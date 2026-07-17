@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "kafka-evidence-ui",
+  "displayName": "KAFKA Evidence UI",
+  "description": "Evidence-first dual-mode design system for dense dashboards, catalogs, monitoring tools, and public-data interfaces.",
+  "author": {
+    "name": "KAFKA2306"
+  },
+  "homepage": "https://kafka2306.github.io/agent-resources/",
+  "repository": "https://github.com/KAFKA2306/agent-resources",
+  "license": "MIT",
+  "keywords": [
+    "design-system",
+    "frontend",
+    "html",
+    "css",
+    "javascript",
+    "dashboard",
+    "evidence"
+  ]
+}
