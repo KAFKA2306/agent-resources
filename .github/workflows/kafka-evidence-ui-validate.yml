@@ -9,6 +9,7 @@ on:
       - ".agents/skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
       - ".claude-plugin/marketplace.json"
+      - "README.md"
       - ".github/workflows/kafka-evidence-ui-*.yml"
   push:
     branches: [main]
@@ -19,6 +20,7 @@ on:
       - ".agents/skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
       - ".claude-plugin/marketplace.json"
+      - "README.md"
       - ".github/workflows/kafka-evidence-ui-*.yml"
 
 permissions:
@@ -68,6 +70,26 @@ jobs:
           if missing:
               raise SystemExit(f'missing required files: {missing}')
           print(f'required files: {len(required)}')
+          PY
+
+      - name: Validate README resource links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          readme = Path('README.md').read_text(encoding='utf-8')
+          required_links = [
+              'https://kafka2306.github.io/agent-resources/',
+              '(skills/kafka-evidence-ui/SKILL.md)',
+              '(plugins/kafka-evidence-ui/README.md)',
+          ]
+          missing = [link for link in required_links if link not in readme]
+          if missing:
+              raise SystemExit(f'missing README links: {missing}')
+          for path in ('skills/kafka-evidence-ui/SKILL.md', 'plugins/kafka-evidence-ui/README.md'):
+              if not Path(path).is_file():
+                  raise SystemExit(f'missing linked file: {path}')
+          print('README resource links: valid')
           PY
 
       - name: Validate JavaScript syntax

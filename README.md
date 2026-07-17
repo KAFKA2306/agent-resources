@@ -176,6 +176,14 @@ agr add madsnorgaard/drupal-expert
 
 **Built something?** [Share it here](https://github.com/kasperjunge/agent-resources/issues).
 
+## KAFKA Evidence UI
+
+Evidence-first design system for dense dashboards, catalogs, monitoring tools, and public-data interfaces.
+
+- [GitHub Pages showcase](https://kafka2306.github.io/agent-resources/)
+- [Design system skill](skills/kafka-evidence-ui/SKILL.md)
+- [Agent plugin](plugins/kafka-evidence-ui/README.md)
+
 ---
 
 ## Coming from npx skills?
@@ -198,6 +206,6 @@ matching repository exists and suggest the correct handles.
 
 <div align="center">
 
-[Documentation](https://kasperjunge.github.io/agent-resources/) · [MIT License](LICENSE)
+[Documentation](https://kafka2306.github.io/agent-resources/) · [MIT License](LICENSE)
 
 </div>

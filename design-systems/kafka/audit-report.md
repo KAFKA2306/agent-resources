@@ -93,3 +93,18 @@ Allowed radii are `0`, `4px`, `8px`, and pill. Shadows are reserved for overlays
 ## Evidence boundary
 
 The complete inventory count is verified for the snapshot date. The implementation findings are based on the representative projects listed above. The audit does **not** claim that every visual file in all 165 repositories was rendered and inspected.
+
+## Identity-fit audit
+
+The system fits KAFKA's operational identity: structural transparency, logging, reality over narrative, intellectual honesty, and autonomous decision support are directly visible in the information architecture and evidence lane.
+
+| Identity signal | Fit | Evidence or gap |
+|---|---|---|
+| Structural transparency | Strong | State, metrics, controls, implementation limits, and evidence are separated and visible. |
+| Reality over narrative | Strong | Unsupported claims are explicitly blocked; coverage is stated as representative. |
+| Systemic integrity | Strong | Freshness, counts, missing evidence, and corrective constraints are first-class content. |
+| Quiet emotional futurism | Partial | Restrained dark/cyan terminal mode supports it; the personal light-blue/lavender and softer emotional register are intentionally subtle. |
+| VRChat, education, and community | Partial | The system supports VR/finance/education tools but contains no social or VR-specific example as a primary surface. |
+| Narrative archive | Partial | Evidence is preserved, but the design system does not yet provide a durable provenance or story-arc component. |
+
+Verdict: no blocking identity conflict. This is recognizably KAFKA as an evidence-first operational persona, not a complete portrait of every personal interest. Personal markers should remain optional for public-facing or VRChat surfaces rather than being forced into every utility UI.
