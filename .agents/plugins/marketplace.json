@@ -1,0 +1,20 @@
+{
+  "name": "kafka-agent-tools",
+  "interface": {
+    "displayName": "KAFKA Agent Tools"
+  },
+  "plugins": [
+    {
+      "name": "kafka-evidence-ui",
+      "source": {
+        "source": "local",
+        "path": "./plugins/kafka-evidence-ui"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

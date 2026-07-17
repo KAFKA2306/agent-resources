@@ -1,0 +1,38 @@
+{
+  "name": "kafka-evidence-ui",
+  "version": "0.1.0",
+  "description": "Evidence-first dual-mode design system for information-dense frontend work.",
+  "author": {
+    "name": "KAFKA2306",
+    "url": "https://github.com/KAFKA2306"
+  },
+  "homepage": "https://kafka2306.github.io/agent-resources/",
+  "repository": "https://github.com/KAFKA2306/agent-resources",
+  "license": "MIT",
+  "keywords": [
+    "design-system",
+    "frontend",
+    "html",
+    "css",
+    "javascript",
+    "dashboard",
+    "evidence"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "KAFKA Evidence UI",
+    "shortDescription": "Evidence-first dense UI system",
+    "longDescription": "Design and refactor dashboards, catalogs, monitoring tools, and public-data interfaces using KAFKA2306's evidence-first terminal and paper modes.",
+    "developerName": "KAFKA2306",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://kafka2306.github.io/agent-resources/",
+    "defaultPrompt": [
+      "Inspect the existing interface before changing it.",
+      "Choose terminal or paper mode from the information context.",
+      "Expose sources, freshness, counts, and unresolved evidence.",
+      "Use the KAFKA Evidence UI tokens and validation checklist."
+    ],
+    "brandColor": "#55BDF6"
+  }
+}

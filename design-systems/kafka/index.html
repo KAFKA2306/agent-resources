@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ja" data-theme="terminal" data-density="compact">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="KAFKA2306の165リポジトリ監査から定義した、証拠優先・高密度・二モードのHTML/CSS/JSデザインシステム。" />
+  <meta name="theme-color" content="#07090c" />
+  <title>KAFKA Evidence UI</title>
+  <link rel="stylesheet" href="components.css" />
+</head>
+<body>
+  <main class="k-shell">
+    <nav class="k-topbar" aria-label="Design system navigation">
+      <div class="k-brand"><span class="k-brand-mark" aria-hidden="true"></span><span>KAFKA Evidence UI</span></div>
+      <div class="k-toolbar">
+        <a class="k-button" href="audit-report.md">Audit report</a>
+        <a class="k-button" href="https://github.com/KAFKA2306/agent-resources">GitHub</a>
+      </div>
+    </nav>
+
+    <section class="k-hero" aria-labelledby="hero-title">
+      <div class="k-hero-main">
+        <div class="k-chips">
+          <span class="k-badge k-info">PORTFOLIO AUDIT / 165 REPOSITORIES</span>
+          <span class="k-badge">HTML / CSS / JS</span>
+        </div>
+        <p class="k-eyebrow">Evidence-first interface system</p>
+        <h1 id="hero-title">証拠を先に、<br />装飾を後に。</h1>
+        <p class="k-lead">更新日、出典、件数、欠損、未解決状態を隠さず、分析・運用・探索の判断を短い視線移動で完了させる。暗色の監査端末と暖色アイボリーのデータ台帳を、同じ設計規則で扱います。</p>
+      </div>
+      <div class="k-status-strip" aria-label="State examples">
+        <div class="k-status"><span>Inventory</span><strong class="k-positive">VERIFIED / 165</strong></div>
+        <div class="k-status"><span>Implementation review</span><strong class="k-info">REPRESENTATIVE</strong></div>
+        <div class="k-status"><span>Unresolved evidence</span><strong class="k-warning">VISIBLE</strong></div>
+        <div class="k-status"><span>Unsupported claim</span><strong class="k-negative">BLOCKED</strong></div>
+      </div>
+    </section>
+
+    <section class="k-grid k-grid-4 k-section" aria-label="System metrics">
+      <article class="k-metric"><span>Repository inventory</span><strong>165</strong><p>2026-07-17 snapshot</p></article>
+      <article class="k-metric"><span>Display modes</span><strong>2</strong><p>terminal / paper</p></article>
+      <article class="k-metric"><span>Default rhythm</span><strong>8px</strong><p>4px base increments</p></article>
+      <article class="k-metric"><span>Focus accents</span><strong>1</strong><p>semantic states are separate</p></article>
+    </section>
+
+    <section class="k-controls k-section" aria-label="Showcase controls">
+      <div class="k-field">
+        <label for="project-search">Project search</label>
+        <input class="k-input" id="project-search" type="search" placeholder="project, mode, evidence..." autocomplete="off" />
+      </div>
+      <div class="k-field">
+        <label>Theme</label>
+        <div class="k-actions">
+          <button class="k-button" type="button" data-theme-button="terminal" aria-pressed="true">Terminal</button>
+          <button class="k-button" type="button" data-theme-button="paper" aria-pressed="false">Paper</button>
+        </div>
+      </div>
+      <div class="k-field">
+        <label>Density</label>
+        <div class="k-actions">
+          <button class="k-button" type="button" data-density-button="compact" aria-pressed="true">Compact</button>
+          <button class="k-button" type="button" data-density-button="comfortable" aria-pressed="false">Comfortable</button>
+        </div>
+      </div>
+      <button class="k-button" id="reset-controls" type="button">RESET</button>
+    </section>
+
+    <section class="k-grid k-grid-2 k-section">
+      <article class="k-panel">
+        <header class="k-panel-head"><h2>Representative projects</h2><span id="project-count" aria-live="polite">6 rows</span></header>
+        <div class="k-table-wrap">
+          <table class="k-table">
+            <thead><tr><th>Project</th><th>Mode</th><th>Evidence trait</th><th>Status</th></tr></thead>
+            <tbody id="project-rows">
+              <tr data-search="pal atlas terminal paper source rank catalog"><td><b>PAL ATLAS</b></td><td class="k-id">terminal / paper</td><td>source, rank, route, count</td><td><span class="k-badge k-positive">VERIFIED</span></td></tr>
+              <tr data-search="us swing strategy bi terminal audit missing source finance"><td><b>US Swing Strategy BI</b></td><td class="k-id">terminal</td><td>audit gaps and source files</td><td><span class="k-badge k-warning">GAPS VISIBLE</span></td></tr>
+              <tr data-search="game library dashboard paper ontology catalog source"><td><b>Game Library Dashboard</b></td><td class="k-id">paper</td><td>ontology and evidence lane</td><td><span class="k-badge k-positive">VERIFIED</span></td></tr>
+              <tr data-search="cedar pollen bi paper public data source limitation"><td><b>Cedar Pollen BI</b></td><td class="k-id">paper</td><td>official sources and limits</td><td><span class="k-badge k-positive">VERIFIED</span></td></tr>
+              <tr data-search="trahist terminal finance table status"><td><b>TraHist</b></td><td class="k-id">terminal</td><td>compact stats and tables</td><td><span class="k-badge k-info">MIGRATE</span></td></tr>
+              <tr data-search="bodoge no mikata dark glass glow radius"><td><b>ボドゲのミカタ</b></td><td class="k-id">terminal</td><td>functional density; excess glow</td><td><span class="k-badge k-negative">CORRECTIVE</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="k-panel">
+        <header class="k-panel-head"><h2>Evidence lane</h2><span>ALWAYS VISIBLE</span></header>
+        <div class="k-panel-body k-evidence-list">
+          <div class="k-evidence"><span>Snapshot</span><strong>2026-07-17</strong><p>Inventory count is tied to an explicit date.</p></div>
+          <div class="k-evidence"><span>Coverage</span><strong>165 repositories enumerated</strong><p>Implementation-level review is representative rather than every file in every repository.</p></div>
+          <div class="k-evidence"><span>Accepted evidence</span><strong>Repeated implementation + explicit preference + corrective decision</strong></div>
+          <div class="k-evidence"><span>Blocked claim</span><strong class="k-negative">“All 165 interfaces were visually inspected”</strong><p>This claim is not supported and therefore remains blocked.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="k-grid k-grid-2 k-section">
+      <article class="k-panel">
+        <header class="k-panel-head"><h2>Semantic states</h2><span>COLOR + TEXT</span></header>
+        <div class="k-panel-body">
+          <div class="k-bars">
+            <div class="k-bar-row"><span>Verified</span><span class="k-track"><span class="k-fill k-fill-positive" style="--value: 92%"></span></span><span>92%</span></div>
+            <div class="k-bar-row"><span>Coverage</span><span class="k-track"><span class="k-fill" style="--value: 74%"></span></span><span>74%</span></div>
+            <div class="k-bar-row"><span>Warning</span><span class="k-track"><span class="k-fill k-fill-warning" style="--value: 38%"></span></span><span>38%</span></div>
+          </div>
+          <div class="k-chips" style="margin-top: 12px">
+            <span class="k-badge k-positive">VERIFIED</span>
+            <span class="k-badge k-warning">STALE</span>
+            <span class="k-badge k-negative">FAILED</span>
+            <span class="k-badge k-info">IN REVIEW</span>
+            <span class="k-badge k-special">SPECIAL CASE</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="k-panel">
+        <header class="k-panel-head"><h2>Core tokens</h2><span>SEMANTIC ONLY</span></header>
+        <div class="k-panel-body k-swatches">
+          <div class="k-swatch"><i style="--swatch: var(--k-focus)"></i><span><b>Focus</b><code>--k-focus</code></span></div>
+          <div class="k-swatch"><i style="--swatch: var(--k-positive)"></i><span><b>Positive</b><code>--k-positive</code></span></div>
+          <div class="k-swatch"><i style="--swatch: var(--k-warning)"></i><span><b>Warning</b><code>--k-warning</code></span></div>
+          <div class="k-swatch"><i style="--swatch: var(--k-negative)"></i><span><b>Negative</b><code>--k-negative</code></span></div>
+          <div class="k-swatch"><i style="--swatch: var(--k-info)"></i><span><b>Information</b><code>--k-info</code></span></div>
+          <div class="k-swatch"><i style="--swatch: var(--k-special)"></i><span><b>Special</b><code>--k-special</code></span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="k-grid k-grid-2 k-section">
+      <article class="k-panel">
+        <header class="k-panel-head"><h2>Plain HTML usage</h2><button class="k-button" id="copy-code" type="button">COPY</button></header>
+        <div class="k-panel-body">
+          <pre class="k-code" id="code-example"><code>&lt;html data-theme="terminal" data-density="compact"&gt;
+  &lt;link rel="stylesheet" href="tokens.css" /&gt;
+  &lt;link rel="stylesheet" href="components.css" /&gt;
+  &lt;main class="k-shell"&gt;...&lt;/main&gt;
+&lt;/html&gt;</code></pre>
+          <p class="k-footer" id="copy-status" aria-live="polite">No framework or runtime dependency.</p>
+        </div>
+      </article>
+
+      <article class="k-panel">
+        <header class="k-panel-head"><h2>Corrective constraints</h2><span>DEFAULT DENY</span></header>
+        <div class="k-panel-body k-evidence-list">
+          <div class="k-evidence"><span>Remove</span><strong>rainbow accents / gradient headings / pervasive glass blur</strong></div>
+          <div class="k-evidence"><span>Remove</span><strong>panel glow / universal hover lift / 18–24px default radii</strong></div>
+          <div class="k-evidence"><span>Preserve</span><strong>thin borders / dense controls / sticky context / mono evidence</strong></div>
+          <div class="k-evidence"><span>Expose</span><strong>source / freshness / count / coverage / unresolved state</strong></div>
+        </div>
+      </article>
+    </section>
+
+    <footer class="k-footer">KAFKA Evidence UI / audit snapshot 2026-07-17 / repository inventory 165 / implementation review representative</footer>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>

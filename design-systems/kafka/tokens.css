@@ -1,0 +1,70 @@
+:root,
+:root[data-theme="terminal"] {
+  color-scheme: dark;
+  --k-bg: #07090c;
+  --k-surface-1: #0c1117;
+  --k-surface-2: #121a22;
+  --k-surface-3: #18232d;
+  --k-line: #283845;
+  --k-line-soft: #1a2731;
+  --k-text: #e8eef3;
+  --k-muted: #94a4b2;
+  --k-dim: #687986;
+  --k-focus: #55bdf6;
+  --k-positive: #2fcf94;
+  --k-warning: #dca858;
+  --k-negative: #f06a78;
+  --k-info: #7aa8ff;
+  --k-special: #ab8bd8;
+  --k-grid: rgb(85 189 246 / 0.035);
+  --k-overlay: rgb(7 9 12 / 0.92);
+}
+
+:root[data-theme="paper"] {
+  color-scheme: light;
+  --k-bg: #f4f1e9;
+  --k-surface-1: #fffdf8;
+  --k-surface-2: #ebe5da;
+  --k-surface-3: #e1d9cb;
+  --k-line: #d5cec1;
+  --k-line-soft: #e5dfd5;
+  --k-text: #191b18;
+  --k-muted: #62675f;
+  --k-dim: #858b82;
+  --k-focus: #2f6f98;
+  --k-positive: #2f7553;
+  --k-warning: #9b681b;
+  --k-negative: #ad4551;
+  --k-info: #416d99;
+  --k-special: #72578e;
+  --k-grid: rgb(47 111 152 / 0.05);
+  --k-overlay: rgb(255 253 248 / 0.92);
+}
+
+:root {
+  --k-font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  --k-font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --k-space-1: 4px;
+  --k-space-2: 8px;
+  --k-space-3: 12px;
+  --k-space-4: 16px;
+  --k-space-6: 24px;
+  --k-space-8: 32px;
+  --k-space-12: 48px;
+  --k-radius-0: 0;
+  --k-radius-1: 4px;
+  --k-radius-2: 8px;
+  --k-radius-pill: 999px;
+  --k-control-height: 36px;
+  --k-panel-padding: 12px;
+  --k-row-padding-y: 8px;
+  --k-shell-max: 1600px;
+  --k-transition: 140ms ease;
+  --k-shadow-overlay: 0 20px 60px rgb(0 0 0 / 0.22);
+}
+
+:root[data-density="comfortable"] {
+  --k-control-height: 42px;
+  --k-panel-padding: 16px;
+  --k-row-padding-y: 11px;
+}
