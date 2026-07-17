@@ -1,0 +1,28 @@
+{
+  "name": "kafka-agent-tools",
+  "owner": {
+    "name": "KAFKA2306"
+  },
+  "description": "Reusable agent skills and plugins by KAFKA2306.",
+  "plugins": [
+    {
+      "name": "kafka-evidence-ui",
+      "source": "./plugins/kafka-evidence-ui",
+      "description": "Evidence-first dual-mode UI system for dense tools and dashboards.",
+      "author": {
+        "name": "KAFKA2306"
+      },
+      "homepage": "https://kafka2306.github.io/agent-resources/",
+      "repository": "https://github.com/KAFKA2306/agent-resources",
+      "license": "MIT",
+      "keywords": [
+        "design-system",
+        "frontend",
+        "html",
+        "css",
+        "javascript",
+        "dashboard"
+      ]
+    }
+  ]
+}
