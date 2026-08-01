@@ -1,84 +1,73 @@
-<div align="center">
+# agent-resources（agr）— AIエージェント用スキル管理CLI
 
-# 🧩 agent-resources (agr)
+**ドキュメント・公開ページ:** https://kafka2306.github.io/agent-resources/
 
-**A package manager for AI agents.**
+`agr`は、GitHub上のエージェントスキルを、Claude Code、Codex、Cursor、OpenCode、GitHub Copilot、Antigravityなどのスキルディレクトリへ導入するCLIです。
 
-Install agent skills from GitHub with one command.
+`agrx`を使うと、スキルを恒久インストールせず、一時的に取得・実行・削除できます。
 
-[![PyPI](https://img.shields.io/pypi/v/agr?color=blue)](https://pypi.org/project/agr/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-</div>
-
----
-
-## Getting Started
-
-Install agr CLI:
+## インストール
 
 ```bash
 pip install agr
 ```
 
-Install your first skill:
+最初のスキルを追加する例:
 
 ```bash
 agr add anthropics/skills/frontend-design
 ```
 
-That's it. The skill is now available in your configured tool (Claude Code, Codex, Cursor, OpenCode, Copilot, or Antigravity).
+リモートから取得する場合は、ローカル環境に`git`が必要です。
 
----
+## 主な機能
 
-## What is agr?
+- GitHubまたはローカルディレクトリからスキルを追加
+- プロジェクト単位またはユーザー全体へインストール
+- `agr.toml`による依存スキルの共有
+- 複数ツールのスキル配置先を自動検出
+- スキルの追加、削除、一覧、同期
+- 新しい`SKILL.md`テンプレートを生成
+- `agrx`による一時実行
+- 対話形式の初期設定
 
-**agr** installs agent skills from GitHub directly into your tool's skills folder
-(`.claude/skills/`, `.codex/skills/`, `.cursor/skills/`, `.opencode/skill/`, `.github/skills/`, or `.agent/skills/`).
-
-**agrx** runs skills instantly from your terminal — download, run, then clean up.
-
----
-
-## Install Skills
-
-```bash
-agr add anthropics/skills/frontend-design     # Install a skill
-agr add -g anthropics/skills/frontend-design  # Install globally for your user
-agr add anthropics/skills/pdf anthropics/skills/mcp-builder   # Install multiple
-agr add anthropics/skills/pdf --source github # Install from an explicit source
-```
-
-Remote installs require `git` to be available on your system.
-
-### Handle format
-
-```
-username/skill-name         → From user's skills repo
-username/repo/skill-name    → From a specific repo
-./path/to/skill             → From local directory
-```
-
-Note: `username/skill-name` now defaults to a repo named `skills`. During a
-deprecation period, agr will fall back to `agent-resources` (with a warning) if
-the skill isn't found in `skills`.
-
----
-
-## Run Skills From Your Terminal
+## スキルを追加する
 
 ```bash
-agrx anthropics/skills/pdf                              # Run a skill instantly
-agrx anthropics/skills/pdf -p "Extract tables from report.pdf"   # With a prompt
-agrx anthropics/skills/skill-creator -i                 # Run, then continue chatting
-agrx anthropics/skills/pdf --tool cursor                # Use a specific tool
+agr add anthropics/skills/frontend-design
+agr add -g anthropics/skills/frontend-design
+agr add anthropics/skills/pdf anthropics/skills/mcp-builder
+agr add anthropics/skills/pdf --source github
 ```
 
----
+### ハンドル形式
 
-## Team Sync
+```text
+username/skill-name
+username/repo/skill-name
+./path/to/skill
+```
 
-Your dependencies are tracked in `agr.toml`:
+- `username/skill-name` — ユーザーの標準`skills`リポジトリから取得
+- `username/repo/skill-name` — リポジトリを明示して取得
+- `./path/to/skill` — ローカルディレクトリから追加
+
+2要素形式は、標準で`skills`という名前のリポジトリを参照します。移行期間中は、見つからない場合に`agent-resources`を確認し、警告を表示する実装です。
+
+## 一時実行する
+
+```bash
+agrx anthropics/skills/pdf
+agrx anthropics/skills/pdf -p "Extract tables from report.pdf"
+agrx anthropics/skills/skill-creator -i
+agrx anthropics/skills/pdf --tool cursor
+```
+
+`agrx`はスキルを一時的に取得して実行し、終了後にクリーンアップします。
+
+## チームで同期する
+
+依存スキルは`agr.toml`へ記録します。
 
 ```toml
 dependencies = [
@@ -87,21 +76,25 @@ dependencies = [
 ]
 ```
 
-Teammates run:
+他のメンバーは次を実行します。
 
 ```bash
 agr sync
 ```
 
----
+ユーザー全体の依存関係を同期する場合:
 
-## Create Your Own Skill
+```bash
+agr sync -g
+```
+
+## 新しいスキルを作る
 
 ```bash
 agr init my-skill
 ```
 
-Creates `my-skill/SKILL.md`:
+生成される基本形:
 
 ```markdown
 ---
@@ -114,98 +107,81 @@ description: What this skill does.
 Instructions for the agent.
 ```
 
-If you're adding it to this repo, place it under `./skills/`.
+このリポジトリへ追加する場合は`skills/`配下へ配置します。
 
-Test it locally:
+ローカル検証:
 
 ```bash
 agr add ./skills/my-skill
 ```
 
-Share it:
+GitHubへ公開すると、他の利用者は次の形式で取得できます。
 
 ```bash
-# Push to GitHub, then others can:
 agr add your-username/my-skill
 ```
 
----
-
-## Initialize a Repo
+## リポジトリを初期化する
 
 ```bash
-agr init       # Create agr.toml (auto-detects tools)
-agr onboard    # Interactive guided setup
+agr init
+agr onboard
 ```
 
-`agr init` creates `agr.toml` and detects which tools you use from repo signals (`.claude/`, `CLAUDE.md`, `.cursor/`, etc.).
+- `agr init` — `agr.toml`を作成し、既存のツール設定を検出
+- `agr onboard` — ツール選択、スキル探索、移行、設定を対話形式で実行
 
-`agr onboard` walks you through tool selection, skill discovery, migration, and configuration interactively.
+## コマンド一覧
 
----
-
-## All Commands
-
-| Command | Description |
-|---------|-------------|
-| `agr add <handle>` | Install a skill |
-| `agr add -g <handle>` | Install a skill globally |
-| `agr remove <handle>` | Uninstall a skill |
-| `agr remove -g <handle>` | Uninstall a global skill |
-| `agr sync` | Install all from agr.toml |
-| `agr sync -g` | Sync global dependencies |
-| `agr list` | Show installed skills |
-| `agr list -g` | Show global skills |
-| `agr init` | Create agr.toml |
-| `agr init <name>` | Create a new skill |
-| `agr onboard` | Interactive guided setup |
-| `agr config <cmd> <key>` | Manage agr.toml (show, get, set, add, remove, unset, edit, path) |
-| `agrx <handle>` | Run skill temporarily |
-
----
-
-## Community Skills
-
-```bash
-# Go development — @dsjacobsen
-agr add dsjacobsen/golang-pro
-
-# Drupal development — @madsnorgaard
-agr add madsnorgaard/drupal-expert
-```
-
-**Built something?** [Share it here](https://github.com/kasperjunge/agent-resources/issues).
+| コマンド | 内容 |
+| --- | --- |
+| `agr add <handle>` | スキルを追加 |
+| `agr add -g <handle>` | ユーザー全体へ追加 |
+| `agr remove <handle>` | スキルを削除 |
+| `agr remove -g <handle>` | ユーザー全体から削除 |
+| `agr sync` | `agr.toml`の依存関係を同期 |
+| `agr sync -g` | グローバル依存関係を同期 |
+| `agr list` | インストール済みスキルを表示 |
+| `agr list -g` | グローバルスキルを表示 |
+| `agr init` | `agr.toml`を作成 |
+| `agr init <name>` | 新しいスキルを作成 |
+| `agr onboard` | 対話形式で初期設定 |
+| `agr config ...` | 設定を表示・変更 |
+| `agrx <handle>` | スキルを一時実行 |
 
 ## KAFKA Evidence UI
 
-Evidence-first design system for dense dashboards, catalogs, monitoring tools, and public-data interfaces.
+高密度なダッシュボード、カタログ、監視画面、公開データUI向けの証拠優先デザインシステムを同梱しています。
 
-- [GitHub Pages showcase](https://kafka2306.github.io/agent-resources/)
-- [Design system skill](skills/kafka-evidence-ui/SKILL.md)
-- [Agent plugin](plugins/kafka-evidence-ui/README.md)
+- [公開ショーケース](https://kafka2306.github.io/agent-resources/)
+- [デザインシステム・スキル](skills/kafka-evidence-ui/SKILL.md)
+- [エージェントプラグイン](plugins/kafka-evidence-ui/README.md)
 
----
+## `npx skills`との違い
 
-## Coming from npx skills?
+`agr`のハンドルは、リポジトリ全体ではなく、具体的なスキルを指定します。
 
-agr uses a slightly different handle format than `npx skills`:
+| 目的 | npx skills | agr |
+| --- | --- | --- |
+| リポジトリ内のスキル | `npx skills add owner/repo` | `agr add owner/repo/skill-name` |
+| 標準リポジトリ内のスキル | — | `agr add owner/skill-name` |
 
-| What you want | npx skills | agr |
-|---|---|---|
-| Skill from a repo | `npx skills add owner/repo` | `agr add owner/repo/skill-name` |
-| Skill from user's default repo | — | `agr add owner/skill-name` |
+2要素形式で見つからない場合は、対応するリポジトリを確認し、利用可能なハンドル候補を提示します。
 
-The key difference: `agr` handles always point to a **specific skill**, not a
-repo to scan. Use the three-part format `owner/repo/skill-name` when the skill
-lives in a non-default repo.
+## セキュリティ上の注意
 
-If you use a two-part handle and the skill isn't found, `agr` will check if a
-matching repository exists and suggest the correct handles.
+エージェントスキルは、AIツールへ実行手順や権限の使い方を与えるファイルです。追加・実行する前に、必ず次を確認してください。
 
----
+- 配布元とリポジトリ所有者
+- `SKILL.md`の全文
+- シェルコマンド、ネットワーク通信、ファイル変更の内容
+- APIキーや秘密情報へのアクセス要求
+- 追加される補助スクリプトや依存関係
 
-<div align="center">
+信頼できないスキルを、機密情報や書き込み権限がある環境で実行しないでください。
 
-[Documentation](https://kafka2306.github.io/agent-resources/) · [MIT License](LICENSE)
+## ライセンス
 
-</div>
+[MIT License](LICENSE)
+
+**README最終監査:** 2026-08-01
