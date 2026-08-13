@@ -6,6 +6,7 @@ ROOT_HTML = ROOT / "docs" / "index.html"
 HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 JS = ROOT / "docs" / "dashboard" / "dashboard.js"
+STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
 
 
 class DashboardSkeletonTest(unittest.TestCase):
@@ -19,6 +20,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         css = CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn("@media(max-width:760px)", css)
         self.assertIn("grid-template-columns:minmax(0,1fr);", css)
+        self.assertIn(".panel-heading{align-items:flex-start;flex-direction:column}", css)
 
     def test_root_promotes_dashboard_and_preserves_docs_routes(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
@@ -35,7 +37,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('fetch("./dashboard.json"', js)
         self.assertIn("repository.group", js)
         self.assertIn("repository.url", js)
-        self.assertNotIn("agent-resources", js.lower())
+        self.assertNotIn("api.github.com", js)
 
     def test_zero_repositories_has_explicit_empty_state(self):
         js = JS.read_text(encoding="utf-8")
@@ -55,6 +57,20 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("ACTIVITY_LABELS[item.kind]", js)
         self.assertIn("最近の活動は0件です。", js)
         self.assertNotIn("api.github.com", js)
+
+    def test_snapshot_generation_time_and_failure_are_explicit(self):
+        html = HTML.read_text(encoding="utf-8")
+        js = JS.read_text(encoding="utf-8")
+        status_js = STATUS_JS.read_text(encoding="utf-8")
+        css = CSS.read_text(encoding="utf-8")
+        self.assertIn('id="snapshot-generated-at"', html)
+        self.assertIn("snapshot.generatedAt", js)
+        self.assertIn('snapshotStatus.dataset.state = "failed"', js)
+        self.assertIn("最新成功データとして扱いません", js)
+        self.assertIn("STALE_AFTER_MS = 2 * 60 * 60 * 1000", status_js)
+        self.assertIn('state: "stale"', status_js)
+        self.assertIn('[data-state="stale"]', css)
+        self.assertIn('[data-state="failed"]', css)
 
 
 if __name__ == "__main__":
