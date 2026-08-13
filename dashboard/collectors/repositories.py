@@ -9,11 +9,20 @@ from dashboard.collectors.github_api import atomic_write_json, fetch_paginated
 
 DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config" / "repositories.json"
 ZONE_TOPIC_PREFIX = "agent-zone-"
+ALLOWED_CONFIG_KEYS = {"owner"}
+
+
+def validate_config(config):
+    if set(config) != ALLOWED_CONFIG_KEYS:
+        raise ValueError("repository config must contain only owner")
+    if not isinstance(config.get("owner"), str) or not config["owner"].strip():
+        raise ValueError("owner must be a non-empty string")
+    return config
 
 
 def load_config(path=DEFAULT_CONFIG):
     with Path(path).open(encoding="utf-8") as handle:
-        return json.load(handle)
+        return validate_config(json.load(handle))
 
 
 def normalize_group_fragment(value):
@@ -71,6 +80,7 @@ def normalize_repository(raw, config):
 
 
 def collect_repositories(config, token=None, fetcher=fetch_paginated):
+    config = validate_config(config)
     owner = quote(config["owner"], safe="")
     url = f"https://api.github.com/users/{owner}/repos?per_page=100&type=owner&sort=updated"
     raw_repositories = fetcher(url, token=token)
