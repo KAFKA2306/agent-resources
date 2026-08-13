@@ -40,6 +40,7 @@ jobs:
         run: |
           mkdir -p deploy/site
           cp docs/index.html deploy/
+          cp -r docs/dashboard deploy/dashboard
           cp -r docs/site/* deploy/site/
 
       - name: Upload artifact
