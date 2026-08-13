@@ -7,13 +7,15 @@
   <meta name="description" content="GitHub上の公開作業を一画面で確認するAgent Resources dashboard">
   <link rel="stylesheet" href="./dashboard.css">
   <link rel="stylesheet" href="./flow.css">
+  <link rel="stylesheet" href="./game.css">
   <script type="module" src="./flow.js"></script>
   <script type="module" src="./dashboard.js"></script>
 </head>
-<body>
+<body class="game-dashboard">
   <header class="topbar"><div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div><a class="home-link" href="../">既存トップへ</a></header>
   <div class="dashboard-shell">
     <main class="main-panel" aria-labelledby="workspace-title">
+      <div class="world-decor" aria-hidden="true"><span class="decor-building"></span><span class="decor-sign">HUB</span><span class="decor-character"></span></div>
       <div class="panel-heading"><div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div><span class="status-chip" id="snapshot-status">読込中</span></div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
       <section id="lane-flow" class="lane-flow" aria-label="work item の処理フロー"></section>
