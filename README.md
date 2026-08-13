@@ -1,46 +1,118 @@
-# agent-resources（agr）— AIエージェント用スキル管理CLI
+# agent-resources — Public Agent Operations Hub
 
-**ドキュメント・公開ページ:** https://kafka2306.github.io/agent-resources/
+**KAFKA2306 の公開 GitHub 作業を、ひとつの画面で観測するための中央ハブです。**
 
-`agr`は、GitHub上のエージェントスキルを、Claude Code、Codex、Cursor、OpenCode、GitHub Copilot、Antigravityなどのスキルディレクトリへ導入するCLIです。
+このリポジトリは現在、主に次の3つを担っています。
 
-`agrx`を使うと、スキルを恒久インストールせず、一時的に取得・実行・削除できます。
+1. **Public Agent Operations Dashboard** — 公開 repository / Issue / PR / GitHub Actions を横断して、現在の作業状態を可視化する
+2. **`agr` / `agrx`** — AIエージェント用スキルを追加・同期・一時実行するCLI
+3. **KAFKA Evidence UI** — 証拠・状態・provenanceを優先する公開データUI / dashboard向けデザイン資産
 
-## インストール
+## Open
+
+- **Public Dashboard:** https://kafka2306.github.io/agent-resources/dashboard/
+- **CLI / Skills Documentation:** https://kafka2306.github.io/agent-resources/site/
+- **Repository:** https://github.com/KAFKA2306/agent-resources
+- **PyPI:** https://pypi.org/project/agent-resources/
+
+リポジトリのGitHub Pagesルート `https://kafka2306.github.io/agent-resources/` も dashboard へリダイレクトします。
+
+---
+
+## 1. Public Agent Operations Dashboard
+
+Dashboard は、`KAFKA2306` が所有する **public かつ non-archived な repository** を GitHub API から自動収集します。repository の個別 allowlist は持ちません。
+
+表示対象は公開情報だけです。private repository は snapshot に入りません。
+
+### 何が見えるか
+
+- **Live Agent World** — project区画 → repository station → Issue / PR / workflow agent
+- **work lanes** — `working` / `waiting` / `done` / `failed`
+- **repository details** — 各 repository の現在の work item
+- **Recent Activity** — 直近 **7日間** の Issue / PR 活動と、各 repository の最新 workflow 状態
+- **GitHub activity stats** — public repository を対象にした月次 Commit / PR / Issue 推移
+- **heat / attention ordering** — 対応が必要な work を上位に出すための表示優先度
+
+Dashboard の状態は `docs/dashboard/dashboard.json` へ生成され、schema validation と public boundary audit を通ったものだけが GitHub Pages に配信されます。
+
+### work lane の意味
+
+| lane | 主な状態 |
+| --- | --- |
+| `working` | open Issue、queued / in-progress workflow |
+| `waiting` | open PR、または明示分類できず確認が必要な状態 |
+| `done` | closed Issue / PR、successful / skipped workflow |
+| `failed` | failed / cancelled workflow |
+
+### project zone の付け方
+
+project の意味的な区画は GitHub repository topic で指定します。
+
+```text
+agent-zone-<name>
+```
+
+例:
+
+```text
+agent-zone-finance
+agent-zone-vr
+agent-zone-research
+agent-zone-automation
+```
+
+`agent-zone-*` が無い repository は `unclassified` に入ります。
+
+**programming language は project zone の代替には使いません。** Python / JavaScript などの実装言語と、project の目的・責務を混同しないためです。
+
+### 更新タイミング
+
+GitHub Pages の build は次の契機で実行されます。
+
+- `main` の `docs/**` / `dashboard/**` 等が更新されたとき
+- **毎時17分** の scheduled build
+- `workflow_dispatch`
+
+build 時に GitHub API から repository、work item、workflow run、7日間の activity、public GitHub stats を再収集し、canonical snapshot を生成します。
+
+### 公開境界
+
+Dashboard は **public-only** を契約にしています。
+
+- owner: `KAFKA2306`
+- public repository のみ
+- archived repository は除外
+- private repository は除外
+- stats も `scope = public`
+- snapshot は JSON Schema で検証
+- Pages build 時に public artifact boundary を再監査
+
+---
+
+## 2. `agr` — Agent Skill Manager
+
+`agr` は、GitHub またはローカルディレクトリ上のエージェントスキルを、Claude Code、Codex、Cursor、OpenCode、GitHub Copilot、Antigravity などのスキル配置先へ導入するCLIです。
+
+`agrx` は、スキルを恒久インストールせず、一時的に取得・実行・削除します。
+
+### Install
 
 ```bash
 pip install agr
 ```
 
-最初のスキルを追加する例:
+リモートから取得する場合はローカル環境に `git` が必要です。
 
-```bash
-agr add anthropics/skills/frontend-design
-```
-
-リモートから取得する場合は、ローカル環境に`git`が必要です。
-
-## 主な機能
-
-- GitHubまたはローカルディレクトリからスキルを追加
-- プロジェクト単位またはユーザー全体へインストール
-- `agr.toml`による依存スキルの共有
-- 複数ツールのスキル配置先を自動検出
-- スキルの追加、削除、一覧、同期
-- 新しい`SKILL.md`テンプレートを生成
-- `agrx`による一時実行
-- 対話形式の初期設定
-
-## スキルを追加する
+### Add a skill
 
 ```bash
 agr add anthropics/skills/frontend-design
 agr add -g anthropics/skills/frontend-design
 agr add anthropics/skills/pdf anthropics/skills/mcp-builder
-agr add anthropics/skills/pdf --source github
 ```
 
-### ハンドル形式
+handle:
 
 ```text
 username/skill-name
@@ -48,13 +120,13 @@ username/repo/skill-name
 ./path/to/skill
 ```
 
-- `username/skill-name` — ユーザーの標準`skills`リポジトリから取得
-- `username/repo/skill-name` — リポジトリを明示して取得
-- `./path/to/skill` — ローカルディレクトリから追加
+- `username/skill-name` — ユーザーの標準 `skills` repository から取得
+- `username/repo/skill-name` — repository を明示
+- `./path/to/skill` — local directory から追加
 
-2要素形式は、標準で`skills`という名前のリポジトリを参照します。移行期間中は、見つからない場合に`agent-resources`を確認し、警告を表示する実装です。
+2要素形式は標準で `skills` repository を参照します。移行期間中は、見つからない場合に `agent-resources` も確認して警告します。
 
-## 一時実行する
+### Run temporarily with `agrx`
 
 ```bash
 agrx anthropics/skills/pdf
@@ -63,11 +135,9 @@ agrx anthropics/skills/skill-creator -i
 agrx anthropics/skills/pdf --tool cursor
 ```
 
-`agrx`はスキルを一時的に取得して実行し、終了後にクリーンアップします。
+### Share dependencies with a team
 
-## チームで同期する
-
-依存スキルは`agr.toml`へ記録します。
+依存スキルは `agr.toml` に記録します。
 
 ```toml
 dependencies = [
@@ -76,112 +146,111 @@ dependencies = [
 ]
 ```
 
-他のメンバーは次を実行します。
-
 ```bash
 agr sync
-```
-
-ユーザー全体の依存関係を同期する場合:
-
-```bash
 agr sync -g
 ```
 
-## 新しいスキルを作る
+### Create a skill
 
 ```bash
 agr init my-skill
 ```
 
-生成される基本形:
-
-```markdown
----
-name: my-skill
-description: What this skill does.
----
-
-# My Skill
-
-Instructions for the agent.
-```
-
-このリポジトリへ追加する場合は`skills/`配下へ配置します。
-
-ローカル検証:
+この repository へ追加する場合は `skills/` 配下へ置き、ローカルで検証できます。
 
 ```bash
 agr add ./skills/my-skill
 ```
 
-GitHubへ公開すると、他の利用者は次の形式で取得できます。
-
-```bash
-agr add your-username/my-skill
-```
-
-## リポジトリを初期化する
+### Initialize / onboard
 
 ```bash
 agr init
 agr onboard
 ```
 
-- `agr init` — `agr.toml`を作成し、既存のツール設定を検出
+- `agr init` — `agr.toml` を作成し、既存ツール設定を検出
 - `agr onboard` — ツール選択、スキル探索、移行、設定を対話形式で実行
 
-## コマンド一覧
+### Main commands
 
-| コマンド | 内容 |
+| command | purpose |
 | --- | --- |
-| `agr add <handle>` | スキルを追加 |
-| `agr add -g <handle>` | ユーザー全体へ追加 |
-| `agr remove <handle>` | スキルを削除 |
-| `agr remove -g <handle>` | ユーザー全体から削除 |
-| `agr sync` | `agr.toml`の依存関係を同期 |
-| `agr sync -g` | グローバル依存関係を同期 |
-| `agr list` | インストール済みスキルを表示 |
-| `agr list -g` | グローバルスキルを表示 |
-| `agr init` | `agr.toml`を作成 |
-| `agr init <name>` | 新しいスキルを作成 |
+| `agr add <handle>` | skill を追加 |
+| `agr add -g <handle>` | global に追加 |
+| `agr remove <handle>` | skill を削除 |
+| `agr remove -g <handle>` | global から削除 |
+| `agr sync` | `agr.toml` を同期 |
+| `agr sync -g` | global dependency を同期 |
+| `agr list` | installed skill を表示 |
+| `agr list -g` | global skill を表示 |
+| `agr init` | `agr.toml` を作成 |
+| `agr init <name>` | 新しい skill を作成 |
 | `agr onboard` | 対話形式で初期設定 |
 | `agr config ...` | 設定を表示・変更 |
-| `agrx <handle>` | スキルを一時実行 |
+| `agrx <handle>` | skill を一時実行 |
 
-## KAFKA Evidence UI
+詳細は **CLI / Skills Documentation** を参照してください。
 
-高密度なダッシュボード、カタログ、監視画面、公開データUI向けの証拠優先デザインシステムを同梱しています。
+---
+
+## 3. KAFKA Evidence UI
+
+高密度な dashboard、catalog、monitoring、公開データUI向けの evidence-first design system を同梱しています。
 
 - [公開ショーケース](https://kafka2306.github.io/agent-resources/)
-- [デザインシステム・スキル](skills/kafka-evidence-ui/SKILL.md)
-- [エージェントプラグイン](plugins/kafka-evidence-ui/README.md)
+- [Design system skill](skills/kafka-evidence-ui/SKILL.md)
+- [Agent plugin](plugins/kafka-evidence-ui/README.md)
 
-## `npx skills`との違い
+Agent World の visual asset は表示専用です。状態・リンク・work item の正準データは dashboard snapshot 側から取得し、visual asset 自体へ operational truth を持たせません。
 
-`agr`のハンドルは、リポジトリ全体ではなく、具体的なスキルを指定します。
+---
 
-| 目的 | npx skills | agr |
-| --- | --- | --- |
-| リポジトリ内のスキル | `npx skills add owner/repo` | `agr add owner/repo/skill-name` |
-| 標準リポジトリ内のスキル | — | `agr add owner/skill-name` |
+## Development / validation
 
-2要素形式で見つからない場合は、対応するリポジトリを確認し、利用可能なハンドル候補を提示します。
+Dashboard の主要QA:
 
-## セキュリティ上の注意
+```bash
+pip install -r dashboard/requirements.txt
+python -m unittest discover -s dashboard/tests -p 'test_*.py' -v
+npm run test:dashboard
+```
 
-エージェントスキルは、AIツールへ実行手順や権限の使い方を与えるファイルです。追加・実行する前に、必ず次を確認してください。
+JavaScript syntax と visual asset manifest も GitHub Actions で検証されます。
 
-- 配布元とリポジトリ所有者
-- `SKILL.md`の全文
-- シェルコマンド、ネットワーク通信、ファイル変更の内容
-- APIキーや秘密情報へのアクセス要求
-- 追加される補助スクリプトや依存関係
+Dashboard build の中心処理は次です。
 
-信頼できないスキルを、機密情報や書き込み権限がある環境で実行しないでください。
+```text
+dashboard/collectors/*
+        ↓
+dashboard/build.py
+        ↓
+JSON Schema validation
+        ↓
+docs/dashboard/dashboard.json
+        ↓
+GitHub Pages
+```
 
-## ライセンス
+---
+
+## Security
+
+エージェントスキルは、AIツールへ実行手順や権限の使い方を与えるファイルです。追加・実行する前に、少なくとも次を確認してください。
+
+- 配布元と repository owner
+- `SKILL.md` の全文
+- shell command、network access、file mutation の内容
+- API key / secret へのアクセス要求
+- 補助scriptと依存関係
+
+信頼できない skill を、機密情報や書き込み権限がある環境で実行しないでください。
+
+Dashboard 側も public-only boundary を前提にしています。private data を public snapshot へ混ぜないでください。
+
+## License
 
 [MIT License](LICENSE)
 
-**README最終監査:** 2026-08-01
+**README最終監査:** 2026-08-13
