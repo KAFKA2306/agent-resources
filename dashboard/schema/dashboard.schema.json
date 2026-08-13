@@ -11,7 +11,8 @@
     "summary": {"$ref": "#/$defs/summary"},
     "repositories": {"type": "array", "items": {"$ref": "#/$defs/repository"}},
     "workItems": {"type": "array", "items": {"$ref": "#/$defs/workItem"}},
-    "activity": {"type": "array", "items": {"$ref": "#/$defs/activityItem"}}
+    "activity": {"type": "array", "items": {"$ref": "#/$defs/activityItem"}},
+    "stats": {"$ref": "#/$defs/stats"}
   },
   "$defs": {
     "summary": {
@@ -66,6 +67,36 @@
         "occurredAt": {"type": "string", "format": "date-time"},
         "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
         "summary": {"type": "string", "minLength": 1}
+      }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "scope", "timezone", "publicRepositories", "archivedPublicRepositories", "monthly"],
+      "properties": {
+        "owner": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "const": "public"},
+        "timezone": {"type": "string", "const": "Asia/Tokyo"},
+        "publicRepositories": {"type": "integer", "minimum": 0},
+        "archivedPublicRepositories": {"type": "integer", "minimum": 0},
+        "monthly": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/monthlyStats"}
+        }
+      }
+    },
+    "monthlyStats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["month", "commits", "prsCreated", "prsMerged", "issuesCreated", "issuesClosed", "partial"],
+      "properties": {
+        "month": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
+        "commits": {"type": "integer", "minimum": 0},
+        "prsCreated": {"type": "integer", "minimum": 0},
+        "prsMerged": {"type": "integer", "minimum": 0},
+        "issuesCreated": {"type": "integer", "minimum": 0},
+        "issuesClosed": {"type": "integer", "minimum": 0},
+        "partial": {"type": "boolean"}
       }
     }
   }
