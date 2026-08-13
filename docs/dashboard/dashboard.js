@@ -112,22 +112,12 @@ function renderGates(workItems, repositoriesById) {
 function formatActivityTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("ja-JP", {
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  return new Intl.DateTimeFormat("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 
-function renderActivity(activity, repositoriesById) {
+function renderActivity(activity) {
   activityFeed.replaceChildren();
-  const items = activity
-    .filter((item) => ACTIVITY_LABELS[item.kind])
-    .slice()
-    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
-    .slice(0, ACTIVITY_LIMIT);
-
+  const items = activity.filter((item) => ACTIVITY_LABELS[item.kind]).slice().sort((a, b) => b.occurredAt.localeCompare(a.occurredAt)).slice(0, ACTIVITY_LIMIT);
   if (items.length === 0) {
     const empty = document.createElement("p");
     empty.className = "muted activity-empty";
@@ -135,15 +125,12 @@ function renderActivity(activity, repositoriesById) {
     activityFeed.append(empty);
     return;
   }
-
   for (const item of items) {
-    const repository = repositoriesById.get(item.repositoryId);
     const link = document.createElement("a");
     link.className = "activity-item";
     link.href = item.url;
     link.target = "_blank";
     link.rel = "noreferrer";
-
     const meta = document.createElement("span");
     meta.className = "activity-meta";
     const kind = document.createElement("span");
@@ -153,11 +140,10 @@ function renderActivity(activity, repositoriesById) {
     time.dateTime = item.occurredAt;
     time.textContent = formatActivityTime(item.occurredAt);
     meta.append(kind, time);
-
     const summary = document.createElement("strong");
     summary.textContent = item.summary || ACTIVITY_LABELS[item.kind];
     const repo = document.createElement("small");
-    repo.textContent = repository ? repository.name : "unknown repository";
+    repo.textContent = item.repositoryName;
     link.append(meta, summary, repo);
     activityFeed.append(link);
   }
@@ -174,7 +160,7 @@ function renderDashboard(snapshot) {
     workByRepository.get(item.repositoryId).push(item);
   }
   renderGates(workItems, repositoriesById);
-  renderActivity(activity, repositoriesById);
+  renderActivity(activity);
   groupsRoot.replaceChildren();
   repositoryCount.textContent = `${repositories.length} repositories`;
   if (repositories.length === 0) {
