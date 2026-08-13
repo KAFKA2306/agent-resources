@@ -4,220 +4,66 @@
   "title": "Agent Resources Dashboard Snapshot",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schemaVersion",
-    "generatedAt",
-    "summary",
-    "repositories",
-    "workItems",
-    "activity"
-  ],
+  "required": ["schemaVersion", "generatedAt", "summary", "repositories", "workItems", "activity"],
   "properties": {
-    "schemaVersion": {
-      "type": "string",
-      "const": "1.0.0"
-    },
-    "generatedAt": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "summary": {
-      "$ref": "#/$defs/summary"
-    },
-    "repositories": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/repository"
-      }
-    },
-    "workItems": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/workItem"
-      }
-    },
-    "activity": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/activityItem"
-      }
-    }
+    "schemaVersion": {"type": "string", "const": "1.0.0"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "summary": {"$ref": "#/$defs/summary"},
+    "repositories": {"type": "array", "items": {"$ref": "#/$defs/repository"}},
+    "workItems": {"type": "array", "items": {"$ref": "#/$defs/workItem"}},
+    "activity": {"type": "array", "items": {"$ref": "#/$defs/activityItem"}}
   },
   "$defs": {
     "summary": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "repositoryCount",
-        "workItemCount",
-        "activityCount"
-      ],
+      "required": ["repositoryCount", "workItemCount", "activityCount"],
       "properties": {
-        "repositoryCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "workItemCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "activityCount": {
-          "type": "integer",
-          "minimum": 0
-        }
+        "repositoryCount": {"type": "integer", "minimum": 0},
+        "workItemCount": {"type": "integer", "minimum": 0},
+        "activityCount": {"type": "integer", "minimum": 0}
       }
     },
     "repository": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "owner",
-        "name",
-        "url",
-        "group",
-        "visibility",
-        "updatedAt"
-      ],
+      "required": ["id", "owner", "name", "url", "group", "visibility", "updatedAt"],
       "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "owner": {
-          "type": "string",
-          "minLength": 1
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "pattern": "^https://github\\.com/"
-        },
-        "group": {
-          "type": "string",
-          "minLength": 1
-        },
-        "visibility": {
-          "type": "string",
-          "enum": [
-            "public",
-            "private",
-            "internal"
-          ]
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "id": {"type": "string", "minLength": 1},
+        "owner": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
+        "group": {"type": "string", "minLength": 1},
+        "visibility": {"type": "string", "enum": ["public", "private", "internal"]},
+        "updatedAt": {"type": "string", "format": "date-time"}
       }
     },
     "workItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "repositoryId",
-        "type",
-        "number",
-        "title",
-        "url",
-        "state",
-        "updatedAt"
-      ],
+      "required": ["id", "repositoryId", "kind", "number", "title", "url", "state", "updatedAt"],
       "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "repositoryId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "issue",
-            "pull_request",
-            "workflow_run"
-          ]
-        },
-        "number": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "title": {
-          "type": "string",
-          "minLength": 1
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "pattern": "^https://github\\.com/"
-        },
-        "state": {
-          "type": "string",
-          "enum": [
-            "open",
-            "closed",
-            "queued",
-            "in_progress",
-            "completed",
-            "failed",
-            "cancelled",
-            "skipped"
-          ]
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "id": {"type": "string", "minLength": 1},
+        "repositoryId": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "enum": ["issue", "pull_request", "workflow_run"]},
+        "number": {"type": "integer", "minimum": 1},
+        "title": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
+        "state": {"type": "string", "enum": ["open", "closed", "queued", "in_progress", "completed", "failed", "cancelled", "skipped"]},
+        "updatedAt": {"type": "string", "format": "date-time"}
       }
     },
     "activityItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "id",
-        "repositoryId",
-        "kind",
-        "occurredAt",
-        "url"
-      ],
+      "required": ["id", "repositoryId", "kind", "occurredAt", "url"],
       "properties": {
-        "id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "repositoryId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "kind": {
-          "type": "string",
-          "enum": [
-            "issue",
-            "pull_request",
-            "workflow_run",
-            "commit"
-          ]
-        },
-        "occurredAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "pattern": "^https://github\\.com/"
-        },
-        "summary": {
-          "type": "string",
-          "minLength": 1
-        }
+        "id": {"type": "string", "minLength": 1},
+        "repositoryId": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "enum": ["issue", "pull_request", "workflow_run", "commit"]},
+        "occurredAt": {"type": "string", "format": "date-time"},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
+        "summary": {"type": "string", "minLength": 1}
       }
     }
   }
