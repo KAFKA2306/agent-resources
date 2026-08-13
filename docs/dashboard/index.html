@@ -6,6 +6,7 @@
   <title>Agent Resources Dashboard</title>
   <meta name="description" content="GitHub上の公開作業を一画面で確認するAgent Resources dashboard">
   <link rel="stylesheet" href="./dashboard.css">
+  <script type="module" src="./dashboard.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -23,11 +24,16 @@
           <p class="eyebrow">WORKSPACE</p>
           <h2 id="workspace-title">中央ハブ</h2>
         </div>
-        <span class="status-chip">骨格表示</span>
+        <span class="status-chip" id="snapshot-status">読込中</span>
       </div>
-      <section class="empty-stage" aria-label="ダッシュボード表示領域">
-        <p>repository と work item の表示領域です。</p>
+
+      <section class="hub" aria-label="中央ハブ">
+        <strong>GitHub Public Hub</strong>
+        <span id="repository-count">0 repositories</span>
       </section>
+
+      <section id="project-groups" class="project-groups" aria-live="polite"></section>
+      <p id="workspace-message" class="muted workspace-message" hidden></p>
     </main>
 
     <aside class="sidebar" aria-labelledby="sidebar-title">
@@ -37,7 +43,7 @@
           <h2 id="sidebar-title">最近の活動</h2>
         </div>
       </div>
-      <p class="muted">データ接続前の空表示です。</p>
+      <p class="muted">activity 表示は後続Issueで接続します。</p>
     </aside>
   </div>
 </body>
