@@ -75,7 +75,9 @@ function groupedRepositories(repositories, workItems, activity, generatedAt) {
   }
   return [...groups.entries()]
     .map(([group, items]) => [group, rankRepositories(items, workItems, activity, generatedAt)])
-    .sort(([, aItems], [, bItems]) => {
+    .sort(([aGroup, aItems], [bGroup, bItems]) => {
+      if (aGroup === "unclassified" && bGroup !== "unclassified") return 1;
+      if (aGroup !== "unclassified" && bGroup === "unclassified") return -1;
       const aHeat = aItems.length ? repositoryHeat(aItems[0], workItems, activity, generatedAt) : 0;
       const bHeat = bItems.length ? repositoryHeat(bItems[0], workItems, activity, generatedAt) : 0;
       return bHeat - aHeat;
@@ -160,13 +162,14 @@ function createStation(repository, workItems, heat) {
     agents.append(createAgent(item));
   }
 
-  station.append(scene, repositoryLink, agents);
+  station.append(repositoryLink, scene, agents);
   return station;
 }
 
 function createZone(group, repositories, workByRepository, workItems, activity, generatedAt) {
+  const isUnclassified = group === "unclassified";
   const zone = document.createElement("section");
-  zone.className = "world-zone";
+  zone.className = isUnclassified ? "world-zone world-zone-unclassified" : "world-zone";
 
   const floor = createAssetImage("scene.floor.v1", "world-floor-asset");
 
@@ -183,7 +186,9 @@ function createZone(group, repositories, workByRepository, workItems, activity, 
   identity.append(name);
 
   const meta = document.createElement("span");
-  meta.textContent = `${repositories.length} stations · hottest first`;
+  meta.textContent = isUnclassified
+    ? `${repositories.length} stations · agent-zone-* topic未設定`
+    : `${repositories.length} stations · hottest first`;
   heading.append(identity, meta);
 
   const stations = document.createElement("div");
@@ -192,7 +197,17 @@ function createZone(group, repositories, workByRepository, workItems, activity, 
     const heat = repositoryHeat(repository, workItems, activity, generatedAt);
     stations.append(createStation(repository, workByRepository.get(repository.id) || [], heat));
   }
-  content.append(heading, stations);
+
+  if (isUnclassified) {
+    const details = document.createElement("details");
+    details.className = "world-unclassified-details";
+    const summary = document.createElement("summary");
+    summary.textContent = `未分類 ${repositories.length} repositoriesを表示`;
+    details.append(summary, stations);
+    content.append(heading, details);
+  } else {
+    content.append(heading, stations);
+  }
   zone.append(floor, content);
   return zone;
 }
@@ -203,7 +218,11 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
   if (!root || !summary) return;
 
   root.replaceChildren();
-  summary.textContent = `${workItems.length} agents`;
+  const classifiedRepositories = repositories.filter(
+    (repository) => (repository.group || "unclassified") !== "unclassified",
+  ).length;
+  const unclassifiedRepositories = repositories.length - classifiedRepositories;
+  summary.textContent = `${workItems.length} agents · ${classifiedRepositories}/${repositories.length} zoned · ${unclassifiedRepositories} unclassified`;
 
   if (repositories.length === 0) {
     const empty = document.createElement("p");
