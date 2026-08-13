@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "KAFKA2306/prompt-vault",
+    "commit": "3e70694f9c7487bfa8e72ee57e9004601ce030e2",
+    "tree": "1ba0c6545e099e499254b607c932d334e91b93bf"
+  },
+  "policy": {
+    "canonicalDashboardData": "dashboard.json",
+    "visualOnly": true,
+    "mutableMainHotlinksAllowed": false,
+    "imageTextIsCanonical": false
+  },
+  "assets": [
+    {
+      "id": "hermes-agent-overview",
+      "path": "artifacts/108_hermes_agent_overview.png",
+      "blobSha": "5b8bb1ca230eef576df7d5bfa4aad6066a66f87e",
+      "role": "reference",
+      "use": "agent architecture and overview composition",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/108_hermes_agent_overview.png"
+    },
+    {
+      "id": "hermes-agent-skills",
+      "path": "artifacts/109_hermes_agent_skills.png",
+      "blobSha": "c6c6d0c3d47b5d9b400d9e2d506cc3b153545cd9",
+      "role": "reference",
+      "use": "agent capability and skill vocabulary",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/109_hermes_agent_skills.png"
+    },
+    {
+      "id": "topdown-window",
+      "path": "artifacts/110_morning_tweet_window_topdown.png",
+      "blobSha": "9e4b0ac12a026172d2106d94ad84d2c79e71ae25",
+      "role": "reference",
+      "use": "top-down room composition",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/110_morning_tweet_window_topdown.png"
+    },
+    {
+      "id": "kafka-visual-identity",
+      "path": "artifacts/112_kafka_visual_identity.png",
+      "blobSha": "651e27cc00ec150261650810faf1f0bcd7bfc9b6",
+      "role": "reference",
+      "use": "visual identity and character direction",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/112_kafka_visual_identity.png"
+    },
+    {
+      "id": "art-direction-desk",
+      "path": "artifacts/169_096_art_direction_desk_review.png",
+      "blobSha": "b938876f5c784703ed744d9d295f21736665ceea",
+      "role": "reference",
+      "use": "workstation and review-desk composition",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/169_096_art_direction_desk_review.png"
+    },
+    {
+      "id": "tweetsdb-idea-map",
+      "path": "artifacts/172_105_tweetsdb_idea_map.png",
+      "blobSha": "953b832168cb583a71370b137b93e9a28732169e",
+      "role": "reference",
+      "use": "workflow zone and route composition",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/172_105_tweetsdb_idea_map.png"
+    },
+    {
+      "id": "tweetsdb-generate-map",
+      "path": "artifacts/173_106_tweetsdb_generate_map.png",
+      "blobSha": "b3097f8bf1c3f10bec9d3bedf33c2e7b6a647ec4",
+      "role": "reference",
+      "use": "generation workflow map",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/173_106_tweetsdb_generate_map.png"
+    },
+    {
+      "id": "tweetsdb-concrete-map",
+      "path": "artifacts/174_107_tweetsdb_idea_concrete_map.png",
+      "blobSha": "40ce06fccce9bf334abba8a744a5b3542ec82d58",
+      "role": "reference",
+      "use": "concrete workflow map",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/174_107_tweetsdb_idea_concrete_map.png"
+    },
+    {
+      "id": "night-game-room-ui",
+      "path": "artifacts/254_kafka_night_game_room_ui.png",
+      "blobSha": "6f6ca4294b37859046ca9ef128c0463ba105c8ae",
+      "role": "reference",
+      "use": "room scene with UI overlay",
+      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/254_kafka_night_game_room_ui.png"
+    }
+  ]
+}
