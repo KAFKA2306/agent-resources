@@ -1,5 +1,6 @@
 import { classifySnapshot } from "./snapshot-status.js";
 import { renderStats } from "./stats.js";
+import { renderWorld } from "./world.js";
 
 const groupsRoot = document.querySelector("#project-groups");
 const repositoryCount = document.querySelector("#repository-count");
@@ -187,6 +188,7 @@ function renderDashboard(snapshot) {
     if (!workByRepository.has(item.repositoryId)) workByRepository.set(item.repositoryId, []);
     workByRepository.get(item.repositoryId).push(item);
   }
+  renderWorld(repositories, workItems);
   renderGates(workItems, repositoriesById);
   renderActivity(activity);
   renderStats(snapshot.stats);
