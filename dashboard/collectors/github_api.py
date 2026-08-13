@@ -9,7 +9,11 @@ API_VERSION = "2026-03-10"
 
 
 class GitHubApiError(RuntimeError):
-    pass
+    def __init__(self, message, *, status=None, headers=None, response_body=None):
+        super().__init__(message)
+        self.status = status
+        self.headers = headers or {}
+        self.response_body = response_body or ""
 
 
 def request_json(url, token=None):
@@ -25,7 +29,19 @@ def request_json(url, token=None):
         with urlopen(request, timeout=30) as response:
             payload = json.loads(response.read().decode("utf-8"))
             return payload, dict(response.headers.items())
-    except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+    except HTTPError as exc:
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = ""
+        response_headers = dict(exc.headers.items()) if exc.headers else {}
+        raise GitHubApiError(
+            f"GitHub API request failed with HTTP {exc.code}: {url}",
+            status=exc.code,
+            headers=response_headers,
+            response_body=body,
+        ) from exc
+    except (URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise GitHubApiError(f"GitHub API request failed: {url}") from exc
 
 
