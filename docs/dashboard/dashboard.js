@@ -1,3 +1,5 @@
+import { classifySnapshot } from "./snapshot-status.js";
+
 const groupsRoot = document.querySelector("#project-groups");
 const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
@@ -10,8 +12,6 @@ const activityFeed = document.querySelector("#activity-feed");
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const ACTIVITY_LIMIT = 20;
-const STALE_AFTER_MS = 2 * 60 * 60 * 1000;
-const CLOCK_SKEW_TOLERANCE_MS = 5 * 60 * 1000;
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
   { lane: "done", label: "完了報告" },
@@ -127,16 +127,6 @@ function formatSnapshotTime(date) {
     minute: "2-digit",
     second: "2-digit",
   }).format(date);
-}
-
-function classifySnapshot(generatedAt, now = Date.now()) {
-  const generated = new Date(generatedAt);
-  const timestamp = generated.getTime();
-  if (Number.isNaN(timestamp)) return { state: "unknown", label: "生成時刻不明", generated: null };
-  const age = now - timestamp;
-  if (age < -CLOCK_SKEW_TOLERANCE_MS) return { state: "unknown", label: "生成時刻異常", generated };
-  if (age > STALE_AFTER_MS) return { state: "stale", label: "古いsnapshot", generated };
-  return { state: "fresh", label: "最新snapshot", generated };
 }
 
 function renderSnapshotMeta(snapshot) {
