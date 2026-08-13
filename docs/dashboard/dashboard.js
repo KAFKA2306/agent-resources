@@ -20,14 +20,12 @@ const GATES = [
   { lane: "failed", label: "失敗・要確認" },
 ];
 
-function groupRepositories(repositories) {
-  const groups = new Map();
-  for (const repository of repositories) {
-    const group = repository.group || "other";
-    if (!groups.has(group)) groups.set(group, []);
-    groups.get(group).push(repository);
-  }
-  return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([group, items]) => [group, items.sort((a, b) => a.name.localeCompare(b.name))]);
+function sortedRepositories(repositories) {
+  return repositories.slice().sort((a, b) => {
+    const groupOrder = (a.group || "other").localeCompare(b.group || "other");
+    if (groupOrder !== 0) return groupOrder;
+    return a.name.localeCompare(b.name);
+  });
 }
 
 function workItemAgent(item, repository) {
@@ -55,6 +53,7 @@ function workItemAgent(item, repository) {
 function repositoryCard(repository, workItems) {
   const card = document.createElement("article");
   card.className = "repository-card";
+  card.dataset.group = repository.group || "other";
   const link = document.createElement("a");
   link.className = "repository-link";
   link.href = repository.url;
@@ -200,25 +199,24 @@ function renderDashboard(snapshot) {
     return;
   }
   workspaceMessage.hidden = true;
-  for (const [group, items] of groupRepositories(repositories)) {
-    const section = document.createElement("section");
-    section.className = "project-group";
-    const heading = document.createElement("div");
-    heading.className = "group-heading";
-    const title = document.createElement("h3");
-    title.textContent = group;
-    const count = document.createElement("span");
-    count.textContent = `${items.length}`;
-    heading.append(title, count);
-    const grid = document.createElement("div");
-    grid.className = "repository-grid";
-    for (const repository of items) {
-      const repositoryItems = (workByRepository.get(repository.id) || []).slice().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-      grid.append(repositoryCard(repository, repositoryItems));
-    }
-    section.append(heading, grid);
-    groupsRoot.append(section);
+
+  const section = document.createElement("section");
+  section.className = "project-group repository-directory";
+  const heading = document.createElement("div");
+  heading.className = "group-heading";
+  const title = document.createElement("h3");
+  title.textContent = "Repository details";
+  const count = document.createElement("span");
+  count.textContent = `${repositories.length}`;
+  heading.append(title, count);
+  const grid = document.createElement("div");
+  grid.className = "repository-grid";
+  for (const repository of sortedRepositories(repositories)) {
+    const repositoryItems = (workByRepository.get(repository.id) || []).slice().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    grid.append(repositoryCard(repository, repositoryItems));
   }
+  section.append(heading, grid);
+  groupsRoot.append(section);
 }
 
 async function loadDashboard() {

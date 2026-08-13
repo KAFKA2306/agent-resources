@@ -29,6 +29,16 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn("item.url", js)
         self.assertNotIn("api.github.com", js)
 
+    def test_group_labels_are_visible_once(self):
+        world_js = WORLD_JS.read_text(encoding="utf-8")
+        dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
+        self.assertIn("name.textContent = group", world_js)
+        self.assertIn('section.className = "project-group repository-directory"', dashboard_js)
+        self.assertIn('card.dataset.group = repository.group || "other"', dashboard_js)
+        self.assertIn('title.textContent = "Repository details"', dashboard_js)
+        self.assertNotIn("title.textContent = group", dashboard_js)
+        self.assertNotIn("groupRepositories(repositories)", dashboard_js)
+
     def test_prompt_vault_sources_are_commit_pinned(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(
