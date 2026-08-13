@@ -1,0 +1,15 @@
+{
+  "total_count": 1,
+  "workflow_runs": [
+    {
+      "id": 9001,
+      "run_number": 42,
+      "name": "pages build",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/example-owner/public-active/actions/runs/9001",
+      "created_at": "2026-08-13T01:20:00Z",
+      "updated_at": "2026-08-13T01:21:00Z"
+    }
+  ]
+}
