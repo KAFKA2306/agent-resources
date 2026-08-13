@@ -1,0 +1,50 @@
+name: Topic bootstrap for Issue 67
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/topic-bootstrap-67.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    env:
+      GH_ADMIN_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
+      TARGET_REPOSITORY: KAFKA2306/agent-resources
+      TARGET_ZONE: agent-zone-automation
+    steps:
+      - name: Preserve existing topics and set explicit agent zone
+        shell: python
+        run: |
+          import json
+          import os
+          import urllib.request
+
+          repo = os.environ['TARGET_REPOSITORY']
+          zone = os.environ['TARGET_ZONE']
+          token = os.environ['GH_ADMIN_TOKEN']
+          url = f'https://api.github.com/repos/{repo}/topics'
+          headers = {
+              'Accept': 'application/vnd.github+json',
+              'Authorization': f'Bearer {token}',
+              'X-GitHub-Api-Version': '2026-03-10',
+              'User-Agent': 'agent-resources-topic-bootstrap',
+          }
+
+          with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
+              current = json.load(response).get('names', [])
+
+          names = sorted({topic for topic in current if not topic.startswith('agent-zone-')} | {zone})
+          payload = json.dumps({'names': names}).encode('utf-8')
+          request = urllib.request.Request(url, data=payload, headers={**headers, 'Content-Type': 'application/json'}, method='PUT')
+          with urllib.request.urlopen(request) as response:
+              updated = json.load(response).get('names', [])
+
+          if zone not in updated:
+              raise SystemExit(f'zone topic was not persisted: {updated}')
+          print(f'{repo}: {zone}')
