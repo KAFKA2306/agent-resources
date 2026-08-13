@@ -41,6 +41,11 @@
         <p class="world-note muted">project区画 → repository station → Issue / PR / workflow agent。背景参照はprompt-vaultのcommit固定asset、状態と操作はdashboard.json由来です。</p>
         <div id="agent-world-zones" class="world-zones" aria-live="polite"></div>
       </section>
+      <section id="lane-flow" class="lane-flow" aria-label="work item の処理フロー"></section>
+      <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
+      <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
+      <section id="project-groups" class="project-groups" aria-live="polite"></section>
+      <p id="workspace-message" class="muted workspace-message" hidden></p>
       <section class="github-stats" aria-labelledby="github-stats-title">
         <div class="stats-heading"><div><p class="eyebrow">PUBLIC GITHUB ACTIVITY</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
         <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
@@ -48,11 +53,6 @@
         <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>
         <p id="stats-note" class="stats-note muted"></p>
       </section>
-      <section id="lane-flow" class="lane-flow" aria-label="work item の処理フロー"></section>
-      <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
-      <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
-      <section id="project-groups" class="project-groups" aria-live="polite"></section>
-      <p id="workspace-message" class="muted workspace-message" hidden></p>
     </main>
     <aside class="sidebar" aria-labelledby="sidebar-title">
       <div class="panel-heading"><div><p class="eyebrow">SIDEBAR</p><h2 id="sidebar-title">最近の活動</h2></div></div>

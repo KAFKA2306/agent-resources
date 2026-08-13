@@ -49,6 +49,12 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn(".world-reference{display:none}", css)
         self.assertIn("grid-template-columns:minmax(0,1fr)", css)
 
+    def test_monthly_activity_is_below_active_workspace(self):
+        html = HTML.read_text(encoding="utf-8")
+        self.assertLess(html.index('id="agent-world-zones"'), html.index('id="lane-flow"'))
+        self.assertLess(html.index('id="lane-flow"'), html.index('id="project-groups"'))
+        self.assertLess(html.index('id="project-groups"'), html.index('id="github-stats-title"'))
+
 
 if __name__ == "__main__":
     unittest.main()
