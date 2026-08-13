@@ -1,6 +1,7 @@
 const groupsRoot = document.querySelector("#project-groups");
 const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
+const snapshotGeneratedAt = document.querySelector("#snapshot-generated-at");
 const workspaceMessage = document.querySelector("#workspace-message");
 const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
@@ -9,6 +10,8 @@ const activityFeed = document.querySelector("#activity-feed");
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const ACTIVITY_LIMIT = 20;
+const STALE_AFTER_MS = 2 * 60 * 60 * 1000;
+const CLOCK_SKEW_TOLERANCE_MS = 5 * 60 * 1000;
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
   { lane: "done", label: "完了報告" },
@@ -115,6 +118,40 @@ function formatActivityTime(value) {
   return new Intl.DateTimeFormat("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(date);
 }
 
+function formatSnapshotTime(date) {
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(date);
+}
+
+function classifySnapshot(generatedAt, now = Date.now()) {
+  const generated = new Date(generatedAt);
+  const timestamp = generated.getTime();
+  if (Number.isNaN(timestamp)) return { state: "unknown", label: "生成時刻不明", generated: null };
+  const age = now - timestamp;
+  if (age < -CLOCK_SKEW_TOLERANCE_MS) return { state: "unknown", label: "生成時刻異常", generated };
+  if (age > STALE_AFTER_MS) return { state: "stale", label: "古いsnapshot", generated };
+  return { state: "fresh", label: "最新snapshot", generated };
+}
+
+function renderSnapshotMeta(snapshot) {
+  const freshness = classifySnapshot(snapshot.generatedAt);
+  snapshotStatus.dataset.state = freshness.state;
+  snapshotStatus.textContent = freshness.label;
+  if (!freshness.generated) {
+    snapshotGeneratedAt.removeAttribute("datetime");
+    snapshotGeneratedAt.textContent = "生成時刻: 不明";
+    return;
+  }
+  snapshotGeneratedAt.dateTime = freshness.generated.toISOString();
+  snapshotGeneratedAt.textContent = `生成時刻: ${formatSnapshotTime(freshness.generated)}`;
+}
+
 function renderActivity(activity) {
   activityFeed.replaceChildren();
   const items = activity.filter((item) => ACTIVITY_LABELS[item.kind]).slice().sort((a, b) => b.occurredAt.localeCompare(a.occurredAt)).slice(0, ACTIVITY_LIMIT);
@@ -194,13 +231,17 @@ async function loadDashboard() {
   try {
     const response = await fetch("./dashboard.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    renderDashboard(await response.json());
-    snapshotStatus.textContent = "読込済";
+    const snapshot = await response.json();
+    renderDashboard(snapshot);
+    renderSnapshotMeta(snapshot);
   } catch (error) {
     renderDashboard({ repositories: [], workItems: [], activity: [] });
-    snapshotStatus.textContent = "読込失敗";
+    snapshotStatus.dataset.state = "failed";
+    snapshotStatus.textContent = "更新失敗";
+    snapshotGeneratedAt.removeAttribute("datetime");
+    snapshotGeneratedAt.textContent = "生成時刻: 取得できません";
     workspaceMessage.hidden = false;
-    workspaceMessage.textContent = "dashboard.json を読み込めませんでした。";
+    workspaceMessage.textContent = "dashboard.json を読み込めませんでした。最新成功データとして扱いません。";
     console.error(error);
   }
 }
