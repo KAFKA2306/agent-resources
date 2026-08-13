@@ -31,6 +31,7 @@ const STATE_ASSET_IDS = Object.freeze({
 });
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
 const LANE_LABELS = { working: "作業中", waiting: "判断待ち", done: "完了", failed: "失敗・要確認" };
+const UNCLASSIFIED_GROUP = "unclassified";
 
 function resolveAsset(assetId) {
   const src = ASSET_BY_ID[assetId];
@@ -69,16 +70,19 @@ function createAssetImage(assetId, className, onLoad = null) {
 function groupedRepositories(repositories, workItems, activity, generatedAt) {
   const groups = new Map();
   for (const repository of repositories) {
-    const group = repository.group || "unclassified";
+    const group = repository.group || UNCLASSIFIED_GROUP;
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(repository);
   }
   return [...groups.entries()]
     .map(([group, items]) => [group, rankRepositories(items, workItems, activity, generatedAt)])
-    .sort(([, aItems], [, bItems]) => {
+    .sort(([aGroup, aItems], [bGroup, bItems]) => {
+      if (aGroup === UNCLASSIFIED_GROUP && bGroup !== UNCLASSIFIED_GROUP) return 1;
+      if (bGroup === UNCLASSIFIED_GROUP && aGroup !== UNCLASSIFIED_GROUP) return -1;
       const aHeat = aItems.length ? repositoryHeat(aItems[0], workItems, activity, generatedAt) : 0;
       const bHeat = bItems.length ? repositoryHeat(bItems[0], workItems, activity, generatedAt) : 0;
-      return bHeat - aHeat;
+      if (bHeat !== aHeat) return bHeat - aHeat;
+      return aGroup.localeCompare(bGroup);
     });
 }
 
@@ -134,13 +138,8 @@ function createStation(repository, workItems, heat) {
   station.className = "world-station";
   station.dataset.heat = heat.toFixed(2);
 
-  const scene = document.createElement("div");
-  scene.className = "world-station-scene";
-  scene.setAttribute("aria-hidden", "true");
-  scene.append(
-    createAssetImage(stationSceneAssetId(workItems), "world-scene-asset"),
-    createAssetImage("prop.small-pack.v1", "world-prop-asset"),
-  );
+  const header = document.createElement("header");
+  header.className = "world-station-header";
 
   const repositoryLink = document.createElement("a");
   repositoryLink.className = "world-station-link";
@@ -152,6 +151,15 @@ function createStation(repository, workItems, heat) {
   const count = document.createElement("span");
   count.textContent = `${workItems.length} agents · heat ${Math.round(heat)}`;
   repositoryLink.append(name, count);
+  header.append(repositoryLink);
+
+  const scene = document.createElement("div");
+  scene.className = "world-station-scene";
+  scene.setAttribute("aria-hidden", "true");
+  scene.append(
+    createAssetImage(stationSceneAssetId(workItems), "world-scene-asset"),
+    createAssetImage("prop.small-pack.v1", "world-prop-asset"),
+  );
 
   const agents = document.createElement("div");
   agents.className = "world-agents";
@@ -160,13 +168,16 @@ function createStation(repository, workItems, heat) {
     agents.append(createAgent(item));
   }
 
-  station.append(scene, repositoryLink, agents);
+  station.append(header, scene, agents);
   return station;
 }
 
 function createZone(group, repositories, workByRepository, workItems, activity, generatedAt) {
   const zone = document.createElement("section");
   zone.className = "world-zone";
+  zone.dataset.group = group;
+  const isUnclassified = group === UNCLASSIFIED_GROUP;
+  if (isUnclassified) zone.classList.add("world-zone-unclassified");
 
   const floor = createAssetImage("scene.floor.v1", "world-floor-asset");
 
@@ -183,8 +194,18 @@ function createZone(group, repositories, workByRepository, workItems, activity, 
   identity.append(name);
 
   const meta = document.createElement("span");
-  meta.textContent = `${repositories.length} stations · hottest first`;
+  meta.textContent = isUnclassified
+    ? `${repositories.length} stations · classification needed`
+    : `${repositories.length} stations · hottest first`;
   heading.append(identity, meta);
+  content.append(heading);
+
+  if (isUnclassified) {
+    const notice = document.createElement("p");
+    notice.className = "world-zone-notice";
+    notice.textContent = "未分類: repository Topics に agent-zone-name を追加すると、次回buildで自動分類されます。";
+    content.append(notice);
+  }
 
   const stations = document.createElement("div");
   stations.className = "world-stations";
@@ -192,7 +213,7 @@ function createZone(group, repositories, workByRepository, workItems, activity, 
     const heat = repositoryHeat(repository, workItems, activity, generatedAt);
     stations.append(createStation(repository, workByRepository.get(repository.id) || [], heat));
   }
-  content.append(heading, stations);
+  content.append(stations);
   zone.append(floor, content);
   return zone;
 }
@@ -203,7 +224,12 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
   if (!root || !summary) return;
 
   root.replaceChildren();
-  summary.textContent = `${workItems.length} agents`;
+  const unclassifiedCount = repositories.filter(
+    (repository) => (repository.group || UNCLASSIFIED_GROUP) === UNCLASSIFIED_GROUP,
+  ).length;
+  summary.textContent = unclassifiedCount > 0
+    ? `${workItems.length} agents · ${unclassifiedCount} unclassified repos`
+    : `${workItems.length} agents`;
 
   if (repositories.length === 0) {
     const empty = document.createElement("p");
