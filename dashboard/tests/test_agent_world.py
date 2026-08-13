@@ -47,6 +47,25 @@ class AgentWorldTest(unittest.TestCase):
         self.assertNotIn("title.textContent = group", dashboard_js)
         self.assertNotIn("groupRepositories(repositories)", dashboard_js)
 
+    def test_unclassified_is_visible_classification_debt_not_the_primary_zone(self):
+        js = WORLD_JS.read_text(encoding="utf-8")
+        css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
+        self.assertIn('aGroup === "unclassified" && bGroup !== "unclassified"', js)
+        self.assertIn('details.className = "world-unclassified-details"', js)
+        self.assertIn('summary.textContent = `未分類 ${repositories.length} repositoriesを表示`', js)
+        self.assertIn('agent-zone-* topic未設定', js)
+        self.assertIn('${classifiedRepositories}/${repositories.length} zoned', js)
+        self.assertIn('.world-zone-unclassified{min-height:auto', css)
+        self.assertIn('.world-unclassified-details>summary{cursor:pointer', css)
+
+    def test_station_project_header_is_top_aligned(self):
+        js = WORLD_JS.read_text(encoding="utf-8")
+        css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
+        self.assertIn("station.append(repositoryLink, scene, agents);", js)
+        self.assertIn(".world-station{display:grid;align-content:start;", css)
+        self.assertIn(".world-station-link{display:flex;align-items:flex-start;", css)
+        self.assertIn(".world-zone-heading>span{white-space:normal}", css)
+
     def test_prompt_vault_sources_are_commit_pinned(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(manifest["source"]["commit"], "99e9e038942660d5bf27faafbcc1b1a490b0fca7")
