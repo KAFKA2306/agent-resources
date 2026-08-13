@@ -3,6 +3,12 @@ const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
 const workspaceMessage = document.querySelector("#workspace-message");
 
+const KIND_LABELS = {
+  issue: "ISSUE",
+  pull_request: "PR",
+  workflow_run: "RUN",
+};
+
 function groupRepositories(repositories) {
   const groups = new Map();
   for (const repository of repositories) {
@@ -12,29 +18,67 @@ function groupRepositories(repositories) {
   }
   return [...groups.entries()]
     .sort(([left], [right]) => left.localeCompare(right))
-    .map(([group, items]) => [
-      group,
-      items.sort((left, right) => left.name.localeCompare(right.name)),
-    ]);
+    .map(([group, items]) => [group, items.sort((left, right) => left.name.localeCompare(right.name))]);
 }
 
-function repositoryCard(repository) {
+function workItemAgent(item, repository) {
   const link = document.createElement("a");
-  link.className = "repository-card";
+  link.className = "work-agent";
+  link.dataset.kind = item.kind;
+  link.href = item.url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  link.title = `${repository.name}: ${item.title}`;
+
+  const badge = document.createElement("span");
+  badge.className = "agent-badge";
+  badge.textContent = KIND_LABELS[item.kind] || "ITEM";
+
+  const copy = document.createElement("span");
+  copy.className = "agent-copy";
+  const title = document.createElement("strong");
+  title.textContent = item.title;
+  const repo = document.createElement("small");
+  repo.textContent = repository.name;
+  copy.append(title, repo);
+
+  link.append(badge, copy);
+  return link;
+}
+
+function repositoryCard(repository, workItems) {
+  const card = document.createElement("article");
+  card.className = "repository-card";
+
+  const link = document.createElement("a");
+  link.className = "repository-link";
   link.href = repository.url;
   link.target = "_blank";
   link.rel = "noreferrer";
-
   const name = document.createElement("strong");
   name.textContent = repository.name;
   const owner = document.createElement("span");
   owner.textContent = repository.owner;
-
   link.append(name, owner);
-  return link;
+
+  const agents = document.createElement("div");
+  agents.className = "agent-list";
+  agents.setAttribute("aria-label", `${repository.name} work items`);
+  for (const item of workItems) agents.append(workItemAgent(item, repository));
+
+  card.append(link, agents);
+  return card;
 }
 
-function renderRepositories(repositories) {
+function renderDashboard(snapshot) {
+  const repositories = Array.isArray(snapshot.repositories) ? snapshot.repositories : [];
+  const workItems = Array.isArray(snapshot.workItems) ? snapshot.workItems : [];
+  const workByRepository = new Map();
+  for (const item of workItems) {
+    if (!workByRepository.has(item.repositoryId)) workByRepository.set(item.repositoryId, []);
+    workByRepository.get(item.repositoryId).push(item);
+  }
+
   groupsRoot.replaceChildren();
   repositoryCount.textContent = `${repositories.length} repositories`;
 
@@ -59,7 +103,12 @@ function renderRepositories(repositories) {
 
     const grid = document.createElement("div");
     grid.className = "repository-grid";
-    for (const repository of items) grid.append(repositoryCard(repository));
+    for (const repository of items) {
+      const repositoryItems = (workByRepository.get(repository.id) || [])
+        .slice()
+        .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+      grid.append(repositoryCard(repository, repositoryItems));
+    }
 
     section.append(heading, grid);
     groupsRoot.append(section);
@@ -71,10 +120,10 @@ async function loadDashboard() {
     const response = await fetch("./dashboard.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const snapshot = await response.json();
-    renderRepositories(Array.isArray(snapshot.repositories) ? snapshot.repositories : []);
+    renderDashboard(snapshot);
     snapshotStatus.textContent = "読込済";
   } catch (error) {
-    renderRepositories([]);
+    renderDashboard({ repositories: [], workItems: [] });
     snapshotStatus.textContent = "読込失敗";
     workspaceMessage.hidden = false;
     workspaceMessage.textContent = "dashboard.json を読み込めませんでした。";
