@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 128" role="img" aria-labelledby="t">
+<title id="t">Agent World small props</title>
+<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path fill="#F7F1E8" d="M16 28h34v45H16z"/><path d="M23 39h20M23 48h15" fill="none"/>
+  <path fill="#CFE3F3" d="M65 39h43l-5 28H70z"/><path d="M61 70h51" fill="none"/>
+  <path d="M132 25v52" fill="none"/><path fill="#BFE4D0" d="M133 27h30l-9 10 9 10h-30z"/>
+  <path fill="#F5D7B8" d="M146 76l24 40h-48z"/><path d="M146 88v10M146 105h.1" fill="none"/>
+</g></svg>

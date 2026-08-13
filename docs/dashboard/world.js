@@ -1,19 +1,73 @@
-const SOURCE_COMMIT = "3e70694f9c7487bfa8e72ee57e9004601ce030e2";
-const RAW_BASE = `https://raw.githubusercontent.com/KAFKA2306/prompt-vault/${SOURCE_COMMIT}/artifacts`;
-const REFERENCE_TEXTURES = [
-  `${RAW_BASE}/110_morning_tweet_window_topdown.png`,
-  `${RAW_BASE}/169_096_art_direction_desk_review.png`,
-  `${RAW_BASE}/172_105_tweetsdb_idea_map.png`,
-  `${RAW_BASE}/254_kafka_night_game_room_ui.png`,
-];
+const ASSET_ROOT = "./assets/agent-world";
 
+const ASSET_BY_ID = Object.freeze({
+  "role.issue-working.v1": `${ASSET_ROOT}/role-issue-working.svg`,
+  "role.pull-request-review.v1": `${ASSET_ROOT}/role-pull-request-review.svg`,
+  "role.workflow-terminal.v1": `${ASSET_ROOT}/role-workflow-terminal.svg`,
+  "state.working.v1": `${ASSET_ROOT}/state-working.svg`,
+  "state.waiting.v1": `${ASSET_ROOT}/state-waiting.svg`,
+  "state.done.v1": `${ASSET_ROOT}/state-done.svg`,
+  "state.failed.v1": `${ASSET_ROOT}/state-failed.svg`,
+  "scene.desk.v1": `${ASSET_ROOT}/scene-desk.svg`,
+  "scene.review-bench.v1": `${ASSET_ROOT}/scene-review-bench.svg`,
+  "scene.terminal.v1": `${ASSET_ROOT}/scene-terminal.svg`,
+  "scene.sign.v1": `${ASSET_ROOT}/scene-sign.svg`,
+  "scene.floor.v1": `${ASSET_ROOT}/scene-floor.svg`,
+  "prop.small-pack.v1": `${ASSET_ROOT}/prop-pack.svg`,
+});
+
+const ROLE_ASSET_IDS = Object.freeze({
+  issue: "role.issue-working.v1",
+  pull_request: "role.pull-request-review.v1",
+  workflow_run: "role.workflow-terminal.v1",
+});
+const STATE_ASSET_IDS = Object.freeze({
+  working: "state.working.v1",
+  waiting: "state.waiting.v1",
+  done: "state.done.v1",
+  failed: "state.failed.v1",
+});
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
 const LANE_LABELS = { working: "作業中", waiting: "判断待ち", done: "完了", failed: "要確認" };
+
+function resolveAsset(assetId) {
+  const src = ASSET_BY_ID[assetId];
+  if (!src) throw new Error(`Unknown Agent World asset id: ${assetId}`);
+  return src;
+}
+
+function createAssetImage(assetId, className, onLoad = null) {
+  const image = document.createElement("img");
+  image.className = className;
+  image.dataset.assetId = assetId;
+  image.alt = "";
+  image.loading = "lazy";
+  image.decoding = "async";
+  image.setAttribute("aria-hidden", "true");
+  image.addEventListener(
+    "load",
+    () => {
+      image.dataset.assetState = "loaded";
+      if (onLoad) onLoad();
+    },
+    { once: true },
+  );
+  image.addEventListener(
+    "error",
+    () => {
+      image.dataset.assetState = "failed";
+      image.hidden = true;
+    },
+    { once: true },
+  );
+  image.src = resolveAsset(assetId);
+  return image;
+}
 
 function groupedRepositories(repositories) {
   const groups = new Map();
   for (const repository of repositories) {
-    const group = repository.group || "other";
+    const group = repository.group || "unclassified";
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(repository);
   }
@@ -22,10 +76,25 @@ function groupedRepositories(repositories) {
     .map(([group, items]) => [group, items.slice().sort((a, b) => a.name.localeCompare(b.name))]);
 }
 
+function roleAssetId(kind) {
+  return ROLE_ASSET_IDS[kind] || ROLE_ASSET_IDS.issue;
+}
+
+function stateAssetId(lane) {
+  return STATE_ASSET_IDS[lane] || STATE_ASSET_IDS.failed;
+}
+
+function stationSceneAssetId(workItems) {
+  if (workItems.some((item) => item.kind === "workflow_run")) return "scene.terminal.v1";
+  if (workItems.some((item) => item.kind === "pull_request")) return "scene.review-bench.v1";
+  return "scene.desk.v1";
+}
+
 function createAgent(item) {
   const link = document.createElement("a");
   link.className = "world-agent";
   link.dataset.lane = item.lane;
+  link.dataset.kind = item.kind;
   link.href = item.url;
   link.target = "_blank";
   link.rel = "noreferrer";
@@ -34,6 +103,14 @@ function createAgent(item) {
   const figure = document.createElement("span");
   figure.className = "world-agent-figure";
   figure.setAttribute("aria-hidden", "true");
+
+  const roleId = roleAssetId(item.kind);
+  const roleImage = createAssetImage(roleId, "world-role-asset", () => {
+    figure.classList.add("has-role-asset");
+  });
+  const stateId = stateAssetId(item.lane);
+  const stateImage = createAssetImage(stateId, "world-state-asset");
+  figure.append(roleImage, stateImage);
 
   const copy = document.createElement("span");
   copy.className = "world-agent-copy";
@@ -49,6 +126,14 @@ function createAgent(item) {
 function createStation(repository, workItems) {
   const station = document.createElement("article");
   station.className = "world-station";
+
+  const scene = document.createElement("div");
+  scene.className = "world-station-scene";
+  scene.setAttribute("aria-hidden", "true");
+  scene.append(
+    createAssetImage(stationSceneAssetId(workItems), "world-scene-asset"),
+    createAssetImage("prop.small-pack.v1", "world-prop-asset"),
+  );
 
   const repositoryLink = document.createElement("a");
   repositoryLink.className = "world-station-link";
@@ -68,31 +153,31 @@ function createStation(repository, workItems) {
     agents.append(createAgent(item));
   }
 
-  station.append(repositoryLink, agents);
+  station.append(scene, repositoryLink, agents);
   return station;
 }
 
-function createZone(group, repositories, workByRepository, index) {
+function createZone(group, repositories, workByRepository) {
   const zone = document.createElement("section");
   zone.className = "world-zone";
 
-  const reference = document.createElement("img");
-  reference.className = "world-reference";
-  reference.src = REFERENCE_TEXTURES[index % REFERENCE_TEXTURES.length];
-  reference.alt = "";
-  reference.loading = "lazy";
-  reference.decoding = "async";
-  reference.setAttribute("aria-hidden", "true");
+  const floor = createAssetImage("scene.floor.v1", "world-floor-asset");
 
   const content = document.createElement("div");
   content.className = "world-zone-content";
   const heading = document.createElement("div");
   heading.className = "world-zone-heading";
+
+  const identity = document.createElement("div");
+  identity.className = "world-zone-identity";
+  identity.append(createAssetImage("scene.sign.v1", "world-sign-asset"));
   const name = document.createElement("strong");
   name.textContent = group;
+  identity.append(name);
+
   const meta = document.createElement("span");
   meta.textContent = `${repositories.length} stations`;
-  heading.append(name, meta);
+  heading.append(identity, meta);
 
   const stations = document.createElement("div");
   stations.className = "world-stations";
@@ -100,7 +185,7 @@ function createZone(group, repositories, workByRepository, index) {
     stations.append(createStation(repository, workByRepository.get(repository.id) || []));
   }
   content.append(heading, stations);
-  zone.append(reference, content);
+  zone.append(floor, content);
   return zone;
 }
 
@@ -126,7 +211,7 @@ export function renderWorld(repositories, workItems) {
     workByRepository.get(item.repositoryId).push(item);
   }
 
-  groupedRepositories(repositories).forEach(([group, items], index) => {
-    root.append(createZone(group, items, workByRepository, index));
+  groupedRepositories(repositories).forEach(([group, items]) => {
+    root.append(createZone(group, items, workByRepository));
   });
 }

@@ -1,88 +1,35 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "source": {
     "repository": "KAFKA2306/prompt-vault",
-    "commit": "3e70694f9c7487bfa8e72ee57e9004601ce030e2",
-    "tree": "1ba0c6545e099e499254b607c932d334e91b93bf"
+    "commit": "99e9e038942660d5bf27faafbcc1b1a490b0fca7",
+    "tree": "2339fded714c0eabc8d4bb64f91043848e3cda85",
+    "collectionManifest": "design-systems/kafka-signal/assets/agent-world/manifest.json",
+    "collectionManifestBlobSha": "752e1ad4aee6edd4ff5d5d08cc43d20aa53a40f2",
+    "consumerManifest": "design-systems/kafka-signal/consumers/agent-resources.json",
+    "consumerManifestBlobSha": "82fe3afd1cae4d5a4937d801032c7bd7fb29368f"
   },
   "policy": {
     "canonicalDashboardData": "dashboard.json",
     "visualOnly": true,
     "mutableMainHotlinksAllowed": false,
-    "imageTextIsCanonical": false
+    "imageTextIsCanonical": false,
+    "stableAssetIdsRequired": true,
+    "assetFailureKeepsInformationUi": true
   },
   "assets": [
-    {
-      "id": "hermes-agent-overview",
-      "path": "artifacts/108_hermes_agent_overview.png",
-      "blobSha": "5b8bb1ca230eef576df7d5bfa4aad6066a66f87e",
-      "role": "reference",
-      "use": "agent architecture and overview composition",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/108_hermes_agent_overview.png"
-    },
-    {
-      "id": "hermes-agent-skills",
-      "path": "artifacts/109_hermes_agent_skills.png",
-      "blobSha": "c6c6d0c3d47b5d9b400d9e2d506cc3b153545cd9",
-      "role": "reference",
-      "use": "agent capability and skill vocabulary",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/109_hermes_agent_skills.png"
-    },
-    {
-      "id": "topdown-window",
-      "path": "artifacts/110_morning_tweet_window_topdown.png",
-      "blobSha": "9e4b0ac12a026172d2106d94ad84d2c79e71ae25",
-      "role": "reference",
-      "use": "top-down room composition",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/110_morning_tweet_window_topdown.png"
-    },
-    {
-      "id": "kafka-visual-identity",
-      "path": "artifacts/112_kafka_visual_identity.png",
-      "blobSha": "651e27cc00ec150261650810faf1f0bcd7bfc9b6",
-      "role": "reference",
-      "use": "visual identity and character direction",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/112_kafka_visual_identity.png"
-    },
-    {
-      "id": "art-direction-desk",
-      "path": "artifacts/169_096_art_direction_desk_review.png",
-      "blobSha": "b938876f5c784703ed744d9d295f21736665ceea",
-      "role": "reference",
-      "use": "workstation and review-desk composition",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/169_096_art_direction_desk_review.png"
-    },
-    {
-      "id": "tweetsdb-idea-map",
-      "path": "artifacts/172_105_tweetsdb_idea_map.png",
-      "blobSha": "953b832168cb583a71370b137b93e9a28732169e",
-      "role": "reference",
-      "use": "workflow zone and route composition",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/172_105_tweetsdb_idea_map.png"
-    },
-    {
-      "id": "tweetsdb-generate-map",
-      "path": "artifacts/173_106_tweetsdb_generate_map.png",
-      "blobSha": "b3097f8bf1c3f10bec9d3bedf33c2e7b6a647ec4",
-      "role": "reference",
-      "use": "generation workflow map",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/173_106_tweetsdb_generate_map.png"
-    },
-    {
-      "id": "tweetsdb-concrete-map",
-      "path": "artifacts/174_107_tweetsdb_idea_concrete_map.png",
-      "blobSha": "40ce06fccce9bf334abba8a744a5b3542ec82d58",
-      "role": "reference",
-      "use": "concrete workflow map",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/174_107_tweetsdb_idea_concrete_map.png"
-    },
-    {
-      "id": "night-game-room-ui",
-      "path": "artifacts/254_kafka_night_game_room_ui.png",
-      "blobSha": "6f6ca4294b37859046ca9ef128c0463ba105c8ae",
-      "role": "reference",
-      "use": "room scene with UI overlay",
-      "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/3e70694f9c7487bfa8e72ee57e9004601ce030e2/artifacts/254_kafka_night_game_room_ui.png"
-    }
+    {"id":"role.issue-working.v1","class":"role","path":"design-systems/kafka-signal/assets/agent-world/role-issue-working.svg","localPath":"assets/agent-world/role-issue-working.svg","blobSha":"c8725f6c0a1fa696c3ff42644f8761c901ebafbd","sha256":"09a99c78a2dfd316ece822a87c631ea8a4f35489bf80674104be1f5a6372c63f","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/role-issue-working.svg","role":"issue-working"},
+    {"id":"role.pull-request-review.v1","class":"role","path":"design-systems/kafka-signal/assets/agent-world/role-pull-request-review.svg","localPath":"assets/agent-world/role-pull-request-review.svg","blobSha":"5f1852e012ea3e36bf6c9d6e82ea3237f3a2e397","sha256":"dcf2d63d314e2dd25a4ea8f083b630cc606ceadf455939c34c54da1eadf5f256","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/role-pull-request-review.svg","role":"pull-request-review"},
+    {"id":"role.workflow-terminal.v1","class":"role","path":"design-systems/kafka-signal/assets/agent-world/role-workflow-terminal.svg","localPath":"assets/agent-world/role-workflow-terminal.svg","blobSha":"08e740cd92204f240be0e17c5e75eecaa7145ae1","sha256":"370131f456d9d7c0158714fd5a4bebeb47983647599411fb5ef5e73067210d7f","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/role-workflow-terminal.svg","role":"workflow-terminal"},
+    {"id":"state.working.v1","class":"state","path":"design-systems/kafka-signal/assets/agent-world/state-working.svg","localPath":"assets/agent-world/state-working.svg","blobSha":"7c7876e3f9f818f0badeedfd2bd86b29a063559d","sha256":"23ed9e699c5d6bd139f81af9654ea937beb9bebf61473592e861c05161ce69f7","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/state-working.svg","state":"working"},
+    {"id":"state.waiting.v1","class":"state","path":"design-systems/kafka-signal/assets/agent-world/state-waiting.svg","localPath":"assets/agent-world/state-waiting.svg","blobSha":"e8613b9fa4cecebe88ebb0a2b147baf3e816c930","sha256":"73475d0d7b6c69be6bb594168524c4fff55ce368b89800a0f327ec4abafe5d45","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/state-waiting.svg","state":"waiting"},
+    {"id":"state.done.v1","class":"state","path":"design-systems/kafka-signal/assets/agent-world/state-done.svg","localPath":"assets/agent-world/state-done.svg","blobSha":"95c92498a57b0f9521ab0bee9a644d22aa2c233d","sha256":"5d382bc8a6b4548435aaaf3c064da09f2574c78a986af2bfa22cd34448b84138","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/state-done.svg","state":"done"},
+    {"id":"state.failed.v1","class":"state","path":"design-systems/kafka-signal/assets/agent-world/state-failed.svg","localPath":"assets/agent-world/state-failed.svg","blobSha":"14f47429cfa55ae92f4c150efb75ab72813f52e7","sha256":"a60a42ccbad068e21028b1e78e2b46e572b7b20697df47f46a76cde6e7a9ac01","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/state-failed.svg","state":"failed"},
+    {"id":"scene.desk.v1","class":"scene","path":"design-systems/kafka-signal/assets/agent-world/scene-desk.svg","localPath":"assets/agent-world/scene-desk.svg","blobSha":"e407d6dffff9ce7676877c6d7fac2a3af4bf2cc1","sha256":"379e4d45866a5a2f951e67a287146e7ab56c269175f2b47bfd0e7906b37c6997","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/scene-desk.svg","role":"desk"},
+    {"id":"scene.review-bench.v1","class":"scene","path":"design-systems/kafka-signal/assets/agent-world/scene-review-bench.svg","localPath":"assets/agent-world/scene-review-bench.svg","blobSha":"bd5360553085071be80fa2c6f26101900e865da8","sha256":"6a7ade4c3a36ca0f6c2dafc2b851bb9975e29cbc395d8926aa9478b1df98192f","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/scene-review-bench.svg","role":"review-bench"},
+    {"id":"scene.terminal.v1","class":"scene","path":"design-systems/kafka-signal/assets/agent-world/scene-terminal.svg","localPath":"assets/agent-world/scene-terminal.svg","blobSha":"6dfe06eb4db9362f9ea253d9f5811623d13e0b70","sha256":"60e2812b2a6063236856b78515d1787fadcc57084438645f1fa497a24da7a0f2","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/scene-terminal.svg","role":"terminal"},
+    {"id":"scene.sign.v1","class":"scene","path":"design-systems/kafka-signal/assets/agent-world/scene-sign.svg","localPath":"assets/agent-world/scene-sign.svg","blobSha":"b91ecbd24ee482bed2ae90a96b4dc4dc6542fd0d","sha256":"82d950ce3b6bed367e169831da71bab68d088394f5465b792c75265154a58a95","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/scene-sign.svg","role":"sign"},
+    {"id":"scene.floor.v1","class":"scene","path":"design-systems/kafka-signal/assets/agent-world/scene-floor.svg","localPath":"assets/agent-world/scene-floor.svg","blobSha":"c7923c7beb40683391c533d790e7c2b9f49c08f7","sha256":"e64f00f4f9c2982ab32b99f9502151638266caad826ae7bd69af25f673941310","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/scene-floor.svg","role":"floor"},
+    {"id":"prop.small-pack.v1","class":"prop","path":"design-systems/kafka-signal/assets/agent-world/prop-pack.svg","localPath":"assets/agent-world/prop-pack.svg","blobSha":"d7ad21addf4ee150d28f705a065cee8a7f7c72ce","sha256":"207487c3ca5df8029776fb6e100dd3d6ef0503a28064b4a6a3d44e857adcd1ec","format":"image/svg+xml","sourceUrl":"https://github.com/KAFKA2306/prompt-vault/blob/99e9e038942660d5bf27faafbcc1b1a490b0fca7/design-systems/kafka-signal/assets/agent-world/prop-pack.svg","role":"small-props"}
   ]
 }

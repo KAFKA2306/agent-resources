@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="t">
+<title id="t">Working state</title>
+<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path fill="#CFE3F3" d="M29 78c0-19 15-32 33-32 18 0 31 13 31 32v24H29z"/>
+  <circle cx="51" cy="67" r="4" fill="#4A4A5A" stroke="none"/><circle cx="73" cy="67" r="4" fill="#4A4A5A" stroke="none"/>
+  <path fill="#F7F1E8" d="M67 82h43l-7 22H60z"/>
+  <path d="M81 92h12M17 46l12 5M22 28l10 10M45 20l2 13" fill="none"/>
+  <path d="M49 82l-9 12" fill="none"/>
+</g></svg>

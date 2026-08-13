@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 128" role="img" aria-labelledby="t">
+<title id="t">Desk workstation</title>
+<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path fill="#F7F1E8" d="M20 72h152v18H20z"/><path d="M34 90v25M158 90v25" fill="none"/>
+  <path fill="#CFE3F3" d="M65 30h62v39H65z"/><path d="M96 69v10M78 79h36" fill="none"/>
+  <path fill="#BFE4D0" d="M31 52h26v20H31z"/><path fill="#EFE3F5" d="M138 57h20v15h-20z"/>
+</g></svg>

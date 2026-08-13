@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="t">
+<title id="t">Issue working worker</title>
+<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path fill="#F7F1E8" d="M31 74c0-20 14-34 33-34s33 14 33 34v25H31z"/>
+  <circle cx="52" cy="65" r="4" fill="#4A4A5A" stroke="none"/><circle cx="76" cy="65" r="4" fill="#4A4A5A" stroke="none"/>
+  <path d="M55 80c6 5 12 5 18 0" fill="none"/>
+  <path fill="#CFE3F3" d="M18 60h26v34H18z"/><path d="M24 69h14M24 77h10" fill="none"/>
+  <path fill="#BFE4D0" d="M82 30l8 8-8 8-8-8z"/>
+  <path d="M41 94L27 86M87 94l14-8" fill="none"/>
+</g></svg>

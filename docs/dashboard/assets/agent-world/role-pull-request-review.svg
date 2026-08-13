@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="t">
+<title id="t">Pull request review worker</title>
+<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path fill="#EFE3F5" d="M30 73c0-19 15-33 34-33s34 14 34 33v27H30z"/>
+  <circle cx="52" cy="64" r="4" fill="#4A4A5A" stroke="none"/><circle cx="76" cy="64" r="4" fill="#4A4A5A" stroke="none"/>
+  <path d="M55 79h18" fill="none"/>
+  <path fill="#F7F1E8" d="M14 84h100v18H14z"/>
+  <path d="M34 29v16m0-16c0 10 16 5 16 16m44-16v16m0-16c0 10-16 5-16 16" fill="none"/>
+  <circle cx="34" cy="27" r="5" fill="#CFE3F3"/><circle cx="94" cy="27" r="5" fill="#EBC6CF"/>
+  <path d="M42 92l8 7 14-14" fill="none"/>
+</g></svg>

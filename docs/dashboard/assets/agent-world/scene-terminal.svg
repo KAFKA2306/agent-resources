@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 128" role="img" aria-labelledby="t">
+<title id="t">CI terminal machine</title>
+<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+  <path fill="#F5D7B8" d="M35 20h122v78H35z"/><path fill="#F7F1E8" d="M47 32h98v48H47z"/>
+  <path d="M61 47l10 9-10 9M79 65h27" fill="none"/>
+  <circle cx="132" cy="56" r="9" fill="#BFE4D0"/><path d="M128 56l3 3 6-7" fill="none"/>
+  <path d="M78 98v12M114 98v12M67 110h58" fill="none"/>
+</g></svg>
