@@ -6,11 +6,15 @@ on:
       - main
     paths:
       - 'docs/**'
+      - 'dashboard/**'
       - '.github/workflows/docs.yml'
+  schedule:
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -21,6 +25,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +36,45 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install mkdocs-material
+        run: pip install mkdocs-material jsonschema
+
+      - name: Collect public GitHub dashboard data
+        run: |
+          set -euo pipefail
+          mkdir -p dashboard/generated docs/dashboard
+          python -m dashboard.collectors.repositories --output dashboard/generated/repositories.json
+          python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
+          python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
+          python -m dashboard.collectors.github_stats --start-month 2026-01 --output dashboard/generated/github-stats.json
+
+      - name: Build and validate canonical dashboard snapshot
+        run: |
+          set -euo pipefail
+          python -m dashboard.build \
+            --repositories dashboard/generated/repositories.json \
+            --work-items dashboard/generated/work-items.json \
+            --workflow-runs dashboard/generated/workflow-runs.json \
+            --stats dashboard/generated/github-stats.json \
+            --schema dashboard/schema/dashboard.schema.json \
+            --output docs/dashboard/dashboard.json
+
+      - name: Audit public artifact boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          snapshot = json.loads(Path('docs/dashboard/dashboard.json').read_text(encoding='utf-8'))
+          if snapshot.get('stats', {}).get('scope') != 'public':
+              raise SystemExit('stats scope is not public')
+          if any(repo.get('visibility') != 'public' for repo in snapshot.get('repositories', [])):
+              raise SystemExit('non-public repository leaked into dashboard snapshot')
+          monthly = snapshot.get('stats', {}).get('monthly', [])
+          if not monthly:
+              raise SystemExit('monthly GitHub stats are missing')
+          print(f"public repositories: {snapshot['stats']['publicRepositories']}")
+          print(f"monthly buckets: {len(monthly)}")
+          PY
 
       - name: Build docs
         working-directory: docs
@@ -38,6 +82,7 @@ jobs:
 
       - name: Prepare deploy directory
         run: |
+          set -euo pipefail
           mkdir -p deploy/site
           cp docs/index.html deploy/
           cp -r docs/dashboard deploy/dashboard
