@@ -1,0 +1,27 @@
+name: Dashboard GitHub stats
+
+on:
+  push:
+    branches:
+      - feature/github-monthly-stats
+  pull_request:
+    paths:
+      - "dashboard/collectors/github_stats.py"
+      - "dashboard/tests/test_github_stats_collector.py"
+      - ".github/workflows/dashboard-github-stats.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile collector
+        run: python -m py_compile dashboard/collectors/github_stats.py
+      - name: Run focused tests
+        run: python -m unittest dashboard.tests.test_github_stats_collector -v
