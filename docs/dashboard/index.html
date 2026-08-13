@@ -46,6 +46,10 @@
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section id="project-groups" class="project-groups" aria-live="polite"></section>
       <p id="workspace-message" class="muted workspace-message" hidden></p>
+      <section class="activity-section" aria-labelledby="activity-title">
+        <div class="section-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h2 id="activity-title">最近の活動</h2></div></div>
+        <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
+      </section>
       <section class="github-stats" aria-labelledby="github-stats-title">
         <div class="stats-heading"><div><p class="eyebrow">PUBLIC GITHUB ACTIVITY</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
         <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
@@ -54,10 +58,6 @@
         <p id="stats-note" class="stats-note muted"></p>
       </section>
     </main>
-    <aside class="sidebar" aria-labelledby="sidebar-title">
-      <div class="panel-heading"><div><p class="eyebrow">SIDEBAR</p><h2 id="sidebar-title">最近の活動</h2></div></div>
-      <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
-    </aside>
   </div>
 </body>
 </html>
