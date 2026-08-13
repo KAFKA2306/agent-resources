@@ -28,7 +28,8 @@ class AgentWorldTest(unittest.TestCase):
     def test_world_layout_is_data_driven(self):
         js = WORLD_JS.read_text(encoding="utf-8")
         self.assertIn("repository.group", js)
-        self.assertIn('repository.group || "unclassified"', js)
+        self.assertIn('const UNCLASSIFIED_GROUP = "unclassified"', js)
+        self.assertIn("repository.group || UNCLASSIFIED_GROUP", js)
         self.assertIn("workByRepository.get(repository.id)", js)
         self.assertIn("item.repositoryId", js)
         self.assertIn("item.lane", js)
@@ -94,11 +95,35 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn("image.hidden = true", js)
         self.assertIn("copy.append(title, status)", js)
 
+    def test_station_identity_is_first_and_top_aligned(self):
+        js = WORLD_JS.read_text(encoding="utf-8")
+        css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
+        self.assertIn('header.className = "world-station-header"', js)
+        self.assertIn("station.append(header, scene, agents)", js)
+        self.assertIn(".world-station{display:grid;grid-template-rows:autoauto1fr;align-content:start", css)
+        self.assertIn(".world-station-header{align-self:start;min-width:0;overflow:hidden}", css)
+        self.assertIn(".world-station-link{display:grid;align-items:start", css)
+
+    def test_unclassified_is_visible_actionable_and_does_not_dominate_order(self):
+        js = WORLD_JS.read_text(encoding="utf-8")
+        css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
+        self.assertIn('zone.classList.add("world-zone-unclassified")', js)
+        self.assertIn('notice.className = "world-zone-notice"', js)
+        self.assertIn("agent-zone-name", js)
+        self.assertIn("unclassified repos", js)
+        self.assertIn("aGroup === UNCLASSIFIED_GROUP", js)
+        self.assertIn("bGroup === UNCLASSIFIED_GROUP", js)
+        self.assertIn(".world-zone-unclassified", css)
+        self.assertIn(".world-zone-notice", css)
+
     def test_mobile_falls_back_to_information_first_layout(self):
         css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn("@media(max-width:760px)", css)
         self.assertIn(".world-floor-asset,.world-station-scene{display:none}", css)
         self.assertIn("grid-template-columns:minmax(0,1fr)", css)
+        self.assertIn(".world-zone-heading{flex-wrap:wrap}", css)
+        self.assertIn(".world-zone-heading>span{white-space:normal}", css)
+        self.assertIn("overflow-wrap:anywhere", css)
 
     def test_monthly_activity_is_below_active_workspace(self):
         html = HTML.read_text(encoding="utf-8")
