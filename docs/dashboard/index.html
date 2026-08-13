@@ -23,7 +23,13 @@
   <div class="dashboard-shell">
     <main class="main-panel" aria-labelledby="workspace-title">
       <div class="world-decor" aria-hidden="true"><span class="decor-building"></span><span class="decor-sign">HUB</span><span class="decor-character"></span></div>
-      <div class="panel-heading"><div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div><span class="status-chip" id="snapshot-status">読込中</span></div>
+      <div class="panel-heading">
+        <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
+        <div class="snapshot-meta">
+          <span class="status-chip" id="snapshot-status" data-state="loading">読込中</span>
+          <time id="snapshot-generated-at" class="snapshot-time">生成時刻: 読込中</time>
+        </div>
+      </div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
       <section id="lane-flow" class="lane-flow" aria-label="work item の処理フロー"></section>
       <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
