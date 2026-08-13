@@ -28,15 +28,15 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install mkdocs-material jsonschema
+        run: pip install mkdocs-material -r dashboard/requirements.txt
 
       - name: Collect public GitHub dashboard data
         run: |
@@ -89,7 +89,7 @@ jobs:
           cp -r docs/site/* deploy/site/
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./deploy
 
@@ -102,4 +102,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
