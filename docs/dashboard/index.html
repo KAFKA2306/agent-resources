@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./dashboard.css">
   <link rel="stylesheet" href="./flow.css">
   <link rel="stylesheet" href="./game.css">
+  <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
   <script type="module" src="./flow.js"></script>
   <script type="module" src="./dashboard.js"></script>
@@ -32,6 +33,14 @@
         </div>
       </div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
+      <section class="agent-world" aria-labelledby="agent-world-title">
+        <div class="world-heading">
+          <div><p class="eyebrow">LIVE AGENT WORLD</p><h2 id="agent-world-title">エージェント作業場</h2></div>
+          <span id="agent-world-summary" class="world-summary">0 agents</span>
+        </div>
+        <p class="world-note muted">project区画 → repository station → Issue / PR / workflow agent。背景参照はprompt-vaultのcommit固定asset、状態と操作はdashboard.json由来です。</p>
+        <div id="agent-world-zones" class="world-zones" aria-live="polite"></div>
+      </section>
       <section class="github-stats" aria-labelledby="github-stats-title">
         <div class="stats-heading"><div><p class="eyebrow">PUBLIC GITHUB ACTIVITY</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
         <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
