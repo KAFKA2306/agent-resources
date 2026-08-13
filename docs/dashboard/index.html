@@ -12,7 +12,14 @@
   <script type="module" src="./dashboard.js"></script>
 </head>
 <body class="game-dashboard">
-  <header class="topbar"><div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div><a class="home-link" href="../">既存トップへ</a></header>
+  <header class="topbar">
+    <div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div>
+    <nav class="top-actions" aria-label="補助導線">
+      <a class="home-link" href="../site/">CLI / Skills docs</a>
+      <a class="home-link" href="https://github.com/KAFKA2306/agent-resources">Repository</a>
+      <a class="home-link" href="https://pypi.org/project/agent-resources/">PyPI</a>
+    </nav>
+  </header>
   <div class="dashboard-shell">
     <main class="main-panel" aria-labelledby="workspace-title">
       <div class="world-decor" aria-hidden="true"><span class="decor-building"></span><span class="decor-sign">HUB</span><span class="decor-character"></span></div>
