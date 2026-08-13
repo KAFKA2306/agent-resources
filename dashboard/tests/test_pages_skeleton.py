@@ -2,6 +2,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+ROOT_HTML = ROOT / "docs" / "index.html"
 HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 JS = ROOT / "docs" / "dashboard" / "dashboard.js"
@@ -19,9 +20,15 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("@media(max-width:760px)", css)
         self.assertIn("grid-template-columns:minmax(0,1fr);", css)
 
-    def test_dashboard_keeps_link_to_existing_home(self):
-        html = HTML.read_text(encoding="utf-8")
-        self.assertIn('href="../"', html)
+    def test_root_promotes_dashboard_and_preserves_docs_routes(self):
+        root_html = ROOT_HTML.read_text(encoding="utf-8")
+        dashboard_html = HTML.read_text(encoding="utf-8")
+        self.assertIn('content="0; url=./dashboard/"', root_html)
+        self.assertIn('window.location.replace("./dashboard/")', root_html)
+        self.assertIn('href="./site/"', root_html)
+        self.assertIn('href="../site/"', dashboard_html)
+        self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
+        self.assertIn('https://pypi.org/project/agent-resources/', dashboard_html)
 
     def test_repository_groups_are_loaded_from_dashboard_json(self):
         js = JS.read_text(encoding="utf-8")
