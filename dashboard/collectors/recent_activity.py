@@ -44,25 +44,6 @@ def normalize_issue_activity(raw, repository):
     }
 
 
-def normalize_workflow_activity(raw, repository):
-    if repository.get("visibility") != "public":
-        return None
-    run_id = raw.get("id")
-    workflow_name = raw.get("name")
-    url = raw.get("html_url")
-    created_at = raw.get("created_at")
-    if not isinstance(run_id, int) or run_id < 1 or not workflow_name or not url or not created_at:
-        raise ValueError("recent workflow activity payload is incomplete")
-    return {
-        "id": f"activity:{repository['id']}:workflow_run:{run_id}",
-        "repositoryId": repository["id"],
-        "kind": "workflow_run",
-        "occurredAt": created_at,
-        "url": url,
-        "summary": workflow_name,
-    }
-
-
 def collect_recent_activity(
     repositories,
     token=None,
@@ -70,12 +51,17 @@ def collect_recent_activity(
     now=None,
     window_days=DEFAULT_WINDOW_DAYS,
 ):
+    """Collect human-relevant Issue/PR activity for the recent window.
+
+    Full workflow-run history is intentionally excluded because it overwhelms the
+    sidebar and heat signal with CI noise. The dashboard already carries each
+    repository's latest workflow state through the dedicated workflow collector.
+    """
     if not isinstance(window_days, int) or window_days < 1:
         raise ValueError("window_days must be a positive integer")
     now = _utc(now or datetime.now(timezone.utc))
     cutoff = now - timedelta(days=window_days)
     since = _iso_z(cutoff)
-    until = _iso_z(now)
     activity_by_id = {}
 
     for repository in repositories:
@@ -83,7 +69,15 @@ def collect_recent_activity(
             continue
         owner = quote(repository["owner"], safe="")
         name = quote(repository["name"], safe="")
-        issue_query = urlencode({"state": "all", "per_page": 100, "sort": "updated", "direction": "desc", "since": since})
+        issue_query = urlencode(
+            {
+                "state": "all",
+                "per_page": 100,
+                "sort": "updated",
+                "direction": "desc",
+                "since": since,
+            }
+        )
         issue_url = f"https://api.github.com/repos/{owner}/{name}/issues?{issue_query}"
         for raw in fetcher(issue_url, token=token):
             event = normalize_issue_activity(raw, repository)
@@ -95,17 +89,11 @@ def collect_recent_activity(
                 if current is None or event["occurredAt"] > current["occurredAt"]:
                     activity_by_id[event["id"]] = event
 
-        run_query = urlencode({"per_page": 100, "created": f"{since}..{until}"})
-        run_url = f"https://api.github.com/repos/{owner}/{name}/actions/runs?{run_query}"
-        for raw in fetcher(run_url, token=token, item_key="workflow_runs"):
-            event = normalize_workflow_activity(raw, repository)
-            if event is None:
-                continue
-            occurred_at = _parse_time(event["occurredAt"])
-            if cutoff <= occurred_at <= now:
-                activity_by_id[event["id"]] = event
-
-    return sorted(activity_by_id.values(), key=lambda event: (event["occurredAt"], event["id"]), reverse=True)
+    return sorted(
+        activity_by_id.values(),
+        key=lambda event: (event["occurredAt"], event["id"]),
+        reverse=True,
+    )
 
 
 def main(argv=None):
@@ -115,7 +103,11 @@ def main(argv=None):
     parser.add_argument("--window-days", type=int, default=DEFAULT_WINDOW_DAYS)
     args = parser.parse_args(argv)
     repositories = json.loads(Path(args.repositories).read_text(encoding="utf-8"))
-    activity = collect_recent_activity(repositories, token=os.getenv("GITHUB_TOKEN"), window_days=args.window_days)
+    activity = collect_recent_activity(
+        repositories,
+        token=os.getenv("GITHUB_TOKEN"),
+        window_days=args.window_days,
+    )
     atomic_write_json(args.output, activity)
     return 0
 
