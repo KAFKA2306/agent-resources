@@ -10,39 +10,23 @@
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <p class="eyebrow">AGENT RESOURCES</p>
-      <h1>公開作業ダッシュボード</h1>
-    </div>
+    <div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div>
     <a class="home-link" href="../">既存トップへ</a>
   </header>
-
   <div class="dashboard-shell">
     <main class="main-panel" aria-labelledby="workspace-title">
       <div class="panel-heading">
-        <div>
-          <p class="eyebrow">WORKSPACE</p>
-          <h2 id="workspace-title">中央ハブ</h2>
-        </div>
+        <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
         <span class="status-chip" id="snapshot-status">読込中</span>
       </div>
-
-      <section class="hub" aria-label="中央ハブ">
-        <strong>GitHub Public Hub</strong>
-        <span id="repository-count">0 repositories</span>
-      </section>
-
+      <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
+      <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
+      <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section id="project-groups" class="project-groups" aria-live="polite"></section>
       <p id="workspace-message" class="muted workspace-message" hidden></p>
     </main>
-
     <aside class="sidebar" aria-labelledby="sidebar-title">
-      <div class="panel-heading">
-        <div>
-          <p class="eyebrow">SIDEBAR</p>
-          <h2 id="sidebar-title">最近の活動</h2>
-        </div>
-      </div>
+      <div class="panel-heading"><div><p class="eyebrow">SIDEBAR</p><h2 id="sidebar-title">最近の活動</h2></div></div>
       <p class="muted">activity 表示は後続Issueで接続します。</p>
     </aside>
   </div>
