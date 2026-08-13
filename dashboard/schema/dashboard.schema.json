@@ -41,7 +41,7 @@
     "workItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "repositoryId", "kind", "number", "title", "url", "state", "updatedAt"],
+      "required": ["id", "repositoryId", "kind", "number", "title", "url", "state", "updatedAt", "lane", "laneReason"],
       "properties": {
         "id": {"type": "string", "minLength": 1},
         "repositoryId": {"type": "string", "minLength": 1},
@@ -50,7 +50,9 @@
         "title": {"type": "string", "minLength": 1},
         "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
         "state": {"type": "string", "enum": ["open", "closed", "queued", "in_progress", "completed", "failed", "cancelled", "skipped"]},
-        "updatedAt": {"type": "string", "format": "date-time"}
+        "updatedAt": {"type": "string", "format": "date-time"},
+        "lane": {"type": "string", "enum": ["working", "waiting", "done", "failed"]},
+        "laneReason": {"type": "string", "minLength": 1}
       }
     },
     "activityItem": {
