@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-08-13T02:33:00Z",
+  "summary": {
+    "repositoryCount": 1,
+    "workItemCount": 3,
+    "activityCount": 1
+  },
+  "repositories": [
+    {
+      "id": "R_kgDORdX2iQ",
+      "owner": "KAFKA2306",
+      "name": "agent-resources",
+      "url": "https://github.com/KAFKA2306/agent-resources",
+      "group": "platform",
+      "visibility": "public",
+      "updatedAt": "2026-08-13T02:30:49Z"
+    }
+  ],
+  "workItems": [
+    {
+      "id": "issue:KAFKA2306/agent-resources#3",
+      "repositoryId": "R_kgDORdX2iQ",
+      "type": "issue",
+      "number": 3,
+      "title": "dashboard: GitHub横断スナップショットのJSON Schemaを定義する",
+      "url": "https://github.com/KAFKA2306/agent-resources/issues/3",
+      "state": "open",
+      "updatedAt": "2026-08-13T02:30:49Z"
+    },
+    {
+      "id": "pull_request:KAFKA2306/agent-resources#2",
+      "repositoryId": "R_kgDORdX2iQ",
+      "type": "pull_request",
+      "number": 2,
+      "title": "example pull request",
+      "url": "https://github.com/KAFKA2306/agent-resources/pull/2",
+      "state": "closed",
+      "updatedAt": "2026-08-12T00:00:00Z"
+    },
+    {
+      "id": "workflow_run:KAFKA2306/agent-resources#123456789",
+      "repositoryId": "R_kgDORdX2iQ",
+      "type": "workflow_run",
+      "number": 123456789,
+      "title": "pages build",
+      "url": "https://github.com/KAFKA2306/agent-resources/actions/runs/123456789",
+      "state": "completed",
+      "updatedAt": "2026-08-13T02:31:00Z"
+    }
+  ],
+  "activity": [
+    {
+      "id": "commit:example",
+      "repositoryId": "R_kgDORdX2iQ",
+      "kind": "commit",
+      "occurredAt": "2026-08-13T02:32:00Z",
+      "url": "https://github.com/KAFKA2306/agent-resources/commit/0123456789abcdef0123456789abcdef01234567",
+      "summary": "Dashboard schema fixture added"
+    }
+  ]
+}
