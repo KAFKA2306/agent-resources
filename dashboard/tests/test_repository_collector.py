@@ -15,22 +15,34 @@ class RepositoryCollectorTest(unittest.TestCase):
         self.config = json.loads(CONFIG_FIXTURE.read_text(encoding="utf-8"))
         self.raw = json.loads(API_FIXTURE.read_text(encoding="utf-8"))
 
-    def test_only_allowed_public_active_repository_is_emitted(self):
+    def test_all_public_active_repositories_are_emitted(self):
         def fetcher(url, token=None):
             self.assertIn("/users/example-owner/repos", url)
             return self.raw
 
         repositories = collect_repositories(self.config, fetcher=fetcher)
-        self.assertEqual([repo["name"] for repo in repositories], ["public-active"])
-        self.assertEqual(repositories[0]["visibility"], "public")
-        self.assertFalse(repositories[0]["archived"])
-        self.assertEqual(repositories[0]["group"], "core")
+        self.assertEqual(
+            [repo["name"] for repo in repositories],
+            ["public-active", "public-language"],
+        )
+        self.assertTrue(all(repo["visibility"] == "public" for repo in repositories))
+        self.assertTrue(all(repo["archived"] is False for repo in repositories))
 
-    def test_private_repository_is_rejected_even_when_not_excluded(self):
-        self.config["includeArchived"] = True
+    def test_project_zone_is_derived_from_github_metadata(self):
+        repositories = collect_repositories(self.config, fetcher=lambda url, token=None: self.raw)
+        by_name = {repo["name"]: repo for repo in repositories}
+        self.assertEqual(by_name["public-active"]["group"], "core")
+        self.assertEqual(by_name["public-language"]["group"], "language-typescript")
 
+    def test_private_repository_is_rejected(self):
         def fetcher(url, token=None):
             return [self.raw[1]]
+
+        self.assertEqual(collect_repositories(self.config, fetcher=fetcher), [])
+
+    def test_archived_repository_is_always_rejected(self):
+        def fetcher(url, token=None):
+            return [self.raw[2]]
 
         self.assertEqual(collect_repositories(self.config, fetcher=fetcher), [])
 
