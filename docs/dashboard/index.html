@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Resources Dashboard</title>
+  <meta name="description" content="GitHub上の公開作業を一画面で確認するAgent Resources dashboard">
+  <link rel="stylesheet" href="./dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">AGENT RESOURCES</p>
+      <h1>公開作業ダッシュボード</h1>
+    </div>
+    <a class="home-link" href="../">既存トップへ</a>
+  </header>
+
+  <div class="dashboard-shell">
+    <main class="main-panel" aria-labelledby="workspace-title">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">WORKSPACE</p>
+          <h2 id="workspace-title">中央ハブ</h2>
+        </div>
+        <span class="status-chip">骨格表示</span>
+      </div>
+      <section class="empty-stage" aria-label="ダッシュボード表示領域">
+        <p>repository と work item の表示領域です。</p>
+      </section>
+    </main>
+
+    <aside class="sidebar" aria-labelledby="sidebar-title">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">SIDEBAR</p>
+          <h2 id="sidebar-title">最近の活動</h2>
+        </div>
+      </div>
+      <p class="muted">データ接続前の空表示です。</p>
+    </aside>
+  </div>
+</body>
+</html>
