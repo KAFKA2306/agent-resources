@@ -75,12 +75,42 @@ class DashboardBuildTest(unittest.TestCase):
                 "updatedAt": "2026-08-13T01:21:00Z",
             }
         ]
+        self.stats = {
+            "generatedAt": "2026-08-13T11:42:00+09:00",
+            "owner": "KAFKA2306",
+            "scope": "public",
+            "timezone": "Asia/Tokyo",
+            "publicRepositories": 122,
+            "archivedPublicRepositories": 1,
+            "monthly": [
+                {
+                    "month": "2026-08",
+                    "commits": 100,
+                    "prsCreated": 20,
+                    "prsMerged": 18,
+                    "issuesCreated": 15,
+                    "issuesClosed": 12,
+                    "partial": True,
+                    "privateRepositoryName": "must-be-stripped",
+                },
+                {
+                    "month": "2026-07",
+                    "commits": 40,
+                    "prsCreated": 8,
+                    "prsMerged": 7,
+                    "issuesCreated": 6,
+                    "issuesClosed": 5,
+                    "partial": False,
+                },
+            ],
+        }
 
-    def build(self, repositories=None, work_items=None, workflow_runs=None):
+    def build(self, repositories=None, work_items=None, workflow_runs=None, stats=None):
         return build_snapshot(
             repositories if repositories is not None else [self.public_repo, self.public_repo_a, self.private_repo],
             work_items if work_items is not None else self.work_items,
             workflow_runs if workflow_runs is not None else self.workflow_runs,
+            stats=self.stats if stats is None else stats,
             generated_at="2026-08-13T02:45:00Z",
         )
 
@@ -90,6 +120,19 @@ class DashboardBuildTest(unittest.TestCase):
         self.assertNotIn("R_private", {item["repositoryId"] for item in snapshot["workItems"]})
         self.assertEqual(snapshot["summary"], {"repositoryCount": 2, "workItemCount": 2, "activityCount": 2})
         validate_snapshot(snapshot, SCHEMA)
+
+    def test_stats_are_public_only_canonical_and_month_sorted(self):
+        snapshot = self.build()
+        self.assertEqual(snapshot["stats"]["scope"], "public")
+        self.assertEqual([row["month"] for row in snapshot["stats"]["monthly"]], ["2026-07", "2026-08"])
+        self.assertNotIn("generatedAt", snapshot["stats"])
+        self.assertNotIn("privateRepositoryName", snapshot["stats"]["monthly"][1])
+        validate_snapshot(snapshot, SCHEMA)
+
+    def test_non_public_stats_fail_closed(self):
+        unsafe = dict(self.stats, scope="all")
+        with self.assertRaises(ValueError):
+            self.build(stats=unsafe)
 
     def test_workflow_run_becomes_done_work_item(self):
         snapshot = self.build()
@@ -116,6 +159,7 @@ class DashboardBuildTest(unittest.TestCase):
             list(reversed([self.public_repo, self.public_repo_a, self.private_repo])),
             list(reversed(self.work_items)),
             list(reversed(self.workflow_runs)),
+            stats=self.stats,
             generated_at="2026-08-13T02:45:00Z",
         )
         self.assertEqual(first, second)
