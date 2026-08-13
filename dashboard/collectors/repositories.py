@@ -51,7 +51,7 @@ def normalize_repository(raw, config):
     archived = raw.get("archived")
     if not isinstance(archived, bool):
         raise ValueError("repository archived flag is missing")
-    if archived and not config["includeArchived"]:
+    if archived:
         return None
 
     required = {
@@ -63,8 +63,6 @@ def normalize_repository(raw, config):
         "archived": archived,
         "updatedAt": raw.get("updated_at"),
     }
-    if not all(required.values()) and required["archived"] is not False:
-        raise ValueError(f"repository payload is incomplete: {name!r}")
     for key in ("id", "owner", "name", "url", "visibility", "updatedAt"):
         if not required[key]:
             raise ValueError(f"repository payload is missing {key}: {name!r}")
