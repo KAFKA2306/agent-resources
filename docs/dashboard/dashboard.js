@@ -4,8 +4,11 @@ const snapshotStatus = document.querySelector("#snapshot-status");
 const workspaceMessage = document.querySelector("#workspace-message");
 const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
+const activityFeed = document.querySelector("#activity-feed");
 
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
+const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
+const ACTIVITY_LIMIT = 20;
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
   { lane: "done", label: "完了報告" },
@@ -106,9 +109,64 @@ function renderGates(workItems, repositoriesById) {
   }
 }
 
+function formatActivityTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("ja-JP", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function renderActivity(activity, repositoriesById) {
+  activityFeed.replaceChildren();
+  const items = activity
+    .filter((item) => ACTIVITY_LABELS[item.kind])
+    .slice()
+    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
+    .slice(0, ACTIVITY_LIMIT);
+
+  if (items.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "muted activity-empty";
+    empty.textContent = "最近の活動は0件です。";
+    activityFeed.append(empty);
+    return;
+  }
+
+  for (const item of items) {
+    const repository = repositoriesById.get(item.repositoryId);
+    const link = document.createElement("a");
+    link.className = "activity-item";
+    link.href = item.url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+
+    const meta = document.createElement("span");
+    meta.className = "activity-meta";
+    const kind = document.createElement("span");
+    kind.className = "activity-kind";
+    kind.textContent = ACTIVITY_LABELS[item.kind];
+    const time = document.createElement("time");
+    time.dateTime = item.occurredAt;
+    time.textContent = formatActivityTime(item.occurredAt);
+    meta.append(kind, time);
+
+    const summary = document.createElement("strong");
+    summary.textContent = item.summary || ACTIVITY_LABELS[item.kind];
+    const repo = document.createElement("small");
+    repo.textContent = repository ? repository.name : "unknown repository";
+    link.append(meta, summary, repo);
+    activityFeed.append(link);
+  }
+}
+
 function renderDashboard(snapshot) {
   const repositories = Array.isArray(snapshot.repositories) ? snapshot.repositories : [];
   const workItems = Array.isArray(snapshot.workItems) ? snapshot.workItems : [];
+  const activity = Array.isArray(snapshot.activity) ? snapshot.activity : [];
   const repositoriesById = new Map(repositories.map((repo) => [repo.id, repo]));
   const workByRepository = new Map();
   for (const item of workItems) {
@@ -116,6 +174,7 @@ function renderDashboard(snapshot) {
     workByRepository.get(item.repositoryId).push(item);
   }
   renderGates(workItems, repositoriesById);
+  renderActivity(activity, repositoriesById);
   groupsRoot.replaceChildren();
   repositoryCount.textContent = `${repositories.length} repositories`;
   if (repositories.length === 0) {
@@ -152,7 +211,7 @@ async function loadDashboard() {
     renderDashboard(await response.json());
     snapshotStatus.textContent = "読込済";
   } catch (error) {
-    renderDashboard({ repositories: [], workItems: [] });
+    renderDashboard({ repositories: [], workItems: [], activity: [] });
     snapshotStatus.textContent = "読込失敗";
     workspaceMessage.hidden = false;
     workspaceMessage.textContent = "dashboard.json を読み込めませんでした。";
