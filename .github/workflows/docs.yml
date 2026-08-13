@@ -7,6 +7,7 @@ on:
     paths:
       - 'docs/**'
       - 'dashboard/**'
+      - 'package.json'
       - '.github/workflows/docs.yml'
   schedule:
     - cron: '17 * * * *'
@@ -36,9 +37,10 @@ jobs:
           python-version: '3.12'
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pip install mkdocs-material -r dashboard/requirements.txt
@@ -46,8 +48,8 @@ jobs:
       - name: Run dashboard QA
         run: |
           set -euo pipefail
-          python -m unittest discover -s dashboard/tests -p 'test_*.py'
-          node --experimental-default-type=module --test dashboard/tests/snapshot-status.test.js
+          python -m unittest discover -s dashboard/tests -p 'test_*.py' -v
+          npm run test:dashboard
 
       - name: Collect public GitHub dashboard data
         run: |
