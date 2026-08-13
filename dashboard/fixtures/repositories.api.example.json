@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "node_id": "R_public_active",
+    "name": "public-active",
+    "owner": {"login": "example-owner"},
+    "private": false,
+    "html_url": "https://github.com/example-owner/public-active",
+    "visibility": "public",
+    "archived": false,
+    "updated_at": "2026-08-13T01:00:00Z"
+  },
+  {
+    "id": 2,
+    "node_id": "R_private",
+    "name": "private-repo",
+    "owner": {"login": "example-owner"},
+    "private": true,
+    "html_url": "https://github.com/example-owner/private-repo",
+    "visibility": "private",
+    "archived": false,
+    "updated_at": "2026-08-13T01:01:00Z"
+  },
+  {
+    "id": 3,
+    "node_id": "R_archived",
+    "name": "archived-public",
+    "owner": {"login": "example-owner"},
+    "private": false,
+    "html_url": "https://github.com/example-owner/archived-public",
+    "visibility": "public",
+    "archived": true,
+    "updated_at": "2026-08-13T01:02:00Z"
+  },
+  {
+    "id": 4,
+    "node_id": "R_excluded",
+    "name": "excluded-public",
+    "owner": {"login": "example-owner"},
+    "private": false,
+    "html_url": "https://github.com/example-owner/excluded-public",
+    "visibility": "public",
+    "archived": false,
+    "updated_at": "2026-08-13T01:03:00Z"
+  }
+]
