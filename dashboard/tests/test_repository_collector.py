@@ -60,6 +60,7 @@ class RepositoryCollectorTest(unittest.TestCase):
             infer_group({"topics": [], "language": "Python"}),
             infer_group({"topics": [], "language": "TypeScript"}),
             infer_group({"topics": [], "language": None}),
+            infer_group({"topics": ["agent-zone-!!!"], "language": "Python"}),
         }
         self.assertEqual(groups, {"unclassified"})
 
