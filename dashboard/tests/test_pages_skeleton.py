@@ -10,17 +10,33 @@ STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
 
 
 class DashboardSkeletonTest(unittest.TestCase):
-    def test_dashboard_has_main_and_sidebar(self):
+    def test_dashboard_has_one_main_flow_without_sidebar(self):
         html = HTML.read_text(encoding="utf-8")
+        css = CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn('<main class="main-panel"', html)
-        self.assertIn('<aside class="sidebar"', html)
+        self.assertNotIn('<aside class="sidebar"', html)
+        self.assertIn('class="activity-section"', html)
+        self.assertNotIn("grid-template-columns:minmax(0,1fr)minmax(260px,340px)", css)
+        self.assertIn(".dashboard-shell{width:min(1500px,100%);", css)
         self.assertIn('name="viewport"', html)
 
-    def test_mobile_layout_collapses_to_one_column(self):
+    def test_visual_and_keyboard_order_follow_one_vertical_hierarchy(self):
+        html = HTML.read_text(encoding="utf-8")
+        world = html.index('id="agent-world-zones"')
+        gates = html.index('id="lane-gates"')
+        projects = html.index('id="project-groups"')
+        activity = html.index('id="activity-feed"')
+        stats = html.index('id="github-stats-title"')
+        self.assertLess(world, gates)
+        self.assertLess(gates, projects)
+        self.assertLess(projects, activity)
+        self.assertLess(activity, stats)
+
+    def test_mobile_keeps_the_same_single_column_hierarchy(self):
         css = CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn("@media(max-width:760px)", css)
-        self.assertIn("grid-template-columns:minmax(0,1fr);", css)
-        self.assertIn(".panel-heading{align-items:flex-start;flex-direction:column}", css)
+        self.assertIn(".repository-grid,.activity-feed{grid-template-columns:minmax(0,1fr)}", css)
+        self.assertIn(".panel-heading,.section-heading{align-items:flex-start;flex-direction:column}", css)
 
     def test_root_promotes_dashboard_and_preserves_docs_routes(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
