@@ -10,32 +10,39 @@ STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
 
 
 class DashboardSkeletonTest(unittest.TestCase):
-    def test_dashboard_has_one_main_flow_without_sidebar(self):
+    def test_dashboard_keeps_only_recent_activity_in_right_sidebar(self):
         html = HTML.read_text(encoding="utf-8")
         css = CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn('<main class="main-panel"', html)
-        self.assertNotIn('<aside class="sidebar"', html)
-        self.assertIn('class="activity-section"', html)
-        self.assertNotIn("grid-template-columns:minmax(0,1fr)minmax(260px,340px)", css)
-        self.assertIn(".dashboard-shell{width:min(1500px,100%);", css)
+        self.assertIn('<aside class="activity-sidebar"', html)
+        self.assertIn("grid-template-columns:minmax(0,1fr)minmax(260px,340px)", css)
+        self.assertIn('id="activity-feed"', html)
+        main_start = html.index('<main class="main-panel"')
+        main_end = html.index("</main>", main_start)
+        sidebar = html.index('<aside class="activity-sidebar"')
+        self.assertGreater(sidebar, main_end)
+        self.assertNotIn('id="activity-feed"', html[main_start:main_end])
+        for marker in ('id="agent-world-zones"', 'id="lane-gates"', 'id="project-groups"', 'id="github-stats-title"'):
+            self.assertIn(marker, html[main_start:main_end])
         self.assertIn('name="viewport"', html)
 
-    def test_visual_and_keyboard_order_follow_one_vertical_hierarchy(self):
+    def test_main_information_order_stays_stable(self):
         html = HTML.read_text(encoding="utf-8")
         world = html.index('id="agent-world-zones"')
         gates = html.index('id="lane-gates"')
         projects = html.index('id="project-groups"')
-        activity = html.index('id="activity-feed"')
         stats = html.index('id="github-stats-title"')
+        activity = html.index('id="activity-feed"')
         self.assertLess(world, gates)
         self.assertLess(gates, projects)
-        self.assertLess(projects, activity)
-        self.assertLess(activity, stats)
+        self.assertLess(projects, stats)
+        self.assertLess(stats, activity)
 
-    def test_mobile_keeps_the_same_single_column_hierarchy(self):
+    def test_mobile_stacks_activity_after_main(self):
         css = CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn("@media(max-width:760px)", css)
-        self.assertIn(".repository-grid,.activity-feed{grid-template-columns:minmax(0,1fr)}", css)
+        self.assertIn(".dashboard-shell{grid-template-columns:minmax(0,1fr);padding:12px}", css)
+        self.assertIn(".activity-sidebar{position:static;max-height:none;overflow:visible}", css)
         self.assertIn(".panel-heading,.section-heading{align-items:flex-start;flex-direction:column}", css)
 
     def test_root_promotes_dashboard_and_preserves_docs_routes(self):
