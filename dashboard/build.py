@@ -1,12 +1,14 @@
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
 
 from dashboard.collectors.github_api import atomic_write_json
 from dashboard.domain.lanes import add_lane
+
+ACTIVITY_WINDOW_DAYS = 7
 
 
 def load_json(path):
@@ -87,23 +89,68 @@ def workflow_to_work_item(run):
     }
 
 
-def build_activity(work_items):
-    activity = []
+def _parse_time(value):
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
+
+def _canonical_activity(item, public_ids):
+    if item.get("repositoryId") not in public_ids:
+        return None
+    required = ("id", "repositoryId", "kind", "occurredAt", "url")
+    if any(not item.get(key) for key in required):
+        raise ValueError("activity payload is incomplete")
+    canonical = {key: item[key] for key in required}
+    if item.get("summary"):
+        canonical["summary"] = item["summary"]
+    return canonical
+
+
+def build_activity(work_items, recent_activity=None, public_ids=None, generated_at=None):
+    public_ids = public_ids or {item["repositoryId"] for item in work_items}
+    activity_by_id = {}
     for item in work_items:
-        activity.append(
-            {
-                "id": f"activity:{item['id']}",
-                "repositoryId": item["repositoryId"],
-                "kind": item["kind"],
-                "occurredAt": item["updatedAt"],
-                "url": item["url"],
-                "summary": item["title"],
-            }
-        )
-    return sorted(activity, key=lambda event: (event["occurredAt"], event["id"]), reverse=True)
+        event = {
+            "id": f"activity:{item['id']}",
+            "repositoryId": item["repositoryId"],
+            "kind": item["kind"],
+            "occurredAt": item["updatedAt"],
+            "url": item["url"],
+            "summary": item["title"],
+        }
+        activity_by_id[event["id"]] = event
+
+    for raw in recent_activity or []:
+        event = _canonical_activity(raw, public_ids)
+        if event is None:
+            continue
+        current = activity_by_id.get(event["id"])
+        if current is None or event["occurredAt"] > current["occurredAt"]:
+            activity_by_id[event["id"]] = event
+
+    if generated_at is not None:
+        upper_bound = _parse_time(generated_at)
+        lower_bound = upper_bound - timedelta(days=ACTIVITY_WINDOW_DAYS)
+        activity_by_id = {
+            event_id: event
+            for event_id, event in activity_by_id.items()
+            if lower_bound <= _parse_time(event["occurredAt"]) <= upper_bound
+        }
+
+    return sorted(
+        activity_by_id.values(),
+        key=lambda event: (event["occurredAt"], event["id"]),
+        reverse=True,
+    )
 
 
-def build_snapshot(repositories, work_items, workflow_runs, stats=None, generated_at=None):
+def build_snapshot(
+    repositories,
+    work_items,
+    workflow_runs,
+    activity_items=None,
+    stats=None,
+    generated_at=None,
+):
     public_repositories = [
         canonical
         for repository in repositories
@@ -130,8 +177,13 @@ def build_snapshot(repositories, work_items, workflow_runs, stats=None, generate
         key=lambda item: (item["repositoryId"], item["kind"], item["number"]),
     )
 
-    activity = build_activity(canonical_items)
     timestamp = generated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    activity = build_activity(
+        canonical_items,
+        recent_activity=activity_items,
+        public_ids=public_ids,
+        generated_at=timestamp,
+    )
     snapshot = {
         "schemaVersion": "1.0.0",
         "generatedAt": timestamp,
@@ -163,6 +215,7 @@ def main(argv=None):
     parser.add_argument("--repositories", required=True)
     parser.add_argument("--work-items", required=True)
     parser.add_argument("--workflow-runs", required=True)
+    parser.add_argument("--activity")
     parser.add_argument("--stats")
     parser.add_argument("--schema", required=True)
     parser.add_argument("--output", required=True)
@@ -172,6 +225,7 @@ def main(argv=None):
         load_json(args.repositories),
         load_json(args.work_items),
         load_json(args.workflow_runs),
+        activity_items=load_json(args.activity) if args.activity else None,
         stats=load_json(args.stats) if args.stats else None,
     )
     schema = load_json(args.schema)

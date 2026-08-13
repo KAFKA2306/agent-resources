@@ -1,3 +1,4 @@
+import { compareWorkItems, rankRepositories, repositoryHeat } from "./ranking.js";
 import { classifySnapshot } from "./snapshot-status.js";
 import { renderStats } from "./stats.js";
 import { renderWorld } from "./world.js";
@@ -13,25 +14,17 @@ const activityFeed = document.querySelector("#activity-feed");
 
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
-const ACTIVITY_LIMIT = 20;
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
-  { lane: "done", label: "完了報告" },
   { lane: "failed", label: "失敗・要確認" },
+  { lane: "done", label: "完了報告" },
 ];
-
-function sortedRepositories(repositories) {
-  return repositories.slice().sort((a, b) => {
-    const groupOrder = (a.group || "other").localeCompare(b.group || "other");
-    if (groupOrder !== 0) return groupOrder;
-    return a.name.localeCompare(b.name);
-  });
-}
 
 function workItemAgent(item, repository) {
   const link = document.createElement("a");
   link.className = "work-agent";
   link.dataset.kind = item.kind;
+  link.dataset.lane = item.lane;
   link.href = item.url;
   link.target = "_blank";
   link.rel = "noreferrer";
@@ -50,10 +43,11 @@ function workItemAgent(item, repository) {
   return link;
 }
 
-function repositoryCard(repository, workItems) {
+function repositoryCard(repository, workItems, heat) {
   const card = document.createElement("article");
   card.className = "repository-card";
   card.dataset.group = repository.group || "other";
+  card.dataset.heat = heat.toFixed(2);
   const link = document.createElement("a");
   link.className = "repository-link";
   link.href = repository.url;
@@ -62,7 +56,7 @@ function repositoryCard(repository, workItems) {
   const name = document.createElement("strong");
   name.textContent = repository.name;
   const owner = document.createElement("span");
-  owner.textContent = repository.owner;
+  owner.textContent = `${repository.owner} · heat ${Math.round(heat)}`;
   link.append(name, owner);
   const agents = document.createElement("div");
   agents.className = "agent-list";
@@ -87,7 +81,7 @@ function showGateItems(label, items, repositoriesById) {
   }
   const list = document.createElement("div");
   list.className = "gate-item-list";
-  for (const item of items) {
+  for (const item of items.slice().sort(compareWorkItems)) {
     const link = document.createElement("a");
     link.href = item.url;
     link.target = "_blank";
@@ -143,13 +137,16 @@ function renderSnapshotMeta(snapshot) {
   snapshotGeneratedAt.textContent = `生成時刻: ${formatSnapshotTime(freshness.generated)}`;
 }
 
-function renderActivity(activity) {
+function renderActivity(activity, repositoriesById) {
   activityFeed.replaceChildren();
-  const items = activity.filter((item) => ACTIVITY_LABELS[item.kind]).slice().sort((a, b) => b.occurredAt.localeCompare(a.occurredAt)).slice(0, ACTIVITY_LIMIT);
+  const items = activity
+    .filter((item) => ACTIVITY_LABELS[item.kind])
+    .slice()
+    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
   if (items.length === 0) {
     const empty = document.createElement("p");
     empty.className = "muted activity-empty";
-    empty.textContent = "最近の活動は0件です。";
+    empty.textContent = "直近7日の活動は0件です。";
     activityFeed.append(empty);
     return;
   }
@@ -171,7 +168,7 @@ function renderActivity(activity) {
     const summary = document.createElement("strong");
     summary.textContent = item.summary || ACTIVITY_LABELS[item.kind];
     const repo = document.createElement("small");
-    repo.textContent = item.repositoryName;
+    repo.textContent = repositoriesById.get(item.repositoryId)?.name || "unknown";
     link.append(meta, summary, repo);
     activityFeed.append(link);
   }
@@ -187,9 +184,9 @@ function renderDashboard(snapshot) {
     if (!workByRepository.has(item.repositoryId)) workByRepository.set(item.repositoryId, []);
     workByRepository.get(item.repositoryId).push(item);
   }
-  renderWorld(repositories, workItems);
+  renderWorld(repositories, workItems, activity, snapshot.generatedAt);
   renderGates(workItems, repositoriesById);
-  renderActivity(activity);
+  renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
   groupsRoot.replaceChildren();
   repositoryCount.textContent = `${repositories.length} repositories`;
@@ -207,13 +204,14 @@ function renderDashboard(snapshot) {
   const title = document.createElement("h3");
   title.textContent = "Repository details";
   const count = document.createElement("span");
-  count.textContent = `${repositories.length}`;
+  count.textContent = `hottest first · ${repositories.length}`;
   heading.append(title, count);
   const grid = document.createElement("div");
   grid.className = "repository-grid";
-  for (const repository of sortedRepositories(repositories)) {
-    const repositoryItems = (workByRepository.get(repository.id) || []).slice().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-    grid.append(repositoryCard(repository, repositoryItems));
+  for (const repository of rankRepositories(repositories, workItems, activity, snapshot.generatedAt)) {
+    const repositoryItems = (workByRepository.get(repository.id) || []).slice().sort(compareWorkItems);
+    const heat = repositoryHeat(repository, workItems, activity, snapshot.generatedAt);
+    grid.append(repositoryCard(repository, repositoryItems, heat));
   }
   section.append(heading, grid);
   groupsRoot.append(section);
