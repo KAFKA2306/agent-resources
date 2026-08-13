@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
+JS = ROOT / "docs" / "dashboard" / "dashboard.js"
 
 
 class DashboardSkeletonTest(unittest.TestCase):
@@ -21,6 +22,18 @@ class DashboardSkeletonTest(unittest.TestCase):
     def test_dashboard_keeps_link_to_existing_home(self):
         html = HTML.read_text(encoding="utf-8")
         self.assertIn('href="../"', html)
+
+    def test_repository_groups_are_loaded_from_dashboard_json(self):
+        js = JS.read_text(encoding="utf-8")
+        self.assertIn('fetch("./dashboard.json"', js)
+        self.assertIn("repository.group", js)
+        self.assertIn("repository.url", js)
+        self.assertNotIn("agent-resources", js.lower())
+
+    def test_zero_repositories_has_explicit_empty_state(self):
+        js = JS.read_text(encoding="utf-8")
+        self.assertIn("repositories.length === 0", js)
+        self.assertIn("公開対象のrepositoryは0件です。", js)
 
 
 if __name__ == "__main__":
