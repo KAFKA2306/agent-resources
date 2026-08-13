@@ -1,0 +1,10 @@
+{
+  "owner": "example-owner",
+  "exclude": [
+    "excluded-public"
+  ],
+  "groupOverrides": {
+    "public-active": "core"
+  },
+  "includeArchived": false
+}
