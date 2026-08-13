@@ -56,9 +56,9 @@ jobs:
           set -euo pipefail
           mkdir -p dashboard/generated docs/dashboard
           python -m dashboard.collectors.repositories --output dashboard/generated/repositories.json
+          python -m dashboard.collectors.github_stats --start-month 2026-01 --request-interval 2.2 --output dashboard/generated/github-stats.json
           python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
-          python -m dashboard.collectors.github_stats --start-month 2026-01 --output dashboard/generated/github-stats.json
 
       - name: Build and validate canonical dashboard snapshot
         run: |

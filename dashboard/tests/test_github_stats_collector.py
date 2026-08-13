@@ -32,6 +32,63 @@ class GitHubStatsCollectorTest(unittest.TestCase):
         self.assertTrue(self.queries)
         self.assertTrue(all("is:public" in query.split() for query in self.queries))
 
+    def test_request_interval_is_applied_without_slowing_unit_tests(self):
+        sleeps = []
+        now = datetime(2026, 1, 31, 23, 59, tzinfo=ZoneInfo("Asia/Tokyo"))
+        collect_github_stats(
+            now=now,
+            request_fn=self.request_fn,
+            request_interval=2.2,
+            sleep_fn=sleeps.append,
+        )
+        self.assertEqual(len(self.queries), 7)
+        self.assertEqual(sleeps, [2.2] * 7)
+
+    def test_rate_limit_uses_retry_after_then_succeeds(self):
+        calls = 0
+        sleeps = []
+
+        def rate_limited_once(url, token=None):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise GitHubApiError(
+                    "rate limited",
+                    status=403,
+                    headers={"Retry-After": "7"},
+                    response_body='{"message":"secondary rate limit"}',
+                )
+            return {"total_count": 4, "incomplete_results": False}, {}
+
+        total = _search_total(
+            "issues",
+            "author:KAFKA2306 is:issue is:public",
+            request_fn=rate_limited_once,
+            sleep_fn=sleeps.append,
+        )
+        self.assertEqual(total, 4)
+        self.assertEqual(calls, 2)
+        self.assertEqual(sleeps, [7.0])
+
+    def test_non_rate_403_is_not_retried(self):
+        sleeps = []
+
+        def forbidden(url, token=None):
+            raise GitHubApiError(
+                "forbidden",
+                status=403,
+                response_body='{"message":"Resource not accessible by integration"}',
+            )
+
+        with self.assertRaises(GitHubApiError):
+            _search_total(
+                "issues",
+                "author:KAFKA2306 is:issue is:public",
+                request_fn=forbidden,
+                sleep_fn=sleeps.append,
+            )
+        self.assertEqual(sleeps, [])
+
     def test_incomplete_search_fails_closed(self):
         def incomplete(url, token=None):
             return {"total_count": 99, "incomplete_results": True}, {}
