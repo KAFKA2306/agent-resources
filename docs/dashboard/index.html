@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./dashboard.css">
   <link rel="stylesheet" href="./flow.css">
   <link rel="stylesheet" href="./game.css">
+  <link rel="stylesheet" href="./stats.css">
   <script type="module" src="./flow.js"></script>
   <script type="module" src="./dashboard.js"></script>
 </head>
@@ -31,6 +32,13 @@
         </div>
       </div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
+      <section class="github-stats" aria-labelledby="github-stats-title">
+        <div class="stats-heading"><div><p class="eyebrow">PUBLIC GITHUB ACTIVITY</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
+        <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
+        <div class="stats-legend" aria-hidden="true"><span data-series="commits">Commit</span><span data-series="prsMerged">Merged PR</span><span data-series="issuesClosed">Closed Issue</span></div>
+        <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>
+        <p id="stats-note" class="stats-note muted"></p>
+      </section>
       <section id="lane-flow" class="lane-flow" aria-label="work item の処理フロー"></section>
       <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
