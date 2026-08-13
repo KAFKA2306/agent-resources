@@ -8,6 +8,8 @@
     "html_url": "https://github.com/example-owner/public-active",
     "visibility": "public",
     "archived": false,
+    "topics": ["agent-zone-core"],
+    "language": "Python",
     "updated_at": "2026-08-13T01:00:00Z"
   },
   {
@@ -19,6 +21,8 @@
     "html_url": "https://github.com/example-owner/private-repo",
     "visibility": "private",
     "archived": false,
+    "topics": [],
+    "language": "Go",
     "updated_at": "2026-08-13T01:01:00Z"
   },
   {
@@ -30,17 +34,21 @@
     "html_url": "https://github.com/example-owner/archived-public",
     "visibility": "public",
     "archived": true,
+    "topics": ["agent-zone-archive"],
+    "language": "Python",
     "updated_at": "2026-08-13T01:02:00Z"
   },
   {
     "id": 4,
-    "node_id": "R_excluded",
-    "name": "excluded-public",
+    "node_id": "R_public_language",
+    "name": "public-language",
     "owner": {"login": "example-owner"},
     "private": false,
-    "html_url": "https://github.com/example-owner/excluded-public",
+    "html_url": "https://github.com/example-owner/public-language",
     "visibility": "public",
     "archived": false,
+    "topics": [],
+    "language": "TypeScript",
     "updated_at": "2026-08-13T01:03:00Z"
   }
 ]

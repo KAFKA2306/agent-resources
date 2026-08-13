@@ -1,8 +1,3 @@
 {
-  "owner": "KAFKA2306",
-  "exclude": [],
-  "groupOverrides": {
-    "agent-resources": "platform"
-  },
-  "includeArchived": false
+  "owner": "KAFKA2306"
 }
