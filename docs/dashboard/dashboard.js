@@ -1,4 +1,5 @@
 import { classifySnapshot } from "./snapshot-status.js";
+import { renderStats } from "./stats.js";
 
 const groupsRoot = document.querySelector("#project-groups");
 const repositoryCount = document.querySelector("#repository-count");
@@ -188,6 +189,7 @@ function renderDashboard(snapshot) {
   }
   renderGates(workItems, repositoriesById);
   renderActivity(activity);
+  renderStats(snapshot.stats);
   groupsRoot.replaceChildren();
   repositoryCount.textContent = `${repositories.length} repositories`;
   if (repositories.length === 0) {
@@ -225,7 +227,7 @@ async function loadDashboard() {
     renderDashboard(snapshot);
     renderSnapshotMeta(snapshot);
   } catch (error) {
-    renderDashboard({ repositories: [], workItems: [], activity: [] });
+    renderDashboard({ repositories: [], workItems: [], activity: [], stats: null });
     snapshotStatus.dataset.state = "failed";
     snapshotStatus.textContent = "更新失敗";
     snapshotGeneratedAt.removeAttribute("datetime");
