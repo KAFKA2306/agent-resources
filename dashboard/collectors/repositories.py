@@ -9,6 +9,7 @@ from dashboard.collectors.github_api import atomic_write_json, fetch_paginated
 
 DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config" / "repositories.json"
 ZONE_TOPIC_PREFIX = "agent-zone-"
+UNCLASSIFIED_GROUP = "unclassified"
 ALLOWED_CONFIG_KEYS = {"owner"}
 
 
@@ -27,7 +28,7 @@ def load_config(path=DEFAULT_CONFIG):
 
 def normalize_group_fragment(value):
     normalized = re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
-    return normalized or "other"
+    return normalized or UNCLASSIFIED_GROUP
 
 
 def infer_group(raw):
@@ -43,11 +44,7 @@ def infer_group(raw):
     )
     if zone_topics:
         return normalize_group_fragment(zone_topics[0])
-
-    language = raw.get("language")
-    if isinstance(language, str) and language.strip():
-        return f"language-{normalize_group_fragment(language)}"
-    return "other"
+    return UNCLASSIFIED_GROUP
 
 
 def normalize_repository(raw, config):
