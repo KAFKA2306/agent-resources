@@ -28,7 +28,7 @@ def load_config(path=DEFAULT_CONFIG):
 
 def normalize_group_fragment(value):
     normalized = re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
-    return normalized or "other"
+    return normalized or UNCLASSIFIED_GROUP
 
 
 def infer_group(raw):
