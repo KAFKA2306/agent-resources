@@ -1,0 +1,37 @@
+[
+  {
+    "node_id": "I_issue_10",
+    "number": 10,
+    "state": "open",
+    "title": "open issue",
+    "html_url": "https://github.com/example-owner/public-active/issues/10",
+    "updated_at": "2026-08-13T01:10:00Z"
+  },
+  {
+    "node_id": "I_pr_11",
+    "number": 11,
+    "state": "open",
+    "title": "open pull request",
+    "html_url": "https://github.com/example-owner/public-active/pull/11",
+    "updated_at": "2026-08-13T01:11:00Z",
+    "pull_request": {
+      "url": "https://api.github.com/repos/example-owner/public-active/pulls/11"
+    }
+  },
+  {
+    "node_id": "I_closed_12",
+    "number": 12,
+    "state": "closed",
+    "title": "closed issue should be ignored",
+    "html_url": "https://github.com/example-owner/public-active/issues/12",
+    "updated_at": "2026-08-13T01:12:00Z"
+  },
+  {
+    "node_id": "I_issue_10_duplicate",
+    "number": 10,
+    "state": "open",
+    "title": "open issue",
+    "html_url": "https://github.com/example-owner/public-active/issues/10",
+    "updated_at": "2026-08-13T01:09:00Z"
+  }
+]
