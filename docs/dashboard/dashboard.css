@@ -1,0 +1,101 @@
+:root {
+  color-scheme: light;
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --line: #dfe4ee;
+  --text: #172033;
+  --muted: #697386;
+  --accent: #325dff;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px clamp(18px, 4vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 0; font-size: clamp(1.35rem, 3vw, 2rem); }
+h2 { margin-bottom: 0; font-size: 1.05rem; }
+
+.eyebrow {
+  margin-bottom: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.home-link { color: var(--accent); font-weight: 700; text-decoration: none; }
+
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 18px;
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.main-panel, .sidebar {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(31, 42, 68, 0.06);
+}
+
+.main-panel { min-height: 68vh; padding: 20px; }
+.sidebar { padding: 20px; }
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.status-chip {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3651c9;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.empty-stage {
+  display: grid;
+  min-height: 48vh;
+  place-items: center;
+  border: 1px dashed #c9d0de;
+  border-radius: 14px;
+  color: var(--muted);
+  text-align: center;
+  padding: 24px;
+}
+
+.muted { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .topbar { align-items: flex-start; flex-direction: column; padding: 18px; }
+  .dashboard-shell { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .main-panel { min-height: auto; }
+  .empty-stage { min-height: 42vh; }
+}
