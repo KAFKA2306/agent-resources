@@ -22,6 +22,38 @@ def canonical_repository(repository):
     }
 
 
+def canonical_stats(stats):
+    if stats is None:
+        return None
+    if stats.get("scope") != "public":
+        raise ValueError("dashboard stats must be public-only")
+    monthly = []
+    for row in stats.get("monthly", []):
+        monthly.append(
+            {
+                key: row[key]
+                for key in (
+                    "month",
+                    "commits",
+                    "prsCreated",
+                    "prsMerged",
+                    "issuesCreated",
+                    "issuesClosed",
+                    "partial",
+                )
+            }
+        )
+    monthly.sort(key=lambda row: row["month"])
+    return {
+        "owner": stats["owner"],
+        "scope": "public",
+        "timezone": stats["timezone"],
+        "publicRepositories": stats["publicRepositories"],
+        "archivedPublicRepositories": stats["archivedPublicRepositories"],
+        "monthly": monthly,
+    }
+
+
 def workflow_state(run):
     status = run.get("status")
     conclusion = run.get("conclusion")
@@ -71,7 +103,7 @@ def build_activity(work_items):
     return sorted(activity, key=lambda event: (event["occurredAt"], event["id"]), reverse=True)
 
 
-def build_snapshot(repositories, work_items, workflow_runs, generated_at=None):
+def build_snapshot(repositories, work_items, workflow_runs, stats=None, generated_at=None):
     public_repositories = [
         canonical
         for repository in repositories
@@ -100,7 +132,7 @@ def build_snapshot(repositories, work_items, workflow_runs, generated_at=None):
 
     activity = build_activity(canonical_items)
     timestamp = generated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    return {
+    snapshot = {
         "schemaVersion": "1.0.0",
         "generatedAt": timestamp,
         "summary": {
@@ -112,6 +144,9 @@ def build_snapshot(repositories, work_items, workflow_runs, generated_at=None):
         "workItems": canonical_items,
         "activity": activity,
     }
+    if stats is not None:
+        snapshot["stats"] = canonical_stats(stats)
+    return snapshot
 
 
 def validate_snapshot(snapshot, schema):
@@ -128,6 +163,7 @@ def main(argv=None):
     parser.add_argument("--repositories", required=True)
     parser.add_argument("--work-items", required=True)
     parser.add_argument("--workflow-runs", required=True)
+    parser.add_argument("--stats")
     parser.add_argument("--schema", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
@@ -136,6 +172,7 @@ def main(argv=None):
         load_json(args.repositories),
         load_json(args.work_items),
         load_json(args.workflow_runs),
+        stats=load_json(args.stats) if args.stats else None,
     )
     schema = load_json(args.schema)
     validate_snapshot(snapshot, schema)
