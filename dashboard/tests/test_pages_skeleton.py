@@ -24,6 +24,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertNotIn('id="activity-feed"', html[main_start:main_end])
         for marker in ('id="agent-world-zones"', 'id="lane-gates"', 'id="project-groups"', 'id="github-stats-title"'):
             self.assertIn(marker, html[main_start:main_end])
+        self.assertIn('SIDEBAR · LAST 7 DAYS', html)
         self.assertIn('name="viewport"', html)
 
     def test_main_information_order_stays_stable(self):
@@ -67,19 +68,29 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("repositories.length === 0", js)
         self.assertIn("公開対象のrepositoryは0件です。", js)
 
-    def test_activity_feed_uses_snapshot_activity_only(self):
+    def test_activity_feed_uses_full_seven_day_snapshot_activity(self):
         html = HTML.read_text(encoding="utf-8")
         js = JS.read_text(encoding="utf-8")
         self.assertIn('id="activity-feed"', html)
+        self.assertIn("SIDEBAR · LAST 7 DAYS", html)
         self.assertIn("snapshot.activity", js)
-        self.assertIn("ACTIVITY_LIMIT = 20", js)
+        self.assertNotIn("ACTIVITY_LIMIT", js)
         self.assertIn("b.occurredAt.localeCompare(a.occurredAt)", js)
         self.assertIn("item.repositoryId", js)
         self.assertIn("item.occurredAt", js)
         self.assertIn("item.url", js)
         self.assertIn("ACTIVITY_LABELS[item.kind]", js)
-        self.assertIn("最近の活動は0件です。", js)
+        self.assertIn("直近7日の活動は0件です。", js)
         self.assertNotIn("api.github.com", js)
+
+    def test_attention_and_repository_heat_are_explicit(self):
+        js = JS.read_text(encoding="utf-8")
+        self.assertIn('lane: "waiting", label: "判断待ち"', js)
+        self.assertIn('lane: "failed", label: "失敗・要確認"', js)
+        self.assertLess(js.index('lane: "waiting"'), js.index('lane: "failed"'))
+        self.assertIn("rankRepositories", js)
+        self.assertIn("repositoryHeat", js)
+        self.assertIn("hottest first", js)
 
     def test_snapshot_generation_time_and_failure_are_explicit(self):
         html = HTML.read_text(encoding="utf-8")

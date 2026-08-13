@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:dashboard": "node --test dashboard/tests/snapshot-status.test.js"
+    "test:dashboard": "node --test dashboard/tests/*.test.js"
   }
 }

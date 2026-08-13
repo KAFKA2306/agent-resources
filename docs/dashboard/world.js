@@ -1,3 +1,5 @@
+import { compareWorkItems, rankRepositories, repositoryHeat } from "./ranking.js";
+
 const ASSET_ROOT = "./assets/agent-world";
 
 const ASSET_BY_ID = Object.freeze({
@@ -28,7 +30,7 @@ const STATE_ASSET_IDS = Object.freeze({
   failed: "state.failed.v1",
 });
 const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
-const LANE_LABELS = { working: "作業中", waiting: "判断待ち", done: "完了", failed: "要確認" };
+const LANE_LABELS = { working: "作業中", waiting: "判断待ち", done: "完了", failed: "失敗・要確認" };
 
 function resolveAsset(assetId) {
   const src = ASSET_BY_ID[assetId];
@@ -64,7 +66,7 @@ function createAssetImage(assetId, className, onLoad = null) {
   return image;
 }
 
-function groupedRepositories(repositories) {
+function groupedRepositories(repositories, workItems, activity, generatedAt) {
   const groups = new Map();
   for (const repository of repositories) {
     const group = repository.group || "unclassified";
@@ -72,8 +74,12 @@ function groupedRepositories(repositories) {
     groups.get(group).push(repository);
   }
   return [...groups.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([group, items]) => [group, items.slice().sort((a, b) => a.name.localeCompare(b.name))]);
+    .map(([group, items]) => [group, rankRepositories(items, workItems, activity, generatedAt)])
+    .sort(([, aItems], [, bItems]) => {
+      const aHeat = aItems.length ? repositoryHeat(aItems[0], workItems, activity, generatedAt) : 0;
+      const bHeat = bItems.length ? repositoryHeat(bItems[0], workItems, activity, generatedAt) : 0;
+      return bHeat - aHeat;
+    });
 }
 
 function roleAssetId(kind) {
@@ -123,9 +129,10 @@ function createAgent(item) {
   return link;
 }
 
-function createStation(repository, workItems) {
+function createStation(repository, workItems, heat) {
   const station = document.createElement("article");
   station.className = "world-station";
+  station.dataset.heat = heat.toFixed(2);
 
   const scene = document.createElement("div");
   scene.className = "world-station-scene";
@@ -143,13 +150,13 @@ function createStation(repository, workItems) {
   const name = document.createElement("strong");
   name.textContent = repository.name;
   const count = document.createElement("span");
-  count.textContent = `${workItems.length} agents`;
+  count.textContent = `${workItems.length} agents · heat ${Math.round(heat)}`;
   repositoryLink.append(name, count);
 
   const agents = document.createElement("div");
   agents.className = "world-agents";
   agents.setAttribute("aria-label", `${repository.name} agents`);
-  for (const item of workItems.slice().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))) {
+  for (const item of workItems.slice().sort(compareWorkItems)) {
     agents.append(createAgent(item));
   }
 
@@ -157,7 +164,7 @@ function createStation(repository, workItems) {
   return station;
 }
 
-function createZone(group, repositories, workByRepository) {
+function createZone(group, repositories, workByRepository, workItems, activity, generatedAt) {
   const zone = document.createElement("section");
   zone.className = "world-zone";
 
@@ -176,20 +183,21 @@ function createZone(group, repositories, workByRepository) {
   identity.append(name);
 
   const meta = document.createElement("span");
-  meta.textContent = `${repositories.length} stations`;
+  meta.textContent = `${repositories.length} stations · hottest first`;
   heading.append(identity, meta);
 
   const stations = document.createElement("div");
   stations.className = "world-stations";
   for (const repository of repositories) {
-    stations.append(createStation(repository, workByRepository.get(repository.id) || []));
+    const heat = repositoryHeat(repository, workItems, activity, generatedAt);
+    stations.append(createStation(repository, workByRepository.get(repository.id) || [], heat));
   }
   content.append(heading, stations);
   zone.append(floor, content);
   return zone;
 }
 
-export function renderWorld(repositories, workItems) {
+export function renderWorld(repositories, workItems, activity = [], generatedAt = null) {
   const root = document.querySelector("#agent-world-zones");
   const summary = document.querySelector("#agent-world-summary");
   if (!root || !summary) return;
@@ -211,7 +219,7 @@ export function renderWorld(repositories, workItems) {
     workByRepository.get(item.repositoryId).push(item);
   }
 
-  groupedRepositories(repositories).forEach(([group, items]) => {
-    root.append(createZone(group, items, workByRepository));
+  groupedRepositories(repositories, workItems, activity, generatedAt).forEach(([group, items]) => {
+    root.append(createZone(group, items, workByRepository, workItems, activity, generatedAt));
   });
 }

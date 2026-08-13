@@ -59,6 +59,7 @@ jobs:
           python -m dashboard.collectors.github_stats --start-month 2026-01 --request-interval 2.2 --output dashboard/generated/github-stats.json
           python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
+          python -m dashboard.collectors.recent_activity --repositories dashboard/generated/repositories.json --window-days 7 --output dashboard/generated/recent-activity.json
 
       - name: Build and validate canonical dashboard snapshot
         run: |
@@ -67,6 +68,7 @@ jobs:
             --repositories dashboard/generated/repositories.json \
             --work-items dashboard/generated/work-items.json \
             --workflow-runs dashboard/generated/workflow-runs.json \
+            --activity dashboard/generated/recent-activity.json \
             --stats dashboard/generated/github-stats.json \
             --schema dashboard/schema/dashboard.schema.json \
             --output docs/dashboard/dashboard.json
