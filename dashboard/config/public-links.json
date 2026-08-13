@@ -1,0 +1,71 @@
+{
+  "profiles": [
+    {
+      "id": "github",
+      "label": "GitHub",
+      "url": "https://github.com/KAFKA2306",
+      "category": "profile",
+      "provider": "github"
+    },
+    {
+      "id": "hatena-blog",
+      "label": "Hatena Blog",
+      "url": "https://kafkafinancialgroup.hatenablog.com/",
+      "category": "writing",
+      "provider": "hatena"
+    },
+    {
+      "id": "scrapbox",
+      "label": "Scrapbox",
+      "url": "https://scrapbox.io/kafka2512",
+      "category": "writing",
+      "provider": "scrapbox"
+    },
+    {
+      "id": "zenn",
+      "label": "Zenn",
+      "url": "https://zenn.dev/kafka2306",
+      "category": "writing",
+      "provider": "zenn"
+    },
+    {
+      "id": "youtube",
+      "label": "YouTube",
+      "url": "https://www.youtube.com/@byosan-money",
+      "category": "media",
+      "provider": "youtube"
+    },
+    {
+      "id": "booth",
+      "label": "BOOTH / Studio Kafka",
+      "url": "https://studiokafka.booth.pm/",
+      "category": "creator",
+      "provider": "booth"
+    },
+    {
+      "id": "note",
+      "label": "note",
+      "url": "https://note.com/kafkavr",
+      "category": "writing",
+      "provider": "note"
+    },
+    {
+      "id": "x",
+      "label": "X / @kafka_vr",
+      "url": "https://x.com/kafka_vr",
+      "category": "social",
+      "provider": "x"
+    },
+    {
+      "id": "vrchat",
+      "label": "VRChat",
+      "url": "https://vrchat.com/home/user/usr_3e36606d-21c3-4be5-b4b5-4bb5f26eefb0",
+      "category": "social",
+      "provider": "vrchat"
+    }
+  ],
+  "vercel": {
+    "teamId": "team_WAiNUdK4pWv6eK8LxnaVY1mC",
+    "maxProjects": 100
+  }
+}
