@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from dashboard.collectors.github_api import GitHubApiError, fetch_paginated
-from dashboard.collectors.repositories import collect_repositories
+from dashboard.collectors.repositories import collect_repositories, infer_group
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_FIXTURE = ROOT / "fixtures" / "repositories.config.example.json"
@@ -28,11 +28,25 @@ class RepositoryCollectorTest(unittest.TestCase):
         self.assertTrue(all(repo["visibility"] == "public" for repo in repositories))
         self.assertTrue(all(repo["archived"] is False for repo in repositories))
 
-    def test_project_zone_is_derived_from_github_metadata(self):
+    def test_project_zone_uses_agent_zone_topic_only(self):
         repositories = collect_repositories(self.config, fetcher=lambda url, token=None: self.raw)
         by_name = {repo["name"]: repo for repo in repositories}
         self.assertEqual(by_name["public-active"]["group"], "core")
-        self.assertEqual(by_name["public-language"]["group"], "language-typescript")
+        self.assertEqual(by_name["public-language"]["group"], "unclassified")
+
+    def test_programming_language_never_becomes_project_zone(self):
+        self.assertEqual(
+            infer_group({"topics": [], "language": "TypeScript"}),
+            "unclassified",
+        )
+        self.assertEqual(
+            infer_group({"topics": [], "language": "Python"}),
+            "unclassified",
+        )
+
+    def test_other_is_not_generated_as_fallback(self):
+        self.assertEqual(infer_group({"topics": []}), "unclassified")
+        self.assertNotEqual(infer_group({"topics": []}), "other")
 
     def test_private_repository_is_rejected(self):
         def fetcher(url, token=None):
