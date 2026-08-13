@@ -1,17 +1,44 @@
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 from urllib.parse import quote
 
 from dashboard.collectors.github_api import atomic_write_json, fetch_paginated
 
 DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config" / "repositories.json"
+ZONE_TOPIC_PREFIX = "agent-zone-"
 
 
 def load_config(path=DEFAULT_CONFIG):
     with Path(path).open(encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def normalize_group_fragment(value):
+    normalized = re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
+    return normalized or "other"
+
+
+def infer_group(raw):
+    topics = raw.get("topics") or []
+    if not isinstance(topics, list):
+        raise ValueError("repository topics must be a list")
+    zone_topics = sorted(
+        topic[len(ZONE_TOPIC_PREFIX) :]
+        for topic in topics
+        if isinstance(topic, str)
+        and topic.startswith(ZONE_TOPIC_PREFIX)
+        and topic[len(ZONE_TOPIC_PREFIX) :]
+    )
+    if zone_topics:
+        return normalize_group_fragment(zone_topics[0])
+
+    language = raw.get("language")
+    if isinstance(language, str) and language.strip():
+        return f"language-{normalize_group_fragment(language)}"
+    return "other"
 
 
 def normalize_repository(raw, config):
@@ -20,8 +47,6 @@ def normalize_repository(raw, config):
     if owner != config["owner"]:
         return None
     if raw.get("visibility") != "public" or raw.get("private") is True:
-        return None
-    if name in config["exclude"]:
         return None
     archived = raw.get("archived")
     if not isinstance(archived, bool):
@@ -43,7 +68,7 @@ def normalize_repository(raw, config):
     for key in ("id", "owner", "name", "url", "visibility", "updatedAt"):
         if not required[key]:
             raise ValueError(f"repository payload is missing {key}: {name!r}")
-    required["group"] = config["groupOverrides"].get(name, "other")
+    required["group"] = infer_group(raw)
     return required
 
 
