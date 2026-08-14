@@ -201,8 +201,9 @@ function createZone(group, repositories, workByRepository, workItems, activity, 
   if (isUnclassified) {
     const details = document.createElement("details");
     details.className = "world-unclassified-details";
+    details.open = true;
     const summary = document.createElement("summary");
-    summary.textContent = `未分類 ${repositories.length} repositoriesを表示`;
+    summary.textContent = `未分類 ${repositories.length} repositories（通常表示）`;
     details.append(summary, stations);
     content.append(heading, details);
   } else {
