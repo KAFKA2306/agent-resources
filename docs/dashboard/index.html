@@ -22,22 +22,19 @@
 <body class="game-dashboard">
   <header class="topbar">
     <div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div>
-    <nav class="top-actions" aria-label="補助導線">
-      <a class="home-link" href="../site/">CLI / Skills docs</a>
-      <a class="home-link" href="https://github.com/KAFKA2306/agent-resources">Repository</a>
-      <a class="home-link" href="https://pypi.org/project/agent-resources/">PyPI</a>
-    </nav>
   </header>
   <div class="dashboard-shell">
-    <main class="main-panel" aria-label="公開作業状況">
-      <div class="dashboard-meta" aria-label="データ鮮度と対象範囲">
-        <strong id="repository-count" class="repository-count">0 repositories</strong>
+    <main class="main-panel" aria-labelledby="workspace-title">
+      <div class="world-decor" aria-hidden="true"><span class="decor-building"></span><span class="decor-sign">HUB</span><span class="decor-character"></span></div>
+      <div class="panel-heading">
+        <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
         <div class="snapshot-meta">
           <span class="status-chip" id="snapshot-status" data-state="loading">読込中</span>
           <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
           <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
         </div>
       </div>
+      <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
       <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section class="agent-world" aria-labelledby="agent-world-title">
