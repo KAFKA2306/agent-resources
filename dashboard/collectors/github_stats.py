@@ -1,8 +1,10 @@
 import argparse
 import calendar
+import json
 import os
 import time
 from datetime import datetime
+from pathlib import Path
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
@@ -14,6 +16,13 @@ DEFAULT_START_MONTH = "2026-01"
 DEFAULT_TIMEZONE = "Asia/Tokyo"
 DEFAULT_REQUEST_INTERVAL = 2.2
 DEFAULT_RATE_RETRIES = 2
+MONTHLY_METRIC_KEYS = (
+    "commits",
+    "prsCreated",
+    "prsMerged",
+    "issuesCreated",
+    "issuesClosed",
+)
 
 
 def _header(headers, name):
@@ -114,6 +123,59 @@ def _date_window(year, month, now):
     return start, end, partial
 
 
+def _canonical_previous_months(previous_stats, owner, start_month, now):
+    if not isinstance(previous_stats, dict):
+        return {}
+    stats = previous_stats.get("stats", previous_stats)
+    if not isinstance(stats, dict):
+        return {}
+    if (
+        stats.get("owner") != owner
+        or stats.get("scope") != "public"
+        or stats.get("timezone") != DEFAULT_TIMEZONE
+    ):
+        return {}
+
+    start_year, start_number = _parse_start_month(start_month)
+    first_month = f"{start_year:04d}-{start_number:02d}"
+    current_month = f"{now.year:04d}-{now.month:02d}"
+    reusable = {}
+    for row in stats.get("monthly", []):
+        if not isinstance(row, dict):
+            continue
+        month = row.get("month")
+        if not isinstance(month, str):
+            continue
+        try:
+            datetime.strptime(month, "%Y-%m")
+        except ValueError:
+            continue
+        if month < first_month or month >= current_month or row.get("partial") is not False:
+            continue
+        values = [row.get(key) for key in MONTHLY_METRIC_KEYS]
+        if any(not isinstance(value, int) or isinstance(value, bool) or value < 0 for value in values):
+            continue
+        reusable[month] = {
+            "month": month,
+            **{key: row[key] for key in MONTHLY_METRIC_KEYS},
+            "partial": False,
+        }
+    return reusable
+
+
+def _load_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _repository_count(path):
+    repositories = _load_json(path)
+    if not isinstance(repositories, list):
+        raise ValueError("repositories input must be a JSON array")
+    if any(repository.get("visibility") != "public" for repository in repositories):
+        raise ValueError("repositories input must be public-only")
+    return len(repositories)
+
+
 def collect_github_stats(
     owner=DEFAULT_OWNER,
     start_month=DEFAULT_START_MONTH,
@@ -122,6 +184,8 @@ def collect_github_stats(
     request_fn=request_json,
     request_interval=0.0,
     sleep_fn=time.sleep,
+    previous_stats=None,
+    public_repository_count=None,
 ):
     tz = ZoneInfo(DEFAULT_TIMEZONE)
     now = now.astimezone(tz) if now is not None else datetime.now(tz)
@@ -138,18 +202,34 @@ def collect_github_stats(
             sleep_fn(request_interval)
         return total
 
-    public_repositories = search("repositories", f"user:{owner} is:public")
+    if public_repository_count is None:
+        public_repositories = search("repositories", f"user:{owner} is:public")
+    else:
+        if (
+            not isinstance(public_repository_count, int)
+            or isinstance(public_repository_count, bool)
+            or public_repository_count < 0
+        ):
+            raise ValueError("public_repository_count must be a non-negative integer")
+        public_repositories = public_repository_count
+
     archived_public_repositories = search(
         "repositories", f"user:{owner} is:public archived:true"
     )
+    reusable_months = _canonical_previous_months(previous_stats, owner, start_month, now)
 
     monthly = []
     for year, month in _month_range(start_month, now):
+        month_key = f"{year:04d}-{month:02d}"
+        if month_key in reusable_months:
+            monthly.append(reusable_months[month_key])
+            continue
+
         start, end, partial = _date_window(year, month, now)
         public = "is:public"
         monthly.append(
             {
-                "month": f"{year:04d}-{month:02d}",
+                "month": month_key,
                 "commits": search(
                     "commits", f"author:{owner} committer-date:{start}..{end} {public}"
                 ),
@@ -185,16 +265,22 @@ def main():
     parser.add_argument("--owner", default=DEFAULT_OWNER)
     parser.add_argument("--start-month", default=DEFAULT_START_MONTH)
     parser.add_argument("--request-interval", type=float, default=DEFAULT_REQUEST_INTERVAL)
+    parser.add_argument("--repositories")
+    parser.add_argument("--previous-dashboard")
     parser.add_argument("--output", default="dashboard/generated/github-stats.json")
     args = parser.parse_args()
     if args.request_interval < 0:
         parser.error("--request-interval must be non-negative")
 
+    previous_stats = _load_json(args.previous_dashboard) if args.previous_dashboard else None
+    public_repository_count = _repository_count(args.repositories) if args.repositories else None
     payload = collect_github_stats(
         owner=args.owner,
         start_month=args.start_month,
         token=os.environ.get("GITHUB_TOKEN"),
         request_interval=args.request_interval,
+        previous_stats=previous_stats,
+        public_repository_count=public_repository_count,
     )
     atomic_write_json(args.output, payload)
 
