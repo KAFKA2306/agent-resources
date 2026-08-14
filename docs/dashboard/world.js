@@ -1,4 +1,5 @@
-import { compareWorkItems, rankRepositories, repositoryHeat } from "./ranking.js";
+const assetVersion = encodeURIComponent(new URL(import.meta.url).searchParams.get("v") || Date.now().toString());
+const { compareWorkItems, rankRepositories, repositoryHeat } = await import(`./ranking.js?v=${assetVersion}`);
 
 const ASSET_ROOT = "./assets/agent-world";
 

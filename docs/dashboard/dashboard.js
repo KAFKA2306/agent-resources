@@ -1,7 +1,15 @@
-import { compareWorkItems } from "./ranking.js";
-import { classifySnapshot } from "./snapshot-status.js";
-import { renderStats } from "./stats.js";
-import { renderWorld } from "./world.js";
+const assetVersion = encodeURIComponent(new URL(import.meta.url).searchParams.get("v") || Date.now().toString());
+const [
+  { compareWorkItems },
+  { classifySnapshot },
+  { renderStats },
+  { renderWorld },
+] = await Promise.all([
+  import(`./ranking.js?v=${assetVersion}`),
+  import(`./snapshot-status.js?v=${assetVersion}`),
+  import(`./stats.js?v=${assetVersion}`),
+  import(`./world.js?v=${assetVersion}`),
+]);
 
 const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
