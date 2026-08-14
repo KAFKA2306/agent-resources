@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "KAFKA2306/prompt-vault",
+    "commit": "e25371c2d638ed91c43e62cdd49ed336e4d30ad9",
+    "manifest": "design-systems/kafka-signal/icons/manifest.json",
+    "manifestBlobSha": "9fadf876b9d233d2868b08c6e1c7604bdbb68322",
+    "index": "design-systems/kafka-signal/icons/index.json",
+    "indexBlobSha": "087538c7622e270c5b65fe27299baaf1eb26d949",
+    "sprite": "design-systems/kafka-signal/icons/sprite.svg",
+    "spriteBlobSha": "de99ebd293bbd13785e53927bb0c36f672314076",
+    "sha256": "161cec65877dc460d844f74132a3d32a26bad3e9a1c78da64451091a22e1985f",
+    "sourceUrl": "https://github.com/KAFKA2306/prompt-vault/blob/e25371c2d638ed91c43e62cdd49ed336e4d30ad9/design-systems/kafka-signal/icons/sprite.svg"
+  },
+  "vendor": {
+    "localPath": "assets/kafka-signal-icons.svg",
+    "symbols": ["ks-issue", "ks-pull-request", "ks-workflow", "ks-timeline"]
+  },
+  "policy": {
+    "visualOnly": true,
+    "mutableMainHotlinksAllowed": false,
+    "visibleTextRequired": true,
+    "assetFailureKeepsInformationUi": true
+  }
+}
