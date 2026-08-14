@@ -175,7 +175,6 @@ jobs:
               with urllib.request.urlopen(request, timeout=20) as response:
                   return response.read().decode('utf-8')
 
-          last_error = None
           for attempt in range(6):
               try:
                   html = fetch('')
@@ -203,9 +202,71 @@ jobs:
                   print(f"deployed activity: {len(snapshot['activity'])}")
                   print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
                   break
-              except Exception as exc:
-                  last_error = exc
+              except Exception:
                   if attempt == 5:
                       raise
                   time.sleep(5)
           PY
+
+      - name: Verify rendered dashboard in headless Chrome
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)"
+          test -n "$chrome"
+          target="${PAGE_URL%/}/dashboard/"
+          for attempt in 1 2 3 4 5 6; do
+            if "$chrome" \
+              --headless=new \
+              --no-sandbox \
+              --disable-gpu \
+              --disable-dev-shm-usage \
+              --virtual-time-budget=10000 \
+              --dump-dom "$target" > rendered-dashboard.html 2> chrome-smoke.log; then
+              if python - <<'PY'
+          import re
+          from pathlib import Path
+
+          html = Path('rendered-dashboard.html').read_text(encoding='utf-8')
+          forbidden = (
+              'PUBLIC PRESENCE',
+              'Repository details',
+              '直近7日の活動は0件です。',
+              '公開GitHub統計はまだ取得されていません。',
+          )
+          for text in forbidden:
+              if text in html:
+                  raise SystemExit(f'rendered dashboard contains forbidden stale/empty state: {text}')
+
+          repo_match = re.search(r'id="repository-count"[^>]*>\s*(\d+) repositories\s*<', html)
+          if not repo_match or int(repo_match.group(1)) <= 0:
+              raise SystemExit('rendered dashboard has zero repositories')
+
+          agent_match = re.search(r'id="agent-world-summary"[^>]*>\s*(\d+) agents', html)
+          if not agent_match or int(agent_match.group(1)) <= 0:
+              raise SystemExit('rendered dashboard has zero agents')
+
+          status_match = re.search(r'id="snapshot-status"[^>]*>([^<]+)<', html)
+          if not status_match or status_match.group(1).strip() in {'読込中', '更新失敗'}:
+              raise SystemExit('rendered dashboard snapshot status did not resolve')
+
+          if 'class="activity-item"' not in html:
+              raise SystemExit('rendered dashboard has no recent activity items')
+          if 'Public repositories' not in html:
+              raise SystemExit('rendered dashboard monthly statistics did not render')
+
+          print(f"browser repositories: {repo_match.group(1)}")
+          print(f"browser agents: {agent_match.group(1)}")
+          print(f"browser snapshot status: {status_match.group(1).strip()}")
+          PY
+              then
+                exit 0
+              fi
+            fi
+            if [ "$attempt" -eq 6 ]; then
+              cat chrome-smoke.log >&2 || true
+              exit 1
+            fi
+            sleep 5
+          done

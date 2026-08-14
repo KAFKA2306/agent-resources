@@ -9,6 +9,7 @@ JS = ROOT / "docs" / "dashboard" / "dashboard.js"
 WORLD_JS = ROOT / "docs" / "dashboard" / "world.js"
 STATS_JS = ROOT / "docs" / "dashboard" / "stats.js"
 STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
+DOCS_WORKFLOW = ROOT / ".github" / "workflows" / "docs.yml"
 PUBLIC_LINK_ASSETS = [
     ROOT / "docs" / "dashboard" / "public-links.js",
     ROOT / "docs" / "dashboard" / "public-links.css",
@@ -116,6 +117,18 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("ACTIVITY_LABELS[item.kind]", js)
         self.assertIn("直近7日の活動は0件です。", js)
         self.assertNotIn("api.github.com", js)
+
+    def test_live_smoke_executes_browser_runtime(self):
+        workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("Verify rendered dashboard in headless Chrome", workflow)
+        self.assertIn("--headless=new", workflow)
+        self.assertIn("--dump-dom", workflow)
+        self.assertIn("rendered dashboard has zero repositories", workflow)
+        self.assertIn("rendered dashboard has zero agents", workflow)
+        self.assertIn("rendered dashboard has no recent activity items", workflow)
+        self.assertIn("rendered dashboard monthly statistics did not render", workflow)
+        self.assertIn("PUBLIC PRESENCE", workflow)
+        self.assertIn("Repository details", workflow)
 
     def test_attention_gates_are_explicit(self):
         js = JS.read_text(encoding="utf-8")
