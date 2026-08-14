@@ -2,11 +2,13 @@ const assetVersion = encodeURIComponent(new URL(import.meta.url).searchParams.ge
 const [
   { compareWorkItems },
   { classifySnapshot },
+  { classifyLive, mergeLiveSnapshot },
   { renderStats },
   { renderWorld },
 ] = await Promise.all([
   import(`./ranking.js?v=${assetVersion}`),
   import(`./snapshot-status.js?v=${assetVersion}`),
+  import(`./live-overlay.js?v=${assetVersion}`),
   import(`./stats.js?v=${assetVersion}`),
   import(`./world.js?v=${assetVersion}`),
 ]);
@@ -14,6 +16,7 @@ const [
 const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
 const snapshotGeneratedAt = document.querySelector("#snapshot-generated-at");
+const liveFetchedAt = document.querySelector("#live-fetched-at");
 const workspaceMessage = document.querySelector("#workspace-message");
 const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
@@ -25,6 +28,16 @@ const GATES = [
   { lane: "failed", label: "失敗・要確認" },
   { lane: "done", label: "完了報告" },
 ];
+const LIVE_CONFIG_URL = "./live-config.json";
+const MIN_LIVE_SUCCESS_AGE_MS = 60 * 1000;
+
+let baselineSnapshot = null;
+let liveEndpoint = null;
+let liveEndpointResolved = false;
+let liveRequest = null;
+let liveRequestSequence = 0;
+let latestAppliedSequence = 0;
+let lastLiveSuccessAt = 0;
 
 function showGateItems(label, items, repositoriesById) {
   gateDetail.replaceChildren();
@@ -86,15 +99,37 @@ function formatSnapshotTime(date) {
 
 function renderSnapshotMeta(snapshot) {
   const freshness = classifySnapshot(snapshot.generatedAt);
-  snapshotStatus.dataset.state = freshness.state;
-  snapshotStatus.textContent = freshness.label;
   if (!freshness.generated) {
     snapshotGeneratedAt.removeAttribute("datetime");
-    snapshotGeneratedAt.textContent = "生成時刻: 不明";
+    snapshotGeneratedAt.textContent = "Snapshot: 不明";
+  } else {
+    snapshotGeneratedAt.dateTime = freshness.generated.toISOString();
+    snapshotGeneratedAt.textContent = `Snapshot: ${formatSnapshotTime(freshness.generated)}`;
+  }
+  if (snapshotStatus.dataset.state === "loading") {
+    snapshotStatus.dataset.state = freshness.state;
+    snapshotStatus.textContent = freshness.label;
+  }
+}
+
+function renderLiveMeta(fetchedAt) {
+  const freshness = classifyLive(fetchedAt);
+  snapshotStatus.dataset.state = freshness.state;
+  snapshotStatus.textContent = freshness.label;
+  if (!freshness.fetched) {
+    liveFetchedAt.removeAttribute("datetime");
+    liveFetchedAt.textContent = "Live: 取得できません";
     return;
   }
-  snapshotGeneratedAt.dateTime = freshness.generated.toISOString();
-  snapshotGeneratedAt.textContent = `生成時刻: ${formatSnapshotTime(freshness.generated)}`;
+  liveFetchedAt.dateTime = freshness.fetched.toISOString();
+  liveFetchedAt.textContent = `Live: ${formatSnapshotTime(freshness.fetched)}`;
+}
+
+function renderLiveFailure(message = "Live取得失敗") {
+  snapshotStatus.dataset.state = "failed";
+  snapshotStatus.textContent = "SNAPSHOT FALLBACK";
+  liveFetchedAt.removeAttribute("datetime");
+  liveFetchedAt.textContent = `Live: ${message}`;
 }
 
 function renderActivity(activity, repositoriesById) {
@@ -139,8 +174,9 @@ function renderDashboard(snapshot) {
   const workItems = Array.isArray(snapshot.workItems) ? snapshot.workItems : [];
   const activity = Array.isArray(snapshot.activity) ? snapshot.activity : [];
   const repositoriesById = new Map(repositories.map((repo) => [repo.id, repo]));
+  const referenceTime = snapshot.liveFetchedAt || snapshot.generatedAt;
 
-  renderWorld(repositories, workItems, activity, snapshot.generatedAt);
+  renderWorld(repositories, workItems, activity, referenceTime);
   renderGates(workItems, repositoriesById);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
@@ -154,23 +190,82 @@ function renderDashboard(snapshot) {
   workspaceMessage.hidden = true;
 }
 
+async function resolveLiveEndpoint() {
+  if (liveEndpointResolved) return liveEndpoint;
+  liveEndpointResolved = true;
+  if (window.location.hostname.endsWith(".vercel.app")) {
+    liveEndpoint = "/api/dashboard-live";
+    return liveEndpoint;
+  }
+  try {
+    const response = await fetch(LIVE_CONFIG_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const config = await response.json();
+    liveEndpoint = typeof config.endpoint === "string" && config.endpoint.startsWith("https://") ? config.endpoint : null;
+  } catch (error) {
+    console.warn("dashboard live endpoint config unavailable", error);
+    liveEndpoint = null;
+  }
+  return liveEndpoint;
+}
+
+export async function refreshLiveState({ force = false } = {}) {
+  if (!baselineSnapshot) return null;
+  if (!force && lastLiveSuccessAt && Date.now() - lastLiveSuccessAt < MIN_LIVE_SUCCESS_AGE_MS) return null;
+  if (liveRequest) return liveRequest;
+
+  const endpoint = await resolveLiveEndpoint();
+  if (!endpoint) {
+    renderLiveFailure("endpoint未設定");
+    return null;
+  }
+
+  const sequence = ++liveRequestSequence;
+  liveRequest = (async () => {
+    try {
+      const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const live = await response.json();
+      const merged = mergeLiveSnapshot(baselineSnapshot, live);
+      if (sequence < latestAppliedSequence) return null;
+      latestAppliedSequence = sequence;
+      lastLiveSuccessAt = Date.now();
+      renderDashboard(merged);
+      renderSnapshotMeta(baselineSnapshot);
+      renderLiveMeta(live.fetchedAt);
+      return merged;
+    } catch (error) {
+      if (sequence >= latestAppliedSequence) renderLiveFailure();
+      console.error("dashboard live refresh failed", error);
+      return null;
+    } finally {
+      if (sequence === liveRequestSequence) liveRequest = null;
+    }
+  })();
+  return liveRequest;
+}
+
 async function loadDashboard() {
   try {
     const response = await fetch("./dashboard.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const snapshot = await response.json();
-    renderDashboard(snapshot);
-    renderSnapshotMeta(snapshot);
+    baselineSnapshot = await response.json();
+    renderDashboard(baselineSnapshot);
+    renderSnapshotMeta(baselineSnapshot);
+    await refreshLiveState({ force: true });
   } catch (error) {
     renderDashboard({ repositories: [], workItems: [], activity: [], stats: null });
     snapshotStatus.dataset.state = "failed";
     snapshotStatus.textContent = "更新失敗";
     snapshotGeneratedAt.removeAttribute("datetime");
-    snapshotGeneratedAt.textContent = "生成時刻: 取得できません";
+    snapshotGeneratedAt.textContent = "Snapshot: 取得できません";
+    liveFetchedAt.removeAttribute("datetime");
+    liveFetchedAt.textContent = "Live: baselineなし";
     workspaceMessage.hidden = false;
     workspaceMessage.textContent = "dashboard.json を読み込めませんでした。最新成功データとして扱いません。";
     console.error(error);
   }
 }
 
+window.addEventListener("dashboard:refresh-live", () => refreshLiveState());
 loadDashboard();

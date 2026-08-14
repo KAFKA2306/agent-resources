@@ -35,7 +35,8 @@
         <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
         <div class="snapshot-meta">
           <span class="status-chip" id="snapshot-status" data-state="loading">読込中</span>
-          <time id="snapshot-generated-at" class="snapshot-time">生成時刻: 読込中</time>
+          <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
+          <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
         </div>
       </div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
@@ -46,7 +47,7 @@
           <div><p class="eyebrow">LIVE AGENT WORLD</p><h2 id="agent-world-title">エージェント作業場</h2></div>
           <span id="agent-world-summary" class="world-summary">0 agents</span>
         </div>
-        <p class="world-note muted">project区画 → repository station → Issue / PR / workflow agent。背景参照はprompt-vaultのcommit固定asset、状態と操作はdashboard.json由来です。</p>
+        <p class="world-note muted">project区画 → repository station → Issue / PR / workflow agent。背景参照はprompt-vaultのcommit固定asset、状態と操作はlive public GitHub stateを優先し、取得不能時だけsnapshotへfallbackします。</p>
         <div id="agent-world-zones" class="world-zones" aria-live="polite"></div>
       </section>
       <p id="workspace-message" class="muted workspace-message" hidden></p>

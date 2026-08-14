@@ -1,15 +1,21 @@
-const AUTO_REFRESH_MS = 5 * 60 * 1000;
-const VISIBLE_REFRESH_AFTER_MS = 60 * 1000;
-let lastRefreshAt = Date.now();
+export const LIVE_REFRESH_INTERVAL_MS = 2 * 60 * 1000;
+export const VISIBLE_REFRESH_AFTER_MS = 60 * 1000;
+export const MIN_TRIGGER_GAP_MS = 15 * 1000;
 
-function refreshPage() {
-  lastRefreshAt = Date.now();
-  window.location.reload();
+let lastTriggerAt = 0;
+
+function triggerLiveRefresh(reason) {
+  const now = Date.now();
+  if (now - lastTriggerAt < MIN_TRIGGER_GAP_MS) return;
+  lastTriggerAt = now;
+  window.dispatchEvent(new CustomEvent("dashboard:refresh-live", { detail: { reason } }));
 }
 
-window.setInterval(refreshPage, AUTO_REFRESH_MS);
+window.setInterval(() => triggerLiveRefresh("interval"), LIVE_REFRESH_INTERVAL_MS);
+window.addEventListener("focus", () => triggerLiveRefresh("focus"));
+window.addEventListener("pageshow", () => triggerLiveRefresh("pageshow"));
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible") return;
-  if (Date.now() - lastRefreshAt >= VISIBLE_REFRESH_AFTER_MS) refreshPage();
+  if (Date.now() - lastTriggerAt >= VISIBLE_REFRESH_AFTER_MS) triggerLiveRefresh("visibilitychange");
 });

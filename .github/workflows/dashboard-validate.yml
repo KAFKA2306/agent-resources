@@ -3,17 +3,21 @@ name: Validate Dashboard
 on:
   pull_request:
     paths:
-      - 'docs/dashboard/**'
+      - 'api/dashboard-live.js'
       - 'dashboard/**'
+      - 'docs/dashboard/**'
       - 'package.json'
+      - 'vercel.json'
       - '.github/workflows/dashboard-validate.yml'
   push:
     branches:
       - main
     paths:
-      - 'docs/dashboard/**'
+      - 'api/dashboard-live.js'
       - 'dashboard/**'
+      - 'docs/dashboard/**'
       - 'package.json'
+      - 'vercel.json'
       - '.github/workflows/dashboard-validate.yml'
 
 permissions:
@@ -49,7 +53,7 @@ jobs:
       - name: Validate dashboard JavaScript syntax
         run: |
           set -euo pipefail
-          for path in docs/dashboard/*.js; do
+          for path in docs/dashboard/*.js dashboard/live-core.js api/dashboard-live.js; do
             node --check "$path"
           done
 
