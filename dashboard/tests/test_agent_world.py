@@ -18,7 +18,7 @@ class AgentWorldTest(unittest.TestCase):
         dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
         self.assertIn('id="agent-world-zones"', html)
         self.assertIn('href="./world.css"', html)
-        self.assertIn('import { renderWorld } from "./world.js";', dashboard_js)
+        self.assertIn('import(`./world.js?v=${assetVersion}`)', dashboard_js)
         self.assertIn(
             "renderWorld(repositories, workItems, activity, snapshot.generatedAt);",
             dashboard_js,
