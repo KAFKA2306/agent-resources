@@ -74,13 +74,21 @@ function send(response, status, payload) {
   return response.status(status).json(payload);
 }
 
+function hasUnsupportedQuery(requestUrl) {
+  if (!requestUrl) return false;
+  const url = new URL(requestUrl, "https://dashboard.invalid");
+  if (!url.search) return false;
+  const keys = [...url.searchParams.keys()];
+  return !(keys.length === 1 && keys[0] === "_vercel_share");
+}
+
 export default async function handler(request, response) {
   if (request.method === "OPTIONS") {
     setCommonHeaders(response);
     return response.status(204).end();
   }
   if (request.method !== "GET") return send(response, 405, { error: "method_not_allowed" });
-  if (request.url && new URL(request.url, "https://dashboard.invalid").search) {
+  if (hasUnsupportedQuery(request.url)) {
     return send(response, 400, { error: "query_parameters_not_supported" });
   }
 
