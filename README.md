@@ -10,12 +10,14 @@
 
 ## Open
 
-- **Public Dashboard:** https://kafka2306.github.io/agent-resources/dashboard/
+- **Live Dashboard (Vercel):** https://agent-resources-one.vercel.app/
+- **Live GitHub API:** https://agent-resources-one.vercel.app/api/dashboard-live
+- **GitHub Pages Dashboard / snapshot fallback:** https://kafka2306.github.io/agent-resources/dashboard/
 - **CLI / Skills Documentation:** https://kafka2306.github.io/agent-resources/site/
 - **Repository:** https://github.com/KAFKA2306/agent-resources
 - **PyPI:** https://pypi.org/project/agent-resources/
 
-リポジトリのGitHub Pagesルート `https://kafka2306.github.io/agent-resources/` も dashboard へリダイレクトします。
+リポジトリのGitHub Pagesルート `https://kafka2306.github.io/agent-resources/` も dashboard へリダイレクトします。Vercel版は server-side Live API を使って最新の public GitHub state をoverlayし、Live取得に失敗した場合はGitHub Pages由来のsnapshotへフォールバックします。
 
 ---
 
@@ -34,7 +36,7 @@ Dashboard は、`KAFKA2306` が所有する **public かつ non-archived な rep
 - **GitHub activity stats** — public repository を対象にした月次 Commit / PR / Issue 推移
 - **heat / attention ordering** — 対応が必要な work を上位に出すための表示優先度
 
-Dashboard の状態は `docs/dashboard/dashboard.json` へ生成され、schema validation と public boundary audit を通ったものだけが GitHub Pages に配信されます。
+Dashboard のbaseline状態は `docs/dashboard/dashboard.json` へ生成され、schema validation と public boundary audit を通ったものだけが GitHub Pages に配信されます。Vercel版では `https://agent-resources-one.vercel.app/api/dashboard-live` から取得した最新状態をこのbaselineへoverlayします。
 
 ### work lane の意味
 
@@ -76,6 +78,8 @@ GitHub Pages の build は次の契機で実行されます。
 
 build 時に GitHub API から repository、work item、workflow run、7日間の activity、public GitHub stats を再収集し、canonical snapshot を生成します。
 
+Vercel版はこのsnapshotをbaselineとして表示し、page open / focus復帰時にLive APIを再取得して最新のpublic GitHub stateをoverlayします。Live取得不能時は `SNAPSHOT FALLBACK` としてbaselineを表示します。
+
 ### 公開境界
 
 Dashboard は **public-only** を契約にしています。
@@ -87,6 +91,7 @@ Dashboard は **public-only** を契約にしています。
 - stats も `scope = public`
 - snapshot は JSON Schema で検証
 - Pages build 時に public artifact boundary を再監査
+- Live API の GitHub credential は server-side のみで使用し、browserへ公開しない
 
 ---
 
@@ -199,11 +204,12 @@ agr onboard
 
 高密度な dashboard、catalog、monitoring、公開データUI向けの evidence-first design system を同梱しています。
 
-- [公開ショーケース](https://kafka2306.github.io/agent-resources/)
+- [公開ショーケース](https://agent-resources-one.vercel.app/)
+- [GitHub Pages fallback](https://kafka2306.github.io/agent-resources/)
 - [Design system skill](skills/kafka-evidence-ui/SKILL.md)
 - [Agent plugin](plugins/kafka-evidence-ui/README.md)
 
-Agent World の visual asset は表示専用です。状態・リンク・work item の正準データは dashboard snapshot 側から取得し、visual asset 自体へ operational truth を持たせません。
+Agent World の visual asset は表示専用です。状態・リンク・work item の正準データは dashboard snapshot / Live API 側から取得し、visual asset 自体へ operational truth を持たせません。
 
 ---
 
@@ -230,7 +236,9 @@ JSON Schema validation
         ↓
 docs/dashboard/dashboard.json
         ↓
-GitHub Pages
+GitHub Pages snapshot
+        ↓
+Vercel dashboard + server-side Live API overlay
 ```
 
 ---
@@ -247,10 +255,10 @@ GitHub Pages
 
 信頼できない skill を、機密情報や書き込み権限がある環境で実行しないでください。
 
-Dashboard 側も public-only boundary を前提にしています。private data を public snapshot へ混ぜないでください。
+Dashboard 側も public-only boundary を前提にしています。private data を public snapshot へ混ぜないでください。`DASHBOARD_GITHUB_TOKEN` はVercel server-side environment variableとしてのみ保持し、repository・HTML・browser bundleへ埋め込みません。
 
 ## License
 
 [MIT License](LICENSE)
 
-**README最終監査:** 2026-08-13
+**README最終監査:** 2026-08-14
