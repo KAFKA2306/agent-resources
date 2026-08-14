@@ -24,7 +24,7 @@ def canonical_repository(repository):
     }
 
 
-def canonical_stats(stats):
+def canonical_stats(stats, public_repository_count):
     if stats is None:
         return None
     if stats.get("scope") != "public":
@@ -50,7 +50,7 @@ def canonical_stats(stats):
         "owner": stats["owner"],
         "scope": "public",
         "timezone": stats["timezone"],
-        "publicRepositories": stats["publicRepositories"],
+        "publicRepositories": public_repository_count,
         "archivedPublicRepositories": stats["archivedPublicRepositories"],
         "monthly": monthly,
     }
@@ -197,7 +197,7 @@ def build_snapshot(
         "activity": activity,
     }
     if stats is not None:
-        snapshot["stats"] = canonical_stats(stats)
+        snapshot["stats"] = canonical_stats(stats, len(public_repositories))
     return snapshot
 
 
