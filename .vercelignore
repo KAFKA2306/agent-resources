@@ -2,6 +2,7 @@
 # Keep the Python CLI/package, tests, agent configs, release docs, and other
 # repository assets out of the Vercel deployment source so Python zero-config
 # does not mis-detect agr/main.py or agrx/main.py as a web application.
+# Framework Preset is managed in Vercel Project Settings and must remain Other.
 /*
 !api
 !dashboard
