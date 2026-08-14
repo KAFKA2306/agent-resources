@@ -26,6 +26,76 @@ class GitHubStatsCollectorTest(unittest.TestCase):
         self.assertEqual(payload["scope"], "public")
         self.assertEqual(payload["timezone"], "Asia/Tokyo")
 
+    def test_closed_months_reuse_previous_dashboard_and_only_current_month_refreshes(self):
+        now = datetime(2026, 8, 13, 11, 42, tzinfo=ZoneInfo("Asia/Tokyo"))
+        previous_monthly = [
+            {
+                "month": f"2026-{month:02d}",
+                "commits": 100 + month,
+                "prsCreated": 20 + month,
+                "prsMerged": 18 + month,
+                "issuesCreated": 15 + month,
+                "issuesClosed": 12 + month,
+                "partial": False,
+            }
+            for month in range(1, 8)
+        ]
+        previous_dashboard = {
+            "stats": {
+                "owner": "KAFKA2306",
+                "scope": "public",
+                "timezone": "Asia/Tokyo",
+                "monthly": previous_monthly,
+            }
+        }
+        sleeps = []
+        payload = collect_github_stats(
+            now=now,
+            request_fn=self.request_fn,
+            request_interval=2.2,
+            sleep_fn=sleeps.append,
+            previous_stats=previous_dashboard,
+            public_repository_count=127,
+        )
+        self.assertEqual(payload["publicRepositories"], 127)
+        self.assertEqual(payload["monthly"][:7], previous_monthly)
+        self.assertEqual(payload["monthly"][-1]["month"], "2026-08")
+        self.assertTrue(payload["monthly"][-1]["partial"])
+        self.assertEqual(len(self.queries), 6)
+        self.assertEqual(sleeps, [2.2] * 6)
+        self.assertTrue(self.queries[0].endswith("archived:true"))
+        self.assertFalse(any("2026-01-01" in query or "2026-07-01" in query for query in self.queries))
+
+    def test_partial_previous_month_is_not_reused(self):
+        now = datetime(2026, 8, 13, 11, 42, tzinfo=ZoneInfo("Asia/Tokyo"))
+        previous_dashboard = {
+            "stats": {
+                "owner": "KAFKA2306",
+                "scope": "public",
+                "timezone": "Asia/Tokyo",
+                "monthly": [
+                    {
+                        "month": "2026-07",
+                        "commits": 1,
+                        "prsCreated": 1,
+                        "prsMerged": 1,
+                        "issuesCreated": 1,
+                        "issuesClosed": 1,
+                        "partial": True,
+                    }
+                ],
+            }
+        }
+        collect_github_stats(
+            start_month="2026-07",
+            now=now,
+            request_fn=self.request_fn,
+            previous_stats=previous_dashboard,
+            public_repository_count=127,
+        )
+        self.assertEqual(len(self.queries), 11)
+        self.assertTrue(any("committer-date:2026-07-01..2026-07-31" in query for query in self.queries))
+
     def test_all_searches_are_public_only(self):
         now = datetime(2026, 1, 31, 23, 59, tzinfo=ZoneInfo("Asia/Tokyo"))
         collect_github_stats(now=now, request_fn=self.request_fn)

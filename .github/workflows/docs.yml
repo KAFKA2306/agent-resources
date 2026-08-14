@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
+      DASHBOARD_PUBLIC_SNAPSHOT_URL: https://kafka2306.github.io/agent-resources/dashboard/dashboard.json
     steps:
       - uses: actions/checkout@v6
 
@@ -56,7 +57,50 @@ jobs:
           set -euo pipefail
           mkdir -p dashboard/generated docs/dashboard
           python -m dashboard.collectors.repositories --output dashboard/generated/repositories.json
-          python -m dashboard.collectors.github_stats --start-month 2026-01 --request-interval 2.2 --output dashboard/generated/github-stats.json
+
+          reuse_previous=1
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            reuse_previous=0
+          elif [ "${GITHUB_EVENT_NAME}" = "schedule" ] && [ "$(TZ=Asia/Tokyo date +%H)" = "09" ]; then
+            reuse_previous=0
+          fi
+
+          if [ "$reuse_previous" -eq 1 ]; then
+            python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          from pathlib import Path
+
+          target = Path('dashboard/generated/previous-dashboard.json')
+          request = urllib.request.Request(
+              os.environ['DASHBOARD_PUBLIC_SNAPSHOT_URL'],
+              headers={'Cache-Control': 'no-cache', 'User-Agent': 'agent-resources-stats-baseline'},
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  payload = json.loads(response.read().decode('utf-8'))
+              if not isinstance(payload, dict) or payload.get('stats', {}).get('scope') != 'public':
+                  raise ValueError('previous dashboard is not a public stats snapshot')
+              target.write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
+              print('closed-month stats baseline: previous production snapshot')
+          except Exception as exc:
+              print(f'closed-month stats baseline unavailable; full refresh: {exc}')
+          PY
+          else
+            echo "closed-month stats baseline bypassed; scheduled/manual full refresh"
+          fi
+
+          stats_args=(
+            --start-month 2026-01
+            --request-interval 2.2
+            --repositories dashboard/generated/repositories.json
+            --output dashboard/generated/github-stats.json
+          )
+          if [ -s dashboard/generated/previous-dashboard.json ]; then
+            stats_args+=(--previous-dashboard dashboard/generated/previous-dashboard.json)
+          fi
+          python -m dashboard.collectors.github_stats "${stats_args[@]}"
           python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
           python -m dashboard.collectors.recent_activity --repositories dashboard/generated/repositories.json --window-days 7 --output dashboard/generated/recent-activity.json
@@ -84,6 +128,9 @@ jobs:
               raise SystemExit('stats scope is not public')
           if any(repo.get('visibility') != 'public' for repo in snapshot.get('repositories', [])):
               raise SystemExit('non-public repository leaked into dashboard snapshot')
+          canonical_repository_count = len(snapshot.get('repositories', []))
+          if snapshot.get('stats', {}).get('publicRepositories') != canonical_repository_count:
+              raise SystemExit('stats repository count diverged from canonical repository list')
           monthly = snapshot.get('stats', {}).get('monthly', [])
           if not monthly:
               raise SystemExit('monthly GitHub stats are missing')
@@ -124,6 +171,8 @@ jobs:
                   raise SystemExit(f'retired dashboard asset leaked into deploy bundle: {retired}')
           if not snapshot.get('repositories'):
               raise SystemExit('deploy snapshot has zero repositories')
+          if snapshot.get('stats', {}).get('publicRepositories') != len(snapshot['repositories']):
+              raise SystemExit('deploy stats repository count diverged from canonical list')
           if not snapshot.get('activity'):
               raise SystemExit('deploy snapshot has zero recent activity')
           if not snapshot.get('stats', {}).get('monthly'):
@@ -187,6 +236,8 @@ jobs:
                       raise RuntimeError('retired JavaScript is still deployed')
                   if not snapshot.get('repositories'):
                       raise RuntimeError('deployed dashboard has zero repositories')
+                  if snapshot.get('stats', {}).get('publicRepositories') != len(snapshot['repositories']):
+                      raise RuntimeError('deployed stats repository count diverged from canonical list')
                   if not snapshot.get('activity'):
                       raise RuntimeError('deployed dashboard has zero recent activity')
                   if not snapshot.get('stats', {}).get('monthly'):
