@@ -32,7 +32,8 @@ class VercelFreshnessTest(unittest.TestCase):
     def test_browser_refreshes_periodically_and_after_tab_returns(self):
         html = DASHBOARD_HTML.read_text(encoding="utf-8")
         js = AUTO_REFRESH.read_text(encoding="utf-8")
-        self.assertIn('src="./auto-refresh.js"', html)
+        self.assertIn('"auto-refresh.js"', html)
+        self.assertIn('import(`./${name}?v=${assetVersion}`)', html)
         self.assertIn("5 * 60 * 1000", js)
         self.assertIn('document.addEventListener("visibilitychange"', js)
         self.assertIn('document.visibilityState !== "visible"', js)
