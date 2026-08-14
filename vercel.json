@@ -2,6 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "python3 -m pip install mkdocs-material && (cd docs && mkdocs build) && mkdir -p deploy/site && cp docs/index.html deploy/index.html && cp -r docs/dashboard deploy/dashboard && cp -r docs/site/* deploy/site/",
   "outputDirectory": "deploy",
+  "functions": {
+    "api/dashboard-live.js": {
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     {
       "source": "/dashboard/dashboard.json",
