@@ -1,4 +1,6 @@
 import json
+import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -40,6 +42,35 @@ class WorkflowRunCollectorTest(unittest.TestCase):
         self.assertEqual(runs[0]["status"], "in_progress")
         self.assertIsNone(runs[0]["conclusion"])
 
+    def test_public_repository_fetches_are_concurrent_and_bounded(self):
+        repositories = [
+            dict(self.repository, id=f"R_{index}", name=f"repo-{index}") for index in range(8)
+        ]
+        lock = threading.Lock()
+        active = 0
+        max_active = 0
+
+        def request_fn(url, token=None):
+            nonlocal active, max_active
+            with lock:
+                active += 1
+                max_active = max(max_active, active)
+            try:
+                time.sleep(0.03)
+                return {"workflow_runs": []}, {}
+            finally:
+                with lock:
+                    active -= 1
+
+        runs = collect_latest_workflow_runs(
+            repositories,
+            request_fn=request_fn,
+            concurrency=3,
+        )
+        self.assertEqual(runs, [])
+        self.assertGreater(max_active, 1)
+        self.assertLessEqual(max_active, 3)
+
     def test_private_repository_is_not_fetched(self):
         private = dict(self.repository, visibility="private")
         calls = []
@@ -57,6 +88,12 @@ class WorkflowRunCollectorTest(unittest.TestCase):
 
         with self.assertRaises(GitHubApiError):
             collect_latest_workflow_runs([self.repository], request_fn=request_fn)
+
+    def test_concurrency_must_remain_bounded(self):
+        for invalid in (0, 9, True):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    collect_latest_workflow_runs([], concurrency=invalid)
 
 
 if __name__ == "__main__":
