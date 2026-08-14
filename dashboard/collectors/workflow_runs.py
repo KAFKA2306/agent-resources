@@ -1,10 +1,14 @@
 import argparse
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import quote
 
 from dashboard.collectors.github_api import GitHubApiError, atomic_write_json, request_json
+
+DEFAULT_CONCURRENCY = 6
+MAX_CONCURRENCY = 8
 
 
 def normalize_workflow_run(raw, repository):
@@ -37,23 +41,46 @@ def normalize_workflow_run(raw, repository):
     }
 
 
-def collect_latest_workflow_runs(repositories, token=None, request_fn=request_json):
-    runs = []
-    for repository in repositories:
-        if repository.get("visibility") != "public":
-            continue
-        owner = quote(repository["owner"], safe="")
-        name = quote(repository["name"], safe="")
-        url = f"https://api.github.com/repos/{owner}/{name}/actions/runs?per_page=1"
-        payload, _headers = request_fn(url, token)
-        raw_runs = payload.get("workflow_runs") if isinstance(payload, dict) else None
-        if not isinstance(raw_runs, list):
-            raise GitHubApiError("unexpected workflow runs response shape")
-        if not raw_runs:
-            continue
-        normalized = normalize_workflow_run(raw_runs[0], repository)
-        if normalized is not None:
-            runs.append(normalized)
+def _validated_concurrency(value):
+    if not isinstance(value, int) or isinstance(value, bool) or not 1 <= value <= MAX_CONCURRENCY:
+        raise ValueError(f"concurrency must be an integer from 1 to {MAX_CONCURRENCY}")
+    return value
+
+
+def _collect_repository_workflow_run(repository, token, request_fn):
+    owner = quote(repository["owner"], safe="")
+    name = quote(repository["name"], safe="")
+    url = f"https://api.github.com/repos/{owner}/{name}/actions/runs?per_page=1"
+    payload, _headers = request_fn(url, token)
+    raw_runs = payload.get("workflow_runs") if isinstance(payload, dict) else None
+    if not isinstance(raw_runs, list):
+        raise GitHubApiError("unexpected workflow runs response shape")
+    if not raw_runs:
+        return None
+    return normalize_workflow_run(raw_runs[0], repository)
+
+
+def collect_latest_workflow_runs(
+    repositories,
+    token=None,
+    request_fn=request_json,
+    concurrency=DEFAULT_CONCURRENCY,
+):
+    concurrency = _validated_concurrency(concurrency)
+    public_repositories = [
+        repository for repository in repositories if repository.get("visibility") == "public"
+    ]
+    if not public_repositories:
+        return []
+
+    worker_count = min(concurrency, len(public_repositories))
+    with ThreadPoolExecutor(max_workers=worker_count, thread_name_prefix="workflow-fetch") as executor:
+        results = executor.map(
+            lambda repository: _collect_repository_workflow_run(repository, token, request_fn),
+            public_repositories,
+        )
+        runs = [run for run in results if run is not None]
+
     runs.sort(key=lambda run: run["repositoryId"])
     return runs
 
@@ -62,9 +89,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--repositories", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY)
     args = parser.parse_args(argv)
     repositories = json.loads(Path(args.repositories).read_text(encoding="utf-8"))
-    runs = collect_latest_workflow_runs(repositories, token=os.getenv("GITHUB_TOKEN"))
+    runs = collect_latest_workflow_runs(
+        repositories,
+        token=os.getenv("GITHUB_TOKEN"),
+        concurrency=args.concurrency,
+    )
     atomic_write_json(args.output, runs)
     return 0
 
