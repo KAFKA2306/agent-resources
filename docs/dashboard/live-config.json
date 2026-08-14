@@ -1,0 +1,4 @@
+{
+  "endpoint": null,
+  "note": "Set this to the verified production /api/dashboard-live URL after the server-side project is provisioned. Vercel-hosted copies use the same-origin endpoint automatically."
+}
