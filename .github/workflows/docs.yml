@@ -103,6 +103,35 @@ jobs:
           cp -r docs/dashboard deploy/dashboard
           cp -r docs/site/* deploy/site/
 
+      - name: Validate deploy bundle
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('deploy/dashboard')
+          html = (root / 'index.html').read_text(encoding='utf-8')
+          dashboard_js = (root / 'dashboard.js').read_text(encoding='utf-8')
+          stats_js = (root / 'stats.js').read_text(encoding='utf-8')
+          snapshot = json.loads((root / 'dashboard.json').read_text(encoding='utf-8'))
+
+          if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
+              raise SystemExit('retired dashboard view leaked into deploy bundle')
+          if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
+              raise SystemExit('retired dashboard JavaScript leaked into deploy bundle')
+          for retired in ('public-links.js', 'public-links.css', 'public-links.json'):
+              if (root / retired).exists():
+                  raise SystemExit(f'retired dashboard asset leaked into deploy bundle: {retired}')
+          if not snapshot.get('repositories'):
+              raise SystemExit('deploy snapshot has zero repositories')
+          if not snapshot.get('activity'):
+              raise SystemExit('deploy snapshot has zero recent activity')
+          if not snapshot.get('stats', {}).get('monthly'):
+              raise SystemExit('deploy snapshot has no monthly stats')
+          print(f"deploy repositories: {len(snapshot['repositories'])}")
+          print(f"deploy activity: {len(snapshot['activity'])}")
+          PY
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
@@ -114,7 +143,69 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  smoke:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Verify deployed dashboard
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          base = os.environ['PAGE_URL'].rstrip('/')
+          nonce = os.environ['EXPECTED_SHA']
+
+          def fetch(path):
+              url = f"{base}/dashboard/{path}?v={nonce}"
+              request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'agent-resources-pages-smoke'})
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  return response.read().decode('utf-8')
+
+          last_error = None
+          for attempt in range(6):
+              try:
+                  html = fetch('')
+                  dashboard_js = fetch('dashboard.js')
+                  stats_js = fetch('stats.js')
+                  snapshot = json.loads(fetch('dashboard.json'))
+                  if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
+                      raise RuntimeError('retired view is still deployed')
+                  if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
+                      raise RuntimeError('retired JavaScript is still deployed')
+                  if not snapshot.get('repositories'):
+                      raise RuntimeError('deployed dashboard has zero repositories')
+                  if not snapshot.get('activity'):
+                      raise RuntimeError('deployed dashboard has zero recent activity')
+                  if not snapshot.get('stats', {}).get('monthly'):
+                      raise RuntimeError('deployed dashboard has no monthly stats')
+                  try:
+                      fetch('public-links.js')
+                  except urllib.error.HTTPError as exc:
+                      if exc.code != 404:
+                          raise
+                  else:
+                      raise RuntimeError('retired public-links.js is still deployed')
+                  print(f"deployed repositories: {len(snapshot['repositories'])}")
+                  print(f"deployed activity: {len(snapshot['activity'])}")
+                  print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
+                  break
+              except Exception as exc:
+                  last_error = exc
+                  if attempt == 5:
+                      raise
+                  time.sleep(5)
+          PY

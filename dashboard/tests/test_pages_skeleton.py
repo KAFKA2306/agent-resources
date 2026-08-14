@@ -6,8 +6,14 @@ ROOT_HTML = ROOT / "docs" / "index.html"
 HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 JS = ROOT / "docs" / "dashboard" / "dashboard.js"
+WORLD_JS = ROOT / "docs" / "dashboard" / "world.js"
 STATS_JS = ROOT / "docs" / "dashboard" / "stats.js"
 STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
+PUBLIC_LINK_ASSETS = [
+    ROOT / "docs" / "dashboard" / "public-links.js",
+    ROOT / "docs" / "dashboard" / "public-links.css",
+    ROOT / "docs" / "dashboard" / "public-links.json",
+]
 
 
 class DashboardSkeletonTest(unittest.TestCase):
@@ -67,6 +73,19 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertNotIn("rankRepositories", js)
         self.assertNotIn("repositoryHeat", js)
 
+    def test_module_graph_cache_busts_every_page_load(self):
+        html = HTML.read_text(encoding="utf-8")
+        js = JS.read_text(encoding="utf-8")
+        world_js = WORLD_JS.read_text(encoding="utf-8")
+        self.assertIn("const assetVersion = Date.now().toString();", html)
+        self.assertIn('import(`./${name}?v=${assetVersion}`)', html)
+        self.assertNotIn('src="./dashboard.js"', html)
+        self.assertIn('new URL(import.meta.url).searchParams.get("v")', js)
+        self.assertIn('import(`./stats.js?v=${assetVersion}`)', js)
+        self.assertIn('import(`./world.js?v=${assetVersion}`)', js)
+        self.assertIn('new URL(import.meta.url).searchParams.get("v")', world_js)
+        self.assertIn('import(`./ranking.js?v=${assetVersion}`)', world_js)
+
     def test_public_presence_is_out_of_dashboard_scope(self):
         html = HTML.read_text(encoding="utf-8")
         stats_js = STATS_JS.read_text(encoding="utf-8")
@@ -75,6 +94,8 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertNotIn("mountPublicLinks", stats_js)
         self.assertNotIn("public-links.js", stats_js)
         self.assertNotIn("public-links.css", stats_js)
+        for asset in PUBLIC_LINK_ASSETS:
+            self.assertFalse(asset.exists(), f"retired dashboard asset still exists: {asset.name}")
 
     def test_zero_repositories_has_explicit_empty_state(self):
         js = JS.read_text(encoding="utf-8")
