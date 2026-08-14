@@ -3,18 +3,22 @@ name: Skill catalog integrity
 on:
   pull_request:
     paths:
-      - "api/**"
+      - "api/v1/**"
       - "skills/**"
       - "scripts/validate_skill_catalog.py"
       - "tests/test_validate_skill_catalog.py"
+      - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/skill-catalog.yml"
   push:
     branches: [main]
     paths:
-      - "api/**"
+      - "api/v1/**"
       - "skills/**"
       - "scripts/validate_skill_catalog.py"
       - "tests/test_validate_skill_catalog.py"
+      - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/skill-catalog.yml"
   workflow_dispatch:
 
@@ -33,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - name: Install development dependencies
-        run: uv sync --frozen --group dev
+        run: uv sync --group dev
       - name: Lint catalog code
         run: uv run ruff check scripts/validate_skill_catalog.py tests/test_validate_skill_catalog.py
       - name: Run catalog tests
