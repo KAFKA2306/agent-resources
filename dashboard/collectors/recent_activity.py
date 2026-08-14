@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import quote, urlencode
@@ -8,6 +9,8 @@ from urllib.parse import quote, urlencode
 from dashboard.collectors.github_api import atomic_write_json, fetch_paginated
 
 DEFAULT_WINDOW_DAYS = 7
+DEFAULT_CONCURRENCY = 6
+MAX_CONCURRENCY = 8
 
 
 def _utc(value):
@@ -44,12 +47,43 @@ def normalize_issue_activity(raw, repository):
     }
 
 
+def _validated_concurrency(value):
+    if not isinstance(value, int) or isinstance(value, bool) or not 1 <= value <= MAX_CONCURRENCY:
+        raise ValueError(f"concurrency must be an integer from 1 to {MAX_CONCURRENCY}")
+    return value
+
+
+def _collect_repository_activity(repository, token, fetcher, since, cutoff, now):
+    owner = quote(repository["owner"], safe="")
+    name = quote(repository["name"], safe="")
+    issue_query = urlencode(
+        {
+            "state": "all",
+            "per_page": 100,
+            "sort": "updated",
+            "direction": "desc",
+            "since": since,
+        }
+    )
+    issue_url = f"https://api.github.com/repos/{owner}/{name}/issues?{issue_query}"
+    events = []
+    for raw in fetcher(issue_url, token=token):
+        event = normalize_issue_activity(raw, repository)
+        if event is None:
+            continue
+        occurred_at = _parse_time(event["occurredAt"])
+        if cutoff <= occurred_at <= now:
+            events.append(event)
+    return events
+
+
 def collect_recent_activity(
     repositories,
     token=None,
     fetcher=fetch_paginated,
     now=None,
     window_days=DEFAULT_WINDOW_DAYS,
+    concurrency=DEFAULT_CONCURRENCY,
 ):
     """Collect human-relevant Issue/PR activity for the recent window.
 
@@ -59,35 +93,32 @@ def collect_recent_activity(
     """
     if not isinstance(window_days, int) or window_days < 1:
         raise ValueError("window_days must be a positive integer")
+    concurrency = _validated_concurrency(concurrency)
     now = _utc(now or datetime.now(timezone.utc))
     cutoff = now - timedelta(days=window_days)
     since = _iso_z(cutoff)
-    activity_by_id = {}
+    public_repositories = [
+        repository for repository in repositories if repository.get("visibility") == "public"
+    ]
+    if not public_repositories:
+        return []
 
-    for repository in repositories:
-        if repository.get("visibility") != "public":
-            continue
-        owner = quote(repository["owner"], safe="")
-        name = quote(repository["name"], safe="")
-        issue_query = urlencode(
-            {
-                "state": "all",
-                "per_page": 100,
-                "sort": "updated",
-                "direction": "desc",
-                "since": since,
-            }
+    worker_count = min(concurrency, len(public_repositories))
+    with ThreadPoolExecutor(max_workers=worker_count, thread_name_prefix="activity-fetch") as executor:
+        repository_events = executor.map(
+            lambda repository: _collect_repository_activity(
+                repository, token, fetcher, since, cutoff, now
+            ),
+            public_repositories,
         )
-        issue_url = f"https://api.github.com/repos/{owner}/{name}/issues?{issue_query}"
-        for raw in fetcher(issue_url, token=token):
-            event = normalize_issue_activity(raw, repository)
-            if event is None:
-                continue
-            occurred_at = _parse_time(event["occurredAt"])
-            if cutoff <= occurred_at <= now:
-                current = activity_by_id.get(event["id"])
-                if current is None or event["occurredAt"] > current["occurredAt"]:
-                    activity_by_id[event["id"]] = event
+        event_groups = list(repository_events)
+
+    activity_by_id = {}
+    for events in event_groups:
+        for event in events:
+            current = activity_by_id.get(event["id"])
+            if current is None or event["occurredAt"] > current["occurredAt"]:
+                activity_by_id[event["id"]] = event
 
     return sorted(
         activity_by_id.values(),
@@ -101,12 +132,14 @@ def main(argv=None):
     parser.add_argument("--repositories", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--window-days", type=int, default=DEFAULT_WINDOW_DAYS)
+    parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY)
     args = parser.parse_args(argv)
     repositories = json.loads(Path(args.repositories).read_text(encoding="utf-8"))
     activity = collect_recent_activity(
         repositories,
         token=os.getenv("GITHUB_TOKEN"),
         window_days=args.window_days,
+        concurrency=args.concurrency,
     )
     atomic_write_json(args.output, activity)
     return 0
