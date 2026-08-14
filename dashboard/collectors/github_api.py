@@ -1,11 +1,15 @@
 import json
 import os
 import tempfile
+import time
+from http.client import RemoteDisconnected
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 API_VERSION = "2026-03-10"
+TRANSIENT_ATTEMPTS = 3
+TRANSIENT_RETRY_DELAYS = (0.5, 1.5)
 
 
 class GitHubApiError(RuntimeError):
@@ -25,24 +29,34 @@ def request_json(url, token=None):
     if token:
         headers["Authorization"] = f"Bearer {token}"
     request = Request(url, headers=headers)
-    try:
-        with urlopen(request, timeout=30) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-            return payload, dict(response.headers.items())
-    except HTTPError as exc:
+    last_transport_error = None
+    for attempt in range(TRANSIENT_ATTEMPTS):
         try:
-            body = exc.read().decode("utf-8", errors="replace")
-        except Exception:
-            body = ""
-        response_headers = dict(exc.headers.items()) if exc.headers else {}
-        raise GitHubApiError(
-            f"GitHub API request failed with HTTP {exc.code}: {url}",
-            status=exc.code,
-            headers=response_headers,
-            response_body=body,
-        ) from exc
-    except (URLError, TimeoutError, json.JSONDecodeError) as exc:
-        raise GitHubApiError(f"GitHub API request failed: {url}") from exc
+            with urlopen(request, timeout=30) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+                return payload, dict(response.headers.items())
+        except HTTPError as exc:
+            try:
+                body = exc.read().decode("utf-8", errors="replace")
+            except Exception:
+                body = ""
+            response_headers = dict(exc.headers.items()) if exc.headers else {}
+            raise GitHubApiError(
+                f"GitHub API request failed with HTTP {exc.code}: {url}",
+                status=exc.code,
+                headers=response_headers,
+                response_body=body,
+            ) from exc
+        except json.JSONDecodeError as exc:
+            raise GitHubApiError(f"GitHub API returned invalid JSON: {url}") from exc
+        except (URLError, TimeoutError, RemoteDisconnected, ConnectionResetError) as exc:
+            last_transport_error = exc
+            if attempt + 1 >= TRANSIENT_ATTEMPTS:
+                break
+            time.sleep(TRANSIENT_RETRY_DELAYS[attempt])
+    raise GitHubApiError(
+        f"GitHub API request failed after {TRANSIENT_ATTEMPTS} transport attempts: {url}"
+    ) from last_transport_error
 
 
 def next_link(headers):
