@@ -36,24 +36,28 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('SIDEBAR · LAST 7 DAYS', html)
         self.assertIn('name="viewport"', html)
 
-    def test_redundant_hub_chrome_is_retired(self):
+    def test_hub_hierarchy_is_preserved_without_header_links(self):
         html = HTML.read_text(encoding="utf-8")
-        self.assertNotIn('<span class="decor-sign">HUB</span>', html)
-        self.assertNotIn('<p class="eyebrow">WORKSPACE</p>', html)
-        self.assertNotIn('>中央ハブ</h2>', html)
-        self.assertNotIn('GitHub Public Hub', html)
-        self.assertNotIn('class="hub"', html)
+        self.assertIn('<span class="decor-sign">HUB</span>', html)
+        self.assertIn('<p class="eyebrow">WORKSPACE</p>', html)
+        self.assertIn('>中央ハブ</h2>', html)
+        self.assertIn('GitHub Public Hub', html)
+        self.assertIn('class="hub"', html)
         self.assertIn('id="repository-count"', html)
         self.assertIn('id="snapshot-status"', html)
+        self.assertNotIn('class="top-actions"', html)
+        self.assertNotIn('CLI / Skills docs', html)
+        self.assertNotIn('https://github.com/KAFKA2306/agent-resources', html)
+        self.assertNotIn('https://pypi.org/project/agent-resources/', html)
 
     def test_main_information_order_stays_stable(self):
         html = HTML.read_text(encoding="utf-8")
-        repository_meta = html.index('id="repository-count"')
+        hub = html.index('class="hub"')
         gates = html.index('id="lane-gates"')
         world = html.index('id="agent-world-zones"')
         stats = html.index('id="github-stats-title"')
         activity = html.index('id="activity-feed"')
-        self.assertLess(repository_meta, gates)
+        self.assertLess(hub, gates)
         self.assertLess(gates, world)
         self.assertLess(world, stats)
         self.assertLess(stats, activity)
@@ -63,17 +67,18 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("@media(max-width:760px)", css)
         self.assertIn(".dashboard-shell{grid-template-columns:minmax(0,1fr);padding:12px}", css)
         self.assertIn(".activity-sidebar{position:static;max-height:none;overflow:visible}", css)
-        self.assertIn(".dashboard-meta,.section-heading{align-items:flex-start;flex-direction:column}", css)
+        self.assertIn(".panel-heading,.section-heading{align-items:flex-start;flex-direction:column}", css)
+        self.assertIn(".hub{align-items:flex-start;flex-direction:column}", css)
 
-    def test_root_promotes_dashboard_and_preserves_docs_routes(self):
+    def test_root_promotes_dashboard_without_dashboard_header_routes(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
         dashboard_html = HTML.read_text(encoding="utf-8")
         self.assertIn('content="0; url=./dashboard/"', root_html)
         self.assertIn('window.location.replace("./dashboard/")', root_html)
         self.assertIn('href="./site/"', root_html)
-        self.assertIn('href="../site/"', dashboard_html)
-        self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
-        self.assertIn('https://pypi.org/project/agent-resources/', dashboard_html)
+        self.assertNotIn('href="../site/"', dashboard_html)
+        self.assertNotIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
+        self.assertNotIn('https://pypi.org/project/agent-resources/', dashboard_html)
 
     def test_agent_world_is_canonical_repository_view(self):
         html = HTML.read_text(encoding="utf-8")
