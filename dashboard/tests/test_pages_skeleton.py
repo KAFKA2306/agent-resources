@@ -6,6 +6,7 @@ ROOT_HTML = ROOT / "docs" / "index.html"
 HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 JS = ROOT / "docs" / "dashboard" / "dashboard.js"
+STATS_JS = ROOT / "docs" / "dashboard" / "stats.js"
 STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
 
 
@@ -22,8 +23,9 @@ class DashboardSkeletonTest(unittest.TestCase):
         sidebar = html.index('<aside class="activity-sidebar"')
         self.assertGreater(sidebar, main_end)
         self.assertNotIn('id="activity-feed"', html[main_start:main_end])
-        for marker in ('id="agent-world-zones"', 'id="lane-gates"', 'id="project-groups"', 'id="github-stats-title"'):
+        for marker in ('id="agent-world-zones"', 'id="lane-gates"', 'id="github-stats-title"'):
             self.assertIn(marker, html[main_start:main_end])
+        self.assertNotIn('id="project-groups"', html)
         self.assertIn('SIDEBAR · LAST 7 DAYS', html)
         self.assertIn('name="viewport"', html)
 
@@ -31,12 +33,10 @@ class DashboardSkeletonTest(unittest.TestCase):
         html = HTML.read_text(encoding="utf-8")
         world = html.index('id="agent-world-zones"')
         gates = html.index('id="lane-gates"')
-        projects = html.index('id="project-groups"')
         stats = html.index('id="github-stats-title"')
         activity = html.index('id="activity-feed"')
         self.assertLess(world, gates)
-        self.assertLess(gates, projects)
-        self.assertLess(projects, stats)
+        self.assertLess(gates, stats)
         self.assertLess(stats, activity)
 
     def test_mobile_stacks_activity_after_main(self):
@@ -56,12 +56,25 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
         self.assertIn('https://pypi.org/project/agent-resources/', dashboard_html)
 
-    def test_repository_groups_are_loaded_from_dashboard_json(self):
+    def test_agent_world_is_canonical_repository_view(self):
+        html = HTML.read_text(encoding="utf-8")
         js = JS.read_text(encoding="utf-8")
         self.assertIn('fetch("./dashboard.json"', js)
-        self.assertIn("repository.group", js)
-        self.assertIn("repository.url", js)
-        self.assertNotIn("api.github.com", js)
+        self.assertIn("renderWorld(repositories, workItems, activity", js)
+        self.assertIn('id="agent-world-zones"', html)
+        self.assertNotIn('id="project-groups"', html)
+        self.assertNotIn("Repository details", html)
+        self.assertNotIn("rankRepositories", js)
+        self.assertNotIn("repositoryHeat", js)
+
+    def test_public_presence_is_out_of_dashboard_scope(self):
+        html = HTML.read_text(encoding="utf-8")
+        stats_js = STATS_JS.read_text(encoding="utf-8")
+        self.assertNotIn("PUBLIC PRESENCE", html)
+        self.assertNotIn('id="public-links"', html)
+        self.assertNotIn("mountPublicLinks", stats_js)
+        self.assertNotIn("public-links.js", stats_js)
+        self.assertNotIn("public-links.css", stats_js)
 
     def test_zero_repositories_has_explicit_empty_state(self):
         js = JS.read_text(encoding="utf-8")
@@ -83,14 +96,11 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("直近7日の活動は0件です。", js)
         self.assertNotIn("api.github.com", js)
 
-    def test_attention_and_repository_heat_are_explicit(self):
+    def test_attention_gates_are_explicit(self):
         js = JS.read_text(encoding="utf-8")
         self.assertIn('lane: "waiting", label: "判断待ち"', js)
         self.assertIn('lane: "failed", label: "失敗・要確認"', js)
         self.assertLess(js.index('lane: "waiting"'), js.index('lane: "failed"'))
-        self.assertIn("rankRepositories", js)
-        self.assertIn("repositoryHeat", js)
-        self.assertIn("hottest first", js)
 
     def test_snapshot_generation_time_and_failure_are_explicit(self):
         html = HTML.read_text(encoding="utf-8")
