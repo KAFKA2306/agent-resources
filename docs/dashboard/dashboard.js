@@ -1,9 +1,8 @@
-import { compareWorkItems, rankRepositories, repositoryHeat } from "./ranking.js";
+import { compareWorkItems } from "./ranking.js";
 import { classifySnapshot } from "./snapshot-status.js";
 import { renderStats } from "./stats.js";
 import { renderWorld } from "./world.js";
 
-const groupsRoot = document.querySelector("#project-groups");
 const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
 const snapshotGeneratedAt = document.querySelector("#snapshot-generated-at");
@@ -12,59 +11,12 @@ const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
 const activityFeed = document.querySelector("#activity-feed");
 
-const KIND_LABELS = { issue: "ISSUE", pull_request: "PR", workflow_run: "RUN" };
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
   { lane: "failed", label: "失敗・要確認" },
   { lane: "done", label: "完了報告" },
 ];
-
-function workItemAgent(item, repository) {
-  const link = document.createElement("a");
-  link.className = "work-agent";
-  link.dataset.kind = item.kind;
-  link.dataset.lane = item.lane;
-  link.href = item.url;
-  link.target = "_blank";
-  link.rel = "noreferrer";
-  link.title = `${repository.name}: ${item.title}`;
-  const badge = document.createElement("span");
-  badge.className = "agent-badge";
-  badge.textContent = KIND_LABELS[item.kind] || "ITEM";
-  const copy = document.createElement("span");
-  copy.className = "agent-copy";
-  const title = document.createElement("strong");
-  title.textContent = item.title;
-  const repo = document.createElement("small");
-  repo.textContent = repository.name;
-  copy.append(title, repo);
-  link.append(badge, copy);
-  return link;
-}
-
-function repositoryCard(repository, workItems, heat) {
-  const card = document.createElement("article");
-  card.className = "repository-card";
-  card.dataset.group = repository.group || "other";
-  card.dataset.heat = heat.toFixed(2);
-  const link = document.createElement("a");
-  link.className = "repository-link";
-  link.href = repository.url;
-  link.target = "_blank";
-  link.rel = "noreferrer";
-  const name = document.createElement("strong");
-  name.textContent = repository.name;
-  const owner = document.createElement("span");
-  owner.textContent = `${repository.owner} · heat ${Math.round(heat)}`;
-  link.append(name, owner);
-  const agents = document.createElement("div");
-  agents.className = "agent-list";
-  agents.setAttribute("aria-label", `${repository.name} work items`);
-  for (const item of workItems) agents.append(workItemAgent(item, repository));
-  card.append(link, agents);
-  return card;
-}
 
 function showGateItems(label, items, repositoriesById) {
   gateDetail.replaceChildren();
@@ -179,42 +131,19 @@ function renderDashboard(snapshot) {
   const workItems = Array.isArray(snapshot.workItems) ? snapshot.workItems : [];
   const activity = Array.isArray(snapshot.activity) ? snapshot.activity : [];
   const repositoriesById = new Map(repositories.map((repo) => [repo.id, repo]));
-  const workByRepository = new Map();
-  for (const item of workItems) {
-    if (!workByRepository.has(item.repositoryId)) workByRepository.set(item.repositoryId, []);
-    workByRepository.get(item.repositoryId).push(item);
-  }
+
   renderWorld(repositories, workItems, activity, snapshot.generatedAt);
   renderGates(workItems, repositoriesById);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
-  groupsRoot.replaceChildren();
   repositoryCount.textContent = `${repositories.length} repositories`;
+
   if (repositories.length === 0) {
     workspaceMessage.hidden = false;
     workspaceMessage.textContent = "公開対象のrepositoryは0件です。";
     return;
   }
   workspaceMessage.hidden = true;
-
-  const section = document.createElement("section");
-  section.className = "project-group repository-directory";
-  const heading = document.createElement("div");
-  heading.className = "group-heading";
-  const title = document.createElement("h3");
-  title.textContent = "Repository details";
-  const count = document.createElement("span");
-  count.textContent = `hottest first · ${repositories.length}`;
-  heading.append(title, count);
-  const grid = document.createElement("div");
-  grid.className = "repository-grid";
-  for (const repository of rankRepositories(repositories, workItems, activity, snapshot.generatedAt)) {
-    const repositoryItems = (workByRepository.get(repository.id) || []).slice().sort(compareWorkItems);
-    const heat = repositoryHeat(repository, workItems, activity, snapshot.generatedAt);
-    grid.append(repositoryCard(repository, repositoryItems, heat));
-  }
-  section.append(heading, grid);
-  groupsRoot.append(section);
 }
 
 async function loadDashboard() {

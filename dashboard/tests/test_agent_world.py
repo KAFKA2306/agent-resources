@@ -40,10 +40,11 @@ class AgentWorldTest(unittest.TestCase):
     def test_group_labels_are_visible_once(self):
         world_js = WORLD_JS.read_text(encoding="utf-8")
         dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
+        html = HTML.read_text(encoding="utf-8")
         self.assertIn("name.textContent = group", world_js)
-        self.assertIn('section.className = "project-group repository-directory"', dashboard_js)
-        self.assertIn('card.dataset.group = repository.group || "other"', dashboard_js)
-        self.assertIn('title.textContent = "Repository details"', dashboard_js)
+        self.assertNotIn('section.className = "project-group repository-directory"', dashboard_js)
+        self.assertNotIn('title.textContent = "Repository details"', dashboard_js)
+        self.assertNotIn('id="project-groups"', html)
         self.assertNotIn("title.textContent = group", dashboard_js)
         self.assertNotIn("groupRepositories(repositories)", dashboard_js)
 
@@ -122,8 +123,8 @@ class AgentWorldTest(unittest.TestCase):
     def test_monthly_activity_is_below_active_workspace(self):
         html = HTML.read_text(encoding="utf-8")
         self.assertLess(html.index('id="agent-world-zones"'), html.index('id="lane-flow"'))
-        self.assertLess(html.index('id="lane-flow"'), html.index('id="project-groups"'))
-        self.assertLess(html.index('id="project-groups"'), html.index('id="github-stats-title"'))
+        self.assertLess(html.index('id="lane-flow"'), html.index('id="github-stats-title"'))
+        self.assertNotIn('id="project-groups"', html)
 
 
 if __name__ == "__main__":
