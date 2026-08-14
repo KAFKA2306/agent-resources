@@ -36,14 +36,24 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('SIDEBAR · LAST 7 DAYS', html)
         self.assertIn('name="viewport"', html)
 
+    def test_redundant_hub_chrome_is_retired(self):
+        html = HTML.read_text(encoding="utf-8")
+        self.assertNotIn('<span class="decor-sign">HUB</span>', html)
+        self.assertNotIn('<p class="eyebrow">WORKSPACE</p>', html)
+        self.assertNotIn('>中央ハブ</h2>', html)
+        self.assertNotIn('GitHub Public Hub', html)
+        self.assertNotIn('class="hub"', html)
+        self.assertIn('id="repository-count"', html)
+        self.assertIn('id="snapshot-status"', html)
+
     def test_main_information_order_stays_stable(self):
         html = HTML.read_text(encoding="utf-8")
-        hub = html.index('class="hub"')
+        repository_meta = html.index('id="repository-count"')
         gates = html.index('id="lane-gates"')
         world = html.index('id="agent-world-zones"')
         stats = html.index('id="github-stats-title"')
         activity = html.index('id="activity-feed"')
-        self.assertLess(hub, gates)
+        self.assertLess(repository_meta, gates)
         self.assertLess(gates, world)
         self.assertLess(world, stats)
         self.assertLess(stats, activity)
@@ -53,7 +63,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("@media(max-width:760px)", css)
         self.assertIn(".dashboard-shell{grid-template-columns:minmax(0,1fr);padding:12px}", css)
         self.assertIn(".activity-sidebar{position:static;max-height:none;overflow:visible}", css)
-        self.assertIn(".panel-heading,.section-heading{align-items:flex-start;flex-direction:column}", css)
+        self.assertIn(".dashboard-meta,.section-heading{align-items:flex-start;flex-direction:column}", css)
 
     def test_root_promotes_dashboard_and_preserves_docs_routes(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
