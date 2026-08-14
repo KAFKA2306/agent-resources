@@ -1,3 +1,5 @@
+import threading
+import time
 import unittest
 from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
@@ -68,6 +70,36 @@ class RecentActivityCollectorTest(unittest.TestCase):
         self.assertEqual(issue_query["direction"], ["desc"])
         self.assertEqual(issue_query["since"], ["2026-08-06T12:00:00Z"])
 
+    def test_public_repository_fetches_are_concurrent_and_bounded(self):
+        repositories = [
+            dict(self.repository, id=f"R_{index}", name=f"repo-{index}") for index in range(8)
+        ]
+        lock = threading.Lock()
+        active = 0
+        max_active = 0
+
+        def fetcher(url, token=None, item_key=None):
+            nonlocal active, max_active
+            with lock:
+                active += 1
+                max_active = max(max_active, active)
+            try:
+                time.sleep(0.03)
+                return []
+            finally:
+                with lock:
+                    active -= 1
+
+        activity = collect_recent_activity(
+            repositories,
+            fetcher=fetcher,
+            now=self.now,
+            concurrency=3,
+        )
+        self.assertEqual(activity, [])
+        self.assertGreater(max_active, 1)
+        self.assertLessEqual(max_active, 3)
+
     def test_private_repository_is_never_fetched(self):
         private = dict(self.repository, visibility="private")
         calls = []
@@ -85,6 +117,12 @@ class RecentActivityCollectorTest(unittest.TestCase):
     def test_window_days_must_be_positive(self):
         with self.assertRaises(ValueError):
             collect_recent_activity([self.repository], now=self.now, window_days=0)
+
+    def test_concurrency_must_remain_bounded(self):
+        for invalid in (0, 9, True):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    collect_recent_activity([], now=self.now, concurrency=invalid)
 
 
 if __name__ == "__main__":
