@@ -38,12 +38,14 @@ class DashboardSkeletonTest(unittest.TestCase):
 
     def test_main_information_order_stays_stable(self):
         html = HTML.read_text(encoding="utf-8")
-        world = html.index('id="agent-world-zones"')
+        hub = html.index('class="hub"')
         gates = html.index('id="lane-gates"')
+        world = html.index('id="agent-world-zones"')
         stats = html.index('id="github-stats-title"')
         activity = html.index('id="activity-feed"')
-        self.assertLess(world, gates)
-        self.assertLess(gates, stats)
+        self.assertLess(hub, gates)
+        self.assertLess(gates, world)
+        self.assertLess(world, stats)
         self.assertLess(stats, activity)
 
     def test_mobile_stacks_activity_after_main(self):
