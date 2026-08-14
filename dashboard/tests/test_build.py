@@ -124,6 +124,8 @@ class DashboardBuildTest(unittest.TestCase):
     def test_stats_are_public_only_canonical_and_month_sorted(self):
         snapshot = self.build()
         self.assertEqual(snapshot["stats"]["scope"], "public")
+        self.assertEqual(snapshot["stats"]["publicRepositories"], 2)
+        self.assertEqual(snapshot["stats"]["publicRepositories"], snapshot["summary"]["repositoryCount"])
         self.assertEqual([row["month"] for row in snapshot["stats"]["monthly"]], ["2026-07", "2026-08"])
         self.assertNotIn("generatedAt", snapshot["stats"])
         self.assertNotIn("privateRepositoryName", snapshot["stats"]["monthly"][1])
