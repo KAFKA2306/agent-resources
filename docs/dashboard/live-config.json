@@ -1,4 +1,4 @@
 {
-  "endpoint": null,
-  "note": "Set this to the verified production /api/dashboard-live URL after the server-side project is provisioned. Vercel-hosted copies use the same-origin endpoint automatically."
+  "endpoint": "https://agent-resources-one.vercel.app/api/dashboard-live",
+  "note": "Verified production live endpoint. GitHub Pages uses this absolute URL; Vercel-hosted copies may use the same-origin endpoint automatically."
 }
