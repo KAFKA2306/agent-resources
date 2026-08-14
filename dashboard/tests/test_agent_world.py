@@ -123,8 +123,9 @@ class AgentWorldTest(unittest.TestCase):
 
     def test_monthly_activity_is_below_active_workspace(self):
         html = HTML.read_text(encoding="utf-8")
-        self.assertLess(html.index('id="agent-world-zones"'), html.index('id="lane-flow"'))
-        self.assertLess(html.index('id="lane-flow"'), html.index('id="github-stats-title"'))
+        self.assertLess(html.index('id="agent-world-zones"'), html.index('id="lane-gates"'))
+        self.assertLess(html.index('id="lane-gates"'), html.index('id="github-stats-title"'))
+        self.assertNotIn('id="lane-flow"', html)
         self.assertNotIn('id="project-groups"', html)
 
 
