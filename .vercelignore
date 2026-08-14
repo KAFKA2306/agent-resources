@@ -1,0 +1,10 @@
+# Vercel only needs the public dashboard build and live API.
+# Keep the Python CLI/package, tests, agent configs, release docs, and other
+# repository assets out of the Vercel deployment source so Python zero-config
+# does not mis-detect agr/main.py or agrx/main.py as a web application.
+/*
+!api
+!dashboard
+!docs
+!package.json
+!vercel.json
