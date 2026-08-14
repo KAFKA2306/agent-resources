@@ -63,6 +63,23 @@ tools = ["claude", "cursor"]
 ### Never Do
 ...
 
+## GitHub write reliability contract
+
+GitHub mutations must use a narrow, state-verified sequence. The goal is to make each write deterministic, reversible where possible, and easy to resume after a connector-side rejection.
+
+1. **Read before every state transition.** Re-fetch the repository, target branch/PR/Issue, and relevant CI state immediately before the write. Do not rely on an earlier snapshot after another mutation has occurred.
+2. **Use one canonical work line.** Reuse the existing canonical branch and PR when one exists. Before creating a branch or PR, verify that the same branch/PR does not already exist. Never create duplicate recovery branches or PRs.
+3. **Make one mutation at a time.** Do not issue parallel writes to the same repository state. After each successful mutation, re-read the resulting state before the next mutation.
+4. **Pin destructive or irreversible actions to current state.** Merge only when the exact PR head SHA has the required CI green, and pass that expected head SHA to the merge action when supported. Never force-push or direct-push as a workaround for a rejected merge.
+5. **Treat host-side safety rejection as transient, not as an authentication diagnosis.** If a mutation is rejected before GitHub executes it, re-read the target state and retry the exact same canonical action once. Do not switch to a broader or more destructive action to bypass the rejection.
+6. **After a second host-side rejection, stop mutations for that run.** Preserve the single canonical branch/PR, record the blocker and next action, and resume from fresh state on the next run. Do not loop, fabricate success, or leave a partial alternative work line.
+7. **Distinguish GitHub errors from connector safety rejection.** GitHub API responses such as mergeability/branch-protection/conflict errors require fixing the repository state. A host-side pre-execution rejection requires the bounded recovery sequence above; it is not evidence that GitHub credentials expired.
+8. **Separate merge and cleanup.** After merge succeeds, re-fetch `main`, PR state, Issue state, and branch state. Then perform cleanup as separate verified mutations. Delete only branches proven merged/superseded and never delete the canonical unfinished branch.
+9. **Prefer idempotent continuation.** A later run should be able to observe that a prior step already succeeded and continue from the next step without repeating completed writes.
+10. **Report evidence, not assumptions.** Record the target URL, exact head/merge commit SHA, CI result, mutation result, cleanup result, and any remaining blocker.
+
+This contract does not bypass ChatGPT/OpenAI safety controls. It minimizes ambiguous or unnecessarily broad mutations so legitimate writes are easier to evaluate and recover safely.
+
 ## Security
 ...
 
@@ -93,5 +110,5 @@ https://developers.openai.com/codex/custom-prompts/
 
 Open Code:
 https://opencode.ai/docs/skills
-https://opencode.ai/docs/commands/
+https://opencode.ai/docs/commands
 https://opencode.ai/docs/agents/
