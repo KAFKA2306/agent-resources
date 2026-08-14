@@ -1,0 +1,15 @@
+.activity-feed.activity-timeline { display:grid; gap:0; }
+.activity-feed.activity-timeline .activity-item { position:relative; display:grid; grid-template-columns:36px minmax(0,1fr); column-gap:10px; row-gap:3px; padding:9px 4px; border:0; border-radius:9px; background:transparent; }
+.activity-feed.activity-timeline .activity-item:hover,.activity-feed.activity-timeline .activity-item:focus-visible { background:#f6f8fc; outline:2px solid #b8c6ff; outline-offset:1px; }
+.activity-feed.activity-timeline .activity-item::after { content:""; position:absolute; z-index:0; left:19px; top:38px; bottom:-9px; width:1px; background:var(--line); }
+.activity-feed.activity-timeline .activity-item:last-child::after { display:none; }
+.activity-feed.activity-timeline .activity-timeline-marker { grid-column:1; grid-row:1 / span 3; z-index:1; display:grid; place-items:center; width:30px; height:30px; margin:1px auto 0; border:1px solid var(--line); border-radius:50%; background:var(--surface); color:#47606f; }
+.activity-feed.activity-timeline .activity-timeline-icon { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.activity-feed.activity-timeline .activity-meta,.activity-feed.activity-timeline .activity-item>strong,.activity-feed.activity-timeline .activity-item>small { grid-column:2; min-width:0; }
+.activity-feed.activity-timeline .activity-meta { align-items:baseline; }
+.activity-feed.activity-timeline .activity-item>strong { font-size:.8rem; line-height:1.4; overflow-wrap:anywhere; }
+.activity-feed.activity-timeline .activity-item>small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.activity-feed.activity-timeline .activity-item[data-activity-kind="issue"] .activity-timeline-marker { background:#eef8f1; color:#35704b; }
+.activity-feed.activity-timeline .activity-item[data-activity-kind="pull_request"] .activity-timeline-marker { background:#f3eefb; color:#71558c; }
+.activity-feed.activity-timeline .activity-item[data-activity-kind="workflow_run"] .activity-timeline-marker { background:#eef4fb; color:#41678c; }
+@media(max-width:760px){.activity-feed.activity-timeline .activity-item{padding-block:10px}.activity-feed.activity-timeline .activity-item::after{bottom:-10px}}
