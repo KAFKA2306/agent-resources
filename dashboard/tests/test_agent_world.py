@@ -48,12 +48,13 @@ class AgentWorldTest(unittest.TestCase):
         self.assertNotIn("title.textContent = group", dashboard_js)
         self.assertNotIn("groupRepositories(repositories)", dashboard_js)
 
-    def test_unclassified_is_visible_classification_debt_not_the_primary_zone(self):
+    def test_unclassified_is_visible_by_default_and_not_the_primary_zone(self):
         js = WORLD_JS.read_text(encoding="utf-8")
         css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn('aGroup === "unclassified" && bGroup !== "unclassified"', js)
         self.assertIn('details.className = "world-unclassified-details"', js)
-        self.assertIn('summary.textContent = `未分類 ${repositories.length} repositoriesを表示`', js)
+        self.assertIn("details.open = true", js)
+        self.assertIn('summary.textContent = `未分類 ${repositories.length} repositories（通常表示）`', js)
         self.assertIn('agent-zone-* topic未設定', js)
         self.assertIn('${classifiedRepositories}/${repositories.length} zoned', js)
         self.assertIn('.world-zone-unclassified{min-height:auto', css)
