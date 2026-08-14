@@ -248,6 +248,14 @@ async function searchIssues(context, query, maxPages) {
   return output;
 }
 
+async function searchIssuesAndPullRequests(context, baseQuery, maxPages) {
+  const [issues, pullRequests] = await Promise.all([
+    searchIssues(context, `${baseQuery} is:issue`, maxPages),
+    searchIssues(context, `${baseQuery} is:pull-request`, maxPages),
+  ]);
+  return [...issues, ...pullRequests];
+}
+
 async function mapWithConcurrency(items, concurrency, mapper) {
   const results = new Array(items.length);
   let cursor = 0;
@@ -283,12 +291,16 @@ export async function collectLiveState({ token, fetchImpl = globalThis.fetch, ow
   const repositories = await listRepositories(context);
   const repositoriesByFullName = new Map(repositories.map((repo) => [`${repo.owner}/${repo.name}`.toLowerCase(), repo]));
 
-  const openRaw = await searchIssues(context, `user:${owner} is:open`, 10);
+  const openRaw = await searchIssuesAndPullRequests(context, `user:${owner} is:open`, 10);
   const workItems = openRaw
     .map((raw) => normalizeSearchWorkItem(raw, repositoriesByFullName))
     .filter(Boolean);
 
-  const activityRaw = await searchIssues(context, `user:${owner} updated:>=${isoDateDaysAgo(now, ACTIVITY_WINDOW_DAYS)}`, 2);
+  const activityRaw = await searchIssuesAndPullRequests(
+    context,
+    `user:${owner} updated:>=${isoDateDaysAgo(now, ACTIVITY_WINDOW_DAYS)}`,
+    2,
+  );
   const searchActivity = activityRaw
     .map((raw) => normalizeSearchActivity(raw, repositoriesByFullName))
     .filter(Boolean);
