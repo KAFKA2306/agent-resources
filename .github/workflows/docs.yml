@@ -299,8 +299,9 @@ jobs:
               raise SystemExit('rendered dashboard has zero agents')
 
           status_match = re.search(r'id="snapshot-status"[^>]*>([^<]+)<', html)
-          if not status_match or status_match.group(1).strip() in {'読込中', '更新失敗'}:
-              raise SystemExit('rendered dashboard snapshot status did not resolve')
+          status = status_match.group(1).strip() if status_match else ''
+          if status != 'LIVE':
+              raise SystemExit(f'rendered dashboard live status is not LIVE: {status or "missing"}')
 
           if 'class="activity-item"' not in html:
               raise SystemExit('rendered dashboard has no recent activity items')
@@ -309,7 +310,7 @@ jobs:
 
           print(f"browser repositories: {repo_match.group(1)}")
           print(f"browser agents: {agent_match.group(1)}")
-          print(f"browser snapshot status: {status_match.group(1).strip()}")
+          print(f"browser snapshot status: {status}")
           PY
               then
                 exit 0
