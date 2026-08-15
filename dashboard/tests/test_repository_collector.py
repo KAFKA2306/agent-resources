@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from dashboard.collectors.github_api import GitHubApiError, fetch_paginated
-from dashboard.collectors.repositories import collect_repositories, infer_group
+from dashboard.collectors.repositories import collect_repositories, infer_group, infer_public_links
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_FIXTURE = ROOT / "fixtures" / "repositories.config.example.json"
@@ -63,6 +63,39 @@ class RepositoryCollectorTest(unittest.TestCase):
             infer_group({"topics": ["agent-zone-!!!"], "language": "Python"}),
         }
         self.assertEqual(groups, {"unclassified"})
+
+    def test_public_links_include_homepage_and_github_pages(self):
+        links = infer_public_links(
+            {"homepage": "https://example.com/app", "has_pages": True},
+            "KAFKA2306",
+            "vrmine",
+        )
+        self.assertEqual(
+            links,
+            [
+                {"kind": "front", "url": "https://example.com/app"},
+                {"kind": "pages", "url": "https://kafka2306.github.io/vrmine/"},
+            ],
+        )
+
+    def test_public_links_deduplicate_homepage_that_matches_pages(self):
+        links = infer_public_links(
+            {"homepage": "https://kafka2306.github.io/vrmine/", "has_pages": True},
+            "KAFKA2306",
+            "vrmine",
+        )
+        self.assertEqual(
+            links,
+            [{"kind": "front", "url": "https://kafka2306.github.io/vrmine/"}],
+        )
+
+    def test_public_links_ignore_non_https_homepage(self):
+        links = infer_public_links(
+            {"homepage": "http://example.com/app", "has_pages": False},
+            "KAFKA2306",
+            "vrmine",
+        )
+        self.assertEqual(links, [])
 
     def test_private_repository_is_rejected(self):
         def fetcher(url, token=None):
