@@ -10,11 +10,15 @@ test("live freshness is explicit and bounded", () => {
   assert.equal(classifyLive("not-a-date", now).label, "SNAPSHOT FALLBACK");
 });
 
-test("live overlay replaces volatile state but preserves heavy baseline stats", () => {
+test("live overlay replaces volatile state but preserves heavy baseline stats and public links", () => {
   const baseline = {
     generatedAt: "2026-08-14T04:00:00Z",
     stats: { scope: "public", monthly: [{ month: "2026-08" }] },
-    repositories: [{ id: "old", visibility: "public" }],
+    repositories: [{
+      id: "repo",
+      visibility: "public",
+      publicLinks: [{ kind: "pages", url: "https://kafka2306.github.io/repo/" }],
+    }],
     workItems: [],
     activity: [],
   };
@@ -22,15 +26,32 @@ test("live overlay replaces volatile state but preserves heavy baseline stats", 
     schemaVersion: "1.0.0",
     scope: "public",
     fetchedAt: "2026-08-14T05:30:00Z",
-    repositories: [{ id: "repo", visibility: "public", archived: false }],
+    repositories: [{ id: "repo", visibility: "public", archived: false, updatedAt: "2026-08-14T05:29:00Z" }],
     workItems: [{ id: "item", repositoryId: "repo" }],
     activity: [{ id: "activity", repositoryId: "repo" }],
     requestBudget: { requestCount: 1 },
   };
   const merged = mergeLiveSnapshot(baseline, live);
   assert.equal(merged.repositories[0].id, "repo");
+  assert.equal(merged.repositories[0].updatedAt, "2026-08-14T05:29:00Z");
+  assert.deepEqual(merged.repositories[0].publicLinks, baseline.repositories[0].publicLinks);
   assert.equal(merged.stats, baseline.stats);
   assert.equal(merged.liveFetchedAt, live.fetchedAt);
+});
+
+test("live-only repositories remain visible without invented public links", () => {
+  const merged = mergeLiveSnapshot(
+    { repositories: [], workItems: [], activity: [] },
+    {
+      scope: "public",
+      fetchedAt: "2026-08-14T05:30:00Z",
+      repositories: [{ id: "new", visibility: "public", archived: false }],
+      workItems: [],
+      activity: [],
+    },
+  );
+  assert.equal(merged.repositories[0].id, "new");
+  assert.equal(Object.hasOwn(merged.repositories[0], "publicLinks"), false);
 });
 
 test("live overlay rejects private or dangling data", () => {
