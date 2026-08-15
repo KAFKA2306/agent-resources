@@ -83,11 +83,17 @@ test("live collector aggregates repositories, open work, latest workflows, and a
     }
     if (parsed.pathname === "/search/issues") {
       const query = parsed.searchParams.get("q");
+      const isPullRequest = query.includes("is:pull-request");
       if (query.includes("is:open")) {
-        return response({ total_count: 2, items: [
-          searchItem("alpha", 7),
-          searchItem("beta", 9, { pull_request: { url: "https://api.github.com/pulls/9" }, html_url: "https://github.com/KAFKA2306/beta/pull/9" }),
-        ] }, { resource: "search", remaining: 29 });
+        if (isPullRequest) {
+          return response({ total_count: 1, items: [
+            searchItem("beta", 9, { pull_request: { url: "https://api.github.com/pulls/9" }, html_url: "https://github.com/KAFKA2306/beta/pull/9" }),
+          ] }, { resource: "search", remaining: 29 });
+        }
+        return response({ total_count: 1, items: [searchItem("alpha", 7)] }, { resource: "search", remaining: 29 });
+      }
+      if (isPullRequest) {
+        return response({ total_count: 0, items: [] }, { resource: "search", remaining: 28 });
       }
       return response({ total_count: 1, items: [searchItem("alpha", 7)] }, { resource: "search", remaining: 28 });
     }
@@ -112,10 +118,10 @@ test("live collector aggregates repositories, open work, latest workflows, and a
   assert.equal(live.workItems.length, 3);
   assert.equal(live.workItems.filter((item) => item.kind === "workflow_run").length, 1);
   assert.equal(live.activity.some((item) => item.kind === "workflow_run"), true);
-  assert.equal(live.requestBudget.requestCount, 5);
+  assert.equal(live.requestBudget.requestCount, 7);
   assert.equal(live.requestBudget.workflowRequestCount, 2);
-  assert.equal(live.requestBudget.theoreticalRequestsPerHourAtMaxAge, Math.ceil(3600 / LIVE_CACHE_SECONDS) * 5);
-  assert.equal(calls.length, 5);
+  assert.equal(live.requestBudget.theoreticalRequestsPerHourAtMaxAge, Math.ceil(3600 / LIVE_CACHE_SECONDS) * 7);
+  assert.equal(calls.length, 7);
   assert.equal(live.rateLimits.search.remaining, 28);
 });
 
