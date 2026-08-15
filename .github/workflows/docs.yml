@@ -258,6 +258,7 @@ jobs:
                       raise
                   time.sleep(5)
           PY
+          python -m dashboard.production_live_smoke
 
       - name: Verify rendered dashboard in headless Chrome
         env:
