@@ -47,10 +47,14 @@ class VercelFreshnessTest(unittest.TestCase):
         self.assertIn("mergeLiveSnapshot", dashboard_js)
         self.assertIn('fetch(endpoint, { headers: { Accept: "application/json" } })', dashboard_js)
 
-    def test_pages_live_endpoint_is_fail_closed_until_verified_url_is_provisioned(self):
+    def test_pages_live_endpoint_targets_verified_vercel_url(self):
         config = json.loads(LIVE_CONFIG.read_text(encoding="utf-8"))
-        self.assertIsNone(config["endpoint"])
+        self.assertEqual(
+            config["endpoint"],
+            "https://agent-resources-one.vercel.app/api/dashboard-live",
+        )
         api = LIVE_API.read_text(encoding="utf-8")
+        self.assertIn('response.setHeader("Access-Control-Allow-Origin", "*")', api)
         self.assertIn("DASHBOARD_GITHUB_TOKEN", api)
         self.assertNotIn("ghp_", api)
         self.assertNotIn("github_pat_", api)
