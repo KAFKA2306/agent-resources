@@ -73,6 +73,17 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn(".world-station-link{display:flex;align-items:flex-start;", css)
         self.assertIn(".world-zone-heading>span{white-space:normal}", css)
 
+    def test_station_has_one_click_front_and_pages_links(self):
+        js = WORLD_JS.read_text(encoding="utf-8")
+        css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
+        self.assertIn("repository.publicLinks", js)
+        self.assertIn('link.kind === "pages" ? "PAGES ↗" : "FRONT ↗"', js)
+        self.assertIn('actions.className = "world-station-actions"', js)
+        self.assertIn('anchor.rel = "noopener noreferrer"', js)
+        self.assertIn("station.insertBefore(publicSurfaceLinks, scene);", js)
+        self.assertIn(".world-station-actions{display:flex;flex-wrap:wrap;gap:5px}", css)
+        self.assertIn(".world-surface-link{display:inline-flex", css)
+
     def test_prompt_vault_sources_are_commit_pinned(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(manifest["source"]["commit"], "99e9e038942660d5bf27faafbcc1b1a490b0fca7")
