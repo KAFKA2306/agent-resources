@@ -36,7 +36,21 @@
         "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
         "group": {"type": "string", "minLength": 1},
         "visibility": {"type": "string", "enum": ["public", "private", "internal"]},
-        "updatedAt": {"type": "string", "format": "date-time"}
+        "updatedAt": {"type": "string", "format": "date-time"},
+        "publicLinks": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/publicLink"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "publicLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "url"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["front", "pages"]},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://"}
       }
     },
     "workItem": {

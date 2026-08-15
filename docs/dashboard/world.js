@@ -132,6 +132,32 @@ function createAgent(item) {
   return link;
 }
 
+function createPublicSurfaceLinks(repository) {
+  const links = Array.isArray(repository.publicLinks) ? repository.publicLinks : [];
+  const safeLinks = links.filter(
+    (link) =>
+      link &&
+      (link.kind === "front" || link.kind === "pages") &&
+      typeof link.url === "string" &&
+      link.url.startsWith("https://"),
+  );
+  if (!safeLinks.length) return null;
+
+  const actions = document.createElement("div");
+  actions.className = "world-station-actions";
+  for (const link of safeLinks) {
+    const anchor = document.createElement("a");
+    anchor.className = `world-surface-link world-surface-link-${link.kind}`;
+    anchor.href = link.url;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.textContent = link.kind === "pages" ? "PAGES ↗" : "FRONT ↗";
+    anchor.title = `${repository.name} ${link.kind === "pages" ? "GitHub Pages" : "frontend"} を開く`;
+    actions.append(anchor);
+  }
+  return actions;
+}
+
 function createStation(repository, workItems, heat) {
   const station = document.createElement("article");
   station.className = "world-station";
@@ -164,6 +190,8 @@ function createStation(repository, workItems, heat) {
   }
 
   station.append(repositoryLink, scene, agents);
+  const publicSurfaceLinks = createPublicSurfaceLinks(repository);
+  if (publicSurfaceLinks) station.insertBefore(publicSurfaceLinks, scene);
   return station;
 }
 

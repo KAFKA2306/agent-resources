@@ -18,10 +18,13 @@ def load_json(path):
 def canonical_repository(repository):
     if repository.get("visibility") != "public":
         return None
-    return {
+    canonical = {
         key: repository[key]
         for key in ("id", "owner", "name", "url", "group", "visibility", "updatedAt")
     }
+    if "publicLinks" in repository:
+        canonical["publicLinks"] = repository["publicLinks"]
+    return canonical
 
 
 def canonical_stats(stats, public_repository_count):

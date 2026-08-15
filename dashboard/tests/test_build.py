@@ -19,6 +19,10 @@ class DashboardBuildTest(unittest.TestCase):
             "visibility": "public",
             "archived": False,
             "updatedAt": "2026-08-13T01:00:00Z",
+            "publicLinks": [
+                {"kind": "front", "url": "https://example.com/zeta"},
+                {"kind": "pages", "url": "https://example-owner.github.io/zeta/"},
+            ],
         }
         self.public_repo_a = {
             "id": "R_public_a",
@@ -120,6 +124,16 @@ class DashboardBuildTest(unittest.TestCase):
         self.assertNotIn("R_private", {item["repositoryId"] for item in snapshot["workItems"]})
         self.assertEqual(snapshot["summary"], {"repositoryCount": 2, "workItemCount": 2, "activityCount": 2})
         validate_snapshot(snapshot, SCHEMA)
+
+    def test_public_links_are_preserved_and_validated(self):
+        snapshot = self.build()
+        zeta = next(repo for repo in snapshot["repositories"] if repo["name"] == "zeta")
+        self.assertEqual(zeta["publicLinks"], self.public_repo["publicLinks"])
+        validate_snapshot(snapshot, SCHEMA)
+
+        zeta["publicLinks"][0]["url"] = "http://example.com/zeta"
+        with self.assertRaises(ValueError):
+            validate_snapshot(snapshot, SCHEMA)
 
     def test_stats_are_public_only_canonical_and_month_sorted(self):
         snapshot = self.build()
