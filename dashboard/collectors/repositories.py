@@ -3,7 +3,7 @@ import json
 import os
 import re
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 from dashboard.collectors.github_api import atomic_write_json, fetch_paginated
 
@@ -47,6 +47,44 @@ def infer_group(raw):
     return UNCLASSIFIED_GROUP
 
 
+def normalize_https_url(value):
+    if not isinstance(value, str):
+        return None
+    candidate = value.strip()
+    if not candidate:
+        return None
+    parsed = urlsplit(candidate)
+    if parsed.scheme != "https" or not parsed.netloc:
+        return None
+    return candidate
+
+
+def github_pages_url(owner, name):
+    host = f"{owner.lower()}.github.io"
+    if name.lower() == host:
+        return f"https://{host}/"
+    return f"https://{host}/{quote(name, safe='')}/"
+
+
+def infer_public_links(raw, owner, name):
+    links = []
+    seen = set()
+
+    def append_link(kind, url):
+        identity = url.rstrip("/")
+        if identity in seen:
+            return
+        seen.add(identity)
+        links.append({"kind": kind, "url": url})
+
+    homepage = normalize_https_url(raw.get("homepage"))
+    if homepage:
+        append_link("front", homepage)
+    if raw.get("has_pages") is True:
+        append_link("pages", github_pages_url(owner, name))
+    return links
+
+
 def normalize_repository(raw, config):
     owner = raw.get("owner", {}).get("login")
     name = raw.get("name")
@@ -73,6 +111,7 @@ def normalize_repository(raw, config):
         if not required[key]:
             raise ValueError(f"repository payload is missing {key}: {name!r}")
     required["group"] = infer_group(raw)
+    required["publicLinks"] = infer_public_links(raw, owner, name)
     return required
 
 
