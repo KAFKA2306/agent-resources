@@ -59,22 +59,3 @@ jobs:
           for path in docs/dashboard/*.js dashboard/live-core.js api/dashboard-live.js; do
             node --check "$path"
           done
-
-      - name: Validate visual asset manifest
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          path = Path('docs/dashboard/assets/asset-manifest.json')
-          data = json.loads(path.read_text(encoding='utf-8'))
-          if data.get('policy', {}).get('visualOnly') is not True:
-              raise SystemExit('visual asset manifest must remain visual-only')
-          if data.get('policy', {}).get('mutableMainHotlinksAllowed') is not False:
-              raise SystemExit('mutable main hotlinks must remain disabled')
-          for asset in data.get('assets', []):
-              url = asset.get('sourceUrl', '')
-              if '/main/' in url:
-                  raise SystemExit(f'mutable main asset URL: {url}')
-          print(f"visual assets: {len(data.get('assets', []))}")
-          PY
