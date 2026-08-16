@@ -117,27 +117,6 @@ jobs:
             --schema dashboard/schema/dashboard.schema.json \
             --output docs/dashboard/dashboard.json
 
-      - name: Audit public artifact boundary
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          snapshot = json.loads(Path('docs/dashboard/dashboard.json').read_text(encoding='utf-8'))
-          if snapshot.get('stats', {}).get('scope') != 'public':
-              raise SystemExit('stats scope is not public')
-          if any(repo.get('visibility') != 'public' for repo in snapshot.get('repositories', [])):
-              raise SystemExit('non-public repository leaked into dashboard snapshot')
-          canonical_repository_count = len(snapshot.get('repositories', []))
-          if snapshot.get('stats', {}).get('publicRepositories') != canonical_repository_count:
-              raise SystemExit('stats repository count diverged from canonical repository list')
-          monthly = snapshot.get('stats', {}).get('monthly', [])
-          if not monthly:
-              raise SystemExit('monthly GitHub stats are missing')
-          print(f"public repositories: {snapshot['stats']['publicRepositories']}")
-          print(f"monthly buckets: {len(monthly)}")
-          PY
-
       - name: Build docs
         working-directory: docs
         run: mkdocs build
@@ -156,11 +135,15 @@ jobs:
           import json
           from pathlib import Path
 
+          from dashboard.build import validate_snapshot
+
           root = Path('deploy/dashboard')
           html = (root / 'index.html').read_text(encoding='utf-8')
           dashboard_js = (root / 'dashboard.js').read_text(encoding='utf-8')
           stats_js = (root / 'stats.js').read_text(encoding='utf-8')
           snapshot = json.loads((root / 'dashboard.json').read_text(encoding='utf-8'))
+          schema = json.loads(Path('dashboard/schema/dashboard.schema.json').read_text(encoding='utf-8'))
+          validate_snapshot(snapshot, schema)
 
           if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
               raise SystemExit('retired dashboard view leaked into deploy bundle')
@@ -171,12 +154,8 @@ jobs:
                   raise SystemExit(f'retired dashboard asset leaked into deploy bundle: {retired}')
           if not snapshot.get('repositories'):
               raise SystemExit('deploy snapshot has zero repositories')
-          if snapshot.get('stats', {}).get('publicRepositories') != len(snapshot['repositories']):
-              raise SystemExit('deploy stats repository count diverged from canonical list')
           if not snapshot.get('activity'):
               raise SystemExit('deploy snapshot has zero recent activity')
-          if not snapshot.get('stats', {}).get('monthly'):
-              raise SystemExit('deploy snapshot has no monthly stats')
           print(f"deploy repositories: {len(snapshot['repositories'])}")
           print(f"deploy activity: {len(snapshot['activity'])}")
           PY
