@@ -35,7 +35,7 @@
         "name": {"type": "string", "minLength": 1},
         "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
         "group": {"type": "string", "minLength": 1},
-        "visibility": {"type": "string", "enum": ["public", "private", "internal"]},
+        "visibility": {"type": "string", "const": "public"},
         "updatedAt": {"type": "string", "format": "date-time"},
         "publicLinks": {
           "type": "array",
@@ -95,6 +95,7 @@
         "archivedPublicRepositories": {"type": "integer", "minimum": 0},
         "monthly": {
           "type": "array",
+          "minItems": 1,
           "items": {"$ref": "#/$defs/monthlyStats"}
         }
       }
