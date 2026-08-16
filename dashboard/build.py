@@ -212,6 +212,15 @@ def validate_snapshot(snapshot, schema):
         details = "; ".join(error.message for error in errors[:5])
         raise ValueError(f"dashboard schema validation failed: {details}")
 
+    counts = (("repositoryCount", "repositories"), ("workItemCount", "workItems"), ("activityCount", "activity"))
+    if any(snapshot["summary"][key] != len(snapshot[field]) for key, field in counts):
+        raise ValueError("dashboard summary counts diverged from canonical collections")
+    repository_ids = {repository["id"] for repository in snapshot["repositories"]}
+    if any(item["repositoryId"] not in repository_ids for field in ("workItems", "activity") for item in snapshot[field]):
+        raise ValueError("dashboard item references a non-canonical repository")
+    if snapshot.get("stats", {}).get("publicRepositories", len(repository_ids)) != len(repository_ids):
+        raise ValueError("dashboard stats repository count diverged from canonical repositories")
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
