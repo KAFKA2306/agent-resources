@@ -186,6 +186,21 @@ class DashboardBuildTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_snapshot(snapshot, SCHEMA)
 
+    def test_validation_fails_closed_on_snapshot_invariants(self):
+        mutations = (
+            lambda snapshot: snapshot["summary"].__setitem__("repositoryCount", 99),
+            lambda snapshot: snapshot["workItems"][0].__setitem__("repositoryId", "missing"),
+            lambda snapshot: snapshot["stats"].__setitem__("publicRepositories", 99),
+            lambda snapshot: snapshot["repositories"][0].__setitem__("visibility", "private"),
+            lambda snapshot: snapshot["stats"].__setitem__("monthly", []),
+        )
+        for index, mutate in enumerate(mutations):
+            with self.subTest(index=index):
+                snapshot = self.build()
+                mutate(snapshot)
+                with self.assertRaises(ValueError):
+                    validate_snapshot(snapshot, SCHEMA)
+
 
 if __name__ == "__main__":
     unittest.main()
