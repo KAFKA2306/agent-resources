@@ -44,6 +44,9 @@ jobs:
       - name: Install dashboard dependencies
         run: pip install -r dashboard/requirements.txt
 
+      - name: Validate dashboard Python syntax
+        run: python -m compileall -q dashboard
+
       - name: Run dashboard tests
         run: |
           set -euo pipefail
