@@ -1,56 +1,128 @@
 import unittest
-from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
 
-from dashboard.collectors.public_links import collect_public_links
+from dashboard.collectors.public_links import (
+    collect_repository_links,
+    enrich_repository_public_links,
+)
 
 
 class PublicLinksCollectorTest(unittest.TestCase):
-    def setUp(self):
-        self.config = {
-            "profiles": [
-                {"id": "github", "label": "GitHub", "url": "https://github.com/KAFKA2306", "category": "profile"},
-                {"id": "zenn", "label": "Zenn", "url": "https://zenn.dev/kafka2306", "category": "writing"},
+    def test_configured_links_work_without_provider_tokens(self):
+        config = {
+            "repositoryLinks": [
+                {
+                    "owner": "KAFKA2306",
+                    "name": "app",
+                    "url": "https://app.pages.dev/",
+                    "provider": "cloudflare",
+                }
             ],
             "vercel": {"teamId": "team_test", "maxProjects": 100},
         }
-        self.now = datetime(2026, 8, 13, 22, 0, tzinfo=timezone.utc)
+        links, status = collect_repository_links(config)
+        self.assertEqual(status["configured"], 1)
+        self.assertEqual(status["vercel"]["status"], "unavailable")
+        self.assertEqual(status["cloudflare"]["status"], "unavailable")
+        self.assertEqual(links[0]["url"], "https://app.pages.dev")
 
-    def test_missing_vercel_token_is_fail_soft(self):
-        payload = collect_public_links(self.config, token=None, now=self.now)
-        self.assertEqual(payload["sourceStatus"]["vercel"]["status"], "unavailable")
-        self.assertEqual({link["id"] for link in payload["links"]}, {"github", "zenn"})
+    def test_live_provider_data_overrides_fallback_and_maps_by_github_repository(self):
+        config = {
+            "repositoryLinks": [
+                {
+                    "owner": "KAFKA2306",
+                    "name": "app",
+                    "url": "https://old-app.vercel.app",
+                    "provider": "vercel",
+                }
+            ],
+            "vercel": {"teamId": "team_test", "maxProjects": 100},
+        }
 
-    def test_only_ready_production_projects_are_exposed(self):
         def fake_request(url, token):
-            self.assertEqual(token, "test-token")
             parsed = urlparse(url)
             query = parse_qs(parsed.query)
-            if parsed.path == "/v9/projects":
-                return {"projects": [{"id": "p_ready", "name": "ready-app"}, {"id": "p_error", "name": "error-app"}, {"id": "p_ready_2", "name": "reader"}]}
-            if parsed.path == "/v6/deployments":
-                project = query["projectId"][0]
-                if project == "p_error":
-                    return {"deployments": [{"state": "ERROR", "url": "error.vercel.app"}]}
-                return {"deployments": [{"state": "READY", "url": f"{project}-hash.vercel.app"}]}
-            if parsed.path.endswith("/p_ready/domains"):
-                return {"domains": [{"name": "ready-app-kafka2306s-projects.vercel.app", "verified": True}, {"name": "ready-app.vercel.app", "verified": True}]}
-            if parsed.path.endswith("/p_ready_2/domains"):
-                return {"domains": [{"name": "reader-git-main-kafka2306s-projects.vercel.app", "verified": True}, {"name": "reader-three-sooty.vercel.app", "verified": True}]}
+            if parsed.netloc == "api.vercel.com" and parsed.path == "/v9/projects":
+                return {"projects": [{"id": "p_app", "name": "app"}]}
+            if parsed.netloc == "api.vercel.com" and parsed.path == "/v6/deployments":
+                self.assertEqual(query["limit"], ["20"])
+                return {
+                    "deployments": [
+                        {"state": "ERROR"},
+                        {
+                            "state": "READY",
+                            "meta": {
+                                "githubCommitOrg": "KAFKA2306",
+                                "githubCommitRepo": "app",
+                            },
+                        },
+                    ]
+                }
+            if parsed.netloc == "api.vercel.com" and parsed.path.endswith("/p_app/domains"):
+                return {
+                    "domains": [
+                        {
+                            "name": "app-kafka2306s-projects.vercel.app",
+                            "verified": True,
+                        },
+                        {"name": "app.vercel.app", "verified": True},
+                    ]
+                }
+            if parsed.netloc == "api.cloudflare.com":
+                return {
+                    "result": [
+                        {
+                            "subdomain": "app.pages.dev",
+                            "source": {
+                                "type": "github",
+                                "config": {
+                                    "owner": "KAFKA2306",
+                                    "repo_name": "app",
+                                },
+                            },
+                        },
+                        {
+                            "subdomain": "direct-upload.pages.dev",
+                            "source": {"type": "direct_upload"},
+                        },
+                    ]
+                }
             raise AssertionError(url)
 
-        payload = collect_public_links(self.config, token="test-token", now=self.now, request_fn=fake_request)
-        vercel = [link for link in payload["links"] if link["provider"] == "vercel"]
-        self.assertEqual({link["label"] for link in vercel}, {"ready-app", "reader"})
-        self.assertEqual({link["url"] for link in vercel}, {"https://ready-app.vercel.app", "https://reader-three-sooty.vercel.app"})
-        self.assertEqual(payload["sourceStatus"]["vercel"], {"status": "ok", "discovered": 3, "ready": 2, "failed": 0})
+        links, status = collect_repository_links(
+            config,
+            vercel_token="vercel-token",
+            cloudflare_account_id="account",
+            cloudflare_token="cloudflare-token",
+            request_fn=fake_request,
+        )
+        by_provider = {link["provider"]: link for link in links}
+        self.assertEqual(by_provider["vercel"]["url"], "https://app.vercel.app")
+        self.assertEqual(by_provider["cloudflare"]["url"], "https://app.pages.dev")
+        self.assertEqual(status["vercel"]["mapped"], 1)
+        self.assertEqual(status["cloudflare"]["mapped"], 1)
 
-    def test_duplicate_urls_are_collapsed(self):
-        config = dict(self.config)
-        config["profiles"] = self.config["profiles"] + [{"id": "github-alt", "label": "GitHub duplicate", "url": "https://github.com/KAFKA2306/", "category": "profile"}]
-        payload = collect_public_links(config, token=None, now=self.now)
-        urls = [link["url"] for link in payload["links"]]
-        self.assertEqual(urls.count("https://github.com/KAFKA2306"), 1)
+        repositories = [
+            {
+                "owner": "KAFKA2306",
+                "name": "app",
+                "publicLinks": [
+                    {
+                        "kind": "pages",
+                        "url": "https://kafka2306.github.io/app/",
+                    }
+                ],
+            }
+        ]
+        enrich_repository_public_links(repositories, links)
+        self.assertEqual(
+            {link["url"].rstrip("/") for link in repositories[0]["publicLinks"]},
+            {
+                "https://kafka2306.github.io/app",
+                "https://app.vercel.app",
+                "https://app.pages.dev",
+            },
+        )
 
 
 if __name__ == "__main__":
