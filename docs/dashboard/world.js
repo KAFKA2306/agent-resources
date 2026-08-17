@@ -132,6 +132,31 @@ function createAgent(item) {
   return link;
 }
 
+function createSurfaceIcon(publicUrl) {
+  try {
+    const base = new URL(publicUrl);
+    if (!base.pathname.endsWith("/")) base.pathname += "/";
+    const image = document.createElement("img");
+    image.className = "world-surface-icon";
+    image.alt = "";
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.referrerPolicy = "no-referrer";
+    image.setAttribute("aria-hidden", "true");
+    image.addEventListener(
+      "error",
+      () => {
+        image.hidden = true;
+      },
+      { once: true },
+    );
+    image.src = new URL("favicon.ico", base).href;
+    return image;
+  } catch {
+    return null;
+  }
+}
+
 export function createPublicSurfaceLinks(repository) {
   const links = Array.isArray(repository.publicLinks) ? repository.publicLinks : [];
   const safeLinks = links.filter(
@@ -153,6 +178,8 @@ export function createPublicSurfaceLinks(repository) {
     anchor.rel = "noopener noreferrer";
     anchor.textContent = link.kind === "pages" ? "PAGES ↗" : "FRONT ↗";
     anchor.title = `${repository.name} ${link.kind === "pages" ? "GitHub Pages" : "frontend"} を開く`;
+    const icon = createSurfaceIcon(link.url);
+    if (icon) anchor.prepend(icon);
     actions.append(anchor);
   }
   return actions;
