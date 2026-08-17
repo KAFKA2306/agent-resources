@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- dashboard/data/repository-index.json; then
+          if [ -z "$(git status --porcelain -- dashboard/data/repository-index.json)" ]; then
             echo 'repository recall index unchanged'
             exit 0
           fi
