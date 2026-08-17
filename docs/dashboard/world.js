@@ -2,6 +2,7 @@ const assetVersion = encodeURIComponent(new URL(import.meta.url).searchParams.ge
 const { compareWorkItems, rankRepositories, repositoryHeat } = await import(`./ranking.js?v=${assetVersion}`);
 
 const ASSET_ROOT = "./assets/agent-world";
+const WORK_ITEM_COLLAPSE_THRESHOLD = 4;
 
 const ASSET_BY_ID = Object.freeze({
   "role.issue-working.v1": `${ASSET_ROOT}/role-issue-working.svg`,
@@ -132,6 +133,53 @@ function createAgent(item) {
   return link;
 }
 
+function createAgentList(items, label) {
+  const agents = document.createElement("div");
+  agents.className = "world-agents";
+  agents.setAttribute("aria-label", label);
+  for (const item of items.slice().sort(compareWorkItems)) {
+    agents.append(createAgent(item));
+  }
+  return agents;
+}
+
+function issuePullRequestSummary(items) {
+  const issueCount = items.filter((item) => item.kind === "issue").length;
+  const pullRequestCount = items.filter((item) => item.kind === "pull_request").length;
+  return [issueCount ? `ISSUE ${issueCount}` : "", pullRequestCount ? `PR ${pullRequestCount}` : ""]
+    .filter(Boolean)
+    .join(" · ");
+}
+
+function createWorkItemView(repository, workItems) {
+  const issuePullRequests = workItems.filter(
+    (item) => item.kind === "issue" || item.kind === "pull_request",
+  );
+  if (issuePullRequests.length <= WORK_ITEM_COLLAPSE_THRESHOLD) {
+    return createAgentList(workItems, `${repository.name} agents`);
+  }
+
+  const container = document.createElement("div");
+  container.className = "world-work-items";
+  const alwaysVisible = workItems.filter(
+    (item) => item.kind !== "issue" && item.kind !== "pull_request",
+  );
+  if (alwaysVisible.length) {
+    container.append(createAgentList(alwaysVisible, `${repository.name} workflow runs`));
+  }
+
+  const details = document.createElement("details");
+  details.className = "world-work-details";
+  const summary = document.createElement("summary");
+  summary.textContent = issuePullRequestSummary(issuePullRequests);
+  details.append(
+    summary,
+    createAgentList(issuePullRequests, `${repository.name} issues and pull requests`),
+  );
+  container.append(details);
+  return container;
+}
+
 function createSurfaceIcon(publicUrl) {
   try {
     const base = new URL(publicUrl);
@@ -209,12 +257,7 @@ function createStation(repository, workItems, heat) {
   count.textContent = `${workItems.length} agents · heat ${Math.round(heat)}`;
   repositoryLink.append(name, count);
 
-  const agents = document.createElement("div");
-  agents.className = "world-agents";
-  agents.setAttribute("aria-label", `${repository.name} agents`);
-  for (const item of workItems.slice().sort(compareWorkItems)) {
-    agents.append(createAgent(item));
-  }
+  const agents = createWorkItemView(repository, workItems);
 
   station.append(repositoryLink, scene, agents);
   const publicSurfaceLinks = createPublicSurfaceLinks(repository);
