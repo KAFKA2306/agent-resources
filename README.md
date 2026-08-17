@@ -1,5 +1,9 @@
 # agent-resources — Public Agent Operations Hub
 
+[![Skill catalog integrity](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml)
+[![Build and Deploy Docs](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml)
+[![Validate Dashboard](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml)
+
 **AIエージェントを増やすほど、「いま何が動いていて、何が止まっていて、どこまで任せられるか」が見えなくなる。**
 
 `agent-resources` は、KAFKA2306 の公開GitHub作業を横断して現在状態を観測し、必要なagent skillを導入・一時実行し、証拠と状態を優先するUIで運用を確認する中央ハブです。
