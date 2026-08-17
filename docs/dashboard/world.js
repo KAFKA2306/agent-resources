@@ -132,7 +132,7 @@ function createAgent(item) {
   return link;
 }
 
-function createPublicSurfaceLinks(repository) {
+export function createPublicSurfaceLinks(repository) {
   const links = Array.isArray(repository.publicLinks) ? repository.publicLinks : [];
   const safeLinks = links.filter(
     (link) =>
