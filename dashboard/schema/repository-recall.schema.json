@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KAFKA2306/agent-resources/blob/main/dashboard/schema/repository-recall.schema.json",
+  "title": "Repository recall index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["repositories"],
+  "properties": {
+    "repositories": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/repository"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "url", "status"],
+      "properties": {
+        "kind": {"enum": ["repository", "readme"]},
+        "url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/KAFKA2306/"
+        },
+        "status": {"enum": ["ok", "absent", "error"]},
+        "fingerprint": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "ok"}}},
+          "then": {"required": ["fingerprint"]}
+        }
+      ]
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "purpose",
+        "matches",
+        "notFor",
+        "url",
+        "sources",
+        "sourceFingerprint",
+        "checkedAt",
+        "needsReview"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "purpose": {"type": "string", "minLength": 1},
+        "matches": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "notFor": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/KAFKA2306/"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/source"}
+        },
+        "sourceFingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "checkedAt": {
+          "oneOf": [
+            {"type": "string", "format": "date-time"},
+            {"type": "null"}
+          ]
+        },
+        "needsReview": {"type": "boolean"}
+      }
+    }
+  }
+}
