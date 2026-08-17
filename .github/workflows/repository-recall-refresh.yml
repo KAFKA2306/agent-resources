@@ -12,12 +12,18 @@ on:
       - 'dashboard/config/repository-recall-overrides.json'
       - 'dashboard/schema/repository-recall.schema.json'
       - '.github/workflows/repository-recall-refresh.yml'
+  pull_request:
+    paths:
+      - 'dashboard/repository_recall.py'
+      - 'dashboard/config/repository-recall-overrides.json'
+      - 'dashboard/schema/repository-recall.schema.json'
+      - '.github/workflows/repository-recall-refresh.yml'
 
 permissions:
   contents: write
 
 concurrency:
-  group: repository-recall-refresh
+  group: repository-recall-refresh-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -25,7 +31,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - name: Check out pull request head
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Check out default ref
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -58,4 +72,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add dashboard/data/repository-index.json
           git commit -m 'chore: refresh repository recall index'
-          git push
+          if [ "${GITHUB_EVENT_NAME}" = 'pull_request' ]; then
+            git push origin HEAD:"${GITHUB_HEAD_REF}"
+          else
+            git push
+          fi
