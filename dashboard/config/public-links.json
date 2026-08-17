@@ -1,67 +1,46 @@
 {
-  "profiles": [
+  "repositoryLinks": [
     {
-      "id": "github",
-      "label": "GitHub",
-      "url": "https://github.com/KAFKA2306",
-      "category": "profile",
-      "provider": "github"
+      "owner": "KAFKA2306",
+      "name": "agent-resources",
+      "url": "https://agent-resources-one.vercel.app",
+      "provider": "vercel"
     },
     {
-      "id": "hatena-blog",
-      "label": "Hatena Blog",
-      "url": "https://kafkafinancialgroup.hatenablog.com/",
-      "category": "writing",
-      "provider": "hatena"
+      "owner": "KAFKA2306",
+      "name": "rule-scribe-games",
+      "url": "https://bodoge-no-mikata.vercel.app",
+      "provider": "vercel"
     },
     {
-      "id": "scrapbox",
-      "label": "Scrapbox",
-      "url": "https://scrapbox.io/kafka2512",
-      "category": "writing",
-      "provider": "scrapbox"
+      "owner": "KAFKA2306",
+      "name": "vlog",
+      "url": "https://kaflog-kafka2306s-projects.vercel.app",
+      "provider": "vercel"
     },
     {
-      "id": "zenn",
-      "label": "Zenn",
-      "url": "https://zenn.dev/kafka2306",
-      "category": "writing",
-      "provider": "zenn"
+      "owner": "KAFKA2306",
+      "name": "vrc_cast_event_calender",
+      "url": "https://vrc-cast-event-calender.pages.dev/",
+      "provider": "cloudflare"
     },
     {
-      "id": "youtube",
-      "label": "YouTube",
-      "url": "https://www.youtube.com/@byosan-money",
-      "category": "media",
-      "provider": "youtube"
+      "owner": "KAFKA2306",
+      "name": "prompt-vault",
+      "url": "https://prompt-vault-cg3.pages.dev/",
+      "provider": "cloudflare"
     },
     {
-      "id": "booth",
-      "label": "BOOTH / Studio Kafka",
-      "url": "https://studiokafka.booth.pm/",
-      "category": "creator",
-      "provider": "booth"
+      "owner": "KAFKA2306",
+      "name": "boothitemmanager",
+      "url": "https://boothitemmanager.pages.dev/",
+      "provider": "cloudflare"
     },
     {
-      "id": "note",
-      "label": "note",
-      "url": "https://note.com/kafkavr",
-      "category": "writing",
-      "provider": "note"
-    },
-    {
-      "id": "x",
-      "label": "X / @kafka_vr",
-      "url": "https://x.com/kafka_vr",
-      "category": "social",
-      "provider": "x"
-    },
-    {
-      "id": "vrchat",
-      "label": "VRChat",
-      "url": "https://vrchat.com/home/user/usr_3e36606d-21c3-4be5-b4b5-4bb5f26eefb0",
-      "category": "social",
-      "provider": "vrchat"
+      "owner": "KAFKA2306",
+      "name": "bodogenomikata2",
+      "url": "https://bodogenomikata2.pages.dev/",
+      "provider": "cloudflare"
     }
   ],
   "vercel": {
