@@ -4,7 +4,7 @@ const [
   { classifySnapshot },
   { classifyLive, mergeLiveSnapshot },
   { renderStats },
-  { renderWorld },
+  { createPublicSurfaceLinks, renderWorld },
 ] = await Promise.all([
   import(`./ranking.js?v=${assetVersion}`),
   import(`./snapshot-status.js?v=${assetVersion}`),
@@ -55,13 +55,17 @@ function showGateItems(label, items, repositoriesById) {
   const list = document.createElement("div");
   list.className = "gate-item-list";
   for (const item of items.slice().sort(compareWorkItems)) {
+    const row = document.createElement("div");
     const link = document.createElement("a");
     link.href = item.url;
     link.target = "_blank";
     link.rel = "noreferrer";
     const repo = repositoriesById.get(item.repositoryId);
     link.textContent = `${repo ? repo.name : "unknown"} · ${item.title}`;
-    list.append(link);
+    row.append(link);
+    const publicSurfaceLinks = repo ? createPublicSurfaceLinks(repo) : null;
+    if (publicSurfaceLinks) row.append(publicSurfaceLinks);
+    list.append(row);
   }
   gateDetail.append(list);
 }
