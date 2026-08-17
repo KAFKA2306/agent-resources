@@ -6,8 +6,15 @@ from pathlib import Path
 from urllib.parse import quote, urlsplit
 
 from dashboard.collectors.github_api import atomic_write_json, fetch_paginated
+from dashboard.collectors.public_links import (
+    collect_repository_links,
+    enrich_repository_public_links,
+)
 
 DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config" / "repositories.json"
+DEFAULT_PUBLIC_LINKS_CONFIG = (
+    Path(__file__).resolve().parents[1] / "config" / "public-links.json"
+)
 ZONE_TOPIC_PREFIX = "agent-zone-"
 UNCLASSIFIED_GROUP = "unclassified"
 ALLOWED_CONFIG_KEYS = {"owner"}
@@ -129,14 +136,28 @@ def collect_repositories(config, token=None, fetcher=fetch_paginated):
     return repositories
 
 
+def load_public_links_config(path=DEFAULT_PUBLIC_LINKS_CONFIG):
+    with Path(path).open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--public-links-config", default=str(DEFAULT_PUBLIC_LINKS_CONFIG))
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
 
     config = load_config(args.config)
     repositories = collect_repositories(config, token=os.getenv("GITHUB_TOKEN"))
+    provider_links, provider_status = collect_repository_links(
+        load_public_links_config(args.public_links_config),
+        vercel_token=os.getenv("VERCEL_TOKEN"),
+        cloudflare_account_id=os.getenv("CLOUDFLARE_ACCOUNT_ID"),
+        cloudflare_token=os.getenv("CLOUDFLARE_API_TOKEN"),
+    )
+    enrich_repository_public_links(repositories, provider_links)
+    print(json.dumps({"publicLinkProviders": provider_status}, sort_keys=True))
     atomic_write_json(args.output, repositories)
     return 0
 
