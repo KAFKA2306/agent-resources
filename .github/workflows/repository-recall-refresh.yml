@@ -1,0 +1,53 @@
+name: Refresh Repository Recall Index
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 22 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repository-recall-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dashboard dependencies
+        run: pip install -r dashboard/requirements.txt
+
+      - name: Refresh public repository recall index
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m dashboard.repository_recall refresh
+
+      - name: Validate generated index and tests
+        run: |
+          set -euo pipefail
+          python -m dashboard.repository_recall validate
+          python -m unittest dashboard.tests.test_repository_recall -v
+
+      - name: Commit changed index
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- dashboard/data/repository-index.json; then
+            echo 'repository recall index unchanged'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dashboard/data/repository-index.json
+          git commit -m 'chore: refresh repository recall index'
+          git push

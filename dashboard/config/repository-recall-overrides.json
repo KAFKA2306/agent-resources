@@ -1,0 +1,38 @@
+{
+  "UnityMCP-VRC": {
+    "purpose": "Claude・MCP・Unityを組み合わせたVRChatワールド制作で、UdonSharpコード生成・実行とUnity連携を支援する",
+    "matches": [
+      "UdonSharp world",
+      "VRChatワールドでUdonSharp生成を支援",
+      "ClaudeからUnityでVRChatワールドを作る"
+    ],
+    "notFor": [
+      "VRChatアバターのExpression MenuやPhysBoneを編集",
+      "汎用Unity Editor操作だけが必要"
+    ]
+  },
+  "unity-agent": {
+    "purpose": "VRChatアバター制作に特化してUnity Editorを自然言語で操作し、Expression Menu・PhysBone・Contact・Constraint・mesh・materialなどを編集する",
+    "matches": [
+      "Expression Menu / PhysBone",
+      "VRChatアバターをAIで編集",
+      "Modular AvatarやVRCFuryを使ったアバター編集"
+    ],
+    "notFor": [
+      "汎用Unity EditorのMCPだけが必要",
+      "VRChatワールドのUdonSharp生成"
+    ]
+  },
+  "unity-mcp": {
+    "purpose": "LLMクライアントからModel Context Protocol経由でUnity Editorのscene・GameObject・asset・script・test・buildを操作する",
+    "matches": [
+      "Unity scene/assetsをLLMから操作",
+      "Unity EditorをMCPで操作",
+      "UnityのsceneやGameObjectをAIから管理"
+    ],
+    "notFor": [
+      "VRChatアバターのExpression MenuやPhysBoneを編集",
+      "VRChatワールドのUdonSharp生成に特化"
+    ]
+  }
+}
