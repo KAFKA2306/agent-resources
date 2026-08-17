@@ -149,9 +149,14 @@ class DashboardSkeletonTest(unittest.TestCase):
 
     def test_attention_gates_are_explicit(self):
         js = JS.read_text(encoding="utf-8")
+        world_js = WORLD_JS.read_text(encoding="utf-8")
         self.assertIn('lane: "waiting", label: "判断待ち"', js)
         self.assertIn('lane: "failed", label: "失敗・要確認"', js)
         self.assertLess(js.index('lane: "waiting"'), js.index('lane: "failed"'))
+        self.assertIn("{ createPublicSurfaceLinks, renderWorld }", js)
+        self.assertIn("createPublicSurfaceLinks(repo)", js)
+        self.assertIn("export function createPublicSurfaceLinks(repository)", world_js)
+        self.assertNotIn("function createPublicSurfaceLinks(", js)
 
     def test_snapshot_generation_time_and_failure_are_explicit(self):
         html = HTML.read_text(encoding="utf-8")
