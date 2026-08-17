@@ -4,6 +4,14 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '37 22 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'dashboard/repository_recall.py'
+      - 'dashboard/config/repository-recall-overrides.json'
+      - 'dashboard/schema/repository-recall.schema.json'
+      - '.github/workflows/repository-recall-refresh.yml'
 
 permissions:
   contents: write
