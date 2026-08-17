@@ -23,6 +23,7 @@ const gateDetail = document.querySelector("#gate-detail");
 const activityFeed = document.querySelector("#activity-feed");
 
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
+const ACTIVITY_COUNT_LABELS = { issue: "Issue", pull_request: "PR", workflow_run: "Run" };
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
   { lane: "failed", label: "失敗・要確認" },
@@ -87,7 +88,129 @@ function renderGates(workItems, repositoriesById) {
 function formatActivityTime(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(date);
+  return new Intl.DateTimeFormat("ja-JP", { hour: "2-digit", minute: "2-digit" }).format(date);
+}
+
+function localDayKey(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "unknown";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatActivityDay(dayKey) {
+  if (dayKey === "unknown") return "日付不明";
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (dayKey === localDayKey(today)) return "今日";
+  if (dayKey === localDayKey(yesterday)) return "昨日";
+  const [year, month, day] = dayKey.split("-").map(Number);
+  return new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric", weekday: "short" }).format(
+    new Date(year, month - 1, day),
+  );
+}
+
+function formatActivityCounts(items) {
+  const counts = { issue: 0, pull_request: 0, workflow_run: 0 };
+  for (const item of items) {
+    if (Object.hasOwn(counts, item.kind)) counts[item.kind] += 1;
+  }
+  return Object.entries(counts)
+    .filter(([, count]) => count > 0)
+    .map(([kind, count]) => `${ACTIVITY_COUNT_LABELS[kind]} ${count}`)
+    .join(" · ");
+}
+
+function createActivityItem(item) {
+  const link = document.createElement("a");
+  link.className = "activity-item";
+  link.href = item.url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  const meta = document.createElement("span");
+  meta.className = "activity-meta";
+  const kind = document.createElement("span");
+  kind.className = "activity-kind";
+  kind.textContent = ACTIVITY_LABELS[item.kind];
+  const time = document.createElement("time");
+  time.dateTime = item.occurredAt;
+  time.textContent = formatActivityTime(item.occurredAt);
+  meta.append(kind, time);
+  const summary = document.createElement("strong");
+  summary.textContent = item.summary || ACTIVITY_LABELS[item.kind];
+  link.append(meta, summary);
+  return link;
+}
+
+function groupActivity(items) {
+  const days = new Map();
+  for (const item of items) {
+    const dayKey = localDayKey(item.occurredAt);
+    if (!days.has(dayKey)) days.set(dayKey, { items: [], repositories: new Map() });
+    const day = days.get(dayKey);
+    day.items.push(item);
+    if (!day.repositories.has(item.repositoryId)) day.repositories.set(item.repositoryId, []);
+    day.repositories.get(item.repositoryId).push(item);
+  }
+  return days;
+}
+
+function renderActivity(activity, repositoriesById) {
+  activityFeed.replaceChildren();
+  const items = activity
+    .filter((item) => ACTIVITY_LABELS[item.kind])
+    .slice()
+    .sort((a, b) => String(b.occurredAt).localeCompare(String(a.occurredAt)));
+  if (items.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "muted activity-empty";
+    empty.textContent = "直近7日の活動は0件です。";
+    activityFeed.append(empty);
+    return;
+  }
+
+  for (const [dayKey, day] of groupActivity(items)) {
+    const daySection = document.createElement("section");
+    daySection.className = "activity-day";
+    const dayHeading = document.createElement("div");
+    dayHeading.className = "activity-day-heading";
+    const dayName = document.createElement("strong");
+    dayName.textContent = formatActivityDay(dayKey);
+    const daySummary = document.createElement("span");
+    daySummary.textContent = `${day.repositories.size} repos · ${formatActivityCounts(day.items)}`;
+    dayHeading.append(dayName, daySummary);
+    daySection.append(dayHeading);
+
+    for (const [repositoryId, repositoryItems] of day.repositories) {
+      const card = document.createElement("article");
+      card.className = "activity-repository-card";
+      const repositoryHeading = document.createElement("div");
+      repositoryHeading.className = "activity-repository-heading";
+      const repositoryName = document.createElement("strong");
+      repositoryName.textContent = repositoriesById.get(repositoryId)?.name || "unknown";
+      const repositorySummary = document.createElement("span");
+      repositorySummary.textContent = `${repositoryItems.length}件 · ${formatActivityCounts(repositoryItems)}`;
+      repositoryHeading.append(repositoryName, repositorySummary);
+      card.append(repositoryHeading, createActivityItem(repositoryItems[0]));
+
+      if (repositoryItems.length > 1) {
+        const details = document.createElement("details");
+        details.className = "activity-more";
+        const summary = document.createElement("summary");
+        summary.textContent = `残り${repositoryItems.length - 1}件を見る`;
+        const list = document.createElement("div");
+        list.className = "activity-more-list";
+        for (const item of repositoryItems.slice(1)) list.append(createActivityItem(item));
+        details.append(summary, list);
+        card.append(details);
+      }
+      daySection.append(card);
+    }
+    activityFeed.append(daySection);
+  }
 }
 
 function formatSnapshotTime(date) {
@@ -134,43 +257,6 @@ function renderLiveFailure(message = "Live取得失敗") {
   snapshotStatus.textContent = "SNAPSHOT FALLBACK";
   liveFetchedAt.removeAttribute("datetime");
   liveFetchedAt.textContent = `Live: ${message}`;
-}
-
-function renderActivity(activity, repositoriesById) {
-  activityFeed.replaceChildren();
-  const items = activity
-    .filter((item) => ACTIVITY_LABELS[item.kind])
-    .slice()
-    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
-  if (items.length === 0) {
-    const empty = document.createElement("p");
-    empty.className = "muted activity-empty";
-    empty.textContent = "直近7日の活動は0件です。";
-    activityFeed.append(empty);
-    return;
-  }
-  for (const item of items) {
-    const link = document.createElement("a");
-    link.className = "activity-item";
-    link.href = item.url;
-    link.target = "_blank";
-    link.rel = "noreferrer";
-    const meta = document.createElement("span");
-    meta.className = "activity-meta";
-    const kind = document.createElement("span");
-    kind.className = "activity-kind";
-    kind.textContent = ACTIVITY_LABELS[item.kind];
-    const time = document.createElement("time");
-    time.dateTime = item.occurredAt;
-    time.textContent = formatActivityTime(item.occurredAt);
-    meta.append(kind, time);
-    const summary = document.createElement("strong");
-    summary.textContent = item.summary || ACTIVITY_LABELS[item.kind];
-    const repo = document.createElement("small");
-    repo.textContent = repositoriesById.get(item.repositoryId)?.name || "unknown";
-    link.append(meta, summary, repo);
-    activityFeed.append(link);
-  }
 }
 
 function renderDashboard(snapshot) {
