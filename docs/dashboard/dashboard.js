@@ -163,7 +163,7 @@ function renderActivity(activity, repositoriesById) {
   const items = activity
     .filter((item) => ACTIVITY_LABELS[item.kind])
     .slice()
-    .sort((a, b) => String(b.occurredAt).localeCompare(String(a.occurredAt)));
+    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
   if (items.length === 0) {
     const empty = document.createElement("p");
     empty.className = "muted activity-empty";
