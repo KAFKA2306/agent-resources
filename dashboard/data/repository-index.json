@@ -1,0 +1,3343 @@
+{
+  "repositories": [
+    {
+      "name": "2510youtuber",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/2510youtuber",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/2510youtuber",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/2510youtuber/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "84041143845d99debaef5808ca783e4d3ec89e5d"
+        }
+      ],
+      "sourceFingerprint": "0902a8f46eced393b31e53b3b9062db2f76bf81e5fddbea44ff35825a58157fa",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "2511youtuber",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/2511youtuber",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/2511youtuber",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/2511youtuber/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "e4257d26801c9716cfbf8c08da2ca43deb1beaa1"
+        }
+      ],
+      "sourceFingerprint": "a754bcc07d487dc64ea9fda41fab60f3c345fd5214f62624e44636207deebcf7",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "333",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/333",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/333",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/333/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "da8e84d049c1d32cfa7cf280164ae80738f0dd78"
+        }
+      ],
+      "sourceFingerprint": "1f0dced2b6922f6676a44f3b52e1c19492c912d1fb45161e7355372f6247dc1d",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "abestudy",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/abestudy",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/abestudy",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/abestudy/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "726824ca7d3b3c49fb19580e27ce9eccbcd67b7d"
+        }
+      ],
+      "sourceFingerprint": "17474d48bf4da887b0177dbf04a16483ddf3df290cc34036e7f4bfe6bbdf4539",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "aboutkafka",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/aboutkafka",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/aboutkafka",
+          "status": "ok",
+          "fingerprint": "69ab97fb14af394acdedc61165aed98fa8f02f28f9e24b1a51146e8f8fb96add"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/aboutkafka/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "eda5417452f621198306001f847a7e5280555fa6"
+        }
+      ],
+      "sourceFingerprint": "bed90d33427c03e282a20b9dc6643b3eb21804b77c30a3ddc246b25ac77db095",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "adaptive_wear_generator_pro",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/adaptive_wear_generator_pro",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/adaptive_wear_generator_pro",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/adaptive_wear_generator_pro/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "ef2daa419c6469576de532284c19a47c2ee1ec3e"
+        }
+      ],
+      "sourceFingerprint": "466b8fcb0ecb253ff7c5983e525ac7e90c66c454d3250052a61e0aa1ed7eeac8",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "agent-resources",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/agent-resources",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/agent-resources",
+          "status": "ok",
+          "fingerprint": "ea4d1bf4cc1715cd12c7887b1e29501808536c0a6f3fad549e77355afa59c107"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "0271542b2df71376ed0d371ef285ac7dd31eba0a"
+        }
+      ],
+      "sourceFingerprint": "fd9b77e3892c8e251fd7187b43345b45b59ef96936e2ebb67a87ef0c328bd423",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "alpha",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/alpha",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/alpha",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/alpha/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "3b4d7a64eca0ed22de214877b9ffcee00f083c87"
+        }
+      ],
+      "sourceFingerprint": "89f31c53b4ce339eac35201b8bf0c8e5ade25b5b8e7bba66630de0b57d0cbc10",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "anime",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/anime",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/anime",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/anime/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "0f07bc5d05d3f89e1347efa818b8b42d7bc7457e"
+        }
+      ],
+      "sourceFingerprint": "09da687b166fe6f1698b1e62ebbb3a88d45eb987ad486b919520c39009fef951",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "AntennaPod",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/AntennaPod",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/AntennaPod",
+          "status": "ok",
+          "fingerprint": "3feb7978ba6b555efa20f7c4a4efa57a327be0383a8d7586c4f5fd37823dd910"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/AntennaPod/blob/develop/README.md",
+          "status": "ok",
+          "fingerprint": "83bd00e36ef2462e0a056227b9a9edc8b0307bf5"
+        }
+      ],
+      "sourceFingerprint": "a6496ade5bbabf8bd8d1803095eac7de3f9edea8052a09a216a36313c7602b45",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "articles",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/articles",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/articles",
+          "status": "ok",
+          "fingerprint": "3c6d1fc0965e3601ef979b211d0e322df7e0b08faeb215ee0198fa9b78c04e75"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/articles/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f69cbd7b1c65dd1794240a669ae9bef13ca17f41"
+        }
+      ],
+      "sourceFingerprint": "ba33e95d133bc29cf6650aab0806641d270cb1fd38af60b6b2b04460a3f96533",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "auto-invest",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/auto-invest",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/auto-invest",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/auto-invest/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "3ac6daa27317cc52f9024b7ce8c87358b201f8dc"
+        }
+      ],
+      "sourceFingerprint": "3e3f42dab42cf379c97e9ef5bd22946638749553e0f548a0c369307772004435",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "autonomous-logistics",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/autonomous-logistics",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/autonomous-logistics",
+          "status": "ok",
+          "fingerprint": "659ef6bf9fc88f6ae52611e990452849f067ad1a9440259e0006d5613232afbb"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/autonomous-logistics/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "95ae258b6ea68ce691b2c8b16b238543459c9cf1"
+        }
+      ],
+      "sourceFingerprint": "5191c2959333c64407f002965cd127b85d1ca70ec6b2a06c5bcb30b71cb2e234",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "autonomous-vehicles",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/autonomous-vehicles",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/autonomous-vehicles",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/autonomous-vehicles/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "027d789df85f5acba7b6a8bf9b2b0c70e2827e50"
+        }
+      ],
+      "sourceFingerprint": "655ada926699e47570b6ee347e4e5c56c1761bdd0f9f12b78b6b058aa1d2a073",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "AutoPhotogrammetry",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/AutoPhotogrammetry",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/AutoPhotogrammetry",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/AutoPhotogrammetry/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "664c9b67d25369491a5d407949dbea394a0d09db"
+        }
+      ],
+      "sourceFingerprint": "aa73d8ae9e0512abb0e5ce4489622e23aae6d40a53be05c922b6f06d5df72df8",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "BestEthernet",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/BestEthernet",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/BestEthernet",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/BestEthernet/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "5ff45797801f83f59a5d325f8dceb3b90b91a7f2"
+        }
+      ],
+      "sourceFingerprint": "85b8ed9edce67382c69272657921fa9671d731cba1ea8234396c4e5faf8aea8b",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "blendshapedeformer",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/blendshapedeformer",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/blendshapedeformer",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/blendshapedeformer/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f87f9046d12cad26a5034cd3f9bb4180f31ec8ff"
+        }
+      ],
+      "sourceFingerprint": "97ced0e81a2a9d83c538ba2ac4337f4dd096d1c6be9961b299f4820764be2e5a",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "BMAX",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/BMAX",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/BMAX",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/BMAX/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d65d91a637c5864a0bd215ca5409b23e707813b3"
+        }
+      ],
+      "sourceFingerprint": "f572999598847098c8b3c90b122284a2f7a23ff53657f163e91c74b89f2739e8",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "boardgamelist",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/boardgamelist",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/boardgamelist",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/boardgamelist/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "192282258ad58f578d67c858f98ca451c429c325"
+        }
+      ],
+      "sourceFingerprint": "d2a9b868e35e94ec781f4c97ba505c58610c8697295ec4def9c6e6212a1aff3a",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "bodogenomikata2",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/bodogenomikata2",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/bodogenomikata2",
+          "status": "ok",
+          "fingerprint": "28160109c0f89f62c579f2591eb92eefeebf36ed7088c12ac6d9996ed92bb18d"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/bodogenomikata2/blob/master/README.md",
+          "status": "ok",
+          "fingerprint": "81f43955d7cbfa65572f7097842734228e0a8b7d"
+        }
+      ],
+      "sourceFingerprint": "9f288b71b038f6667988b9aa34e3cd9f0b2aa096579d17ba6cbbf4c8dfed2e31",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "bonus",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/bonus",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/bonus",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/bonus/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "a21488ba3fc007808c04ca304583fec74d790b28"
+        }
+      ],
+      "sourceFingerprint": "e2de92eda3cf63c4503f470ef70058e32d0fd8d67d27389347cd15767371d506",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "books",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/books",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/books",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/books/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "46bfd6719e3c6ffc1590c4e0075b5b92804921b2"
+        }
+      ],
+      "sourceFingerprint": "ebd8bc3fa326e8ff59b2970f694062b9e9aef6062e98ae1f61237b789566b985",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "boothitemmanager",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/boothitemmanager",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/boothitemmanager",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/boothitemmanager/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "87d55e62dc7f8dd5bab961b030c44cbba5772b08"
+        }
+      ],
+      "sourceFingerprint": "27f92cbb54029d8e1d9186fa768d65634f5b0859174caf2b048584284fba81bc",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "bpyutils",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/bpyutils",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/bpyutils",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/bpyutils/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "e2e0cabc5c23b5442345c61443b0eb95e60471e7"
+        }
+      ],
+      "sourceFingerprint": "84c5453f92cabefe7a12e797aa1b7fe8cb813fa9368533d08b844873713e48e2",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "CantStopExpressLearn",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/CantStopExpressLearn",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/CantStopExpressLearn",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/CantStopExpressLearn/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "173cb41a2827e62de4801b45a1b53ce80c231b41"
+        }
+      ],
+      "sourceFingerprint": "cced25e948b9a216c734aa84d8e7a16250cd2bd1d3d909ddadd839a5e46bc35d",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "cast_event_cal",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/cast_event_cal",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/cast_event_cal",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/cast_event_cal/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "47775c43e69551f71e435b0c9cb3028270568b89"
+        }
+      ],
+      "sourceFingerprint": "5ef36646f7319aea7f3d347ed565dbd575484c9c4ef7d75d1626b99cbd3f4c21",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "cedar-pollen-bi",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/cedar-pollen-bi",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/cedar-pollen-bi",
+          "status": "ok",
+          "fingerprint": "156c703c0c14c13cf6abe8b2bc24298b03671bb3c1b46cc0039a99d4eac16abd"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/cedar-pollen-bi/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "249a490e053b0d2a2f2e2cd482cf06b319db4ae7"
+        }
+      ],
+      "sourceFingerprint": "49febf1134cc3ccfdf33c7e21046bd22b17f5c6ec86e1bb3b5d81f0d07450c32",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "claude-code",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/claude-code",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/claude-code",
+          "status": "ok",
+          "fingerprint": "477d7d5d7c5d6c95ddf9c5c43552ac7f4f60547883fc3cd622688ab094ad06c8"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/claude-code/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "1853e3ea13513e9dee10d6d884e48984688670d1"
+        }
+      ],
+      "sourceFingerprint": "aee4f088b4c62d73dc3d79318cec71a866a7398dba696ef22699ef0f750ca2ae",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "com",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/com",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/com",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/com/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "dc61619fdb4f0d6460218c1b576526b23b66ad97"
+        }
+      ],
+      "sourceFingerprint": "5d0769ac5cb59a190e81d5e13703ff316b1bb798caf0d94f0c14f07876cf6a02",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "ComfyUI-KLingAI-API",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "3276e8aca2e629332f84d7d066da83daa6921577"
+        }
+      ],
+      "sourceFingerprint": "41ce31f6d5ea3238f38fb3dd6806b7f6489b1bad31e9f0d84e3353783492a19e",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "CrewTrade",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/CrewTrade",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/CrewTrade",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/CrewTrade/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "7c14d0f25fe650a6191de7aef43b50f2c66b9dbe"
+        }
+      ],
+      "sourceFingerprint": "e6383d75a6647ed43b86c003814a48f658c0d7420d68fc40fc27a808e97c4c89",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "daily-arXiv-ai-enhanced",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/daily-arXiv-ai-enhanced",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/daily-arXiv-ai-enhanced",
+          "status": "ok",
+          "fingerprint": "aa02c77df6fb3bee9770b8f34c3af5b7c341c9473eeed0511cbeaee72659d0c9"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/daily-arXiv-ai-enhanced/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "72ae9db82897f79fb2d5f74fb33405e9aa5c8714"
+        }
+      ],
+      "sourceFingerprint": "8eb72ec9ffc4e70c1dd5c452e966fa0207ee9fa35e4cb231bac8ea5043cbb246",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "dancer",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/dancer",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/dancer",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/dancer/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "dc80122d4f75dcb4ac6d7e22a76cda58b87eed4a"
+        }
+      ],
+      "sourceFingerprint": "7a2e6687673422ba55ffdd10a516b29327f33cec4c2bcfdaf2b96e726e803ecb",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "DeepCode",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/DeepCode",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/DeepCode",
+          "status": "ok",
+          "fingerprint": "269332b19579315aba90317b45347a0b110b68ec0fd1ca1d73fbf88c00b5e970"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/DeepCode/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "3d1e7ce68de6a05f58d3d7f8fa3d42bab1f03024"
+        }
+      ],
+      "sourceFingerprint": "a82c78cbae700c3dce04861e4b1aebc23da82c6fbc3c6a397de9ca9d72dece1d",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "detective",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/detective",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/detective",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/detective/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "1dc0f3a2c23e4da1050eb666f9ba50f0464f5c2c"
+        }
+      ],
+      "sourceFingerprint": "9e648e42cd60bac6044aa657f6ea92f30e177359728da63f842b7d32f5661fb3",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "dmovie2511",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/dmovie2511",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/dmovie2511",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/dmovie2511/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "e06e52ecb5f158b217d2655cff15ad5453b9c968"
+        }
+      ],
+      "sourceFingerprint": "547df5167bae9000e35a31f2c0d8d552cf4513cc51c0bc64afc8dcb8944635fb",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "DominionDeckDrawSimlator",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/DominionDeckDrawSimlator",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/DominionDeckDrawSimlator",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/DominionDeckDrawSimlator/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "9495abee7e2c00f0f33561315d5e27e768a4df61"
+        }
+      ],
+      "sourceFingerprint": "1cb88848300a87a6c45c0450b41ca3330b5163ea459c17e2bf9d8113fd373022",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "econalert",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/econalert",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/econalert",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/econalert/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "9edc3163f200261a393e46b42aac6f8e85e5fc38"
+        }
+      ],
+      "sourceFingerprint": "a1d8bcf0e847a0a4655e370fb8691b1f2e74b37cd8b5ec1790a7d301be88babd",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "etf",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/etf",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/etf",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/etf/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "b8b0b9be2d3a02fe88a0faa7c6476d5429db76b5"
+        }
+      ],
+      "sourceFingerprint": "e33fe37ff56233056db686bc1f6a6ab0dbefe05314127b70b2b223e58fd39d20",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "factory",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/factory",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/factory",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/factory/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "4c9e13d1d64f246c35f0149b6213e60efeea7444"
+        }
+      ],
+      "sourceFingerprint": "be3b30ed6e213f8deaf0bdcd1074dc646a036597516efc5b8e009cc5a6dc599f",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "finAnalist",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/finAnalist",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/finAnalist",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/finAnalist/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d7ca205a3ae0260db973220525f2fefc2e1ae98f"
+        }
+      ],
+      "sourceFingerprint": "6b7f44b03ad62c48b7a22a98dc85809af71ff71ce58539cf2f07da9663c87b88",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "financial-services-plugins",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/financial-services-plugins",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/financial-services-plugins",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/financial-services-plugins/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "a48f5be80387891bf9550f5c2de1984cdcb35ae4"
+        }
+      ],
+      "sourceFingerprint": "e1a8baf011914b77689ab0fb9a4e1d38807316cc47302cd19e9d52122fcf4273",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "finBI",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/finBI",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/finBI",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/finBI/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "4c7bb4f2a21620165c30f973b1b5e1f7acc98a39"
+        }
+      ],
+      "sourceFingerprint": "a1658f56d36775174df225c7ebfb5b94568f1d5b171ac81944160946a75eb004",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "fit",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/fit",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/fit",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/fit/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "4608c9b0388212d8b3bf09ef494dc2bce0f79a8d"
+        }
+      ],
+      "sourceFingerprint": "9fbd03e9ef51f4f9271a78f77d0970d5987fba779cf72de3c640bc1f97d6bdea",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "furutsatotax",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/furutsatotax",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/furutsatotax",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/furutsatotax/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "0a8a83e3abbe9ee810a1305184ad51153b46fd57"
+        }
+      ],
+      "sourceFingerprint": "a7abf41b0e5c382b48d8b09f7e0c551f3c0b50dcc296ae3c860bc399090aa164",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "furuyoni",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/furuyoni",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/furuyoni",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/furuyoni/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "e4c0a08cbb68ac668fa7182861186c4de662e31f"
+        }
+      ],
+      "sourceFingerprint": "0bd0178e56fac35466496d45e2088c540eda11e8a559b1c348f103b74fa4dd5a",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "fx",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/fx",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/fx",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/fx/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "442d5cd78b5bdf371bb16b9542f6e8a8e7be7d64"
+        }
+      ],
+      "sourceFingerprint": "df1c9690ada4d3ec42df5901423e267b227adfb57528b7576b971964dc25091c",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "game-library-dashboard",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/game-library-dashboard",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/game-library-dashboard",
+          "status": "ok",
+          "fingerprint": "e3acc196bf4162c39630c58dbd4cc46454957a22851d071582c647e66f0bc459"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/game-library-dashboard/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "fde09d2ba4b90c8974ce6cd60cd79cc6643269e9"
+        }
+      ],
+      "sourceFingerprint": "96aa256ec5136c263404ccd5895cc6299f4c2a15907b0f47b2a44e9ebacf4d3c",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "gennote",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/gennote",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/gennote",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/gennote/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "af68545df5d4e2f43a2ea2cccaff5c9c634faafd"
+        }
+      ],
+      "sourceFingerprint": "5754272bb13ce0215189e6132568aa489f08bbcab299b07081bafcab7dd58a53",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "hf-cache-hub",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/hf-cache-hub",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/hf-cache-hub",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/hf-cache-hub/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "a8cc1cf54cc9bb8ce547ee7aff87405fc4a7bdcf"
+        }
+      ],
+      "sourceFingerprint": "cbb94f5a6053fc77de6f1913a15a0b596ed90f9b0f07202364b0babc09885709",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "hitaiall",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/hitaiall",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/hitaiall",
+          "status": "ok",
+          "fingerprint": "bf4945381190b9a57b62c2e709316e0bd35cdf78bb26b133240bc9fd0f095f33"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/hitaiall/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "4890915f1af9b538afd8c33763510ae8bc97812b"
+        }
+      ],
+      "sourceFingerprint": "bb23e08691565178c7da09e7ba946d5b79633c587ea09670499e55029b54c5e8",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "hitaiou",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/hitaiou",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/hitaiou",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/hitaiou/blob/main/readme.md",
+          "status": "ok",
+          "fingerprint": "b50ec133a1394e27071517b599371beb01680ce7"
+        }
+      ],
+      "sourceFingerprint": "180881677a2cea8c60e334bfba19348e18fb4259802fad7f5b42efcebe10f9df",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "image2outfit",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/image2outfit",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/image2outfit",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/image2outfit/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "6b551449204b4f6c44ffbfd7d3c3912afc392d0a"
+        }
+      ],
+      "sourceFingerprint": "e43ee1c8c2f8930ea0d877cc492f40554c26cb370c9a96ca7c34ea7e368a8502",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "investor",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/investor",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/investor",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/investor/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "c37326c73c7b6bc96a6fe36ba5b0b01d9edbe18d"
+        }
+      ],
+      "sourceFingerprint": "913d4897eff4b21203c310519bf0094c0f01ed5d389b5f1e083ebc0d7284f54b",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "investor2",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/investor2",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/investor2",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/investor2/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "294a39b5950e174829a117036dfe0d9ef23dafb8"
+        }
+      ],
+      "sourceFingerprint": "e890ee0ea4358afb5ddd62005b07412c5ec4ba460f1a351d2f5ddca453a45b8a",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "irr",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/irr",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/irr",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/irr/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "064095b6d61e9b9309186aa23cbc7118a2c59e51"
+        }
+      ],
+      "sourceFingerprint": "08b34742312967b5f4092de07640c557f170f0f241a8e7eb2df7013f3c715fca",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "jhr",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/jhr",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/jhr",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/jhr/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "41e1861caf46634ca66cee72b302fdd480762d9b"
+        }
+      ],
+      "sourceFingerprint": "4b697e5dd4332b2265dadf9b59dd29a8e88cb1f10178c40bc98a1ff7f6417f99",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "kafin3",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/kafin3",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/kafin3",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/kafin3/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d50973e5fc6f69f14bba3723a24b96f63b8fa5d7"
+        }
+      ],
+      "sourceFingerprint": "4e3b46661c0e135f9d21720885218f4cbaabda8e23ba17325f62a7c6db06214f",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "kafka",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/kafka",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/kafka",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/kafka/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "c22845d7df3c91e664bbc16e3871214c10df890d"
+        }
+      ],
+      "sourceFingerprint": "a3e75e56637cf256bf1d5c36e160b19f42da5768adde0d70f4dd5ec31e193938",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "KAFKA2306",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/KAFKA2306",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/KAFKA2306",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/KAFKA2306/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "459a6c79a5f323b7869ef1803516051250f76a20"
+        }
+      ],
+      "sourceFingerprint": "4c27620827edab5c6df73fc09cfc07bceea5e688e4dcb42870bb7f5858afce14",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "kakeibo",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/kakeibo",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/kakeibo",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/kakeibo/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "1ba32ca05b2aef2fcf4ba0354dd4268f4168cd44"
+        }
+      ],
+      "sourceFingerprint": "821725864a47e7c516f26ac897f0c849d6a7798b45b0d693ee1e855a66eca6e2",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "kimeraassist",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/kimeraassist",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/kimeraassist",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/kimeraassist/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "1ece6b2e2f3f6f7c007921e9f52d3831a316b390"
+        }
+      ],
+      "sourceFingerprint": "622f67679ed2db21f027232eeb64614ac1d9bccd285199d8344eee58978e7558",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "kling",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/kling",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/kling",
+          "status": "ok",
+          "fingerprint": "2a143d45c68a74da3c87f45654e54189c4314c75122b1b451b2eec9f1b9f57a1"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/kling/blob/master/README.md",
+          "status": "ok",
+          "fingerprint": "55773c5fec14bef552dcee01350c65d27c5c77d3"
+        }
+      ],
+      "sourceFingerprint": "40fb5135c044263da536c63b3d35242b870c37704e3157b54d2ddd1306be7de0",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "know",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/know",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/know",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/know/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "3d2b86f3d476568712a77abf56eb9f83585bad20"
+        }
+      ],
+      "sourceFingerprint": "e3da5d489bb1d8694e396e35e198a045a262c71ab5bb8f4d4e9f593b6f197892",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "launcher",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/launcher",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/launcher",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/launcher/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "7712ddab8e4296450baf0e6835776e6aaa8b2b5b"
+        }
+      ],
+      "sourceFingerprint": "9f8c63757e60b2c316cb5c15cf79cfb51165dd394fb791937083553949aab941",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "m2",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/m2",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/m2",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/m2/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "20dab30917e1352a97a75e7d07c8955e30b4d9f5"
+        }
+      ],
+      "sourceFingerprint": "64eb06dad39034af7b574253c73c8ff06414e47edfe8f2db47ca8aef2995479f",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "magicaltexture",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/magicaltexture",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/magicaltexture",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/magicaltexture/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "db4015b3d23eb2dbba835bad43b7188ed5fd4892"
+        }
+      ],
+      "sourceFingerprint": "c6ff7f6eaca27c2a20a6a210b5a89b07d96b257878e1e2a73dc532461cda916e",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "marvelousdesigner",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/marvelousdesigner",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/marvelousdesigner",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/marvelousdesigner/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "817c655087e76838f20b97f8889343e0a8b18379"
+        }
+      ],
+      "sourceFingerprint": "3c5bc3f2ac86b11b9dfc252a2f06d711c75e92b2e099dee50aa03c05587c35f1",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "mitsuikaggle",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/mitsuikaggle",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/mitsuikaggle",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/mitsuikaggle/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "8c1cb6e55d02c5a8b9b9dc42f272a1eed8660d77"
+        }
+      ],
+      "sourceFingerprint": "9ee653778afcf6822b45c35147d0be8fe7475652fcc35d6e9ec3cb49cb5729a3",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "mj",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/mj",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/mj",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/mj/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "5fb8bed982bae485a9330a7a7e98cf98873565bf"
+        }
+      ],
+      "sourceFingerprint": "19c7a1605c632c8c99bdac9fe6d678e871fe9412e4769c8401ce230affd2e630",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "molecularshader",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/molecularshader",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/molecularshader",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/molecularshader/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "c7c989f77c73455b99dc78949ab56d006250d81c"
+        }
+      ],
+      "sourceFingerprint": "e028d804d3c48b91bed96addad834a99a1cee01648bdb196e9028888d5b5c033",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "mstr",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/mstr",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/mstr",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/mstr/blob/main/readme.md",
+          "status": "ok",
+          "fingerprint": "e4b3d732c66300e00782d8d8fc380b592454ce79"
+        }
+      ],
+      "sourceFingerprint": "90e5ccb41eefaa948a67ace8993747ed8cbe06a1d9ab3d4b7b0d62e0333ff1d6",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "multiomics",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/multiomics",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/multiomics",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/multiomics",
+          "status": "absent"
+        }
+      ],
+      "sourceFingerprint": "b26b6db08e1b07d9cd2e806fbd1c8f6fde077e5153420401eebc72a2b4dac128",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "nk225seasonality",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/nk225seasonality",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/nk225seasonality",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/nk225seasonality/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "c6e3bdbea9a81802d46480e279c2ca4e486fce8f"
+        }
+      ],
+      "sourceFingerprint": "22447d6ceda750b4e415189aaa073caa275f1880186b9f05185d3f52e338e06b",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "nlm",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/nlm",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/nlm",
+          "status": "ok",
+          "fingerprint": "556ab5e64523cbfcc4c2c9813772f1b0632cb80e3af2ea552656dd25e8a7882a"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/nlm/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "dba0f4548f1fcd3119385c5504a544e712ebfe2e"
+        }
+      ],
+      "sourceFingerprint": "0b491e00b5d9d62a102170b5830a93840d8e30be850e57719cfc8473736deab7",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "nonfarmpayroll",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/nonfarmpayroll",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/nonfarmpayroll",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/nonfarmpayroll/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "cc51b694d681b279733578434eafc47c5aa6d223"
+        }
+      ],
+      "sourceFingerprint": "825d64371d09b5818c4105ab32d8e945514b567240f1106de135429843597070",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "notebooklm-py",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/notebooklm-py",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/notebooklm-py",
+          "status": "ok",
+          "fingerprint": "fd8b9562e6d98a2370652a404ffd4cb5aac649d7c06ccd05651099aecefc72bd"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/notebooklm-py/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "736b487ba484f97abe5329bbbe7d45cfe2d6edb8"
+        }
+      ],
+      "sourceFingerprint": "1047b6a375a140d94c7c1f0aa703f9011589f80f84163537e67836063a448460",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "NVII",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/NVII",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/NVII",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/NVII/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "c584d63eff6560722eb8d36b35a1754379c84faf"
+        }
+      ],
+      "sourceFingerprint": "ccf328cdf5ace6551e5f6ee58e1becef61b5fabeb85cd25c8ac720e94d466539",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "oil",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/oil",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/oil",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/oil/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f191db78fd1aa5fb26b2cb01c2441599fe8e8019"
+        }
+      ],
+      "sourceFingerprint": "faabafa8a2e439fc87c0ac9782221b2afca7d893b6b693d8c4a899f301526deb",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "open-fitter",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/open-fitter",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/open-fitter",
+          "status": "ok",
+          "fingerprint": "e75014d4e62da94c1f6c2befc21f178b6d1f5a056a440505159d356222dc2455"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/open-fitter/blob/master/README.md",
+          "status": "ok",
+          "fingerprint": "5f479fb09fe397a9cca791c056d16a7e695750fd"
+        }
+      ],
+      "sourceFingerprint": "8442c002680644f87812b8b5f35b38c921738f9d71126d8e0768eb94edd944ab",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "openclaw",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/openclaw",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/openclaw",
+          "status": "ok",
+          "fingerprint": "95d09db4a2f44a20ccd06f5de30dbd13fe6fa193b94fea7f8c13590f71e9be2a"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/openclaw/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "59b24ff324a2848416a4dfca6b45042149ef9c4a"
+        }
+      ],
+      "sourceFingerprint": "cc677b6a1b2e5f4ba5a97deeb11789710b82b9970349f5b3d1b57b137cabefc5",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "option",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/option",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/option",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/option/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "a2e75ec7e950c500bb48b805fa6612ec6ce531db"
+        }
+      ],
+      "sourceFingerprint": "4d4db33d7d17f45be12fec711d4240cee7e88c3d133ad919f2d09e652a1562b0",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "pal-atlas",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/pal-atlas",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/pal-atlas",
+          "status": "ok",
+          "fingerprint": "634342439df1d9ec17a9afb2d9092514a19f81a4d0398bbdca49f03fcf0004a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/pal-atlas/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "4a3179917f32d1cc552be0df653653eaca897900"
+        }
+      ],
+      "sourceFingerprint": "2a85445720ef7e0dc4be056fecbceca01efbcbfe51ade0e16667e9ff3d9e03ce",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "pamiq-poker",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/pamiq-poker",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/pamiq-poker",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/pamiq-poker/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f4245c5dc1184cb1d7c8bc71632eede4a5fbd555"
+        }
+      ],
+      "sourceFingerprint": "120acbb92fa6591dbbf895aa282ec694afa43ebd901ed77f819f7fe130d0d2f2",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "photoprism",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/photoprism",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/photoprism",
+          "status": "ok",
+          "fingerprint": "f8d701c4e57c803bc2ffd9c03c93cd55631a4841d0fc67ba9069838f6414a755"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/photoprism/blob/develop/README.md",
+          "status": "ok",
+          "fingerprint": "7c2cb26e97b1cd6871298f64744f3e4c688c24e1"
+        }
+      ],
+      "sourceFingerprint": "9ff24332c999702e6a02242af4726c83aaf7a91cf3f8dff3893c0c9a978a7efe",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "PictureChangerTools",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/PictureChangerTools",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/PictureChangerTools",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/PictureChangerTools/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f678e4e49a78ed5097bd0a9edaeb01823d969a94"
+        }
+      ],
+      "sourceFingerprint": "d47d39ee55c27047c5f8c219e52b7c177f6526627485aa3f3dfc261c3e967113",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "prompt-vault",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/prompt-vault",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/prompt-vault",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/prompt-vault/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "7c42664a43dd058b4298a13eabcb330c4ac0bd5d"
+        }
+      ],
+      "sourceFingerprint": "8e5b198a7b57cdcbb9df1757972c3546676815af0a71d29d708af54783bc31a3",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "readable-github",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/readable-github",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/readable-github",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/readable-github/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "98c4e46bc63161c6b253823fa973c32c0756ba06"
+        }
+      ],
+      "sourceFingerprint": "2c35a283f89ea9efb3f85994476a7529d3dab6781c8df8c6e49b79de423afe82",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "robot",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/robot",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/robot",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/robot",
+          "status": "absent"
+        }
+      ],
+      "sourceFingerprint": "4fceccb1007b23f60f01bd599c19ce8601f875e1865de6e3d03f136927dc5673",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "rule-scribe-games",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/rule-scribe-games",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/rule-scribe-games",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/rule-scribe-games/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "28b8d2396ea8a0277a9ee0d2697dcd09b3556465"
+        }
+      ],
+      "sourceFingerprint": "918816dc187a51ea82a75597668bba472a26e0e0f4fc089a285055723f85683c",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "salary",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/salary",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/salary",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/salary/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "06783a69dca4c76d61fc8d858d80f6a35a806d09"
+        }
+      ],
+      "sourceFingerprint": "ee358e69d0427e1143f7f7bd45dff144cacf4a078d689e2b7de5096db6d0ad8a",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "semiconductor-earnings-model",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/semiconductor-earnings-model",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/semiconductor-earnings-model",
+          "status": "ok",
+          "fingerprint": "b42cda4015f37a02da4320e977de3cc0df6516d7508f6ff0f7f19e1264033ded"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "522c35ba301ba08dd9bedb62ae4fc8226f713929"
+        }
+      ],
+      "sourceFingerprint": "034b345f4ccc116089594b41bbd2eeba72bc8bec59949a84e566e3fed5c5ed35",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "skew",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/skew",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/skew",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/skew/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "e13022ce178930f792391b3a9701e13c12d045db"
+        }
+      ],
+      "sourceFingerprint": "3e6b2978af3075b9e622eacbb77604c12ef18ad3562f2d4a86067868243a04c6",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "space",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/space",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/space",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/space",
+          "status": "absent"
+        }
+      ],
+      "sourceFingerprint": "f4a63d422f41a4d8bbfd6470bfaa142456940669dbc79cdd3a8080882f358a25",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "summer",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/summer",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/summer",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/summer/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "dcaadb6ace9cadb6472816f7443a2ee6dada495a"
+        }
+      ],
+      "sourceFingerprint": "d41cf68a4a67d8d3559453b8b36d05b908cca41f537be8f4c36be6620d608d99",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "Swiss-Tournament-Manager",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/Swiss-Tournament-Manager",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/Swiss-Tournament-Manager",
+          "status": "ok",
+          "fingerprint": "b898f9eeba21c00e7f28d493a6c6254f43c8faef7f251026dc712708b1041fd5"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/Swiss-Tournament-Manager/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d93cc58c684475d79a9f916455c36a0368ac8871"
+        }
+      ],
+      "sourceFingerprint": "3a2ce009482841a797a60ad3a99207657da22d7a152022e2413761d0415f8242",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "TexasSolver",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/TexasSolver",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/TexasSolver",
+          "status": "ok",
+          "fingerprint": "4ba556444ff81a57c7c55617710444a5f8f683f020bd35bdea46aa3a2409f36a"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/TexasSolver/blob/master/README.md",
+          "status": "ok",
+          "fingerprint": "a1160cdb2ba643cdb91466ee1321cd17118f78e6"
+        }
+      ],
+      "sourceFingerprint": "f64674052649c8c9c3f6021a209be7881d13c37f4b5f605d9d7059e623cfa9f1",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "TradingView-Screener",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/TradingView-Screener",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/TradingView-Screener",
+          "status": "ok",
+          "fingerprint": "f94dc21cbd3ca3bf01a56830c146abdef62a5cd79f3773ce4b34ebe5a452347e"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/TradingView-Screener/blob/master/README.md",
+          "status": "ok",
+          "fingerprint": "1569f5498b908fe73320cb2813802d14b9cd4c2f"
+        }
+      ],
+      "sourceFingerprint": "f38eba9c50d3ee247f048fa0f8b9f5ac49419e3f6c1e1f47d31486e13097743c",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "trahist",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/trahist",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/trahist",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/trahist/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "44460da52d2ba98c319e00772d0ae7183cdaa312"
+        }
+      ],
+      "sourceFingerprint": "307402ddcb6410abd0e31878b4bc101321a39af1597181270dc3175a3db154ec",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "travel",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/travel",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/travel",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/travel/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "8a2f941b6963e1fe357277275ba7045c9c20da07"
+        }
+      ],
+      "sourceFingerprint": "14d5ace2093747f22aad16da45ae41699ba4821977db192d19910cd35bce360d",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "Unique3D",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/Unique3D",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/Unique3D",
+          "status": "ok",
+          "fingerprint": "5242658d8f7dee35f5ad3c2d70a4edb9d6588cd13f1d7da29a6617e084816eda"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/Unique3D/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "8246c397a8d483bb1ddc7316b45c4a1f566544df"
+        }
+      ],
+      "sourceFingerprint": "2d772db6d264859490fa1222fccbafa251e08e9c25532c8b9618cba0cbad2036",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "unity-agent",
+      "purpose": "VRChatアバター制作に特化してUnity Editorを自然言語で操作し、Expression Menu・PhysBone・Contact・Constraint・mesh・materialなどを編集する",
+      "matches": [
+        "Expression Menu / PhysBone",
+        "VRChatアバターをAIで編集",
+        "Modular AvatarやVRCFuryを使ったアバター編集"
+      ],
+      "notFor": [
+        "汎用Unity EditorのMCPだけが必要",
+        "VRChatワールドのUdonSharp生成"
+      ],
+      "url": "https://github.com/KAFKA2306/unity-agent",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/unity-agent",
+          "status": "ok",
+          "fingerprint": "4db0e7a7fbeca835cbc2bd4caf3231f5d8c6149c03ea9b62c2dbcf3925b33a57"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/unity-agent/blob/master/README.md",
+          "status": "ok",
+          "fingerprint": "967390ae8c8c1d03cacef381af04a7aab50b731c"
+        }
+      ],
+      "sourceFingerprint": "32d7e5f7203516d9ef0840adb790942931cc947847e08c3b55a3cb2e963da54b",
+      "checkedAt": "2026-08-17T23:13:01Z",
+      "needsReview": false
+    },
+    {
+      "name": "unity-mcp",
+      "purpose": "LLMクライアントからModel Context Protocol経由でUnity Editorのscene・GameObject・asset・script・test・buildを操作する",
+      "matches": [
+        "Unity scene/assetsをLLMから操作",
+        "Unity EditorをMCPで操作",
+        "UnityのsceneやGameObjectをAIから管理"
+      ],
+      "notFor": [
+        "VRChatアバターのExpression MenuやPhysBoneを編集",
+        "VRChatワールドのUdonSharp生成に特化"
+      ],
+      "url": "https://github.com/KAFKA2306/unity-mcp",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/unity-mcp",
+          "status": "ok",
+          "fingerprint": "6e97b2f19bbcbe558d0a4fca3093d203c1b229c373184086439e0aee93ecf5ce"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/unity-mcp/blob/beta/README.md",
+          "status": "ok",
+          "fingerprint": "fe136ecc8948806422d29294f772e715a1446846"
+        }
+      ],
+      "sourceFingerprint": "90eca4d5350dab0ff50e29f6ac4cfa586deed91c0441e0d446210026a840d0fc",
+      "checkedAt": "2026-08-17T23:13:01Z",
+      "needsReview": false
+    },
+    {
+      "name": "UnityMCP-VRC",
+      "purpose": "Claude・MCP・Unityを組み合わせたVRChatワールド制作で、UdonSharpコード生成・実行とUnity連携を支援する",
+      "matches": [
+        "UdonSharp world",
+        "VRChatワールドでUdonSharp生成を支援",
+        "ClaudeからUnityでVRChatワールドを作る"
+      ],
+      "notFor": [
+        "VRChatアバターのExpression MenuやPhysBoneを編集",
+        "汎用Unity Editor操作だけが必要"
+      ],
+      "url": "https://github.com/KAFKA2306/UnityMCP-VRC",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/UnityMCP-VRC",
+          "status": "ok",
+          "fingerprint": "429c68cc2b3c16907ec10cc88bfd01e2212fbc12e1b40330d9be271e0b527cce"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/UnityMCP-VRC/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "e062dc812c7e1ea3a447dbff780229904d92cdd1"
+        }
+      ],
+      "sourceFingerprint": "193100fb40be33f3de63a5e0a6a030d805d048c300ebdb0cfca848135f790a6f",
+      "checkedAt": "2026-08-17T23:13:01Z",
+      "needsReview": false
+    },
+    {
+      "name": "uranium",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/uranium",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/uranium",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/uranium/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "dd5541f2d623dc58e9a0cbbb450f15d068f39b96"
+        }
+      ],
+      "sourceFingerprint": "6cee8b74a59d961beeaddf4d30e337ee607cb65f5d105570cceb7cfeedd221cb",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "us-swing-strategy-bi-pages",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/us-swing-strategy-bi-pages",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/us-swing-strategy-bi-pages",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/us-swing-strategy-bi-pages/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "62c81164d3435789b5e26fb006eccbd2b4fca0b5"
+        }
+      ],
+      "sourceFingerprint": "15bc81998f3d57f5d9605b2582c454fe8f92d8b358a7242b17840fa13da86557",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "VeilVoice",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/VeilVoice",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/VeilVoice",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/VeilVoice/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "a9a5dd3e82a88be5db10e43e5d0528b38d445fdb"
+        }
+      ],
+      "sourceFingerprint": "b8104c1affcefdcda1e1be5f342475fed613e0079b423aa0d558a79e510d6390",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vlog",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vlog",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vlog",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vlog/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "cf7bcf2746d99a977e79955b25288a801fd1c93d"
+        }
+      ],
+      "sourceFingerprint": "c08d8beb7093ba5a243fb107e18f32dbfb4177ea653856cf54f390bdffcace91",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vlogrs",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vlogrs",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vlogrs",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vlogrs/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "698698fbeba5141a491f6d8137888d576794dc94"
+        }
+      ],
+      "sourceFingerprint": "59b12d63f112b843b4dd5d2682d5b610d3cf2256074b8fff190817d62a2f3066",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vmatch2",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vmatch2",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vmatch2",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vmatch2",
+          "status": "absent"
+        }
+      ],
+      "sourceFingerprint": "af623e25f473b1fc044ced8595a524a98d8566902ae33185647e379a9d47e090",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vmatching",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vmatching",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vmatching",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vmatching/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "9378722fbde1c01263823432aed58f4e09294dbd"
+        }
+      ],
+      "sourceFingerprint": "d224bbc79cca6af47b1653282433d5fc1c1ce26256e1c4c09ab8d660236c69de",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrc-pilot-test",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrc-pilot-test",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrc-pilot-test",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrc-pilot-test/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "4dbc12dfcaf861570b55b8bec74c9416cf6cb8ce"
+        }
+      ],
+      "sourceFingerprint": "c389968ff3dde6efc565140a1f125ea26199dccd3c7cb3974ddcf10a4b1c407a",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrc_cast_event_calender",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrc_cast_event_calender",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrc_cast_event_calender",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrc_cast_event_calender/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "205c8cad021cc22bc7da3e0c4d5481687128cde7"
+        }
+      ],
+      "sourceFingerprint": "0ce10c8d810a84107595d60a7c99de13ba8ff7eeba8a364e86aaba2def4d9dbe",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrcgimmicknetwork",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrcgimmicknetwork",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrcgimmicknetwork",
+          "status": "ok",
+          "fingerprint": "156ee4297d78792ba0abcee1b05fe7ac2773e2620a3f973e601904350f1d9efb"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrcgimmicknetwork/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "eec77165d3e2951c3634ba55d8184dd5941826cb"
+        }
+      ],
+      "sourceFingerprint": "f0d0609ad1c18e0e44b0f2e30dabd3dee9b53e52e1f0ec8e13056a4c669c4eec",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "VRChat-bolt",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/VRChat-bolt",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/VRChat-bolt",
+          "status": "ok",
+          "fingerprint": "69ab97fb14af394acdedc61165aed98fa8f02f28f9e24b1a51146e8f8fb96add"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/VRChat-bolt/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "64a4413ba06d9e663a2797f09997339ffe2ceab0"
+        }
+      ],
+      "sourceFingerprint": "cf0e62169b0b5bbeb58a2d20fd432c8a4e6ad217ee37e84803b91571f2792f3e",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrcplat",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrcplat",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrcplat",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrcplat/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "7f470ca304049eb555b8dba7fb85801ac732bfeb"
+        }
+      ],
+      "sourceFingerprint": "a2a6408a4c36eafdab7eb89e3812134a928c9c4dce61a4cb636553e70f4d2b60",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrcrelator",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrcrelator",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrcrelator",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrcrelator/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "8be0352f04467a75a8641d9fe6e3223b6e181daf"
+        }
+      ],
+      "sourceFingerprint": "08277aae6d8ad6775580c069b51a44393cf97385a3cc031d8eb6e22daff23113",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrcviewer",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrcviewer",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrcviewer",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrcviewer/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "555fad65219620fe9cee5bdce7e57de97990e2a0"
+        }
+      ],
+      "sourceFingerprint": "6f29c6d3ac1d60e49b1e69ecdae834692c907e2e5dda6f5c48a3afd2475aeea6",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrmine",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrmine",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrmine",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrmine/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d3d6e4ece8cfb537a7388a2bed6b28de71820ca5"
+        }
+      ],
+      "sourceFingerprint": "20a1c747f7641b3b6727aa7919befa6477ac4cad0b104a888257fbdd185784fc",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "VRPhotoJourney",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/VRPhotoJourney",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/VRPhotoJourney",
+          "status": "ok",
+          "fingerprint": "f0100eddbfc4b6d5c2977dd6889d34d679e1e7e9f616cf1475ed94499a375d67"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/VRPhotoJourney/blob/master/readme.md",
+          "status": "ok",
+          "fingerprint": "ca606d4cca59259495586a886310a234851c8ef1"
+        }
+      ],
+      "sourceFingerprint": "52301a6de38070ab541e9508d202d048bbe3c7a0cb4d961b6455ad4f643cc630",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vrpoker",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vrpoker",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vrpoker",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vrpoker/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "3771e9767fe7a7c5eab370380d768f59ca5cc4ee"
+        }
+      ],
+      "sourceFingerprint": "ef93f7bfd394eadb0ef48a005c7c3ba8b00852131b24d0065252c167e81b38a3",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "vtttv",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/vtttv",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/vtttv",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/vtttv/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "27d4a77ca82e0d3e3d5337d9b15d3334a46745fe"
+        }
+      ],
+      "sourceFingerprint": "d44582c8a1eae986e05f7bba3282a683e1cca5fc8baf11237b29fa391d2042db",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "WealthAudit",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/WealthAudit",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/WealthAudit",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/WealthAudit/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "8fe182020001d40fafcd78129e65c88f67d7a741"
+        }
+      ],
+      "sourceFingerprint": "f48bc7498fa0b23804f190605a37dcfbbd0370a5db8aacbd3347d79f51dfef58",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "x",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/x",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/x",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/x/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "45921a12d69d2f1fd2d46cad5d05b26ebd384257"
+        }
+      ],
+      "sourceFingerprint": "14c9956f814c46dd8078f43d6db2eddde690670279b81d4c47b7fda0356e8749",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "Year2035",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/Year2035",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/Year2035",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/Year2035/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d3d64c7f1cdcb882dae5f7b005972fd7f3900af6"
+        }
+      ],
+      "sourceFingerprint": "da86f186daf6b926898957f6bc91f552d59f08f3abdb467c01a8c89a392ce9a0",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "yt3",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/yt3",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/yt3",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/yt3/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f57c46e1b77caeff21dc9d68c88e5c960a215a64"
+        }
+      ],
+      "sourceFingerprint": "3ff6d442baa97b668c468855f1fc4f1b94fc3b0f0d49fd8bca5becf672a00fb4",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "yt4",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/yt4",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/yt4",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/yt4/blob/main/docs/README.md",
+          "status": "ok",
+          "fingerprint": "e8906e127c2b238e7fb1af0a5be7f7858366a5fb"
+        }
+      ],
+      "sourceFingerprint": "3fe61660d7bf6d139e811b05e582610811ed2ae0942d957da06b9e9d6450eef4",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
+      "name": "ytmanager",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/ytmanager",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/ytmanager",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/ytmanager/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "791c30735bbde2a4ae75fbfaa57018a97ff818b5"
+        }
+      ],
+      "sourceFingerprint": "3a0438435661d5c7daf23d73f2da565764950e9bf2b6641ddea622ce2a42c386",
+      "checkedAt": null,
+      "needsReview": true
+    }
+  ]
+}
