@@ -106,9 +106,9 @@
     },
     {
       "name": "aboutkafka",
-      "purpose": "Created with StackBlitz ⚡️",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "Created with StackBlitz ⚡️"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/aboutkafka",
@@ -127,8 +127,8 @@
         }
       ],
       "sourceFingerprint": "bed90d33427c03e282a20b9dc6643b3eb21804b77c30a3ddc246b25ac77db095",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "adaptive_wear_generator_pro",
@@ -262,9 +262,9 @@
     },
     {
       "name": "articles",
-      "purpose": "articles",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "articles"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/articles",
@@ -283,8 +283,8 @@
         }
       ],
       "sourceFingerprint": "ba33e95d133bc29cf6650aab0806641d270cb1fd38af60b6b2b04460a3f96533",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "auto-invest",
@@ -314,9 +314,9 @@
     },
     {
       "name": "autonomous-logistics",
-      "purpose": "tradermade_cfd",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "tradermade_cfd"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/autonomous-logistics",
@@ -335,8 +335,8 @@
         }
       ],
       "sourceFingerprint": "5191c2959333c64407f002965cd127b85d1ca70ec6b2a06c5bcb30b71cb2e234",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "autonomous-vehicles",
@@ -1302,9 +1302,9 @@
     },
     {
       "name": "hitaiall",
-      "purpose": "hitaiall",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "hitaiall"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/hitaiall",
@@ -1323,8 +1323,8 @@
         }
       ],
       "sourceFingerprint": "bb23e08691565178c7da09e7ba946d5b79633c587ea09670499e55029b54c5e8",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "hitaiou",
@@ -2951,9 +2951,9 @@
     },
     {
       "name": "vrcgimmicknetwork",
-      "purpose": "vrcgimmicknetwork, wix",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "vrcgimmicknetwork, wix"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrcgimmicknetwork",
@@ -2972,14 +2972,14 @@
         }
       ],
       "sourceFingerprint": "f0d0609ad1c18e0e44b0f2e30dabd3dee9b53e52e1f0ec8e13056a4c669c4eec",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "VRChat-bolt",
-      "purpose": "Created with StackBlitz ⚡️",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "Created with StackBlitz ⚡️"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/VRChat-bolt",
@@ -2998,8 +2998,8 @@
         }
       ],
       "sourceFingerprint": "cf0e62169b0b5bbeb58a2d20fd432c8a4e6ad217ee37e84803b91571f2792f3e",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "vrcplat",
@@ -3107,9 +3107,9 @@
     },
     {
       "name": "VRPhotoJourney",
-      "purpose": "VRPhotoJourney",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "VRPhotoJourney"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/VRPhotoJourney",
@@ -3128,8 +3128,8 @@
         }
       ],
       "sourceFingerprint": "52301a6de38070ab541e9508d202d048bbe3c7a0cb4d961b6455ad4f643cc630",
-      "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "vrpoker",
