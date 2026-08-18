@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from dashboard.collectors.github_api import GitHubApiError
 from dashboard.repository_recall import (
@@ -11,7 +12,9 @@ from dashboard.repository_recall import (
     collect_source_fact,
     inventory_names,
     merge_index,
+    refresh_index,
     search_index,
+    semantic_coverage,
     validate_coverage,
     validate_index,
 )
@@ -31,7 +34,14 @@ class RepositoryRecallTests(unittest.TestCase):
             "publicLinks": [],
         }
 
-    def facts(self, name, fingerprint="a" * 64):
+    def facts(
+        self,
+        name,
+        fingerprint="a" * 64,
+        *,
+        description=None,
+        topics=None,
+    ):
         return {
             "name": name,
             "url": f"https://github.com/KAFKA2306/{name}",
@@ -50,6 +60,8 @@ class RepositoryRecallTests(unittest.TestCase):
                 },
             ],
             "sourceFingerprint": fingerprint,
+            "description": description,
+            "topics": topics or [],
         }
 
     def entry(
@@ -110,9 +122,11 @@ class RepositoryRecallTests(unittest.TestCase):
         self.assertEqual(result["name"], "unity-mcp")
         self.assertEqual([source["status"] for source in result["sources"]], ["ok", "ok"])
         self.assertEqual(result["sources"][1]["fingerprint"], "readme-sha")
+        self.assertEqual(result["description"], "Unity MCP")
+        self.assertEqual(result["topics"], ["mcp", "unity"])
         self.assertRegex(result["sourceFingerprint"], r"^[0-9a-f]{64}$")
 
-    def test_collect_source_fact_distinguishes_missing_readme_from_failure(self):
+    def test_collect_source_fact_treats_missing_readme_as_absent(self):
         repo = self.repo("empty")
 
         def no_readme(url, token):
@@ -130,8 +144,11 @@ class RepositoryRecallTests(unittest.TestCase):
                 {},
             )
 
-        absent = collect_source_fact(repo, request_fn=no_readme)
-        self.assertEqual(absent["sources"][1]["status"], "absent")
+        result = collect_source_fact(repo, request_fn=no_readme)
+        self.assertEqual(result["sources"][1]["status"], "absent")
+
+    def test_collect_source_fact_propagates_transient_failure(self):
+        repo = self.repo("empty")
 
         def failed_readme(url, token):
             if url.endswith("/readme"):
@@ -148,16 +165,13 @@ class RepositoryRecallTests(unittest.TestCase):
                 {},
             )
 
-        failed = collect_source_fact(repo, request_fn=failed_readme)
-        self.assertEqual(failed["sources"][1]["status"], "error")
-        self.assertNotEqual(absent["sourceFingerprint"], failed["sourceFingerprint"])
+        with self.assertRaises(GitHubApiError):
+            collect_source_fact(repo, request_fn=failed_readme)
 
-    def test_collect_source_fact_marks_boundary_change_as_error(self):
+    def test_collect_source_fact_rejects_boundary_change(self):
         repo = self.repo("public-before")
 
         def request_fn(url, token):
-            if url.endswith("/readme"):
-                raise GitHubApiError("missing", status=404)
             return (
                 {
                     "private": True,
@@ -170,10 +184,10 @@ class RepositoryRecallTests(unittest.TestCase):
                 {},
             )
 
-        result = collect_source_fact(repo, request_fn=request_fn)
-        self.assertEqual(result["sources"][0]["status"], "error")
+        with self.assertRaisesRegex(ValueError, "source boundary changed"):
+            collect_source_fact(repo, request_fn=request_fn)
 
-    def test_merge_index_creates_unreviewed_entry_for_new_repository(self):
+    def test_merge_index_creates_unreviewed_entry_without_semantic_evidence(self):
         repo = self.repo("new-repo")
         document = merge_index(
             [repo],
@@ -186,6 +200,54 @@ class RepositoryRecallTests(unittest.TestCase):
         self.assertEqual(entry["matches"], [UNKNOWN_MATCH])
         self.assertTrue(entry["needsReview"])
         self.assertIsNone(entry["checkedAt"])
+
+    def test_merge_index_uses_public_description_as_verified_semantic_evidence(self):
+        repo = self.repo("described")
+        document = merge_index(
+            [repo],
+            {
+                "described": self.facts(
+                    "described",
+                    description="Collect semiconductor earnings evidence",
+                    topics=["finance", "semiconductor"],
+                )
+            },
+            existing={"repositories": []},
+            now="2026-08-18T01:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertEqual(entry["purpose"], "Collect semiconductor earnings evidence")
+        self.assertEqual(
+            entry["matches"],
+            ["Collect semiconductor earnings evidence", "finance", "semiconductor"],
+        )
+        self.assertFalse(entry["needsReview"])
+        self.assertEqual(entry["checkedAt"], "2026-08-18T01:00:00Z")
+
+    def test_merge_index_backfills_existing_placeholder_when_description_exists(self):
+        repo = self.repo("described")
+        old = self.entry(
+            "described",
+            purpose=UNKNOWN_PURPOSE,
+            matches=[UNKNOWN_MATCH],
+            checked_at=None,
+            needs_review=True,
+        )
+        document = merge_index(
+            [repo],
+            {
+                "described": self.facts(
+                    "described",
+                    description="Public evidence index",
+                    topics=["evidence"],
+                )
+            },
+            existing={"repositories": [old]},
+            now="2026-08-18T01:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertEqual(entry["purpose"], "Public evidence index")
+        self.assertFalse(entry["needsReview"])
 
     def test_merge_index_preserves_semantics_when_sources_are_unchanged(self):
         repo = self.repo("stable")
@@ -242,7 +304,58 @@ class RepositoryRecallTests(unittest.TestCase):
         self.assertEqual(entry["checkedAt"], "2026-08-18T03:00:00Z")
         self.assertEqual(entry["purpose"], "VRChat avatar editor")
 
-    def test_validate_index_rejects_duplicates_and_invalid_entries(self):
+    def test_merge_index_preserves_checked_at_for_unchanged_override(self):
+        repository = self.repo("unity-agent")
+        override = {
+            "purpose": "VRChat avatar editor",
+            "matches": ["Expression Menu / PhysBone"],
+            "notFor": ["UdonSharp world"],
+        }
+        old = self.entry(
+            "unity-agent",
+            purpose=override["purpose"],
+            matches=override["matches"],
+            not_for=override["notFor"],
+            checked_at="2026-08-18T00:00:00Z",
+        )
+        document = merge_index(
+            [repository],
+            {"unity-agent": self.facts("unity-agent", "a" * 64)},
+            existing={"repositories": [old]},
+            overrides={"unity-agent": override},
+            now="2026-08-19T00:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertEqual(entry["checkedAt"], "2026-08-18T00:00:00Z")
+        self.assertFalse(entry["needsReview"])
+
+    def test_merge_index_marks_unchanged_override_stale_when_source_changes(self):
+        repository = self.repo("unity-agent")
+        override = {
+            "purpose": "VRChat avatar editor",
+            "matches": ["Expression Menu / PhysBone"],
+            "notFor": ["UdonSharp world"],
+        }
+        old = self.entry(
+            "unity-agent",
+            purpose=override["purpose"],
+            matches=override["matches"],
+            not_for=override["notFor"],
+            fingerprint="a" * 64,
+            checked_at="2026-08-18T00:00:00Z",
+        )
+        document = merge_index(
+            [repository],
+            {"unity-agent": self.facts("unity-agent", "b" * 64)},
+            existing={"repositories": [old]},
+            overrides={"unity-agent": override},
+            now="2026-08-19T00:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertTrue(entry["needsReview"])
+        self.assertEqual(entry["checkedAt"], "2026-08-18T00:00:00Z")
+
+    def test_validate_index_rejects_duplicates_invalid_entries_and_verified_placeholder(self):
         valid = self.entry("valid")
         self.assertEqual(validate_index({"repositories": [valid]})["repositories"][0]["name"], "valid")
         with self.assertRaisesRegex(ValueError, "duplicate repository names"):
@@ -258,22 +371,31 @@ class RepositoryRecallTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "sources must be non-empty"):
             validate_index({"repositories": [no_sources]})
 
+        placeholder = self.entry(
+            "placeholder",
+            purpose=UNKNOWN_PURPOSE,
+            matches=[UNKNOWN_MATCH],
+            needs_review=False,
+        )
+        with self.assertRaisesRegex(ValueError, "placeholder semantics"):
+            validate_index({"repositories": [placeholder]})
+
     def test_validate_coverage_reports_missing_and_extra_names(self):
         repositories = [self.repo("one"), self.repo("two")]
         valid_document = {"repositories": [self.entry("one"), self.entry("two")]}
         self.assertTrue(validate_coverage(repositories, valid_document))
 
-        with self.assertRaisesRegex(ValueError, "missing=\['two'\]"):
+        with self.assertRaisesRegex(ValueError, "missing=\\['two'\\]"):
             validate_coverage(repositories, {"repositories": [self.entry("one")]})
 
-        with self.assertRaisesRegex(ValueError, "extra=\['three'\]"):
+        with self.assertRaisesRegex(ValueError, "extra=\\['three'\\]"):
             validate_coverage(
                 repositories,
                 {"repositories": [self.entry("one"), self.entry("two"), self.entry("three")]},
             )
 
-    def test_search_distinguishes_public_unity_repositories(self):
-        document = {
+    def unity_document(self):
+        return {
             "repositories": [
                 self.entry(
                     "unity-mcp",
@@ -295,6 +417,9 @@ class RepositoryRecallTests(unittest.TestCase):
                 ),
             ]
         }
+
+    def test_search_distinguishes_public_unity_repositories(self):
+        document = self.unity_document()
         self.assertEqual(search_index("Expression Menu / PhysBone", document)["selected"], "unity-agent")
         self.assertEqual(search_index("UdonSharp world", document)["selected"], "UnityMCP-VRC")
         self.assertEqual(search_index("Unity scene/assetsをLLMから操作", document)["selected"], "unity-mcp")
@@ -302,6 +427,17 @@ class RepositoryRecallTests(unittest.TestCase):
         penetration = search_index("衣装が体を貫通する", document)
         self.assertIsNone(penetration["selected"])
         self.assertNotIn("unitymcppro", json.dumps(penetration, ensure_ascii=False))
+
+    def test_parent_issue_natural_language_regressions(self):
+        document = self.unity_document()
+        cases = {
+            "LLMからUnity Editorのscene/assetsを操作する": "unity-mcp",
+            "VRChatアバターのExpression MenuやPhysBoneをAIで編集する": "unity-agent",
+            "VRChatワールドでUdonSharp生成を支援する": "UnityMCP-VRC",
+        }
+        for query, expected in cases.items():
+            with self.subTest(query=query):
+                self.assertEqual(search_index(query, document)["selected"], expected)
 
     def test_unreviewed_entry_is_never_selected(self):
         document = {
@@ -317,6 +453,87 @@ class RepositoryRecallTests(unittest.TestCase):
         result = search_index("Unity EditorをMCPで操作", document)
         self.assertIsNone(result["selected"])
         self.assertTrue(result["ambiguous"])
+
+    def test_semantic_coverage_reports_verified_and_review_counts(self):
+        document = {
+            "repositories": [
+                self.entry("verified"),
+                self.entry(
+                    "pending",
+                    purpose=UNKNOWN_PURPOSE,
+                    matches=[UNKNOWN_MATCH],
+                    checked_at=None,
+                    needs_review=True,
+                ),
+            ]
+        }
+        self.assertEqual(
+            semantic_coverage(document),
+            {"repositories": 2, "verified": 1, "needsReview": 1, "placeholders": 1},
+        )
+
+    def test_refresh_index_is_idempotent_for_stable_override(self):
+        repository = self.repo("unity-agent")
+        override = {
+            "unity-agent": {
+                "purpose": "VRChat avatar editor",
+                "matches": ["Expression Menu / PhysBone"],
+                "notFor": ["UdonSharp world"],
+            }
+        }
+        facts = {"unity-agent": self.facts("unity-agent", "a" * 64)}
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            config_path = root / "repositories.json"
+            index_path = root / "repository-index.json"
+            overrides_path = root / "overrides.json"
+            config_path.write_text('{"owner":"KAFKA2306"}', encoding="utf-8")
+            index_path.write_text('{"repositories":[]}', encoding="utf-8")
+            overrides_path.write_text(json.dumps(override, ensure_ascii=False), encoding="utf-8")
+
+            with (
+                patch("dashboard.repository_recall.collect_repositories", return_value=[repository]),
+                patch("dashboard.repository_recall.collect_source_facts", return_value=facts),
+            ):
+                first_changed, first = refresh_index(config_path, index_path, overrides_path)
+                second_changed, second = refresh_index(config_path, index_path, overrides_path)
+
+        self.assertTrue(first_changed)
+        self.assertFalse(second_changed)
+        self.assertEqual(first, second)
+
+    def test_refresh_failure_does_not_mutate_existing_index(self):
+        repository = self.repo("stable")
+        existing = {"repositories": [self.entry("stable")]}
+        before = json.dumps(existing, ensure_ascii=False, sort_keys=True)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            config_path = root / "repositories.json"
+            index_path = root / "repository-index.json"
+            overrides_path = root / "overrides.json"
+            config_path.write_text('{"owner":"KAFKA2306"}', encoding="utf-8")
+            index_path.write_text(json.dumps(existing, ensure_ascii=False), encoding="utf-8")
+            overrides_path.write_text("{}", encoding="utf-8")
+
+            with (
+                patch("dashboard.repository_recall.collect_repositories", return_value=[repository]),
+                patch(
+                    "dashboard.repository_recall.collect_source_facts",
+                    side_effect=GitHubApiError("rate limited", status=403),
+                ),
+            ):
+                with self.assertRaises(GitHubApiError):
+                    refresh_index(config_path, index_path, overrides_path)
+
+            after = json.dumps(
+                json.loads(index_path.read_text(encoding="utf-8")),
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+
+        self.assertEqual(before, after)
 
     def test_schema_declares_strict_repository_shape(self):
         schema_path = Path(__file__).resolve().parents[1] / "schema" / "repository-recall.schema.json"
