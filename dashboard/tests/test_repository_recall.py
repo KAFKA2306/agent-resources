@@ -224,6 +224,47 @@ class RepositoryRecallTests(unittest.TestCase):
         self.assertFalse(entry["needsReview"])
         self.assertEqual(entry["checkedAt"], "2026-08-18T01:00:00Z")
 
+    def test_merge_index_keeps_generic_description_unreviewed(self):
+        cases = [
+            ("aboutkafka", "Created with StackBlitz ⚡️"),
+            ("articles", "articles"),
+            ("autonomous-logistics", "tradermade_cfd"),
+        ]
+        for name, description in cases:
+            with self.subTest(name=name):
+                document = merge_index(
+                    [self.repo(name)],
+                    {name: self.facts(name, description=description)},
+                    existing={"repositories": []},
+                    now="2026-08-18T01:00:00Z",
+                )
+                entry = document["repositories"][0]
+                self.assertTrue(entry["needsReview"])
+                self.assertEqual(entry["purpose"], UNKNOWN_PURPOSE)
+                self.assertEqual(entry["matches"], [UNKNOWN_MATCH])
+
+    def test_merge_index_demotes_generic_auto_semantic_from_previous_refresh(self):
+        name = "aboutkafka"
+        description = "Created with StackBlitz ⚡️"
+        old = self.entry(
+            name,
+            purpose=description,
+            matches=[description],
+            checked_at="2026-08-18T01:00:00Z",
+            needs_review=False,
+        )
+        document = merge_index(
+            [self.repo(name)],
+            {name: self.facts(name, description=description)},
+            existing={"repositories": [old]},
+            now="2026-08-18T02:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertTrue(entry["needsReview"])
+        self.assertEqual(entry["purpose"], UNKNOWN_PURPOSE)
+        self.assertEqual(entry["matches"], [UNKNOWN_MATCH])
+        self.assertIsNone(entry["checkedAt"])
+
     def test_merge_index_backfills_existing_placeholder_when_description_exists(self):
         repo = self.repo("described")
         old = self.entry(
@@ -238,7 +279,7 @@ class RepositoryRecallTests(unittest.TestCase):
             {
                 "described": self.facts(
                     "described",
-                    description="Public evidence index",
+                    description="Public evidence index for reusable repository discovery",
                     topics=["evidence"],
                 )
             },
@@ -246,7 +287,7 @@ class RepositoryRecallTests(unittest.TestCase):
             now="2026-08-18T01:00:00Z",
         )
         entry = document["repositories"][0]
-        self.assertEqual(entry["purpose"], "Public evidence index")
+        self.assertEqual(entry["purpose"], "Public evidence index for reusable repository discovery")
         self.assertFalse(entry["needsReview"])
 
     def test_merge_index_preserves_semantics_when_sources_are_unchanged(self):
