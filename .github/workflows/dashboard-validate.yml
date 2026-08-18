@@ -5,6 +5,7 @@ on:
     paths:
       - 'api/dashboard-live.js'
       - 'dashboard/**'
+      - '!dashboard/data/repository-index.json'
       - 'docs/dashboard/**'
       - 'package.json'
       - 'vercel.json'
@@ -15,6 +16,7 @@ on:
     paths:
       - 'api/dashboard-live.js'
       - 'dashboard/**'
+      - '!dashboard/data/repository-index.json'
       - 'docs/dashboard/**'
       - 'package.json'
       - 'vercel.json'
