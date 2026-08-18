@@ -18,11 +18,14 @@ REVIEWED = {
     "kafka",
     "KAFKA2306",
     "marvelousdesigner",
+    "multiomics",
     "nonfarmpayroll",
     "prompt-vault",
     "readable-github",
+    "robot",
     "rule-scribe-games",
     "skew",
+    "space",
     "vmatch2",
     "vrc-pilot-test",
     "vrcgimmicknetwork",
@@ -32,8 +35,6 @@ REVIEWED = {
     "Year2035",
     "yt4",
 }
-
-NO_EVIDENCE = {"multiomics", "robot", "space"}
 
 
 class RepositoryRecallManualReviewTests(unittest.TestCase):
@@ -67,11 +68,32 @@ class RepositoryRecallManualReviewTests(unittest.TestCase):
             )
         return {"repositories": repositories}
 
-    def test_all_evidence_backed_remaining_repositories_are_reviewed(self):
+    def test_all_manually_audited_repositories_have_reviewed_semantics(self):
         self.assertTrue(REVIEWED.issubset(self.overrides))
 
-    def test_empty_repositories_are_not_promoted_without_evidence(self):
-        self.assertTrue(NO_EVIDENCE.isdisjoint(self.overrides))
+    def test_multiomics_is_explicitly_planned_not_falsely_implemented(self):
+        semantic = self.overrides["multiomics"]
+        self.assertIn("正準ターゲット", semantic["purpose"])
+        self.assertIn("未materialized", semantic["purpose"])
+        result = search_index(
+            "Multiomicsの正準repository",
+            self.document({"multiomics"}),
+        )
+        self.assertEqual(result["selected"], "multiomics")
+
+    def test_non_canonical_empty_repositories_are_not_selected(self):
+        cases = [
+            ("robot", "robot"),
+            ("robot", "robotics"),
+            ("robot", "ロボット"),
+            ("space", "space"),
+            ("space", "reusable rockets"),
+            ("space", "ロケット"),
+        ]
+        for name, query in cases:
+            with self.subTest(name=name, query=query):
+                result = search_index(query, self.document({name}))
+                self.assertIsNone(result["selected"])
 
     def test_nearby_repository_queries_stay_distinct(self):
         cases = [

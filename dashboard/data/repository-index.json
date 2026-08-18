@@ -1919,11 +1919,16 @@
     },
     {
       "name": "multiomics",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ARK Big Ideas 2026 Multiomicsの正準ターゲットrepository。sequencing economics・clinical trials・approvals・provenanceを扱う計画で、現時点では実装とdatasetは未materialized",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Multiomicsの正準repository",
+        "sequencing economics clinical trials approvalsを追跡する",
+        "ARK Big Ideas Multiomicsの実装先"
       ],
-      "notFor": [],
+      "notFor": [
+        "実装済みのMultiomics datasetを取得する",
+        "旧AI金融prototypeをそのまま利用する"
+      ],
       "url": "https://github.com/KAFKA2306/multiomics",
       "sources": [
         {
@@ -1934,13 +1939,14 @@
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/multiomics",
-          "status": "absent"
+          "url": "https://github.com/KAFKA2306/multiomics/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "d2787e611cd62b71fa3235c7fee491b8ac6a305b"
         }
       ],
-      "sourceFingerprint": "b26b6db08e1b07d9cd2e806fbd1c8f6fde077e5153420401eebc72a2b4dac128",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "9c8372d545b9f558749b42606d5e2465c2465e57dd331aa7d8a50585b52e2f22",
+      "checkedAt": "2026-08-18T03:40:48Z",
+      "needsReview": false
     },
     {
       "name": "nk225seasonality",
@@ -2349,11 +2355,20 @@
     },
     {
       "name": "robot",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "非正準の空repository。ARK Big Ideas 2026 Roboticsの正準実装先はKAFKA2306/factoryであり、このrepositoryには並行実装を作らない",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "非正準の空repository",
+        "deprecated robotics placeholder"
       ],
-      "notFor": [],
+      "notFor": [
+        "robot",
+        "robotics",
+        "ロボット",
+        "automation",
+        "自動化",
+        "factory",
+        "工場"
+      ],
       "url": "https://github.com/KAFKA2306/robot",
       "sources": [
         {
@@ -2364,13 +2379,14 @@
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/robot",
-          "status": "absent"
+          "url": "https://github.com/KAFKA2306/robot/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "42e602874b04385ab09be517416e46d4faf66a8a"
         }
       ],
-      "sourceFingerprint": "4fceccb1007b23f60f01bd599c19ce8601f875e1865de6e3d03f136927dc5673",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "5ffea0670ca7e09e81c36743e152fceac915d96d4364b3d57a2ea0f90e499e01",
+      "checkedAt": "2026-08-18T03:40:48Z",
+      "needsReview": false
     },
     {
       "name": "rule-scribe-games",
@@ -2488,11 +2504,23 @@
     },
     {
       "name": "space",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "非正準の空repository。Reusable Rocketsの正準ターゲットはspace-launchesで、既存の移行作業はKAFKA2306/trahistで管理するため、このrepositoryには並行実装を作らない",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "非正準の空repository",
+        "deprecated space placeholder"
       ],
-      "notFor": [],
+      "notFor": [
+        "space",
+        "space launches",
+        "space-launches",
+        "reusable rockets",
+        "rocket",
+        "ロケット",
+        "launch",
+        "打上げ",
+        "reentry",
+        "再突入"
+      ],
       "url": "https://github.com/KAFKA2306/space",
       "sources": [
         {
@@ -2503,13 +2531,14 @@
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/space",
-          "status": "absent"
+          "url": "https://github.com/KAFKA2306/space/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "0c7f8867c630dcf69799eaa1047ecbf4656d4cfb"
         }
       ],
-      "sourceFingerprint": "f4a63d422f41a4d8bbfd6470bfaa142456940669dbc79cdd3a8080882f358a25",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "64e8c7735379e357c6a5e1cdbdae32c5cc137c8140937ceeb42c5352eca757e6",
+      "checkedAt": "2026-08-18T03:40:48Z",
+      "needsReview": false
     },
     {
       "name": "summer",

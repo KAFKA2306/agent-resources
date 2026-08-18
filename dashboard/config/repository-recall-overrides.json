@@ -144,6 +144,18 @@
       "画像から衣装を自動生成する"
     ]
   },
+  "multiomics": {
+    "purpose": "ARK Big Ideas 2026 Multiomicsの正準ターゲットrepository。sequencing economics・clinical trials・approvals・provenanceを扱う計画で、現時点では実装とdatasetは未materialized",
+    "matches": [
+      "Multiomicsの正準repository",
+      "sequencing economics clinical trials approvalsを追跡する",
+      "ARK Big Ideas Multiomicsの実装先"
+    ],
+    "notFor": [
+      "実装済みのMultiomics datasetを取得する",
+      "旧AI金融prototypeをそのまま利用する"
+    ]
+  },
   "nonfarmpayroll": {
     "purpose": "米国BLSのTotal nonfarm employmentを、出典・取得時刻・検証情報付きJSON・CSV・埋め込みチャートとして配布する公開データレイヤー",
     "matches": [
@@ -180,6 +192,22 @@
       "GitHub ActionsやIssueを管理する"
     ]
   },
+  "robot": {
+    "purpose": "非正準の空repository。ARK Big Ideas 2026 Roboticsの正準実装先はKAFKA2306/factoryであり、このrepositoryには並行実装を作らない",
+    "matches": [
+      "非正準の空repository",
+      "deprecated robotics placeholder"
+    ],
+    "notFor": [
+      "robot",
+      "robotics",
+      "ロボット",
+      "automation",
+      "自動化",
+      "factory",
+      "工場"
+    ]
+  },
   "rule-scribe-games": {
     "purpose": "ボードゲームを検索し、準備・ゲームプレイ・終了条件を日本語で構造化してルール理解へつなぐReact・FastAPIアプリ",
     "matches": [
@@ -202,6 +230,25 @@
     "notFor": [
       "半導体企業の長期決算モデルを作る",
       "BLS雇用統計を配布する"
+    ]
+  },
+  "space": {
+    "purpose": "非正準の空repository。Reusable Rocketsの正準ターゲットはspace-launchesで、既存の移行作業はKAFKA2306/trahistで管理するため、このrepositoryには並行実装を作らない",
+    "matches": [
+      "非正準の空repository",
+      "deprecated space placeholder"
+    ],
+    "notFor": [
+      "space",
+      "space launches",
+      "space-launches",
+      "reusable rockets",
+      "rocket",
+      "ロケット",
+      "launch",
+      "打上げ",
+      "reentry",
+      "再突入"
     ]
   },
   "vmatch2": {
