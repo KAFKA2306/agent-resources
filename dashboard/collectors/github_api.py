@@ -10,6 +10,15 @@ from urllib.request import Request, urlopen
 API_VERSION = "2026-03-10"
 TRANSIENT_ATTEMPTS = 3
 TRANSIENT_RETRY_DELAYS = (0.5, 1.5)
+_REPOSITORY_DETAIL_FIELDS = {
+    "private",
+    "visibility",
+    "archived",
+    "description",
+    "topics",
+    "default_branch",
+}
+_REPOSITORY_PAYLOAD_CACHE = {}
 
 
 class GitHubApiError(RuntimeError):
@@ -20,7 +29,25 @@ class GitHubApiError(RuntimeError):
         self.response_body = response_body or ""
 
 
+def _cache_repository_payloads(items):
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        api_url = item.get("url")
+        if (
+            not isinstance(api_url, str)
+            or not api_url.startswith("https://api.github.com/repos/")
+            or not _REPOSITORY_DETAIL_FIELDS.issubset(item)
+        ):
+            continue
+        _REPOSITORY_PAYLOAD_CACHE[api_url] = item
+
+
 def request_json(url, token=None):
+    cached = _REPOSITORY_PAYLOAD_CACHE.get(url)
+    if cached is not None:
+        return dict(cached), {}
+
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": API_VERSION,
@@ -86,6 +113,7 @@ def fetch_paginated(url, token=None, request_fn=request_json, item_key=None):
         page_items = payload.get(item_key) if item_key else payload
         if not isinstance(page_items, list):
             raise GitHubApiError("unexpected GitHub API response shape")
+        _cache_repository_payloads(page_items)
         items.extend(page_items)
         current = next_link(headers)
     return items
