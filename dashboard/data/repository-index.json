@@ -2,9 +2,9 @@
   "repositories": [
     {
       "name": "2510youtuber",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "2510youtuber — AIエージェントによるYouTube動画生成",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "2510youtuber — AIエージェントによるYouTube動画生成"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/2510youtuber",
@@ -23,14 +23,14 @@
         }
       ],
       "sourceFingerprint": "0902a8f46eced393b31e53b3b9062db2f76bf81e5fddbea44ff35825a58157fa",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "2511youtuber",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ニュース取得、台本生成、VOICEVOX音声、字幕、FFmpeg動画、メタデータ生成、YouTube公開までを一つの実行で処理します。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ニュース取得、台本生成、VOICEVOX音声、字幕、FFmpeg動画、メタデータ生成、YouTube公開までを一つの実行で処理します。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/2511youtuber",
@@ -49,14 +49,14 @@
         }
       ],
       "sourceFingerprint": "a754bcc07d487dc64ea9fda41fab60f3c345fd5214f62624e44636207deebcf7",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "333",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "読売333 批判的検証 — 等ウェート指数をTOPIXと比較する分析試作",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "読売333 批判的検証 — 等ウェート指数をTOPIXと比較する分析試作"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/333",
@@ -75,14 +75,14 @@
         }
       ],
       "sourceFingerprint": "1f0dced2b6922f6676a44f3b52e1c19492c912d1fb45161e7355372f6247dc1d",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "abestudy",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "アベノミクス期を中心に、年次リバランスの日本株ポートフォリオをウォークフォワード評価する研究コードです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "アベノミクス期を中心に、年次リバランスの日本株ポートフォリオをウォークフォワード評価する研究コードです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/abestudy",
@@ -101,14 +101,14 @@
         }
       ],
       "sourceFingerprint": "17474d48bf4da887b0177dbf04a16483ddf3df290cc34036e7f4bfe6bbdf4539",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "aboutkafka",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "aboutkafka — legacy profile prototype",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "aboutkafka — legacy profile prototype"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/aboutkafka",
@@ -127,14 +127,14 @@
         }
       ],
       "sourceFingerprint": "bed90d33427c03e282a20b9dc6643b3eb21804b77c30a3ddc246b25ac77db095",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "adaptive_wear_generator_pro",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "AdaptiveWear Generator Pro — Blender密着衣装生成アドオン",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "AdaptiveWear Generator Pro — Blender密着衣装生成アドオン"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/adaptive_wear_generator_pro",
@@ -153,8 +153,8 @@
         }
       ],
       "sourceFingerprint": "466b8fcb0ecb253ff7c5983e525ac7e90c66c454d3250052a61e0aa1ed7eeac8",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "agent-resources",
@@ -184,9 +184,9 @@
     },
     {
       "name": "alpha",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Alpha Architecture Agent 🤖📈",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Alpha Architecture Agent 🤖📈"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/alpha",
@@ -205,14 +205,14 @@
         }
       ],
       "sourceFingerprint": "89f31c53b4ce339eac35201b8bf0c8e5ade25b5b8e7bba66630de0b57d0cbc10",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "anime",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "anime — dアニメストア公開情報の年別ブラウザ",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "anime — dアニメストア公開情報の年別ブラウザ"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/anime",
@@ -231,8 +231,8 @@
         }
       ],
       "sourceFingerprint": "09da687b166fe6f1698b1e62ebbb3a88d45eb987ad486b919520c39009fef951",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "AntennaPod",
@@ -262,9 +262,9 @@
     },
     {
       "name": "articles",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "広い読者が自分事にできる問題を入口に、実体験・実測・失敗から、読後の判断や行動を一段よくする技術記事を作るrepository。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "広い読者が自分事にできる問題を入口に、実体験・実測・失敗から、読後の判断や行動を一段よくする技術記事を作るrepository。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/articles",
@@ -283,14 +283,14 @@
         }
       ],
       "sourceFingerprint": "ba33e95d133bc29cf6650aab0806641d270cb1fd38af60b6b2b04460a3f96533",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "auto-invest",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Auto Invest Dashboard — 投資リスク計算ダッシュボード",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Auto Invest Dashboard — 投資リスク計算ダッシュボード"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/auto-invest",
@@ -309,14 +309,14 @@
         }
       ],
       "sourceFingerprint": "3e3f42dab42cf379c97e9ef5bd22946638749553e0f548a0c369307772004435",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "autonomous-logistics",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "TraderMade APIから価格データを取得し、Parquet・CSV・Feather・DuckDB等へ保存して、統合・指標計算・表示を試したコードを保存しています。稼働中のデータサービス、再現可能な分析package、売買systemではありません。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "TraderMade APIから価格データを取得し、Parquet・CSV・Feather・DuckDB等へ保存して、統合・指標計算・表示を試したコードを保存しています。稼働中のデータサービス、再現可能な分析package、売買systemではありません。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/autonomous-logistics",
@@ -335,14 +335,14 @@
         }
       ],
       "sourceFingerprint": "5191c2959333c64407f002965cd127b85d1ca70ec6b2a06c5bcb30b71cb2e234",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "autonomous-vehicles",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "旧 finagecfd のCFD価格取得実験は正準責務ではありません。現在は NHTSA と California DMV の公開情報だけを扱います。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "旧 finagecfd のCFD価格取得実験は正準責務ではありません。現在は NHTSA と California DMV の公開情報だけを扱います。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/autonomous-vehicles",
@@ -361,14 +361,14 @@
         }
       ],
       "sourceFingerprint": "655ada926699e47570b6ee347e4e5c56c1761bdd0f9f12b78b6b058aa1d2a073",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "AutoPhotogrammetry",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "AutoPhotogrammetry — clone → task → PLY",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "AutoPhotogrammetry — clone → task → PLY"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/AutoPhotogrammetry",
@@ -387,14 +387,14 @@
         }
       ],
       "sourceFingerprint": "96d046d274b94813c0b6a167469b3b67095c9ebab9f5ade79ff41bdec11719e3",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "BestEthernet",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "旅先や会場で使える回線を固定的に決めず、その場で候補を測定し、根拠を残して選び直すための Windows 向けツール群です。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "旅先や会場で使える回線を固定的に決めず、その場で候補を測定し、根拠を残して選び直すための Windows 向けツール群です。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/BestEthernet",
@@ -413,14 +413,14 @@
         }
       ],
       "sourceFingerprint": "85b8ed9edce67382c69272657921fa9671d731cba1ea8234396c4e5faf8aea8b",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "blendshapedeformer",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "blendshapedeformer — BlendShape転送の検証基準と研究構想",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "blendshapedeformer — BlendShape転送の検証基準と研究構想"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/blendshapedeformer",
@@ -439,14 +439,14 @@
         }
       ],
       "sourceFingerprint": "97ced0e81a2a9d83c538ba2ac4337f4dd096d1c6be9961b299f4820764be2e5a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "BMAX",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "BMAX — ビットコイン関連転換社債ETFの計算研究",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "BMAX — ビットコイン関連転換社債ETFの計算研究"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/BMAX",
@@ -465,14 +465,14 @@
         }
       ],
       "sourceFingerprint": "f572999598847098c8b3c90b122284a2f7a23ff53657f163e91c74b89f2739e8",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "boardgamelist",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ルールを集めるほど、「同じゲームだから一つにまとめる」が危険になる。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ルールを集めるほど、「同じゲームだから一つにまとめる」が危険になる。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/boardgamelist",
@@ -491,14 +491,14 @@
         }
       ],
       "sourceFingerprint": "d2a9b868e35e94ec781f4c97ba505c58610c8697295ec4def9c6e6212a1aff3a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "bodogenomikata2",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "プレイ中にルールで止まったとき、欲しいのは「それらしい答え」ではなく、すぐ使えて根拠へ戻れる答えです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "プレイ中にルールで止まったとき、欲しいのは「それらしい答え」ではなく、すぐ使えて根拠へ戻れる答えです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/bodogenomikata2",
@@ -517,14 +517,14 @@
         }
       ],
       "sourceFingerprint": "9f288b71b038f6667988b9aa34e3cd9f0b2aa096579d17ba6cbbf4c8dfed2e31",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "bonus",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "賞与は「会社別の数字」を集めるほど、比較を間違えやすくなる。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "賞与は「会社別の数字」を集めるほど、比較を間違えやすくなる。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/bonus",
@@ -543,14 +543,14 @@
         }
       ],
       "sourceFingerprint": "e2de92eda3cf63c4503f470ef70058e32d0fd8d67d27389347cd15767371d506",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "books",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "本が増えるほど、「持っているか」「読んだか」「どの版か」が一つの答えではなくなる。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "本が増えるほど、「持っているか」「読んだか」「どの版か」が一つの答えではなくなる。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/books",
@@ -569,14 +569,14 @@
         }
       ],
       "sourceFingerprint": "ebd8bc3fa326e8ff59b2970f694062b9e9aef6062e98ae1f61237b789566b985",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "boothitemmanager",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "BOOTHで欲しい衣装を見つけても、「自分のアバターで使えるか」は商品タイトルだけでは分からない。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "BOOTHで欲しい衣装を見つけても、「自分のアバターで使えるか」は商品タイトルだけでは分からない。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/boothitemmanager",
@@ -595,14 +595,14 @@
         }
       ],
       "sourceFingerprint": "27f92cbb54029d8e1d9186fa768d65634f5b0859174caf2b048584284fba81bc",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "bpyutils",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "bpyutils — Blender・Unity衣装変換ユーティリティ集",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "bpyutils — Blender・Unity衣装変換ユーティリティ集"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/bpyutils",
@@ -621,14 +621,14 @@
         }
       ],
       "sourceFingerprint": "84c5453f92cabefe7a12e797aa1b7fe8cb813fa9368533d08b844873713e48e2",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "CantStopExpressLearn",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "学習器を強くする前に、まず「ゲームを間違えていない」ことを証明する。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "学習器を強くする前に、まず「ゲームを間違えていない」ことを証明する。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/CantStopExpressLearn",
@@ -647,14 +647,14 @@
         }
       ],
       "sourceFingerprint": "cced25e948b9a216c734aa84d8e7a16250cd2bd1d3d909ddadd839a5e46bc35d",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "cast_event_cal",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "casteventcal — VRChat Event Intelligence",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "casteventcal — VRChat Event Intelligence"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/cast_event_cal",
@@ -673,8 +673,8 @@
         }
       ],
       "sourceFingerprint": "5ef36646f7319aea7f3d347ed565dbd575484c9c4ef7d75d1626b99cbd3f4c21",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "cedar-pollen-bi",
@@ -730,9 +730,9 @@
     },
     {
       "name": "com",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "KAFKA2306/com は、KAFKA2306配下の複数リポジトリにまたがる仕事を、人間が理解でき、ChatGPTが実行を支援でき、GitHub上で監査できる形に保つための管理リポジトリです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "KAFKA2306/com は、KAFKA2306配下の複数リポジトリにまたがる仕事を、人間が理解でき、ChatGPTが実行を支援でき、GitHub上で監査できる形に保つための管理リポジトリです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/com",
@@ -751,14 +751,14 @@
         }
       ],
       "sourceFingerprint": "5d0769ac5cb59a190e81d5e13703ff316b1bb798caf0d94f0c14f07876cf6a02",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "ComfyUI-KLingAI-API",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ComfyUI 上で KLing AI API を呼び出すためのカスタムノードです。API の仕様は KLing AI API ドキュメントを参照してください。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ComfyUI 上で KLing AI API を呼び出すためのカスタムノードです。API の仕様は KLing AI API ドキュメントを参照してください。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API",
@@ -777,14 +777,14 @@
         }
       ],
       "sourceFingerprint": "41ce31f6d5ea3238f38fb3dd6806b7f6489b1bad31e9f0d84e3353783492a19e",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "CrewTrade",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "金融データは、集めるほど比較しやすくなるとは限らない。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "金融データは、集めるほど比較しやすくなるとは限らない。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/CrewTrade",
@@ -803,8 +803,8 @@
         }
       ],
       "sourceFingerprint": "e6383d75a6647ed43b86c003814a48f658c0d7420d68fc40fc27a808e97c4c89",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "daily-arXiv-ai-enhanced",
@@ -834,9 +834,9 @@
     },
     {
       "name": "dancer",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公開済みの実ダンスモーションを SiroinoSotaiPC へ retarget し、Blender で H.264 MP4 を生成します。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公開済みの実ダンスモーションを SiroinoSotaiPC へ retarget し、Blender で H.264 MP4 を生成します。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/dancer",
@@ -855,8 +855,8 @@
         }
       ],
       "sourceFingerprint": "7a2e6687673422ba55ffdd10a516b29327f33cec4c2bcfdaf2b96e726e803ecb",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "DeepCode",
@@ -886,9 +886,9 @@
     },
     {
       "name": "detective",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "文章の統計が違って見えても、それだけで「AIが書いた」「この年代に書かれた」とは言えない。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "文章の統計が違って見えても、それだけで「AIが書いた」「この年代に書かれた」とは言えない。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/detective",
@@ -907,14 +907,14 @@
         }
       ],
       "sourceFingerprint": "9e648e42cd60bac6044aa657f6ea92f30e177359728da63f842b7d32f5661fb3",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "dmovie2511",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "dmovie2511 — ComfyUI動画生成の自動実行環境",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "dmovie2511 — ComfyUI動画生成の自動実行環境"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/dmovie2511",
@@ -933,14 +933,14 @@
         }
       ],
       "sourceFingerprint": "547df5167bae9000e35a31f2c0d8d552cf4513cc51c0bc64afc8dcb8944635fb",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "DominionDeckDrawSimlator",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公開ページ: https://kafka2306.github.io/DominionDeckDrawSimlator/",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公開ページ: https://kafka2306.github.io/DominionDeckDrawSimlator/"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/DominionDeckDrawSimlator",
@@ -959,14 +959,14 @@
         }
       ],
       "sourceFingerprint": "1cb88848300a87a6c45c0450b41ca3330b5163ea459c17e2bf9d8113fd373022",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "econalert",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公式経済指標を、発表時点・対象期間・取得元を失わず保存し、後段の分析や通知から再利用できるようにするrepositoryです。正準責務は economic-releases へのrename後も同じです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公式経済指標を、発表時点・対象期間・取得元を失わず保存し、後段の分析や通知から再利用できるようにするrepositoryです。正準責務は economic-releases へのrename後も同じです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/econalert",
@@ -985,14 +985,14 @@
         }
       ],
       "sourceFingerprint": "a1d8bcf0e847a0a4655e370fb8691b1f2e74b37cd8b5ec1790a7d301be88babd",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "etf",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "etf — ARK ETF holdings",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "etf — ARK ETF holdings"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/etf",
@@ -1011,14 +1011,14 @@
         }
       ],
       "sourceFingerprint": "e33fe37ff56233056db686bc1f6a6ab0dbefe05314127b70b2b223e58fd39d20",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "factory",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "「どの会社が、どこで、何を、どう作っているか」を、出典まで戻って比較できる製造拠点データベース。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "「どの会社が、どこで、何を、どう作っているか」を、出典まで戻って比較できる製造拠点データベース。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/factory",
@@ -1037,14 +1037,14 @@
         }
       ],
       "sourceFingerprint": "be3b30ed6e213f8deaf0bdcd1074dc646a036597516efc5b8e009cc5a6dc599f",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "finAnalist",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "入力テーマのニュースと、利用者が明示した市場シンボルの企業・財務・価格データを取得し、記述レポートへまとめるPythonプロトタイプです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "入力テーマのニュースと、利用者が明示した市場シンボルの企業・財務・価格データを取得し、記述レポートへまとめるPythonプロトタイプです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/finAnalist",
@@ -1063,14 +1063,14 @@
         }
       ],
       "sourceFingerprint": "6b7f44b03ad62c48b7a22a98dc85809af71ff71ce58539cf2f07da9663c87b88",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "financial-services-plugins",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Claude for Financial Services",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Claude for Financial Services"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/financial-services-plugins",
@@ -1089,14 +1089,14 @@
         }
       ],
       "sourceFingerprint": "e1a8baf011914b77689ab0fb9a4e1d38807316cc47302cd19e9d52122fcf4273",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "finBI",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "金融データは、数字を並べるだけでは「何が起きたか」が分かりにくい。 finBI は、保存済みの検証済みデータから 2つの日付を選ぶだけで、変化を見て・比べて・出典まで確かめられる 小さな金融BIです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "金融データは、数字を並べるだけでは「何が起きたか」が分かりにくい。 finBI は、保存済みの検証済みデータから 2つの日付を選ぶだけで、変化を見て・比べて・出典まで確かめられる 小さな金融BIです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/finBI",
@@ -1115,14 +1115,14 @@
         }
       ],
       "sourceFingerprint": "a1658f56d36775174df225c7ebfb5b94568f1d5b171ac81944160946a75eb004",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "fit",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "fit — Blender衣装リターゲット研究基盤",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "fit — Blender衣装リターゲット研究基盤"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/fit",
@@ -1141,14 +1141,14 @@
         }
       ],
       "sourceFingerprint": "9fbd03e9ef51f4f9271a78f77d0970d5987fba779cf72de3c640bc1f97d6bdea",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "furutsatotax",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公開サイト: https://kafka2306.github.io/furutsatotax/",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公開サイト: https://kafka2306.github.io/furutsatotax/"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/furutsatotax",
@@ -1167,14 +1167,14 @@
         }
       ],
       "sourceFingerprint": "a7abf41b0e5c382b48d8b09f7e0c551f3c0b50dcc296ae3c860bc399090aa164",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "furuyoni",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "同じカード名でも、版が違えば「今使える情報」は同じとは限らない。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "同じカード名でも、版が違えば「今使える情報」は同じとは限らない。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/furuyoni",
@@ -1193,14 +1193,14 @@
         }
       ],
       "sourceFingerprint": "0bd0178e56fac35466496d45e2088c540eda11e8a559b1c348f103b74fa4dd5a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "fx",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "fx — tokenized asset observations",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "fx — tokenized asset observations"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/fx",
@@ -1219,8 +1219,8 @@
         }
       ],
       "sourceFingerprint": "df1c9690ada4d3ec42df5901423e267b227adfb57528b7576b971964dc25091c",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "game-library-dashboard",
@@ -1250,9 +1250,9 @@
     },
     {
       "name": "gennote",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "金融データ自動収集・ブログ投稿システム AIFinReporter",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "金融データ自動収集・ブログ投稿システム AIFinReporter"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/gennote",
@@ -1271,14 +1271,14 @@
         }
       ],
       "sourceFingerprint": "5754272bb13ce0215189e6132568aa489f08bbcab299b07081bafcab7dd58a53",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "hf-cache-hub",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Hugging Face modelをrevision固定で共有cacheへ配置し、複数projectから同一snapshotを参照するための小さなbootstrap utilityです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Hugging Face modelをrevision固定で共有cacheへ配置し、複数projectから同一snapshotを参照するための小さなbootstrap utilityです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/hf-cache-hub",
@@ -1297,14 +1297,14 @@
         }
       ],
       "sourceFingerprint": "cbb94f5a6053fc77de6f1913a15a0b596ed90f9b0f07202364b0babc09885709",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "hitaiall",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ヒタイオール - アバター衣装対応希望ランキング",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ヒタイオール - アバター衣装対応希望ランキング"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/hitaiall",
@@ -1323,14 +1323,14 @@
         }
       ],
       "sourceFingerprint": "bb23e08691565178c7da09e7ba946d5b79633c587ea09670499e55029b54c5e8",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "hitaiou",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "非対応改変のニーズを収集・可視化し、クリエイターとユーザーをつなぐプラットフォームです。需要調査から作品の納品まで、スムーズな非対応改変プロセスを実現します。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "非対応改変のニーズを収集・可視化し、クリエイターとユーザーをつなぐプラットフォームです。需要調査から作品の納品まで、スムーズな非対応改変プロセスを実現します。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/hitaiou",
@@ -1349,14 +1349,14 @@
         }
       ],
       "sourceFingerprint": "180881677a2cea8c60e334bfba19348e18fb4259802fad7f5b42efcebe10f9df",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "image2outfit",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "SiroinoSotaiPC向け衣装をBlenderで制作し、編集可能ソース、FBX、宣言済みPrefab、実レンダリング、研究記録を一つの再現可能な製品ワークスペースで管理するプロジェクトです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "SiroinoSotaiPC向け衣装をBlenderで制作し、編集可能ソース、FBX、宣言済みPrefab、実レンダリング、研究記録を一つの再現可能な製品ワークスペースで管理するプロジェクトです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/image2outfit",
@@ -1375,14 +1375,14 @@
         }
       ],
       "sourceFingerprint": "e43ee1c8c2f8930ea0d877cc492f40554c26cb370c9a96ca7c34ea7e368a8502",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "investor",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "KAFKA2306/investor は、企業開示、金利・為替、市場データ、投資仮説、バックテスト、企業知識、公開ダッシュボードを、出典、時点、計算、予測、実運用証拠を分離して扱うための統合研究ワークスペースです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "KAFKA2306/investor は、企業開示、金利・為替、市場データ、投資仮説、バックテスト、企業知識、公開ダッシュボードを、出典、時点、計算、予測、実運用証拠を分離して扱うための統合研究ワークスペースです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/investor",
@@ -1401,14 +1401,14 @@
         }
       ],
       "sourceFingerprint": "913d4897eff4b21203c310519bf0094c0f01ed5d389b5f1e083ebc0d7284f54b",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "investor2",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "AAARTS — 自律型アルファ研究システム",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "AAARTS — 自律型アルファ研究システム"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/investor2",
@@ -1427,14 +1427,14 @@
         }
       ],
       "sourceFingerprint": "e890ee0ea4358afb5ddd62005b07412c5ec4ba460f1a351d2f5ddca453a45b8a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "irr",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "irr — 賃金・賞与を世界株へ積み立てた場合のIRR研究",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "irr — 賃金・賞与を世界株へ積み立てた場合のIRR研究"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/irr",
@@ -1453,14 +1453,14 @@
         }
       ],
       "sourceFingerprint": "08b34742312967b5f4092de07640c557f170f0f241a8e7eb2df7013f3c715fca",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "jhr",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "JHR公式Excelから稼働率、ADR、RevPAR、売上高を抽出し、出典・対象範囲・集計意味を保存する研究プロジェクトです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "JHR公式Excelから稼働率、ADR、RevPAR、売上高を抽出し、出典・対象範囲・集計意味を保存する研究プロジェクトです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/jhr",
@@ -1479,14 +1479,14 @@
         }
       ],
       "sourceFingerprint": "4b697e5dd4332b2265dadf9b59dd29a8e88cb1f10178c40bc98a1ff7f6417f99",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "kafin3",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "kafin3 — 2024年のAI金融分析prototype",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "kafin3 — 2024年のAI金融分析prototype"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/kafin3",
@@ -1505,14 +1505,14 @@
         }
       ],
       "sourceFingerprint": "4e3b46661c0e135f9d21720885218f4cbaabda8e23ba17325f62a7c6db06214f",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "kafka",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRChat — profile GitHub — KAFKA2306 X — @kafkavr note — かふか｜KAFKA Zenn — かふか Scrapbox — kafka2512 BOOTH — Studio Kafka YouTube — @byosan-money Hatena Blog — kafkafinancialgroup",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat — profile GitHub — KAFKA2306 X — @kafkavr note — かふか｜KAFKA Zenn — かふか Scrapbox — kafka2512 BOOTH — Studio Kafka YouTube — @byosan-money Hatena Blog — kafkafinancialgroup"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/kafka",
@@ -1531,14 +1531,14 @@
         }
       ],
       "sourceFingerprint": "a3e75e56637cf256bf1d5c36e160b19f42da5768adde0d70f4dd5ec31e193938",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "KAFKA2306",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "実際に使うデータ、作業、記録、判断を、後から根拠・状態・失敗まで追えて、もう一度使える形へ変えるソフトウェアを作っています。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "実際に使うデータ、作業、記録、判断を、後から根拠・状態・失敗まで追えて、もう一度使える形へ変えるソフトウェアを作っています。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/KAFKA2306",
@@ -1557,14 +1557,14 @@
         }
       ],
       "sourceFingerprint": "4c27620827edab5c6df73fc09cfc07bceea5e688e4dcb42870bb7f5858afce14",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "kakeibo",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "家計簿で最初に守るべきなのは、集計結果ではない。元の明細をGitへ出さないことだ。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "家計簿で最初に守るべきなのは、集計結果ではない。元の明細をGitへ出さないことだ。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/kakeibo",
@@ -1583,14 +1583,14 @@
         }
       ],
       "sourceFingerprint": "821725864a47e7c516f26ac897f0c849d6a7798b45b0d693ee1e855a66eca6e2",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "kimeraassist",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "kimeraassist — VRChatアバター診断・修復用Unity Editorツール",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "kimeraassist — VRChatアバター診断・修復用Unity Editorツール"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/kimeraassist",
@@ -1609,8 +1609,8 @@
         }
       ],
       "sourceFingerprint": "622f67679ed2db21f027232eeb64614ac1d9bccd285199d8344eee58978e7558",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "kling",
@@ -1640,9 +1640,9 @@
     },
     {
       "name": "know",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公開サイト: https://kafka2306.github.io/know/",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公開サイト: https://kafka2306.github.io/know/"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/know",
@@ -1661,14 +1661,14 @@
         }
       ],
       "sourceFingerprint": "e3da5d489bb1d8694e396e35e198a045a262c71ab5bb8f4d4e9f593b6f197892",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "launcher",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "最小構成の Android ランチャー。Jetpack Compose + ViewModel でホーム画面 / アプリドロワー / クイックアクションだけに絞り、設定値と端末依存ロジックは LauncherConfig と NavigationInfoResolver に集約しています。Xiaomi 端末では 3 ボタン前提 UI に自動でフォールバックし、設定画面で警告カード（ NavigationNotice ）を表示します。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "最小構成の Android ランチャー。Jetpack Compose + ViewModel でホーム画面 / アプリドロワー / クイックアクションだけに絞り、設定値と端末依存ロジックは LauncherConfig と NavigationInfoResolver に集約しています。Xiaomi 端末では 3 ボタン前提 UI に自動でフォールバックし、設定画面で警告カード（ NavigationNotice ）を表示します。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/launcher",
@@ -1687,14 +1687,14 @@
         }
       ],
       "sourceFingerprint": "9f8c63757e60b2c316cb5c15cf79cfb51165dd394fb791937083553949aab941",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "m2",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "経済・市場データを data.yml に保存し、Pythonで可視化してGitHub Pagesへ公開するrepositoryです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "経済・市場データを data.yml に保存し、Pythonで可視化してGitHub Pagesへ公開するrepositoryです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/m2",
@@ -1713,14 +1713,14 @@
         }
       ],
       "sourceFingerprint": "64eb06dad39034af7b574253c73c8ff06414e47edfe8f2db47ca8aef2995479f",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "magicaltexture",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "magicaltexture — Pastel Eye Colorizer",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "magicaltexture — Pastel Eye Colorizer"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/magicaltexture",
@@ -1739,14 +1739,14 @@
         }
       ],
       "sourceFingerprint": "c6ff7f6eaca27c2a20a6a210b5a89b07d96b257878e1e2a73dc532461cda916e",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "marvelousdesigner",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公開サイト: https://kafka2306.github.io/marvelousdesigner/",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公開サイト: https://kafka2306.github.io/marvelousdesigner/"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/marvelousdesigner",
@@ -1765,14 +1765,14 @@
         }
       ],
       "sourceFingerprint": "3c5bc3f2ac86b11b9dfc252a2f06d711c75e92b2e099dee50aa03c05587c35f1",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "mitsuikaggle",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "MITSUI&CO. Commodity Prediction Challenge research",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "MITSUI&CO. Commodity Prediction Challenge research"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/mitsuikaggle",
@@ -1791,14 +1791,14 @@
         }
       ],
       "sourceFingerprint": "9ee653778afcf6822b45c35147d0be8fe7475652fcc35d6e9ec3cb49cb5729a3",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "mj",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "🀄 Solo Mahjong Practice Machine",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "🀄 Solo Mahjong Practice Machine"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/mj",
@@ -1817,14 +1817,14 @@
         }
       ],
       "sourceFingerprint": "19c7a1605c632c8c99bdac9fe6d678e871fe9412e4769c8401ce230affd2e630",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "molecularshader",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Molecule Renderer for Unity/VRChat",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Molecule Renderer for Unity/VRChat"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/molecularshader",
@@ -1843,14 +1843,14 @@
         }
       ],
       "sourceFingerprint": "e028d804d3c48b91bed96addad834a99a1cee01648bdb196e9028888d5b5c033",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "mstr",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "MSTR・Bitcoin分析snapshot",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "MSTR・Bitcoin分析snapshot"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/mstr",
@@ -1869,8 +1869,8 @@
         }
       ],
       "sourceFingerprint": "90e5ccb41eefaa948a67ace8993747ed8cbe06a1d9ab3d4b7b0d62e0333ff1d6",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "multiomics",
@@ -1899,9 +1899,9 @@
     },
     {
       "name": "nk225seasonality",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Nikkei 225 Seasonality Analysis System",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Nikkei 225 Seasonality Analysis System"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/nk225seasonality",
@@ -1920,8 +1920,8 @@
         }
       ],
       "sourceFingerprint": "22447d6ceda750b4e415189aaa073caa275f1880186b9f05185d3f52e338e06b",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "nlm",
@@ -1951,9 +1951,9 @@
     },
     {
       "name": "nonfarmpayroll",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "nonfarmpayroll — BLS雇用統計を、記事・分析・プロダクトですぐ使える形に",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "nonfarmpayroll — BLS雇用統計を、記事・分析・プロダクトですぐ使える形に"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/nonfarmpayroll",
@@ -1972,8 +1972,8 @@
         }
       ],
       "sourceFingerprint": "825d64371d09b5818c4105ab32d8e945514b567240f1106de135429843597070",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "notebooklm-py",
@@ -2003,9 +2003,9 @@
     },
     {
       "name": "NVII",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "REX NVDA Growth & Income ETF (NVII) に特化した高度な金融工学分析プラットフォームです。本システムは、レバレッジETFの複雑な動態を正確にモデリングし、カバードコール戦略の包括的なリスク・リターン分析を提供します。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "REX NVDA Growth & Income ETF (NVII) に特化した高度な金融工学分析プラットフォームです。本システムは、レバレッジETFの複雑な動態を正確にモデリングし、カバードコール戦略の包括的なリスク・リターン分析を提供します。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/NVII",
@@ -2024,14 +2024,14 @@
         }
       ],
       "sourceFingerprint": "ccf328cdf5ace6551e5f6ee58e1becef61b5fabeb85cd25c8ac720e94d466539",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "oil",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "EIAの週次石油データを、監視対象・変化量・アラート・出所が1画面で分かるブリーフに変換します。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "EIAの週次石油データを、監視対象・変化量・アラート・出所が1画面で分かるブリーフに変換します。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/oil",
@@ -2050,8 +2050,8 @@
         }
       ],
       "sourceFingerprint": "faabafa8a2e439fc87c0ac9782221b2afca7d893b6b693d8c4a899f301526deb",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "open-fitter",
@@ -2107,9 +2107,9 @@
     },
     {
       "name": "option",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Finance Option Project",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Finance Option Project"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/option",
@@ -2128,8 +2128,8 @@
         }
       ],
       "sourceFingerprint": "4d4db33d7d17f45be12fec711d4240cee7e88c3d133ad919f2d09e652a1562b0",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "pal-atlas",
@@ -2159,9 +2159,9 @@
     },
     {
       "name": "pamiq-poker",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "PAMIQ Curiosity Experiments",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "PAMIQ Curiosity Experiments"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/pamiq-poker",
@@ -2180,8 +2180,8 @@
         }
       ],
       "sourceFingerprint": "120acbb92fa6591dbbf895aa282ec694afa43ebd901ed77f819f7fe130d0d2f2",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "photoprism",
@@ -2211,9 +2211,9 @@
     },
     {
       "name": "PictureChangerTools",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "PictureChanger Tools for Unity Editor",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "PictureChanger Tools for Unity Editor"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/PictureChangerTools",
@@ -2232,14 +2232,14 @@
         }
       ],
       "sourceFingerprint": "d47d39ee55c27047c5f8c219e52b7c177f6526627485aa3f3dfc261c3e967113",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "prompt-vault",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "良かった生成プロンプトを後で再現しようとしても、文章だけでは「何が効いたか」は分からない。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "良かった生成プロンプトを後で再現しようとしても、文章だけでは「何が効いたか」は分からない。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/prompt-vault",
@@ -2258,14 +2258,14 @@
         }
       ],
       "sourceFingerprint": "8e5b198a7b57cdcbb9df1757972c3546676815af0a71d29d708af54783bc31a3",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "readable-github",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "コードを理解するために、GitHubから離れる必要はない。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "コードを理解するために、GitHubから離れる必要はない。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/readable-github",
@@ -2284,8 +2284,8 @@
         }
       ],
       "sourceFingerprint": "2c35a283f89ea9efb3f85994476a7529d3dab6781c8df8c6e49b79de423afe82",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "robot",
@@ -2314,9 +2314,9 @@
     },
     {
       "name": "rule-scribe-games",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "The Infinite Intelligence for Board Gamers",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "The Infinite Intelligence for Board Gamers"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/rule-scribe-games",
@@ -2335,14 +2335,14 @@
         }
       ],
       "sourceFingerprint": "918816dc187a51ea82a75597668bba472a26e0e0f4fc089a285055723f85683c",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "salary",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "給与データで危険なのは、古いことだけではない。出所や重複を見失った数字を「別の事実」として数えてしまうことだ。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "給与データで危険なのは、古いことだけではない。出所や重複を見失った数字を「別の事実」として数えてしまうことだ。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/salary",
@@ -2361,8 +2361,8 @@
         }
       ],
       "sourceFingerprint": "ee358e69d0427e1143f7f7bd45dff144cacf4a078d689e2b7de5096db6d0ad8a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "semiconductor-earnings-model",
@@ -2443,9 +2443,9 @@
     },
     {
       "name": "summer",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ぎ# Summer Heat Mitigation Guide | 夏季熱対策ガイド",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ぎ# Summer Heat Mitigation Guide | 夏季熱対策ガイド"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/summer",
@@ -2464,8 +2464,8 @@
         }
       ],
       "sourceFingerprint": "d41cf68a4a67d8d3559453b8b36d05b908cca41f537be8f4c36be6620d608d99",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "Swiss-Tournament-Manager",
@@ -2547,9 +2547,9 @@
     },
     {
       "name": "trahist",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Trade History Analyzer (TraHist)",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Trade History Analyzer (TraHist)"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/trahist",
@@ -2568,14 +2568,14 @@
         }
       ],
       "sourceFingerprint": "307402ddcb6410abd0e31878b4bc101321a39af1597181270dc3175a3db154ec",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "travel",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Wayweave — 旅行先の発見・比較・行程編集・公式確認を分ける旅行知識プロダクト",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Wayweave — 旅行先の発見・比較・行程編集・公式確認を分ける旅行知識プロダクト"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/travel",
@@ -2594,8 +2594,8 @@
         }
       ],
       "sourceFingerprint": "14d5ace2093747f22aad16da45ae41699ba4821977db192d19910cd35bce360d",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "Unique3D",
@@ -2718,9 +2718,9 @@
     },
     {
       "name": "uranium",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "nuclear-power — IAEA PRIS reactor evidence",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "nuclear-power — IAEA PRIS reactor evidence"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/uranium",
@@ -2739,14 +2739,14 @@
         }
       ],
       "sourceFingerprint": "6cee8b74a59d961beeaddf4d30e337ee607cb65f5d105570cceb7cfeedd221cb",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "us-swing-strategy-bi-pages",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "US Swing Strategy BI Dashboard",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "US Swing Strategy BI Dashboard"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/us-swing-strategy-bi-pages",
@@ -2765,14 +2765,14 @@
         }
       ],
       "sourceFingerprint": "15bc81998f3d57f5d9605b2582c454fe8f92d8b358a7242b17840fa13da86557",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "VeilVoice",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "FINAL ZERO-TRUST DELIVERY CONTRACT",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "FINAL ZERO-TRUST DELIVERY CONTRACT"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/VeilVoice",
@@ -2791,14 +2791,14 @@
         }
       ],
       "sourceFingerprint": "b8104c1affcefdcda1e1be5f342475fed613e0079b423aa0d558a79e510d6390",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vlog",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VLog Human Memory Engine",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VLog Human Memory Engine"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vlog",
@@ -2817,14 +2817,14 @@
         }
       ],
       "sourceFingerprint": "c08d8beb7093ba5a243fb107e18f32dbfb4177ea653856cf54f390bdffcace91",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vlogrs",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "🎮 VLog - Autonomous Life Logger",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "🎮 VLog - Autonomous Life Logger"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vlogrs",
@@ -2843,8 +2843,8 @@
         }
       ],
       "sourceFingerprint": "59b12d63f112b843b4dd5d2682d5b610d3cf2256074b8fff190817d62a2f3066",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vmatch2",
@@ -2873,9 +2873,9 @@
     },
     {
       "name": "vmatching",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Virtual Tokyo Matching",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Virtual Tokyo Matching"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vmatching",
@@ -2894,8 +2894,8 @@
         }
       ],
       "sourceFingerprint": "d224bbc79cca6af47b1653282433d5fc1c1ce26256e1c4c09ab8d660236c69de",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrc-pilot-test",
@@ -2925,9 +2925,9 @@
     },
     {
       "name": "vrc_cast_event_calender",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "vrccasteventcalender — compatibility snapshot",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "vrccasteventcalender — compatibility snapshot"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrc_cast_event_calender",
@@ -2946,8 +2946,8 @@
         }
       ],
       "sourceFingerprint": "0ce10c8d810a84107595d60a7c99de13ba8ff7eeba8a364e86aaba2def4d9dbe",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrcgimmicknetwork",
@@ -2977,9 +2977,9 @@
     },
     {
       "name": "VRChat-bolt",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Edit in StackBlitz next generation editor ⚡️",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Edit in StackBlitz next generation editor ⚡️"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/VRChat-bolt",
@@ -2998,14 +2998,14 @@
         }
       ],
       "sourceFingerprint": "cf0e62169b0b5bbeb58a2d20fd432c8a4e6ad217ee37e84803b91571f2792f3e",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrcplat",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "docs/ に記述されているプレゼンス、購入、アバターエコシステムのためのモノレポ足場。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "docs/ に記述されているプレゼンス、購入、アバターエコシステムのためのモノレポ足場。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrcplat",
@@ -3024,14 +3024,14 @@
         }
       ],
       "sourceFingerprint": "a2a6408a4c36eafdab7eb89e3812134a928c9c4dce61a4cb636553e70f4d2b60",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrcrelator",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRChat AIコンパニオン通信システム（VRC Relator） 全体設計仕様書",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat AIコンパニオン通信システム（VRC Relator） 全体設計仕様書"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrcrelator",
@@ -3050,14 +3050,14 @@
         }
       ],
       "sourceFingerprint": "08277aae6d8ad6775580c069b51a44393cf97385a3cc031d8eb6e22daff23113",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrcviewer",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "CSVを正準入力として、VRChatのアバターとワールドを検索・カテゴリ閲覧できる静的ギャラリーです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "CSVを正準入力として、VRChatのアバターとワールドを検索・カテゴリ閲覧できる静的ギャラリーです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrcviewer",
@@ -3076,14 +3076,14 @@
         }
       ],
       "sourceFingerprint": "6f29c6d3ac1d60e49b1e69ecdae834692c907e2e5dda6f5c48a3afd2475aeea6",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrmine",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRMine — VRChat・ブラウザ向けゲーム開発基盤",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRMine — VRChat・ブラウザ向けゲーム開発基盤"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrmine",
@@ -3102,14 +3102,14 @@
         }
       ],
       "sourceFingerprint": "20a1c747f7641b3b6727aa7919befa6477ac4cad0b104a888257fbdd185784fc",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "VRPhotoJourney",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Unity Editor上で、指定したローカルフォルダの画像からスライドショー用オブジェクトを生成する試作です。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Unity Editor上で、指定したローカルフォルダの画像からスライドショー用オブジェクトを生成する試作です。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/VRPhotoJourney",
@@ -3128,14 +3128,14 @@
         }
       ],
       "sourceFingerprint": "52301a6de38070ab541e9508d202d048bbe3c7a0cb4d961b6455ad4f643cc630",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vrpoker",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRChat のポーカーテーブルを画面から読み取り、判断結果を入力操作へつなぐための実験的な Python プロジェクトです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat のポーカーテーブルを画面から読み取り、判断結果を入力操作へつなぐための実験的な Python プロジェクトです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vrpoker",
@@ -3154,14 +3154,14 @@
         }
       ],
       "sourceFingerprint": "ef93f7bfd394eadb0ef48a005c7c3ba8b00852131b24d0065252c167e81b38a3",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "vtttv",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRChat・PCVR環境向け リアルタイム音声認識＆音声合成アプリケーション",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat・PCVR環境向け リアルタイム音声認識＆音声合成アプリケーション"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/vtttv",
@@ -3180,14 +3180,14 @@
         }
       ],
       "sourceFingerprint": "d44582c8a1eae986e05f7bba3282a683e1cca5fc8baf11237b29fa391d2042db",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "WealthAudit",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "WealthAuditは、収入、支出、資産残高、市場データから、個人の貸借対照表、キャッシュフロー、資産配分、投資収益、FI指標、将来予測を再計算し、ローカルのWebダッシュボードで確認するための個人財務ワークスペースです。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "WealthAuditは、収入、支出、資産残高、市場データから、個人の貸借対照表、キャッシュフロー、資産配分、投資収益、FI指標、将来予測を再計算し、ローカルのWebダッシュボードで確認するための個人財務ワークスペースです。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/WealthAudit",
@@ -3206,14 +3206,14 @@
         }
       ],
       "sourceFingerprint": "f48bc7498fa0b23804f190605a37dcfbbd0370a5db8aacbd3347d79f51dfef58",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "x",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Twitter(X)のデータアーカイブを利用して、あなたの活動を多角的に分析・可視化するツールです。 完全ローカル環境で動作するため、高速かつプライバシーも安心。外部APIへの送信は一切行いません。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Twitter(X)のデータアーカイブを利用して、あなたの活動を多角的に分析・可視化するツールです。 完全ローカル環境で動作するため、高速かつプライバシーも安心。外部APIへの送信は一切行いません。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/x",
@@ -3232,14 +3232,14 @@
         }
       ],
       "sourceFingerprint": "14c9956f814c46dd8078f43d6db2eddde690670279b81d4c47b7fda0356e8749",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "Year2035",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "監視社会に抗う者たちの、自由を求めた革命の物語。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "監視社会に抗う者たちの、自由を求めた革命の物語。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/Year2035",
@@ -3258,14 +3258,14 @@
         }
       ],
       "sourceFingerprint": "da86f186daf6b926898957f6bc91f552d59f08f3abdb467c01a8c89a392ce9a0",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "yt3",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "YT3 — Auditable Autonomous Media Operations",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "YT3 — Auditable Autonomous Media Operations"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/yt3",
@@ -3284,14 +3284,14 @@
         }
       ],
       "sourceFingerprint": "3ff6d442baa97b668c468855f1fc4f1b94fc3b0f0d49fd8bca5becf672a00fb4",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "yt4",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "yt4 Documentation Index",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "yt4 Documentation Index"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/yt4",
@@ -3310,14 +3310,14 @@
         }
       ],
       "sourceFingerprint": "3fe61660d7bf6d139e811b05e582610811ed2ae0942d957da06b9e9d6450eef4",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     },
     {
       "name": "ytmanager",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "YouTube動画自動生成システムの管理リポジトリ",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "YouTube動画自動生成システムの管理リポジトリ"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/ytmanager",
@@ -3336,8 +3336,8 @@
         }
       ],
       "sourceFingerprint": "3a0438435661d5c7daf23d73f2da565764950e9bf2b6641ddea622ce2a42c386",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T02:16:42Z",
+      "needsReview": false
     }
   ]
 }
