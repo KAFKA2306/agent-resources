@@ -158,9 +158,9 @@
     },
     {
       "name": "agent-resources",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "A package manager for AI agents. Install agent skills from GitHub with a single command.",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "A package manager for AI agents. Install agent skills from GitHub with a single command."
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/agent-resources",
@@ -179,8 +179,8 @@
         }
       ],
       "sourceFingerprint": "fd9b77e3892c8e251fd7187b43345b45b59ef96936e2ebb67a87ef0c328bd423",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "alpha",
@@ -236,9 +236,9 @@
     },
     {
       "name": "AntennaPod",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "A podcast manager for Android",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "A podcast manager for Android"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/AntennaPod",
@@ -257,8 +257,8 @@
         }
       ],
       "sourceFingerprint": "a6496ade5bbabf8bd8d1803095eac7de3f9edea8052a09a216a36313c7602b45",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "articles",
@@ -383,10 +383,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/AutoPhotogrammetry/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "664c9b67d25369491a5d407949dbea394a0d09db"
+          "fingerprint": "6c28b7dc0e80ee73ba68ec491a1fd1c2f795d26f"
         }
       ],
-      "sourceFingerprint": "aa73d8ae9e0512abb0e5ce4489622e23aae6d40a53be05c922b6f06d5df72df8",
+      "sourceFingerprint": "96d046d274b94813c0b6a167469b3b67095c9ebab9f5ade79ff41bdec11719e3",
       "checkedAt": null,
       "needsReview": true
     },
@@ -678,9 +678,9 @@
     },
     {
       "name": "cedar-pollen-bi",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Interactive BI dashboard for Japan cedar male flower bud ratios",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Interactive BI dashboard for Japan cedar male flower bud ratios"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/cedar-pollen-bi",
@@ -699,14 +699,14 @@
         }
       ],
       "sourceFingerprint": "49febf1134cc3ccfdf33c7e21046bd22b17f5c6ec86e1bb3b5d81f0d07450c32",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "claude-code",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Claude Code Snapshot for Research. All original source code is the property of Anthropic.",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Claude Code Snapshot for Research. All original source code is the property of Anthropic."
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/claude-code",
@@ -725,8 +725,8 @@
         }
       ],
       "sourceFingerprint": "aee4f088b4c62d73dc3d79318cec71a866a7398dba696ef22699ef0f750ca2ae",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "com",
@@ -808,9 +808,9 @@
     },
     {
       "name": "daily-arXiv-ai-enhanced",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Automatically crawl arXiv papers daily and summarize them using AI. Illustrating them using GitHub Pages.",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Automatically crawl arXiv papers daily and summarize them using AI. Illustrating them using GitHub Pages."
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/daily-arXiv-ai-enhanced",
@@ -829,8 +829,8 @@
         }
       ],
       "sourceFingerprint": "8eb72ec9ffc4e70c1dd5c452e966fa0207ee9fa35e4cb231bac8ea5043cbb246",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "dancer",
@@ -860,9 +860,9 @@
     },
     {
       "name": "DeepCode",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "\"DeepCode: Open Agentic Coding (Paper2Code & Text2Web & Text2Backend)\"",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "\"DeepCode: Open Agentic Coding (Paper2Code & Text2Web & Text2Backend)\""
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/DeepCode",
@@ -881,8 +881,8 @@
         }
       ],
       "sourceFingerprint": "a82c78cbae700c3dce04861e4b1aebc23da82c6fbc3c6a397de9ca9d72dece1d",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "detective",
@@ -1224,9 +1224,9 @@
     },
     {
       "name": "game-library-dashboard",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Official-metadata game ontology dashboard",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Official-metadata game ontology dashboard"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/game-library-dashboard",
@@ -1245,8 +1245,8 @@
         }
       ],
       "sourceFingerprint": "96aa256ec5136c263404ccd5895cc6299f4c2a15907b0f47b2a44e9ebacf4d3c",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "gennote",
@@ -1614,9 +1614,9 @@
     },
     {
       "name": "kling",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Kling AI Python SDK - Production-ready, type-safe Python client for Kling AI's cutting-edge video generation and media processing APIs. Supports async/await, Pydantic models, and comprehensive error h",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Kling AI Python SDK - Production-ready, type-safe Python client for Kling AI's cutting-edge video generation and media processing APIs. Supports async/await, Pydantic models, and comprehensive error h"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/kling",
@@ -1635,8 +1635,8 @@
         }
       ],
       "sourceFingerprint": "40fb5135c044263da536c63b3d35242b870c37704e3157b54d2ddd1306be7de0",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "know",
@@ -1925,9 +1925,9 @@
     },
     {
       "name": "nlm",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "a command line interface to NotebookLM",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "a command line interface to NotebookLM"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/nlm",
@@ -1946,8 +1946,8 @@
         }
       ],
       "sourceFingerprint": "0b491e00b5d9d62a102170b5830a93840d8e30be850e57719cfc8473736deab7",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "nonfarmpayroll",
@@ -1977,9 +1977,9 @@
     },
     {
       "name": "notebooklm-py",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Unofficial Python API and agentic skill for Google NotebookLM. Full programmatic access to NotebookLM's features—including capabilities the web UI doesn't expose—via Python, CLI, and AI agents like Claude Code, Codex, and OpenClaw.",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Unofficial Python API and agentic skill for Google NotebookLM. Full programmatic access to NotebookLM's features—including capabilities the web UI doesn't expose—via Python, CLI, and AI agents like Claude Code, Codex, and OpenClaw."
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/notebooklm-py",
@@ -1998,8 +1998,8 @@
         }
       ],
       "sourceFingerprint": "1047b6a375a140d94c7c1f0aa703f9011589f80f84163537e67836063a448460",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "NVII",
@@ -2055,9 +2055,9 @@
     },
     {
       "name": "open-fitter",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "An open-source implementation compatible with \"もちふぃった～\", based on the GPL-3 core logic released by NINE GATES.",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "An open-source implementation compatible with \"もちふぃった～\", based on the GPL-3 core logic released by NINE GATES."
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/open-fitter",
@@ -2076,14 +2076,14 @@
         }
       ],
       "sourceFingerprint": "8442c002680644f87812b8b5f35b38c921738f9d71126d8e0768eb94edd944ab",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "openclaw",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/openclaw",
@@ -2102,8 +2102,8 @@
         }
       ],
       "sourceFingerprint": "cc677b6a1b2e5f4ba5a97deeb11789710b82b9970349f5b3d1b57b137cabefc5",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "option",
@@ -2133,9 +2133,9 @@
     },
     {
       "name": "pal-atlas",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Palworld 1.0 Pal Atlas: graph-first breeding database and interactive parent discovery UI",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Palworld 1.0 Pal Atlas: graph-first breeding database and interactive parent discovery UI"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/pal-atlas",
@@ -2154,8 +2154,8 @@
         }
       ],
       "sourceFingerprint": "2a85445720ef7e0dc4be056fecbceca01efbcbfe51ade0e16667e9ff3d9e03ce",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "pamiq-poker",
@@ -2185,9 +2185,9 @@
     },
     {
       "name": "photoprism",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "AI-Powered Photos App 🌈💎✨",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "AI-Powered Photos App 🌈💎✨"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/photoprism",
@@ -2206,8 +2206,8 @@
         }
       ],
       "sourceFingerprint": "9ff24332c999702e6a02242af4726c83aaf7a91cf3f8dff3893c0c9a978a7efe",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "PictureChangerTools",
@@ -2366,9 +2366,9 @@
     },
     {
       "name": "semiconductor-earnings-model",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Reproducible semiconductor earnings scenario model with LangGraph and GitHub Pages",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Reproducible semiconductor earnings scenario model with LangGraph and GitHub Pages"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/semiconductor-earnings-model",
@@ -2387,8 +2387,8 @@
         }
       ],
       "sourceFingerprint": "034b345f4ccc116089594b41bbd2eeba72bc8bec59949a84e566e3fed5c5ed35",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "skew",
@@ -2469,9 +2469,9 @@
     },
     {
       "name": "Swiss-Tournament-Manager",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Swiss-Tournament-Manager for JoinWars at VRChat",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Swiss-Tournament-Manager for JoinWars at VRChat"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/Swiss-Tournament-Manager",
@@ -2490,14 +2490,14 @@
         }
       ],
       "sourceFingerprint": "3a2ce009482841a797a60ad3a99207657da22d7a152022e2413761d0415f8242",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "TexasSolver",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "🚀 A very efficient Texas Holdem GTO solver :spades::hearts::clubs::diamonds:",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "🚀 A very efficient Texas Holdem GTO solver :spades::hearts::clubs::diamonds:"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/TexasSolver",
@@ -2516,14 +2516,14 @@
         }
       ],
       "sourceFingerprint": "f64674052649c8c9c3f6021a209be7881d13c37f4b5f605d9d7059e623cfa9f1",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "TradingView-Screener",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "A package that lets you create TradingView screeners in Python",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "A package that lets you create TradingView screeners in Python"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/TradingView-Screener",
@@ -2542,8 +2542,8 @@
         }
       ],
       "sourceFingerprint": "f38eba9c50d3ee247f048fa0f8b9f5ac49419e3f6c1e1f47d31486e13097743c",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "trahist",
@@ -2599,9 +2599,9 @@
     },
     {
       "name": "Unique3D",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "[NeurIPS 2024] Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "[NeurIPS 2024] Unique3D: High-Quality and Efficient 3D Mesh Generation from a Single Image"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/Unique3D",
@@ -2620,8 +2620,8 @@
         }
       ],
       "sourceFingerprint": "2d772db6d264859490fa1222fccbafa251e08e9c25532c8b9618cba0cbad2036",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T01:58:06Z",
+      "needsReview": false
     },
     {
       "name": "unity-agent",

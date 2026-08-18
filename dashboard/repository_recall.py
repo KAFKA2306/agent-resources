@@ -15,6 +15,8 @@ DEFAULT_INDEX = BASE_DIR / "data" / "repository-index.json"
 DEFAULT_OVERRIDES = BASE_DIR / "config" / "repository-recall-overrides.json"
 UNKNOWN_PURPOSE = "未確認: source evidence は取得済みだが semantic review が必要"
 UNKNOWN_MATCH = "未確認: semantic review 完了後に検索対象へ昇格"
+_ASCII_TERM_RE = re.compile(r"[a-z0-9][a-z0-9+#._-]*")
+_JAPANESE_TERM_RE = re.compile(r"[ぁ-んァ-ヶ一-龯ー]{3,}")
 
 
 def utc_now_iso():
@@ -67,54 +69,58 @@ def collect_source_fact(repo, token=None, request_fn=request_json):
         f"{quote(name, safe='')}"
     )
     repo_url = repo["url"]
-    sources = []
-    material = {"name": name}
 
-    try:
-        metadata, _ = request_fn(api_url, token)
-        if (
-            metadata.get("private") is True
-            or metadata.get("visibility") != "public"
-            or metadata.get("archived") is True
-        ):
-            raise ValueError(f"source boundary changed for {owner}/{name}")
-        metadata_material = {
-            "description": metadata.get("description"),
-            "topics": sorted(metadata.get("topics") or []),
-            "default_branch": metadata.get("default_branch"),
-        }
-        metadata_fingerprint = canonical_hash(metadata_material)
-        sources.append(_source("repository", repo_url, "ok", metadata_fingerprint))
-        material["repository"] = metadata_material
-    except (GitHubApiError, ValueError) as exc:
-        sources.append(_source("repository", repo_url, "error"))
-        material["repositoryError"] = type(exc).__name__
+    metadata, _ = request_fn(api_url, token)
+    if (
+        metadata.get("private") is True
+        or metadata.get("visibility") != "public"
+        or metadata.get("archived") is True
+    ):
+        raise ValueError(f"source boundary changed for {owner}/{name}")
+
+    metadata_material = {
+        "description": metadata.get("description"),
+        "topics": sorted(metadata.get("topics") or []),
+        "default_branch": metadata.get("default_branch"),
+    }
+    sources = [
+        _source(
+            "repository",
+            repo_url,
+            "ok",
+            canonical_hash(metadata_material),
+        )
+    ]
+    material = {"name": name, "repository": metadata_material}
 
     readme_api = f"{api_url}/readme"
     try:
         readme, _ = request_fn(readme_api, token)
         readme_sha = readme.get("sha")
-        readme_url = readme.get("html_url") or repo_url
         if not readme_sha:
             raise ValueError("README response missing sha")
-        sources.append(_source("readme", readme_url, "ok", readme_sha))
+        sources.append(
+            _source(
+                "readme",
+                readme.get("html_url") or repo_url,
+                "ok",
+                readme_sha,
+            )
+        )
         material["readme"] = readme_sha
     except GitHubApiError as exc:
-        if exc.status == 404:
-            sources.append(_source("readme", repo_url, "absent"))
-            material["readme"] = None
-        else:
-            sources.append(_source("readme", repo_url, "error"))
-            material["readmeError"] = exc.status or "transport"
-    except ValueError:
-        sources.append(_source("readme", repo_url, "error"))
-        material["readmeError"] = "invalid"
+        if exc.status != 404:
+            raise
+        sources.append(_source("readme", repo_url, "absent"))
+        material["readme"] = None
 
     return {
         "name": name,
         "url": repo_url,
         "sources": sources,
         "sourceFingerprint": canonical_hash(material),
+        "description": metadata_material["description"],
+        "topics": metadata_material["topics"],
     }
 
 
@@ -147,7 +153,85 @@ def _normalize_override(raw):
         isinstance(item, str) and item.strip() for item in not_for
     ):
         raise ValueError("override notFor must contain strings")
-    return {"purpose": purpose.strip(), "matches": matches, "notFor": not_for}
+    return {
+        "purpose": purpose.strip(),
+        "matches": [item.strip() for item in matches],
+        "notFor": [item.strip() for item in not_for],
+    }
+
+
+def _semantic_fields(entry):
+    return {
+        "purpose": entry["purpose"],
+        "matches": entry["matches"],
+        "notFor": entry.get("notFor", []),
+    }
+
+
+def _description_is_informative(name, description):
+    if not isinstance(description, str):
+        return False
+    normalized = description.strip()
+    if len(normalized) < 16:
+        return False
+    lower = normalized.casefold()
+    if "created with stackblitz" in lower:
+        return False
+    name_key = re.sub(r"[^a-z0-9]+", "", name.casefold())
+    description_key = re.sub(r"[^a-z0-9]+", "", lower)
+    if name_key and description_key == name_key:
+        return False
+    ascii_terms = _ASCII_TERM_RE.findall(lower)
+    japanese_chars = re.findall(r"[ぁ-んァ-ヶ一-龯ー]", normalized)
+    return len(ascii_terms) >= 3 or len(japanese_chars) >= 10
+
+
+def _source_semantic(facts):
+    description = facts.get("description")
+    if not _description_is_informative(facts["name"], description):
+        return None
+    purpose = description.strip()
+    topics = [
+        topic.strip()
+        for topic in facts.get("topics", [])
+        if isinstance(topic, str) and topic.strip()
+    ]
+    matches = [purpose, *topics]
+    return {
+        "purpose": purpose,
+        "matches": list(dict.fromkeys(matches)),
+        "notFor": [],
+    }
+
+
+def _is_source_description_semantic(entry, facts):
+    description = facts.get("description")
+    if not isinstance(description, str):
+        return False
+    expected = {
+        "purpose": description.strip(),
+        "matches": list(
+            dict.fromkeys(
+                [
+                    description.strip(),
+                    *[
+                        topic.strip()
+                        for topic in facts.get("topics", [])
+                        if isinstance(topic, str) and topic.strip()
+                    ],
+                ]
+            )
+        ),
+        "notFor": [],
+    }
+    return _semantic_fields(entry) == expected
+
+
+def _is_placeholder(entry):
+    return (
+        entry.get("purpose") == UNKNOWN_PURPOSE
+        or entry.get("matches") == [UNKNOWN_MATCH]
+    )
 
 
 def merge_index(
@@ -169,26 +253,77 @@ def merge_index(
         facts = source_facts[name]
         old = existing_entries.get(name)
         override = overrides.get(name)
+        normalized_override = _normalize_override(override) if override else None
+        source_semantic = _source_semantic(facts)
+        source_unchanged = (
+            old is not None
+            and old.get("sourceFingerprint") == facts["sourceFingerprint"]
+        )
+        override_unchanged = (
+            normalized_override is not None
+            and old is not None
+            and _semantic_fields(old) == normalized_override
+        )
 
-        if old and old.get("sourceFingerprint") == facts["sourceFingerprint"] and not override:
-            preserved = dict(old)
-            preserved["url"] = repo["url"]
-            preserved["sources"] = facts["sources"]
-            result.append(preserved)
-            continue
+        if source_unchanged and (
+            normalized_override is None or override_unchanged
+        ):
+            should_backfill = (
+                normalized_override is None
+                and old.get("needsReview") is True
+                and _is_placeholder(old)
+                and source_semantic is not None
+            )
+            should_demote = (
+                normalized_override is None
+                and old.get("needsReview") is False
+                and source_semantic is None
+                and _is_source_description_semantic(old, facts)
+            )
+            if should_demote:
+                result.append(
+                    {
+                        "name": name,
+                        "purpose": UNKNOWN_PURPOSE,
+                        "matches": [UNKNOWN_MATCH],
+                        "notFor": [],
+                        "url": repo["url"],
+                        "sources": facts["sources"],
+                        "sourceFingerprint": facts["sourceFingerprint"],
+                        "checkedAt": None,
+                        "needsReview": True,
+                    }
+                )
+                continue
+            if not should_backfill:
+                preserved = dict(old)
+                preserved["url"] = repo["url"]
+                preserved["sources"] = facts["sources"]
+                result.append(preserved)
+                continue
 
-        if override:
-            semantic = _normalize_override(override)
-            needs_review = False
-            checked_at = checked_now
-        elif old:
-            semantic = {
-                "purpose": old["purpose"],
-                "matches": old["matches"],
-                "notFor": old.get("notFor", []),
-            }
+        if normalized_override is not None:
+            semantic = normalized_override
+            override_changed = (
+                old is None or _semantic_fields(old) != normalized_override
+            )
+            if old is None or override_changed:
+                needs_review = False
+                checked_at = checked_now
+            elif source_unchanged:
+                needs_review = False
+                checked_at = old.get("checkedAt")
+            else:
+                needs_review = True
+                checked_at = old.get("checkedAt")
+        elif old and not source_unchanged:
+            semantic = _semantic_fields(old)
             needs_review = True
             checked_at = old.get("checkedAt")
+        elif source_semantic is not None:
+            semantic = source_semantic
+            needs_review = False
+            checked_at = checked_now
         else:
             semantic = {
                 "purpose": UNKNOWN_PURPOSE,
@@ -289,6 +424,8 @@ def validate_index(document):
             raise ValueError(f"needsReview must be boolean: {name}")
         if not entry["needsReview"] and checked_at is None:
             raise ValueError(f"reviewed entry requires checkedAt: {name}")
+        if not entry["needsReview"] and _is_placeholder(entry):
+            raise ValueError(f"reviewed entry cannot use placeholder semantics: {name}")
     if len(names) != len(set(names)):
         raise ValueError("duplicate repository names in index")
     return document
@@ -307,16 +444,29 @@ def validate_coverage(repositories, document):
     return True
 
 
+def semantic_coverage(document):
+    validate_index(document)
+    repositories = document["repositories"]
+    verified = sum(not entry["needsReview"] for entry in repositories)
+    needs_review = len(repositories) - verified
+    placeholders = sum(_is_placeholder(entry) for entry in repositories)
+    return {
+        "repositories": len(repositories),
+        "verified": verified,
+        "needsReview": needs_review,
+        "placeholders": placeholders,
+    }
+
+
 def _normalize_text(value):
     return re.sub(r"\s+", " ", value.casefold()).strip()
 
 
 def _terms(query):
-    return [
-        part
-        for part in re.split(r"[^\w+#.-]+", _normalize_text(query))
-        if len(part) >= 2
-    ]
+    normalized = _normalize_text(query)
+    terms = _ASCII_TERM_RE.findall(normalized)
+    terms.extend(_JAPANESE_TERM_RE.findall(normalized))
+    return list(dict.fromkeys(term for term in terms if len(term) >= 2))
 
 
 def search_index(query, document, limit=5):
@@ -434,15 +584,15 @@ def main(argv=None):
             json.dumps(
                 {
                     "changed": changed,
-                    "repositories": len(document["repositories"]),
+                    **semantic_coverage(document),
                 },
                 ensure_ascii=False,
             )
         )
         return 0
     if args.command == "validate":
-        validate_index(load_json(args.index))
-        print("repository recall index: valid")
+        document = validate_index(load_json(args.index))
+        print(json.dumps(semantic_coverage(document), ensure_ascii=False))
         return 0
     result = search_index(args.query, load_json(args.index))
     print(json.dumps(result, ensure_ascii=False, indent=2))
