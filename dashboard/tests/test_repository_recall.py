@@ -1,3 +1,4 @@
+import base64
 import json
 import tempfile
 import unittest
@@ -41,6 +42,7 @@ class RepositoryRecallTests(unittest.TestCase):
         *,
         description=None,
         topics=None,
+        readme_text=None,
     ):
         return {
             "name": name,
@@ -62,6 +64,7 @@ class RepositoryRecallTests(unittest.TestCase):
             "sourceFingerprint": fingerprint,
             "description": description,
             "topics": topics or [],
+            "readmeText": readme_text,
         }
 
     def entry(
@@ -103,6 +106,10 @@ class RepositoryRecallTests(unittest.TestCase):
                     {
                         "sha": "readme-sha",
                         "html_url": "https://github.com/KAFKA2306/unity-mcp/blob/beta/README.md",
+                        "encoding": "base64",
+                        "content": base64.b64encode(
+                            b"# Unity MCP\n\nControl Unity Editor from an LLM."
+                        ).decode("ascii"),
                     },
                     {},
                 )
@@ -124,6 +131,7 @@ class RepositoryRecallTests(unittest.TestCase):
         self.assertEqual(result["sources"][1]["fingerprint"], "readme-sha")
         self.assertEqual(result["description"], "Unity MCP")
         self.assertEqual(result["topics"], ["mcp", "unity"])
+        self.assertIn("Control Unity Editor", result["readmeText"])
         self.assertRegex(result["sourceFingerprint"], r"^[0-9a-f]{64}$")
 
     def test_collect_source_fact_treats_missing_readme_as_absent(self):
@@ -242,6 +250,88 @@ class RepositoryRecallTests(unittest.TestCase):
                 self.assertTrue(entry["needsReview"])
                 self.assertEqual(entry["purpose"], UNKNOWN_PURPOSE)
                 self.assertEqual(entry["matches"], [UNKNOWN_MATCH])
+
+    def test_merge_index_uses_readme_when_description_is_generic(self):
+        name = "articles"
+        readme = """# KAFKA2306/articles
+
+[![CI](https://example.invalid/badge.svg)](https://example.invalid/)
+
+**広い読者が自分事にできる問題を入口に、実体験・実測・失敗から、読後の判断や行動を一段よくする技術記事を作るrepository。**
+
+## Usage
+
+- publish articles
+"""
+        document = merge_index(
+            [self.repo(name)],
+            {
+                name: self.facts(
+                    name,
+                    description="articles",
+                    readme_text=readme,
+                )
+            },
+            existing={"repositories": []},
+            now="2026-08-18T01:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertFalse(entry["needsReview"])
+        self.assertIn("技術記事を作るrepository", entry["purpose"])
+
+    def test_merge_index_rejects_readme_framework_boilerplate(self):
+        name = "webapp"
+        readme = """# webapp
+
+This is a Next.js project bootstrapped with create-next-app.
+
+## Getting Started
+
+First, run the development server.
+"""
+        document = merge_index(
+            [self.repo(name)],
+            {
+                name: self.facts(
+                    name,
+                    description=None,
+                    readme_text=readme,
+                )
+            },
+            existing={"repositories": []},
+            now="2026-08-18T01:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertTrue(entry["needsReview"])
+        self.assertEqual(entry["purpose"], UNKNOWN_PURPOSE)
+
+    def test_merge_index_rejects_readme_installation_as_purpose(self):
+        name = "tool"
+        readme = """# tool
+
+## Installation
+
+Install this package with pip to start using the command line tool.
+
+## License
+
+MIT License.
+"""
+        document = merge_index(
+            [self.repo(name)],
+            {
+                name: self.facts(
+                    name,
+                    description=None,
+                    readme_text=readme,
+                )
+            },
+            existing={"repositories": []},
+            now="2026-08-18T01:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertTrue(entry["needsReview"])
+        self.assertEqual(entry["purpose"], UNKNOWN_PURPOSE)
 
     def test_merge_index_demotes_generic_auto_semantic_from_previous_refresh(self):
         name = "aboutkafka"
