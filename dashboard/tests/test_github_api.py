@@ -5,7 +5,7 @@ from http.client import RemoteDisconnected
 from unittest.mock import call, patch
 from urllib.error import HTTPError
 
-from dashboard.collectors.github_api import GitHubApiError, request_json
+from dashboard.collectors.github_api import GitHubApiError, fetch_paginated, request_json
 
 
 class FakeResponse:
@@ -78,6 +78,52 @@ class GitHubApiTransportRetryTest(unittest.TestCase):
 
         self.assertEqual(mock_urlopen.call_count, 1)
         mock_sleep.assert_not_called()
+
+    @patch("dashboard.collectors.github_api.urlopen")
+    def test_repository_list_primes_detail_cache(self, mock_urlopen):
+        repo_url = "https://api.github.com/repos/example-owner/cached-repo"
+        repository = {
+            "url": repo_url,
+            "private": False,
+            "visibility": "public",
+            "archived": False,
+            "description": "Cached repository metadata",
+            "topics": ["cache", "repository"],
+            "default_branch": "main",
+        }
+
+        fetch_paginated(
+            "https://api.github.com/users/example-owner/repos?page=1",
+            request_fn=lambda url, token=None: ([repository], {}),
+        )
+        payload, headers = request_json(repo_url)
+
+        self.assertEqual(payload, repository)
+        self.assertEqual(headers, {})
+        mock_urlopen.assert_not_called()
+
+    @patch("dashboard.collectors.github_api.urlopen")
+    def test_incomplete_repository_list_payload_falls_back_to_network(self, mock_urlopen):
+        repo_url = "https://api.github.com/repos/example-owner/incomplete-repo"
+        incomplete = {
+            "url": repo_url,
+            "private": False,
+            "visibility": "public",
+            "archived": False,
+            "description": None,
+            "topics": [],
+        }
+        fresh = {**incomplete, "default_branch": "main"}
+
+        fetch_paginated(
+            "https://api.github.com/users/example-owner/repos?page=1",
+            request_fn=lambda url, token=None: ([incomplete], {}),
+        )
+        mock_urlopen.return_value = FakeResponse(json.dumps(fresh).encode("utf-8"))
+        payload, _ = request_json(repo_url)
+
+        self.assertEqual(payload, fresh)
+        mock_urlopen.assert_called_once()
 
 
 if __name__ == "__main__":
