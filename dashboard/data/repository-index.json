@@ -366,11 +366,16 @@
     },
     {
       "name": "AutoPhotogrammetry",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "実写動画からframe抽出・COLMAP camera pose推定・Gaussian Splat trainingを行い、provenance付きPLYを生成する",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "動画からGaussian Splat PLYを作る",
+        "実写動画をCOLMAPとNerfstudioで3D再構成",
+        "photogrammetryからcamera poseとGaussian Splatを生成"
       ],
-      "notFor": [],
+      "notFor": [
+        "生成済みPLYをWeb・Unity・VRChatで表示する",
+        "写真展示用のUnity slideshowを作る"
+      ],
       "url": "https://github.com/KAFKA2306/AutoPhotogrammetry",
       "sources": [
         {
@@ -383,12 +388,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/AutoPhotogrammetry/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6c28b7dc0e80ee73ba68ec491a1fd1c2f795d26f"
+          "fingerprint": "eb15c2d97a1995b4fd78573fc41b4a18b7d1cbae"
         }
       ],
-      "sourceFingerprint": "96d046d274b94813c0b6a167469b3b67095c9ebab9f5ade79ff41bdec11719e3",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "ab4be35308a5c601fc0d9cbea5b2b8f42f6025aad48a13b66794370689820952",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "BestEthernet",
@@ -470,11 +475,16 @@
     },
     {
       "name": "boardgamelist",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "版・拡張・言語・情報種別を分離したまま、出典付きでボードゲームのルールを確認できる非公式ルールガイド",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ボードゲームのルールを版ごとに出典付きで調べる",
+        "公式ルールとFAQとコミュニティ解釈を分けて確認する",
+        "プレイ中に今の版へ適用できるルールを調べる"
       ],
-      "notFor": [],
+      "notFor": [
+        "AIによる対話型ルール回答を主目的にする",
+        "ボードゲーム情報の旧RuleScribeアプリを使う"
+      ],
       "url": "https://github.com/KAFKA2306/boardgamelist",
       "sources": [
         {
@@ -491,16 +501,21 @@
         }
       ],
       "sourceFingerprint": "d2a9b868e35e94ec781f4c97ba505c58610c8697295ec4def9c6e6212a1aff3a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "bodogenomikata2",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公式ルール・FAQ・登録済み資料を出典付きで構造化し、セットアップ・手番・合法手・終了条件・得点を素早く確認できるボードゲーム・コンパニオン",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ボードゲームのルールを素早く質問して出典へ戻る",
+        "セットアップや得点を公式資料付きで確認する",
+        "AI補助と公式ルールを区別したボドゲ支援"
       ],
-      "notFor": [],
+      "notFor": [
+        "静的な版別ルールガイドだけを読む",
+        "旧RuleScribe Games実装を使う"
+      ],
       "url": "https://github.com/KAFKA2306/bodogenomikata2",
       "sources": [
         {
@@ -517,8 +532,8 @@
         }
       ],
       "sourceFingerprint": "9f288b71b038f6667988b9aa34e3cd9f0b2aa096579d17ba6cbbf4c8dfed2e31",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "bonus",
@@ -756,11 +771,16 @@
     },
     {
       "name": "ComfyUI-KLingAI-API",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ComfyUIからKLing AI APIを呼び出すためのカスタムノード",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ComfyUIからKling AI APIを使う",
+        "Kling動画生成をComfyUI nodeから呼ぶ",
+        "ComfyUI custom node for KLing AI"
       ],
-      "notFor": [],
+      "notFor": [
+        "ComfyUI本体を管理する",
+        "KLing AIの料金やWeb UIだけを調べる"
+      ],
       "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API",
       "sources": [
         {
@@ -777,8 +797,8 @@
         }
       ],
       "sourceFingerprint": "41ce31f6d5ea3238f38fb3dd6806b7f6489b1bad31e9f0d84e3353783492a19e",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "CrewTrade",
@@ -938,11 +958,16 @@
     },
     {
       "name": "DominionDeckDrawSimlator",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "単純化したドミニオンの山札について、ドローカードで引き切れる厳密確率を動的計画法で計算するWeb計算機",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ドミニオンでデッキを引き切る確率を計算",
+        "研究所などのドローカードで引き切り確率を厳密計算",
+        "Dominion draw probability calculator"
       ],
-      "notFor": [],
+      "notFor": [
+        "ドミニオン全体のゲーム進行をシミュレーション",
+        "一般のボードゲームルールを検索"
+      ],
       "url": "https://github.com/KAFKA2306/DominionDeckDrawSimlator",
       "sources": [
         {
@@ -959,8 +984,8 @@
         }
       ],
       "sourceFingerprint": "1cb88848300a87a6c45c0450b41ca3330b5163ea459c17e2bf9d8113fd373022",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "econalert",
@@ -1172,11 +1197,16 @@
     },
     {
       "name": "furuyoni",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "『桜降る代に決闘を 再演』の現行情報と『新幕』Season 1〜10の資料を、版と情報種別を混ぜずに調べる非公式統合ガイド",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "ふるよにの現行ルールと過去season資料を分けて調べる",
+        "再演と新幕の情報を混同せず検索",
+        "桜降る代に決闘をのメガミやルール資料を探す"
       ],
-      "notFor": [],
+      "notFor": [
+        "一般のボードゲームルールを検索",
+        "現行公式と旧seasonを同一ルールとして統合"
+      ],
       "url": "https://github.com/KAFKA2306/furuyoni",
       "sources": [
         {
@@ -1193,8 +1223,8 @@
         }
       ],
       "sourceFingerprint": "0bd0178e56fac35466496d45e2088c540eda11e8a559b1c348f103b74fa4dd5a",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "fx",
@@ -1510,11 +1540,16 @@
     },
     {
       "name": "kafka",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "KAFKAのWebsiteとVRChat・GitHub・X・note・Zenn・Scrapbox・BOOTH・YouTube・Hatena Blogへの導線を置く静的プロフィールサイト",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "KAFKAの個人サイトを見る",
+        "VRChatやZennやBOOTHなどKAFKAのリンクをまとめて見る",
+        "KAFKA profile website"
       ],
-      "notFor": [],
+      "notFor": [
+        "KAFKA2306の全project一覧やmissionを確認する",
+        "repository recall indexを管理する"
+      ],
       "url": "https://github.com/KAFKA2306/kafka",
       "sources": [
         {
@@ -1531,16 +1566,21 @@
         }
       ],
       "sourceFingerprint": "a3e75e56637cf256bf1d5c36e160b19f42da5768adde0d70f4dd5ec31e193938",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "KAFKA2306",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "KAFKA2306のmission、主要repository、公開サイトへの正準入口を提供するGitHubプロフィールrepository",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "KAFKA2306の主要プロジェクト一覧を見る",
+        "KAFKA2306のmissionと公開サイトを確認",
+        "GitHubプロフィールから投資・VRChat・旅行などのrepoへ移動"
       ],
-      "notFor": [],
+      "notFor": [
+        "最小構成の個人Websiteだけを見る",
+        "repository recallの機械可読indexを取得する"
+      ],
       "url": "https://github.com/KAFKA2306/KAFKA2306",
       "sources": [
         {
@@ -1557,8 +1597,8 @@
         }
       ],
       "sourceFingerprint": "4c27620827edab5c6df73fc09cfc07bceea5e688e4dcb42870bb7f5858afce14",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "kakeibo",
@@ -1744,11 +1784,16 @@
     },
     {
       "name": "marvelousdesigner",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Marvelous Designer・Blender・Unity・VRChatを使う衣装制作を、パターン設計から実動作確認まで段階別に学ぶMkDocs教材",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat衣装をMarvelous Designerから作る手順を学ぶ",
+        "Marvelous DesignerからBlender Unity VRChatまでの衣装制作ガイド",
+        "衣装のパターン設計や布シミュレーションを学ぶ"
       ],
-      "notFor": [],
+      "notFor": [
+        "実際の衣装assetやFBXを生成・管理する",
+        "画像から衣装を自動生成する"
+      ],
       "url": "https://github.com/KAFKA2306/marvelousdesigner",
       "sources": [
         {
@@ -1765,8 +1810,8 @@
         }
       ],
       "sourceFingerprint": "3c5bc3f2ac86b11b9dfc252a2f06d711c75e92b2e099dee50aa03c05587c35f1",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "mitsuikaggle",
@@ -1951,11 +1996,16 @@
     },
     {
       "name": "nonfarmpayroll",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "米国BLSのTotal nonfarm employmentを、出典・取得時刻・検証情報付きJSON・CSV・埋め込みチャートとして配布する公開データレイヤー",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "BLS非農業部門雇用者数をJSONやCSVで使う",
+        "NFPチャートを記事へ埋め込む",
+        "Total nonfarm employmentのprovenance付きデータを取得"
       ],
-      "notFor": [],
+      "notFor": [
+        "雇用統計以外の経済指標をまとめて取得",
+        "現在系列から過去の初回公表値を推定"
+      ],
       "url": "https://github.com/KAFKA2306/nonfarmpayroll",
       "sources": [
         {
@@ -1972,8 +2022,8 @@
         }
       ],
       "sourceFingerprint": "825d64371d09b5818c4105ab32d8e945514b567240f1106de135429843597070",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "notebooklm-py",
@@ -2237,11 +2287,16 @@
     },
     {
       "name": "prompt-vault",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "生成プロンプト本文・再利用部品・template・生成画像・用途・来歴を分離して管理し、再構成可能にする保管庫",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "画像生成プロンプトを部品化して再利用する",
+        "promptと生成画像と来歴を一緒に管理",
+        "使ったプロンプトをblockとtemplateで整理する"
       ],
-      "notFor": [],
+      "notFor": [
+        "LLMのsystem promptだけを配布する",
+        "画像生成モデルそのものを実行する"
+      ],
       "url": "https://github.com/KAFKA2306/prompt-vault",
       "sources": [
         {
@@ -2258,16 +2313,21 @@
         }
       ],
       "sourceFingerprint": "8e5b198a7b57cdcbb9df1757972c3546676815af0a71d29d708af54783bc31a3",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "readable-github",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "GitHubのコードブロックへ解説ボタンを追加し、Geminiによる日本語コード解説をその場に表示するChrome拡張機能",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "GitHub上のコードをGeminiで日本語解説する",
+        "GitHubコードブロックにAI解説ボタンを付ける",
+        "コードを別画面へ移さずその場で説明するChrome拡張"
       ],
-      "notFor": [],
+      "notFor": [
+        "GitHub repositoryを検索・索引化する",
+        "GitHub ActionsやIssueを管理する"
+      ],
       "url": "https://github.com/KAFKA2306/readable-github",
       "sources": [
         {
@@ -2284,8 +2344,8 @@
         }
       ],
       "sourceFingerprint": "2c35a283f89ea9efb3f85994476a7529d3dab6781c8df8c6e49b79de423afe82",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "robot",
@@ -2314,11 +2374,16 @@
     },
     {
       "name": "rule-scribe-games",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "ボードゲームを検索し、準備・ゲームプレイ・終了条件を日本語で構造化してルール理解へつなぐReact・FastAPIアプリ",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "RuleScribe Gamesでボードゲームルールを検索",
+        "BGG検索から日本語ルール理解まで使う",
+        "ReactとFastAPIのボードゲームルールアプリ"
       ],
-      "notFor": [],
+      "notFor": [
+        "版と出典の静的ルールガイドを読む",
+        "現行のボドゲのミカタを使う"
+      ],
       "url": "https://github.com/KAFKA2306/rule-scribe-games",
       "sources": [
         {
@@ -2335,8 +2400,8 @@
         }
       ],
       "sourceFingerprint": "918816dc187a51ea82a75597668bba472a26e0e0f4fc089a285055723f85683c",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "salary",
@@ -2392,11 +2457,16 @@
     },
     {
       "name": "skew",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Yahoo Financeの価格系列を取得し、終値・SMA5・SMA20・平均リターン・標準偏差・Sharpeを表示してCSV/YAMLへ出力するTauriデスクトップアプリ",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Yahoo Financeの株価をTauriアプリで取得して分析",
+        "株価のSMAとSharpeを表示してCSVに保存",
+        "KAFKAミニyfダッシュボード"
       ],
-      "notFor": [],
+      "notFor": [
+        "半導体企業の長期決算モデルを作る",
+        "BLS雇用統計を配布する"
+      ],
       "url": "https://github.com/KAFKA2306/skew",
       "sources": [
         {
@@ -2409,12 +2479,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/skew/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e13022ce178930f792391b3a9701e13c12d045db"
+          "fingerprint": "dbc43bd70923370dfd1a8d1aceaa83dd211b297c"
         }
       ],
-      "sourceFingerprint": "3e6b2978af3075b9e622eacbb77604c12ef18ad3562f2d4a86067868243a04c6",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "dd9886d57ea7ae4f6b02b57b7f7e26f1924eb99a371a9d03fb8fc02140f50558",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "space",
@@ -2678,12 +2748,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/unity-mcp/blob/beta/README.md",
           "status": "ok",
-          "fingerprint": "fe136ecc8948806422d29294f772e715a1446846"
+          "fingerprint": "a646cc5d58097231b1d6dcb69029c891707a5648"
         }
       ],
-      "sourceFingerprint": "90eca4d5350dab0ff50e29f6ac4cfa586deed91c0441e0d446210026a840d0fc",
+      "sourceFingerprint": "347b761e5cc073d59dc8c320e6285c081c247a0cca3bf1512e5b231496f86aca",
       "checkedAt": "2026-08-17T23:16:22Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "UnityMCP-VRC",
@@ -2848,11 +2918,16 @@
     },
     {
       "name": "vmatch2",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRChat world内で公開profileの6次元ベクトルからcosine similarityを計算し、相性の高いユーザーを推薦するUnity・UdonSharp matching prototype",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat内でユーザー相性を計算する",
+        "UdonSharpで6次元profileからmatchingする",
+        "VirtualTokyoMatchingのcompatibility recommendation"
       ],
-      "notFor": [],
+      "notFor": [
+        "WebサイトでVRChatイベントを検索する",
+        "VRChatアバターやworldを一覧表示する静的ギャラリー"
+      ],
       "url": "https://github.com/KAFKA2306/vmatch2",
       "sources": [
         {
@@ -2863,13 +2938,14 @@
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/vmatch2",
-          "status": "absent"
+          "url": "https://github.com/KAFKA2306/vmatch2/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "5d52de67ea6da24eb459facb37637b2ed4a268ae"
         }
       ],
-      "sourceFingerprint": "af623e25f473b1fc044ced8595a524a98d8566902ae33185647e379a9d47e090",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "bca85140ffc14eb3de2fba6bec9d26258372300fa5bf1b45d5a1b85b7c6ba718",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "vmatching",
@@ -2899,11 +2975,16 @@
     },
     {
       "name": "vrc-pilot-test",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRChatのexplorer・複数world撮影・反応速度・world探索を、独立したPython実験として検証するrepository",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChat自動操作の小さな実験を試す",
+        "VRChat explorerやmass photographerを実行",
+        "AI用VRChat profileでDesktop自動操作を検証"
       ],
-      "notFor": [],
+      "notFor": [
+        "本番用VRChat matching systemを実装する",
+        "VRChat world情報の静的ギャラリーを公開する"
+      ],
       "url": "https://github.com/KAFKA2306/vrc-pilot-test",
       "sources": [
         {
@@ -2916,12 +2997,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrc-pilot-test/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4dbc12dfcaf861570b55b8bec74c9416cf6cb8ce"
+          "fingerprint": "5b16be1995f400d7315bfea4b3b3c35ad8b98368"
         }
       ],
-      "sourceFingerprint": "c389968ff3dde6efc565140a1f125ea26199dccd3c7cb3974ddcf10a4b1c407a",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "bf87c613e50ef5ab29aaf74da70316b82efcf948a9c32cb6eafd35443ef2e86e",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "vrc_cast_event_calender",
@@ -2951,11 +3032,16 @@
     },
     {
       "name": "vrcgimmicknetwork",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "VRCギミックに関する技術情報をbackend・dynamic pages・public assets・pagesで提供するWebプラットフォーム",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChatギミックの技術情報サイト",
+        "VRC gimmick technical information platform",
+        "VRChatギミック情報をWebで整理する"
       ],
-      "notFor": [],
+      "notFor": [
+        "Unity EditorをMCPで操作する",
+        "VRChatアバターのPhysBoneをAI編集する"
+      ],
       "url": "https://github.com/KAFKA2306/vrcgimmicknetwork",
       "sources": [
         {
@@ -2972,16 +3058,21 @@
         }
       ],
       "sourceFingerprint": "f0d0609ad1c18e0e44b0f2e30dabd3dee9b53e52e1f0ec8e13056a4c669c4eec",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "VRChat-bolt",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "sample world dataを使ってVRChat world discovery画面を表示するReact・Vite UI prototype",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChatワールド発見UIのprototype",
+        "sample world cardをReactで表示する",
+        "VRChat world search画面を試作する"
       ],
-      "notFor": [],
+      "notFor": [
+        "live VRChat APIからworldを収集する",
+        "CSVを正準入力にしたavatar/world静的ギャラリーを公開する"
+      ],
       "url": "https://github.com/KAFKA2306/VRChat-bolt",
       "sources": [
         {
@@ -2994,12 +3085,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/VRChat-bolt/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "64a4413ba06d9e663a2797f09997339ffe2ceab0"
+          "fingerprint": "bef8751b887e34fc7b6cb6eb955591f761eeaf27"
         }
       ],
-      "sourceFingerprint": "cf0e62169b0b5bbeb58a2d20fd432c8a4e6ad217ee37e84803b91571f2792f3e",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "25cf1b06659549f1d9a58d626ba228dc961042ae930b77995aa9aaa401ecda78",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "vrcplat",
@@ -3055,11 +3146,16 @@
     },
     {
       "name": "vrcviewer",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "CSVを正準入力としてVRChatのアバターとworldを検索・カテゴリ閲覧できる静的ギャラリーを生成する",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "VRChatアバターとworldをCSVから静的ギャラリー化",
+        "VRChat worldをカテゴリ別に見るGitHub Pages",
+        "CSVからVRChat gallery HTMLを生成"
       ],
-      "notFor": [],
+      "notFor": [
+        "sample dataだけのReact world discovery prototype",
+        "live VRChat APIからデータを収集する"
+      ],
       "url": "https://github.com/KAFKA2306/vrcviewer",
       "sources": [
         {
@@ -3076,8 +3172,8 @@
         }
       ],
       "sourceFingerprint": "6f29c6d3ac1d60e49b1e69ecdae834692c907e2e5dda6f5c48a3afd2475aeea6",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "vrmine",
@@ -3107,11 +3203,16 @@
     },
     {
       "name": "VRPhotoJourney",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "Unity Editorで写真slideshowを生成し、exhibition manifestを監査してtexture・material・prefab・reportを含む固定展示packを生成するツールセット",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "Unityで写真slideshowを作る",
+        "写真manifestからUnity展示prefabを生成",
+        "VR写真展示用のexhibition packを作る"
       ],
-      "notFor": [],
+      "notFor": [
+        "実写動画からGaussian Splat PLYを生成する",
+        "VRChat runtimeで利用者PCの写真folderを列挙する"
+      ],
       "url": "https://github.com/KAFKA2306/VRPhotoJourney",
       "sources": [
         {
@@ -3122,14 +3223,14 @@
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/VRPhotoJourney/blob/master/readme.md",
+          "url": "https://github.com/KAFKA2306/VRPhotoJourney/blob/master/README.md",
           "status": "ok",
-          "fingerprint": "ca606d4cca59259495586a886310a234851c8ef1"
+          "fingerprint": "200c92cd1cc294f5c96c27bcb9fcaa2a7e48ffc5"
         }
       ],
-      "sourceFingerprint": "52301a6de38070ab541e9508d202d048bbe3c7a0cb4d961b6455ad4f643cc630",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "5cf34948b073341e2ed5f6ed024019e596cfe9fbdc0b8a489f6e5377ecd80b76",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "vrpoker",
@@ -3237,11 +3338,16 @@
     },
     {
       "name": "Year2035",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "2035年の東京の監視社会に抵抗する若者たちを描くSFディストピア小説の正準原稿と用語集を管理するrepository",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "2035年東京が舞台のSFディストピア小説",
+        "監視社会に抗うハルコとユウキの物語",
+        "Year2035の章原稿を読む"
       ],
-      "notFor": [],
+      "notFor": [
+        "2035年の市場予測や技術予測を扱う",
+        "一般の技術ドキュメントを管理する"
+      ],
       "url": "https://github.com/KAFKA2306/Year2035",
       "sources": [
         {
@@ -3258,8 +3364,8 @@
         }
       ],
       "sourceFingerprint": "da86f186daf6b926898957f6bc91f552d59f08f3abdb467c01a8c89a392ce9a0",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "yt3",
@@ -3289,11 +3395,16 @@
     },
     {
       "name": "yt4",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "scriptまたはintentからTTS音声を生成し、ASR・prosody・speaker検証と監査を経てvideo compositionとpublish処理へつなぐTypeScript・Bun production pipeline",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "TTS音声を品質検証して動画公開につなぐ",
+        "ASRとspeaker verification付きの音声動画production pipeline",
+        "yt4のdaily situation voice campaignを実行"
       ],
-      "notFor": [],
+      "notFor": [
+        "一般的なYouTubeチャンネル管理だけを行う",
+        "調査記事やfinancial reportを作る"
+      ],
       "url": "https://github.com/KAFKA2306/yt4",
       "sources": [
         {
@@ -3304,14 +3415,14 @@
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/yt4/blob/main/docs/README.md",
+          "url": "https://github.com/KAFKA2306/yt4/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e8906e127c2b238e7fb1af0a5be7f7858366a5fb"
+          "fingerprint": "6b7a256d21ed53b51f9b034195857371097f9ccc"
         }
       ],
-      "sourceFingerprint": "3fe61660d7bf6d139e811b05e582610811ed2ae0942d957da06b9e9d6450eef4",
-      "checkedAt": null,
-      "needsReview": true
+      "sourceFingerprint": "d9a05010b16e6519604fdbe737362a6a782fc8881ab4e534afcfd7d0f0f9db37",
+      "checkedAt": "2026-08-18T03:27:13Z",
+      "needsReview": false
     },
     {
       "name": "ytmanager",
