@@ -11,12 +11,14 @@ on:
       - 'dashboard/repository_recall.py'
       - 'dashboard/config/repository-recall-overrides.json'
       - 'dashboard/schema/repository-recall.schema.json'
+      - 'dashboard/tests/test_repository_recall*.py'
       - '.github/workflows/repository-recall-refresh.yml'
   pull_request:
     paths:
       - 'dashboard/repository_recall.py'
       - 'dashboard/config/repository-recall-overrides.json'
       - 'dashboard/schema/repository-recall.schema.json'
+      - 'dashboard/tests/test_repository_recall*.py'
       - '.github/workflows/repository-recall-refresh.yml'
 
 permissions:
@@ -58,7 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m dashboard.repository_recall validate
-          python -m unittest dashboard.tests.test_repository_recall -v
+          python -m unittest discover -s dashboard/tests -p 'test_repository_recall*.py' -v
 
       - name: Commit changed index
         shell: bash
