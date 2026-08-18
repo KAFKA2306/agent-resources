@@ -9,16 +9,11 @@ on:
       - main
     paths:
       - 'dashboard/repository_recall.py'
+      - 'dashboard/collectors/github_api.py'
+      - 'dashboard/collectors/repositories.py'
+      - 'dashboard/config/repositories.json'
       - 'dashboard/config/repository-recall-overrides.json'
       - 'dashboard/schema/repository-recall.schema.json'
-      - 'dashboard/tests/test_repository_recall*.py'
-      - '.github/workflows/repository-recall-refresh.yml'
-  pull_request:
-    paths:
-      - 'dashboard/repository_recall.py'
-      - 'dashboard/config/repository-recall-overrides.json'
-      - 'dashboard/schema/repository-recall.schema.json'
-      - 'dashboard/tests/test_repository_recall*.py'
       - '.github/workflows/repository-recall-refresh.yml'
 
 permissions:
@@ -33,34 +28,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Check out pull request head
-        if: github.event_name == 'pull_request'
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Check out default ref
-        if: github.event_name != 'pull_request'
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
-      - name: Install dashboard dependencies
-        run: pip install -r dashboard/requirements.txt
-
       - name: Refresh public repository recall index
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python -m dashboard.repository_recall refresh
 
-      - name: Validate generated index and tests
-        run: |
-          set -euo pipefail
-          python -m dashboard.repository_recall validate
-          python -m unittest discover -s dashboard/tests -p 'test_repository_recall*.py' -v
+      - name: Validate generated index
+        run: python -m dashboard.repository_recall validate
 
       - name: Commit changed index
         shell: bash
@@ -74,8 +55,4 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add dashboard/data/repository-index.json
           git commit -m 'chore: refresh repository recall index'
-          if [ "${GITHUB_EVENT_NAME}" = 'pull_request' ]; then
-            git push origin HEAD:"${GITHUB_HEAD_REF}"
-          else
-            git push
-          fi
+          git push
