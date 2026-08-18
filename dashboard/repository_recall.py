@@ -168,9 +168,27 @@ def _semantic_fields(entry):
     }
 
 
+def _description_is_informative(name, description):
+    if not isinstance(description, str):
+        return False
+    normalized = description.strip()
+    if len(normalized) < 16:
+        return False
+    lower = normalized.casefold()
+    if "created with stackblitz" in lower:
+        return False
+    name_key = re.sub(r"[^a-z0-9]+", "", name.casefold())
+    description_key = re.sub(r"[^a-z0-9]+", "", lower)
+    if name_key and description_key == name_key:
+        return False
+    ascii_terms = _ASCII_TERM_RE.findall(lower)
+    japanese_chars = re.findall(r"[ぁ-んァ-ヶ一-龯ー]", normalized)
+    return len(ascii_terms) >= 3 or len(japanese_chars) >= 10
+
+
 def _source_semantic(facts):
     description = facts.get("description")
-    if not isinstance(description, str) or not description.strip():
+    if not _description_is_informative(facts["name"], description):
         return None
     purpose = description.strip()
     topics = [
@@ -184,6 +202,29 @@ def _source_semantic(facts):
         "matches": list(dict.fromkeys(matches)),
         "notFor": [],
     }
+
+
+def _is_source_description_semantic(entry, facts):
+    description = facts.get("description")
+    if not isinstance(description, str):
+        return False
+    expected = {
+        "purpose": description.strip(),
+        "matches": list(
+            dict.fromkeys(
+                [
+                    description.strip(),
+                    *[
+                        topic.strip()
+                        for topic in facts.get("topics", [])
+                        if isinstance(topic, str) and topic.strip()
+                    ],
+                ]
+            )
+        ),
+        "notFor": [],
+    }
+    return _semantic_fields(entry) == expected
 
 
 def _is_placeholder(entry):
@@ -213,6 +254,7 @@ def merge_index(
         old = existing_entries.get(name)
         override = overrides.get(name)
         normalized_override = _normalize_override(override) if override else None
+        source_semantic = _source_semantic(facts)
         source_unchanged = (
             old is not None
             and old.get("sourceFingerprint") == facts["sourceFingerprint"]
@@ -226,13 +268,33 @@ def merge_index(
         if source_unchanged and (
             normalized_override is None or override_unchanged
         ):
-            source_semantic = _source_semantic(facts)
             should_backfill = (
                 normalized_override is None
                 and old.get("needsReview") is True
                 and _is_placeholder(old)
                 and source_semantic is not None
             )
+            should_demote = (
+                normalized_override is None
+                and old.get("needsReview") is False
+                and source_semantic is None
+                and _is_source_description_semantic(old, facts)
+            )
+            if should_demote:
+                result.append(
+                    {
+                        "name": name,
+                        "purpose": UNKNOWN_PURPOSE,
+                        "matches": [UNKNOWN_MATCH],
+                        "notFor": [],
+                        "url": repo["url"],
+                        "sources": facts["sources"],
+                        "sourceFingerprint": facts["sourceFingerprint"],
+                        "checkedAt": None,
+                        "needsReview": True,
+                    }
+                )
+                continue
             if not should_backfill:
                 preserved = dict(old)
                 preserved["url"] = repo["url"]
@@ -258,20 +320,18 @@ def merge_index(
             semantic = _semantic_fields(old)
             needs_review = True
             checked_at = old.get("checkedAt")
+        elif source_semantic is not None:
+            semantic = source_semantic
+            needs_review = False
+            checked_at = checked_now
         else:
-            source_semantic = _source_semantic(facts)
-            if source_semantic is not None:
-                semantic = source_semantic
-                needs_review = False
-                checked_at = checked_now
-            else:
-                semantic = {
-                    "purpose": UNKNOWN_PURPOSE,
-                    "matches": [UNKNOWN_MATCH],
-                    "notFor": [],
-                }
-                needs_review = True
-                checked_at = None
+            semantic = {
+                "purpose": UNKNOWN_PURPOSE,
+                "matches": [UNKNOWN_MATCH],
+                "notFor": [],
+            }
+            needs_review = True
+            checked_at = None
 
         result.append(
             {
