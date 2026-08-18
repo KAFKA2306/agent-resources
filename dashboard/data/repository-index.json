@@ -2726,11 +2726,12 @@
     },
     {
       "name": "unity-mcp",
-      "purpose": "LLMクライアントからModel Context Protocol経由でUnity Editorのscene・GameObject・asset・script・test・buildを操作する",
+      "purpose": "LLMクライアントからModel Context Protocol経由でUnity Editorのscene・GameObject・asset・script・test・buildを操作し、このforkではVRChat制作失敗のevidence-backed Failure KBも管理する",
       "matches": [
         "Unity scene/assetsをLLMから操作",
         "Unity EditorをMCPで操作",
-        "UnityのsceneやGameObjectをAIから管理"
+        "UnityのsceneやGameObjectをAIから管理",
+        "VRChat制作失敗のFailure KBを調べる"
       ],
       "notFor": [
         "VRChatアバターのExpression MenuやPhysBoneを編集",
@@ -2752,8 +2753,8 @@
         }
       ],
       "sourceFingerprint": "347b761e5cc073d59dc8c320e6285c081c247a0cca3bf1512e5b231496f86aca",
-      "checkedAt": "2026-08-17T23:16:22Z",
-      "needsReview": true
+      "checkedAt": "2026-08-18T03:31:34Z",
+      "needsReview": false
     },
     {
       "name": "UnityMCP-VRC",
