@@ -221,7 +221,6 @@ def merge_index(
             normalized_override is not None
             and old is not None
             and _semantic_fields(old) == normalized_override
-            and old.get("needsReview") is False
         )
 
         if source_unchanged and (
