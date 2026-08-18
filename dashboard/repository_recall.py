@@ -19,6 +19,82 @@ UNKNOWN_PURPOSE = "未確認: source evidence は取得済みだが semantic rev
 UNKNOWN_MATCH = "未確認: semantic review 完了後に検索対象へ昇格"
 _ASCII_TERM_RE = re.compile(r"[a-z0-9][a-z0-9+#._-]*")
 _JAPANESE_TERM_RE = re.compile(r"[ぁ-んァ-ヶ一-龯ー]{3,}")
+_PURPOSE_MARKERS = (
+    "repository",
+    "リポジトリ",
+    "project",
+    "プロジェクト",
+    "tool",
+    "ツール",
+    "system",
+    "システム",
+    "dashboard",
+    "ダッシュボード",
+    "platform",
+    "プラットフォーム",
+    "plugin",
+    "プラグイン",
+    "アドオン",
+    "application",
+    "アプリ",
+    "service",
+    "サービス",
+    "workspace",
+    "ワークスペース",
+    "framework",
+    "基盤",
+    "library",
+    "ライブラリ",
+    "agent",
+    "エージェント",
+    "research",
+    "研究",
+    "renderer",
+    "analyzer",
+    "manager",
+    "simulator",
+    "logger",
+    "engine",
+    "machine",
+    "prototype",
+    "プロトタイプ",
+    "database",
+    "データベース",
+    "browser",
+    "ブラウザ",
+    "viewer",
+    "evidence",
+)
+_ACTION_MARKERS = (
+    "収集",
+    "取得",
+    "生成",
+    "分析",
+    "可視化",
+    "管理",
+    "検索",
+    "保存",
+    "比較",
+    "支援",
+    "変換",
+    "公開",
+    "統合",
+    "作成",
+    "実行",
+    "監視",
+    "抽出",
+    "提供",
+    "retarget",
+    "render",
+    "collect",
+    "generate",
+    "analyze",
+    "visualize",
+    "manage",
+    "search",
+    "convert",
+    "publish",
+)
 
 
 def utc_now_iso():
@@ -191,6 +267,7 @@ def _text_is_informative(name, value, *, minimum_length=16):
     lower = normalized.casefold()
     boilerplate = (
         "created with stackblitz",
+        "edit in stackblitz",
         "this project was bootstrapped with create react app",
         "this is a next.js project bootstrapped with create-next-app",
         "this is a next.js project bootstrapped with",
@@ -233,13 +310,16 @@ def _readme_candidates(readme_text):
     in_frontmatter = False
     lines = readme_text.splitlines()
 
+    def append_candidate(kind, value):
+        candidate = _clean_markdown_text(value)
+        if candidate:
+            candidates.append({"kind": kind, "text": candidate})
+
     def flush():
         if not paragraph:
             return
-        candidate = _clean_markdown_text(" ".join(paragraph))
+        append_candidate("paragraph", " ".join(paragraph))
         paragraph.clear()
-        if candidate:
-            candidates.append(candidate)
 
     for index, raw_line in enumerate(lines):
         line = raw_line.strip()
@@ -274,9 +354,7 @@ def _readme_candidates(readme_text):
 
         if line.startswith("#"):
             flush()
-            heading = _clean_markdown_text(line.lstrip("#").strip())
-            if heading:
-                candidates.append(heading)
+            append_candidate("heading", line.lstrip("#").strip())
             continue
 
         if (
@@ -302,13 +380,55 @@ def _readme_candidates(readme_text):
     return candidates
 
 
+def _phrase_key(value):
+    return re.sub(r"[^a-z0-9ぁ-んァ-ヶ一-龯ー]+", " ", value.casefold()).strip()
+
+
+def _candidate_mentions_repo(name, candidate):
+    needle = _phrase_key(name)
+    haystack = _phrase_key(candidate)
+    return bool(needle) and f" {needle} " in f" {haystack} "
+
+
+def _candidate_score(name, candidate, kind):
+    lower = candidate.casefold()
+    if not _text_is_informative(name, candidate, minimum_length=20):
+        return -1
+    if lower.startswith(("公開ページ:", "公開サイト:")):
+        return -1
+    if "stackblitz" in lower:
+        return -1
+    if lower in {"final zero-trust delivery contract", "final delivery contract"}:
+        return -1
+    if lower.endswith("documentation index"):
+        return -1
+    if candidate.count("http://") + candidate.count("https://") >= 1 and len(candidate) < 120:
+        return -1
+
+    score = 0
+    if _candidate_mentions_repo(name, candidate):
+        score += 5
+    if any(marker in lower for marker in _PURPOSE_MARKERS):
+        score += 5
+    score += min(
+        4,
+        sum(1 for marker in _ACTION_MARKERS if marker in lower),
+    )
+    if 24 <= len(candidate) <= 240:
+        score += 1
+    if re.search(r"(?:です|ます|する|ための|向け)$", candidate.rstrip("。.!！")):
+        score += 1
+    if kind == "heading" and len(_ASCII_TERM_RE.findall(lower)) >= 3:
+        score += 1
+    return score
+
+
 def _readme_semantic(facts):
     name = facts["name"]
-    for candidate in _readme_candidates(facts.get("readmeText"))[:20]:
-        cleaned = _clean_markdown_text(candidate)
-        if not _text_is_informative(name, cleaned, minimum_length=20):
-            continue
-        lower = cleaned.casefold()
+    scored = []
+    for order, item in enumerate(_readme_candidates(facts.get("readmeText"))[:30]):
+        candidate = item["text"]
+        lower = candidate.casefold()
         if lower.startswith(
             (
                 "installation",
@@ -327,20 +447,25 @@ def _readme_semantic(facts):
             )
         ):
             continue
-        purpose = cleaned
-        if len(purpose) > 320:
-            purpose = purpose[:317].rstrip() + "..."
-        topics = [
-            topic.strip()
-            for topic in facts.get("topics", [])
-            if isinstance(topic, str) and topic.strip()
-        ]
-        return {
-            "purpose": purpose,
-            "matches": list(dict.fromkeys([purpose, *topics])),
-            "notFor": [],
-        }
-    return None
+        score = _candidate_score(name, candidate, item["kind"])
+        if score >= 5:
+            scored.append((score, -order, candidate))
+
+    if not scored:
+        return None
+    _, _, purpose = max(scored)
+    if len(purpose) > 320:
+        purpose = purpose[:317].rstrip() + "..."
+    topics = [
+        topic.strip()
+        for topic in facts.get("topics", [])
+        if isinstance(topic, str) and topic.strip()
+    ]
+    return {
+        "purpose": purpose,
+        "matches": list(dict.fromkeys([purpose, *topics])),
+        "notFor": [],
+    }
 
 
 def _source_semantic(facts):
@@ -360,20 +485,37 @@ def _source_semantic(facts):
     return _readme_semantic(facts)
 
 
-def _is_source_description_semantic(entry, facts):
-    description = facts.get("description")
-    return (
-        isinstance(description, str)
-        and entry.get("purpose") == description.strip()
-        and entry.get("matches", [None])[0] == description.strip()
-        and entry.get("notFor", []) == []
-    )
-
-
 def _is_placeholder(entry):
     return (
         entry.get("purpose") == UNKNOWN_PURPOSE
         or entry.get("matches") == [UNKNOWN_MATCH]
+    )
+
+
+def _entry(name, repo, facts, semantic, checked_at, needs_review):
+    return {
+        "name": name,
+        **semantic,
+        "url": repo["url"],
+        "sources": facts["sources"],
+        "sourceFingerprint": facts["sourceFingerprint"],
+        "checkedAt": checked_at,
+        "needsReview": needs_review,
+    }
+
+
+def _placeholder_entry(name, repo, facts):
+    return _entry(
+        name,
+        repo,
+        facts,
+        {
+            "purpose": UNKNOWN_PURPOSE,
+            "matches": [UNKNOWN_MATCH],
+            "notFor": [],
+        },
+        None,
+        True,
     )
 
 
@@ -401,94 +543,105 @@ def merge_index(
             old is not None
             and old.get("sourceFingerprint") == facts["sourceFingerprint"]
         )
-        override_unchanged = (
-            normalized_override is not None
-            and old is not None
-            and _semantic_fields(old) == normalized_override
-        )
 
-        if source_unchanged and (
-            normalized_override is None or override_unchanged
-        ):
-            source_semantic = _source_semantic(facts)
-            should_backfill = (
-                normalized_override is None
-                and old.get("needsReview") is True
-                and _is_placeholder(old)
-                and source_semantic is not None
+        if normalized_override is not None:
+            override_unchanged = (
+                old is not None and _semantic_fields(old) == normalized_override
             )
-            should_demote = (
-                normalized_override is None
-                and old.get("needsReview") is False
-                and source_semantic is None
-                and _is_source_description_semantic(old, facts)
-            )
-            if not should_backfill and not should_demote:
+            if source_unchanged and override_unchanged:
                 preserved = dict(old)
                 preserved["url"] = repo["url"]
                 preserved["sources"] = facts["sources"]
                 result.append(preserved)
                 continue
-            if should_demote:
+            if old is None or not override_unchanged:
                 result.append(
-                    {
-                        "name": name,
-                        "purpose": UNKNOWN_PURPOSE,
-                        "matches": [UNKNOWN_MATCH],
-                        "notFor": [],
-                        "url": repo["url"],
-                        "sources": facts["sources"],
-                        "sourceFingerprint": facts["sourceFingerprint"],
-                        "checkedAt": None,
-                        "needsReview": True,
-                    }
+                    _entry(
+                        name,
+                        repo,
+                        facts,
+                        normalized_override,
+                        checked_now,
+                        False,
+                    )
                 )
                 continue
-
-        if normalized_override is not None:
-            semantic = normalized_override
-            override_changed = (
-                old is None or _semantic_fields(old) != normalized_override
+            result.append(
+                _entry(
+                    name,
+                    repo,
+                    facts,
+                    normalized_override,
+                    old.get("checkedAt"),
+                    True,
+                )
             )
-            if old is None or override_changed:
-                needs_review = False
-                checked_at = checked_now
-            elif source_unchanged:
-                needs_review = False
-                checked_at = old.get("checkedAt")
-            else:
-                needs_review = True
-                checked_at = old.get("checkedAt")
-        elif old and not source_unchanged:
-            semantic = _semantic_fields(old)
-            needs_review = True
-            checked_at = old.get("checkedAt")
-        else:
-            source_semantic = _source_semantic(facts)
-            if source_semantic is not None:
-                semantic = source_semantic
-                needs_review = False
-                checked_at = checked_now
-            else:
-                semantic = {
-                    "purpose": UNKNOWN_PURPOSE,
-                    "matches": [UNKNOWN_MATCH],
-                    "notFor": [],
-                }
-                needs_review = True
-                checked_at = None
+            continue
 
-        result.append(
-            {
-                "name": name,
-                **semantic,
-                "url": repo["url"],
-                "sources": facts["sources"],
-                "sourceFingerprint": facts["sourceFingerprint"],
-                "checkedAt": checked_at,
-                "needsReview": needs_review,
-            }
-        )
+        if old is not None and not source_unchanged:
+            result.append(
+                _entry(
+                    name,
+                    repo,
+                    facts,
+                    _semantic_fields(old),
+                    old.get("checkedAt"),
+                    True,
+                )
+            )
+            continue
+
+        source_semantic = _source_semantic(facts)
+        if old is not None and source_unchanged:
+            if old.get("needsReview") is True and not _is_placeholder(old):
+                preserved = dict(old)
+                preserved["url"] = repo["url"]
+                preserved["sources"] = facts["sources"]
+                result.append(preserved)
+                continue
+            if source_semantic is None:
+                if old.get("needsReview") is True and _is_placeholder(old):
+                    preserved = dict(old)
+                    preserved["url"] = repo["url"]
+                    preserved["sources"] = facts["sources"]
+                    result.append(preserved)
+                else:
+                    result.append(_placeholder_entry(name, repo, facts))
+                continue
+            if (
+                old.get("needsReview") is False
+                and _semantic_fields(old) == source_semantic
+            ):
+                preserved = dict(old)
+                preserved["url"] = repo["url"]
+                preserved["sources"] = facts["sources"]
+                result.append(preserved)
+                continue
+            result.append(
+                _entry(
+                    name,
+                    repo,
+                    facts,
+                    source_semantic,
+                    checked_now,
+                    False,
+                )
+            )
+            continue
+
+        if source_semantic is not None:
+            result.append(
+                _entry(
+                    name,
+                    repo,
+                    facts,
+                    source_semantic,
+                    checked_now,
+                    False,
+                )
+            )
+        else:
+            result.append(_placeholder_entry(name, repo, facts))
 
     document = {"repositories": result}
     validate_index(document)
