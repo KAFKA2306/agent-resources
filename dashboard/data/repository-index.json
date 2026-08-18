@@ -1297,12 +1297,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/gennote/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "af68545df5d4e2f43a2ea2cccaff5c9c634faafd"
+          "fingerprint": "902044ec3b8bf114ae4a5d38c67c87c71dd76828"
         }
       ],
-      "sourceFingerprint": "5754272bb13ce0215189e6132568aa489f08bbcab299b07081bafcab7dd58a53",
+      "sourceFingerprint": "2bfbd61e1d7bcaba5d498b458649ef1d1293c2f0d647fff53579dcecfb68d27b",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "hf-cache-hub",
@@ -1323,12 +1323,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/hf-cache-hub/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "a8cc1cf54cc9bb8ce547ee7aff87405fc4a7bdcf"
+          "fingerprint": "68f02f27a2ebc095350cb6cfe7095197f0020e80"
         }
       ],
-      "sourceFingerprint": "cbb94f5a6053fc77de6f1913a15a0b596ed90f9b0f07202364b0babc09885709",
+      "sourceFingerprint": "33763bb4ca48760e89414cbd9e5ef256f38baf829ed3aefe55f302513fb553e9",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "hitaiall",
@@ -1941,12 +1941,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/multiomics/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d2787e611cd62b71fa3235c7fee491b8ac6a305b"
+          "fingerprint": "e0ca47759124099725ae3ae0918894fbcafea871"
         }
       ],
-      "sourceFingerprint": "9c8372d545b9f558749b42606d5e2465c2465e57dd331aa7d8a50585b52e2f22",
+      "sourceFingerprint": "877240109efc6578df9da9ca4bc38463cbb09ad21d0e395bf444c211c27726f9",
       "checkedAt": "2026-08-18T03:40:48Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "nk225seasonality",
@@ -2024,12 +2024,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/nonfarmpayroll/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "cc51b694d681b279733578434eafc47c5aa6d223"
+          "fingerprint": "b2ebe6765617ad1c17c6afc8cc7918fed1b86705"
         }
       ],
-      "sourceFingerprint": "825d64371d09b5818c4105ab32d8e945514b567240f1106de135429843597070",
+      "sourceFingerprint": "1b90a0ede1f383f39bbb0cb30770ce2bb7f4b1317f4a179d2fd7fc59521d4bb7",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "notebooklm-py",
@@ -3167,12 +3167,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrcrelator/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "8be0352f04467a75a8641d9fe6e3223b6e181daf"
+          "fingerprint": "fc3cf916ef00c461fd1801737843f47e2e602aad"
         }
       ],
-      "sourceFingerprint": "08277aae6d8ad6775580c069b51a44393cf97385a3cc031d8eb6e22daff23113",
+      "sourceFingerprint": "aa62f0073d4ba1f7df9beff80ea65e4ff0faf885c7c3cc0094473c2854673e90",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "vrcviewer",
@@ -3447,12 +3447,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/yt4/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6b7a256d21ed53b51f9b034195857371097f9ccc"
+          "fingerprint": "8684eb6f3da713eaec7026c10ae580a19304432f"
         }
       ],
-      "sourceFingerprint": "d9a05010b16e6519604fdbe737362a6a782fc8881ab4e534afcfd7d0f0f9db37",
+      "sourceFingerprint": "107228ac4488b2e103769e3355cd529cd6a14be047c4f7c18b24fc01ae3bd647",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "ytmanager",
