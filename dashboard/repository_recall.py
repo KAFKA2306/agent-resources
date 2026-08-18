@@ -484,6 +484,24 @@ def _source_semantic(facts):
     return _readme_semantic(facts)
 
 
+def _is_source_description_semantic(entry, facts):
+    description = facts.get("description")
+    if not isinstance(description, str):
+        return False
+    purpose = description.strip()
+    topics = [
+        topic.strip()
+        for topic in facts.get("topics", [])
+        if isinstance(topic, str) and topic.strip()
+    ]
+    expected = {
+        "purpose": purpose,
+        "matches": list(dict.fromkeys([purpose, *topics])),
+        "notFor": [],
+    }
+    return _semantic_fields(entry) == expected
+
+
 def _is_placeholder(entry):
     return (
         entry.get("purpose") == UNKNOWN_PURPOSE
@@ -531,6 +549,40 @@ def merge_index(
                 and _is_placeholder(old)
                 and source_semantic is not None
             )
+            should_rebuild_generic_description = (
+                normalized_override is None
+                and old.get("needsReview") is False
+                and not _description_is_informative(name, facts.get("description"))
+                and _is_source_description_semantic(old, facts)
+            )
+            if should_rebuild_generic_description:
+                if source_semantic is None:
+                    result.append(
+                        {
+                            "name": name,
+                            "purpose": UNKNOWN_PURPOSE,
+                            "matches": [UNKNOWN_MATCH],
+                            "notFor": [],
+                            "url": repo["url"],
+                            "sources": facts["sources"],
+                            "sourceFingerprint": facts["sourceFingerprint"],
+                            "checkedAt": None,
+                            "needsReview": True,
+                        }
+                    )
+                else:
+                    result.append(
+                        {
+                            "name": name,
+                            **source_semantic,
+                            "url": repo["url"],
+                            "sources": facts["sources"],
+                            "sourceFingerprint": facts["sourceFingerprint"],
+                            "checkedAt": checked_now,
+                            "needsReview": False,
+                        }
+                    )
+                continue
             if not should_backfill:
                 preserved = dict(old)
                 preserved["url"] = repo["url"]
