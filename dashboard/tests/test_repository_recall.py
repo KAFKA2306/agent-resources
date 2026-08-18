@@ -355,6 +355,33 @@ class RepositoryRecallTests(unittest.TestCase):
         self.assertTrue(entry["needsReview"])
         self.assertEqual(entry["checkedAt"], "2026-08-18T00:00:00Z")
 
+    def test_stale_override_remains_stale_until_override_changes(self):
+        repository = self.repo("unity-agent")
+        override = {
+            "purpose": "VRChat avatar editor",
+            "matches": ["Expression Menu / PhysBone"],
+            "notFor": ["UdonSharp world"],
+        }
+        stale = self.entry(
+            "unity-agent",
+            purpose=override["purpose"],
+            matches=override["matches"],
+            not_for=override["notFor"],
+            fingerprint="b" * 64,
+            checked_at="2026-08-18T00:00:00Z",
+            needs_review=True,
+        )
+        document = merge_index(
+            [repository],
+            {"unity-agent": self.facts("unity-agent", "b" * 64)},
+            existing={"repositories": [stale]},
+            overrides={"unity-agent": override},
+            now="2026-08-20T00:00:00Z",
+        )
+        entry = document["repositories"][0]
+        self.assertTrue(entry["needsReview"])
+        self.assertEqual(entry["checkedAt"], "2026-08-18T00:00:00Z")
+
     def test_validate_index_rejects_duplicates_invalid_entries_and_verified_placeholder(self):
         valid = self.entry("valid")
         self.assertEqual(validate_index({"repositories": [valid]})["repositories"][0]["name"], "valid")
