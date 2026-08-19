@@ -187,7 +187,7 @@ def main() -> None:
     dom = result.stdout
     checks = {
         "live request occurred": FixtureHandler.live_requests >= 1,
-        "live status rendered": 'id="snapshot-status" data-state="live">LIVE<' in dom,
+        "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
         "live repository rendered": "live-repo" in dom,
         "live work item rendered": "LIVE-ISSUE" in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
