@@ -175,12 +175,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "0271542b2df71376ed0d371ef285ac7dd31eba0a"
+          "fingerprint": "e92495d9897ee1cd772070f2ff2a4a95a42c7413"
         }
       ],
-      "sourceFingerprint": "fd9b77e3892c8e251fd7187b43345b45b59ef96936e2ebb67a87ef0c328bd423",
+      "sourceFingerprint": "2ecaed592174d0963d277b49ceff978dc186451165b485c9674d32b86a98a379",
       "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "alpha",
@@ -201,12 +201,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/alpha/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3b4d7a64eca0ed22de214877b9ffcee00f083c87"
+          "fingerprint": "43773b8039d6d4048a627fbdde7922c989f97661"
         }
       ],
-      "sourceFingerprint": "89f31c53b4ce339eac35201b8bf0c8e5ade25b5b8e7bba66630de0b57d0cbc10",
+      "sourceFingerprint": "eeb5908dbe9628719104d8f98a3f901531588619325180b086dfabc83081db5b",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "anime",
@@ -357,10 +357,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-vehicles/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "98c9dcead60e01238905e15693552a92fd9c33c6"
+          "fingerprint": "c89c88df511a90dbc0bae07366c392844680477a"
         }
       ],
-      "sourceFingerprint": "d1ab9173834af7259ea1049f7fecd2db88b90b386e13f42926687b5957c73347",
+      "sourceFingerprint": "d5f6ca00972b05567cfb094803cd331c3a0d60e7c7775e2624530183e31c5add",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -388,10 +388,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/AutoPhotogrammetry/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4a86172dbd5477a214d752f384b1d0552c7977f1"
+          "fingerprint": "54d383caed3c304d8e00b395f466486fdce530d2"
         }
       ],
-      "sourceFingerprint": "9e0c91701177579247c4fd594bf1565f9dba260f44deae7dadea18f8c302a1f2",
+      "sourceFingerprint": "0add4119376036f7956e2ab3b04f3217633783feaca7743e6c1df551d4d2ea13",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -871,10 +871,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/dancer/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "9647dc60a7a8042f2c74088d125cb8f01d30cb93"
+          "fingerprint": "ca2c5575f155b9cf039afc546f4b434f3219cac1"
         }
       ],
-      "sourceFingerprint": "b60c2f15bd83d304b9dde64d993af4b90868fbbc0acb7c615c07bb71bbe0012a",
+      "sourceFingerprint": "6911593b706a34b8d7f36d6ed4acfb2a8382fd259b9d7a77a46378e56a0356a8",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1058,10 +1058,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4a4e5b0917b66e9aa74982b4ae9fe766f95386ec"
+          "fingerprint": "6480ce2dbe4f7815c1f3a2e47dd898e05ef69d21"
         }
       ],
-      "sourceFingerprint": "1edb0a51d54dd09704e22e05949c09f1e4c8d0fdd0f0bb8a0c6134f7ed374cc3",
+      "sourceFingerprint": "e66575520140d91533994c577cac9abe666fb4b2cdee5ec8d1cfa566b8bc8d19",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1084,12 +1084,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finAnalist/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d7ca205a3ae0260db973220525f2fefc2e1ae98f"
+          "fingerprint": "03018efafb901018fb2ef42dad6b7f65ceb76fc8"
         }
       ],
-      "sourceFingerprint": "6b7f44b03ad62c48b7a22a98dc85809af71ff71ce58539cf2f07da9663c87b88",
+      "sourceFingerprint": "acc47b758dc6a79122c661224316f032e8fdd44d17eae8e52139b0d86ae721b3",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "financial-services-plugins",
@@ -1375,12 +1375,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/hitaiou/blob/main/readme.md",
           "status": "ok",
-          "fingerprint": "b50ec133a1394e27071517b599371beb01680ce7"
+          "fingerprint": "046276e918d66bab4a3ea5633cc13ca5b6ce8179"
         }
       ],
-      "sourceFingerprint": "180881677a2cea8c60e334bfba19348e18fb4259802fad7f5b42efcebe10f9df",
+      "sourceFingerprint": "424797d0c6bff29279932b74e0eeea12b19615d9ddf0c12b275065015b1d9824",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "image2outfit",
@@ -1531,10 +1531,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/kafin3/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "8240d65857ed8f81c7f2a906d6cb34ce4b185cbd"
+          "fingerprint": "98cc232108614c069160dc31fb044da81c5c4c58"
         }
       ],
-      "sourceFingerprint": "08c4a835be7ee6b66cc0a4ebfb9e25610bb7eb7aeccd2382e8434dbf060bf12e",
+      "sourceFingerprint": "dd5cadebc5d5105aa6fa9d23e10e074b0bfa142d55a4bddae9212e72fb00558d",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1697,12 +1697,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/know/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3d2b86f3d476568712a77abf56eb9f83585bad20"
+          "fingerprint": "93c5e9564706b48e340d2f2703eea011677356fb"
         }
       ],
-      "sourceFingerprint": "e3da5d489bb1d8694e396e35e198a045a262c71ab5bb8f4d4e9f593b6f197892",
+      "sourceFingerprint": "bfeb0f02667beaaa0d842532c9a98c6860dc5f13b1f1d340735170d6a612b894",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "launcher",
@@ -1967,12 +1967,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/nk225seasonality/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "c6e3bdbea9a81802d46480e279c2ca4e486fce8f"
+          "fingerprint": "b855695890288e7f0d79874ee227be68a0d2464f"
         }
       ],
-      "sourceFingerprint": "22447d6ceda750b4e415189aaa073caa275f1880186b9f05185d3f52e338e06b",
+      "sourceFingerprint": "66d44f8e0e363bbc13827e2ae57c5c73f67f4b051e2a6a9fefb86dbed767d150",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "nlm",
@@ -2346,12 +2346,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/readable-github/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "98c4e46bc63161c6b253823fa973c32c0756ba06"
+          "fingerprint": "a2456f97501350a3fe06477d9524d58751e3ed93"
         }
       ],
-      "sourceFingerprint": "2c35a283f89ea9efb3f85994476a7529d3dab6781c8df8c6e49b79de423afe82",
+      "sourceFingerprint": "d1d49f3110c0b21bd1a6873616770e3216727c992463213a7dc689d4da7063b6",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "robot",
@@ -2559,12 +2559,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/summer/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "dcaadb6ace9cadb6472816f7443a2ee6dada495a"
+          "fingerprint": "78828562b31a458aaa7aede18dd98b7923329050"
         }
       ],
-      "sourceFingerprint": "d41cf68a4a67d8d3559453b8b36d05b908cca41f537be8f4c36be6620d608d99",
+      "sourceFingerprint": "6687d68b7255db96e5cb0c30f08923596eeff9eaca54662f79c63886acd785c4",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "Swiss-Tournament-Manager",
@@ -2861,12 +2861,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/us-swing-strategy-bi-pages/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "62c81164d3435789b5e26fb006eccbd2b4fca0b5"
+          "fingerprint": "042fc7db05ac69108d5d394d59013cec24f636c2"
         }
       ],
-      "sourceFingerprint": "15bc81998f3d57f5d9605b2582c454fe8f92d8b358a7242b17840fa13da86557",
+      "sourceFingerprint": "07f52540363fd87fcac86df76f2b16f0b31801b935db7aa0d10147a8a12a8cae",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "VeilVoice",
@@ -2939,12 +2939,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vlogrs/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "698698fbeba5141a491f6d8137888d576794dc94"
+          "fingerprint": "8af9491ffa15d87abafab35842fe849ad1176952"
         }
       ],
-      "sourceFingerprint": "59b12d63f112b843b4dd5d2682d5b610d3cf2256074b8fff190817d62a2f3066",
+      "sourceFingerprint": "4d84cc63a7d4bbb12d071a110f67f8ab8951910231b246635fbb4506a72986a1",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "vmatch2",
@@ -3250,10 +3250,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrmine/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "0ac56ec1374a70d7be8fe751ec71fdb6bc384286"
+          "fingerprint": "02b45a51d2550e91e4a4709c5a12f83a4d4fff30"
         }
       ],
-      "sourceFingerprint": "6060c59d808a991774002e72f9669ee061cae1d48304047ad4a224c3b3f79071",
+      "sourceFingerprint": "01163872259cc9a2784928edb50c867970f7d468f58ade0124f4cd81c35f3653",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -3307,12 +3307,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrpoker/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3771e9767fe7a7c5eab370380d768f59ca5cc4ee"
+          "fingerprint": "5ce1b3078dad0a7d2df460254b1ef31a8c03601f"
         }
       ],
-      "sourceFingerprint": "ef93f7bfd394eadb0ef48a005c7c3ba8b00852131b24d0065252c167e81b38a3",
+      "sourceFingerprint": "ac6fcb128e8effb46b71d164cc6d78e486d19eca68cb80f8bbd1fd0e7cedbb0a",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "vtttv",
