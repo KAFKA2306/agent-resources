@@ -24,6 +24,7 @@ const activityFeed = document.querySelector("#activity-feed");
 
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const ACTIVITY_COUNT_LABELS = { issue: "Issue", pull_request: "PR", workflow_run: "Run" };
+const WORK_ITEM_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const GATES = [
   { lane: "waiting", label: "判断待ち" },
   { lane: "failed", label: "失敗・要確認" },
@@ -39,6 +40,17 @@ let liveRequest = null;
 let liveRequestSequence = 0;
 let latestAppliedSequence = 0;
 let lastLiveSuccessAt = 0;
+
+function formatWorkItemAge(value) {
+  const updated = new Date(value);
+  if (Number.isNaN(updated.getTime())) return "更新時刻不明";
+  const ageMs = Math.max(0, Date.now() - updated.getTime());
+  const minutes = Math.floor(ageMs / (60 * 1000));
+  if (minutes < 60) return `${minutes}分前に更新`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}時間前に更新`;
+  return `${Math.floor(hours / 24)}日前に更新`;
+}
 
 function showGateItems(label, items, repositoriesById) {
   gateDetail.replaceChildren();
@@ -56,14 +68,36 @@ function showGateItems(label, items, repositoriesById) {
   const list = document.createElement("div");
   list.className = "gate-item-list";
   for (const item of items.slice().sort(compareWorkItems)) {
-    const row = document.createElement("div");
+    const row = document.createElement("article");
+    row.className = "gate-item";
+    const repo = repositoriesById.get(item.repositoryId);
+
+    const itemHeading = document.createElement("div");
+    itemHeading.className = "gate-item-heading";
     const link = document.createElement("a");
+    link.className = "gate-item-link";
     link.href = item.url;
     link.target = "_blank";
     link.rel = "noreferrer";
-    const repo = repositoriesById.get(item.repositoryId);
     link.textContent = `${repo ? repo.name : "unknown"} · ${item.title}`;
-    row.append(link);
+    itemHeading.append(link);
+
+    const meta = document.createElement("div");
+    meta.className = "gate-item-meta";
+    const kind = document.createElement("span");
+    kind.textContent = WORK_ITEM_LABELS[item.kind] || item.kind;
+    const state = document.createElement("span");
+    state.textContent = item.state;
+    const updated = document.createElement("time");
+    if (item.updatedAt) updated.dateTime = item.updatedAt;
+    updated.textContent = formatWorkItemAge(item.updatedAt);
+    meta.append(kind, state, updated);
+
+    const reason = document.createElement("p");
+    reason.className = "gate-item-reason";
+    reason.textContent = item.laneReason || "理由は取得できませんでした。";
+
+    row.append(itemHeading, meta, reason);
     const publicSurfaceLinks = repo ? createPublicSurfaceLinks(repo) : null;
     if (publicSurfaceLinks) row.append(publicSurfaceLinks);
     list.append(row);
