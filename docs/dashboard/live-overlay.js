@@ -7,11 +7,11 @@ function parseTime(value) {
 
 export function classifyLive(fetchedAt, nowMs = Date.now()) {
   const fetchedMs = parseTime(fetchedAt);
-  if (fetchedMs === null) return { label: "SNAPSHOT FALLBACK", ageMs: null, isFresh: false };
+  if (fetchedMs === null) return { label: "SNAPSHOT FALLBACK", state: "failed", ageMs: null, isFresh: false };
   const ageMs = Math.max(0, nowMs - fetchedMs);
   return ageMs <= LIVE_MAX_AGE_MS
-    ? { label: "LIVE", ageMs, isFresh: true }
-    : { label: "STALE", ageMs, isFresh: false };
+    ? { label: "LIVE", state: "fresh", ageMs, isFresh: true }
+    : { label: "STALE", state: "stale", ageMs, isFresh: false };
 }
 
 export function mergeLiveSnapshot(baseline, live) {
