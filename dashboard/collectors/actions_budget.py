@@ -2,6 +2,7 @@ import argparse
 import calendar
 import json
 import os
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 from urllib.parse import urlencode
 
@@ -90,6 +91,8 @@ def _billing_usage(owner, today, token, request_fn=request_json):
                 "status": "unavailable",
                 "reason": f"github_api_http_{exc.status}",
                 "reported_actions_minutes": None,
+                "reported_actions_minutes_by_repository": None,
+                "reported_actions_minutes_by_sku": None,
             }
         raise
 
@@ -98,6 +101,8 @@ def _billing_usage(owner, today, token, request_fn=request_json):
         raise GitHubApiError("unexpected billing usage response shape")
 
     minutes = 0.0
+    by_repository = defaultdict(float)
+    by_sku = defaultdict(float)
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -108,12 +113,28 @@ def _billing_usage(owner, today, token, request_fn=request_json):
         quantity = item.get("quantity")
         if not isinstance(quantity, (int, float)) or isinstance(quantity, bool) or quantity < 0:
             raise GitHubApiError("invalid Actions billing quantity")
-        minutes += float(quantity)
+        quantity = float(quantity)
+        minutes += quantity
+
+        repository_name = item.get("repositoryName")
+        if isinstance(repository_name, str) and repository_name:
+            by_repository[repository_name] += quantity
+        sku = item.get("sku")
+        if isinstance(sku, str) and sku:
+            by_sku[sku] += quantity
+
+    def sorted_breakdown(values):
+        return [
+            {"name": name, "minutes": value}
+            for name, value in sorted(values.items(), key=lambda pair: (-pair[1], pair[0].lower()))
+        ]
 
     return {
         "status": "available",
         "reason": None,
         "reported_actions_minutes": minutes,
+        "reported_actions_minutes_by_repository": sorted_breakdown(by_repository),
+        "reported_actions_minutes_by_sku": sorted_breakdown(by_sku),
     }
 
 
@@ -224,6 +245,11 @@ def collect_actions_budget(
         "decision": {
             "can_assert_remaining_minutes": reported_minutes is not None,
             "highest_run_repository": max(rows, key=lambda row: row["month_to_date_runs"])["full_name"] if rows else None,
+            "highest_billed_repository": (
+                billing["reported_actions_minutes_by_repository"][0]["name"]
+                if billing.get("reported_actions_minutes_by_repository")
+                else None
+            ),
             "next_action": (
                 "inspect highest-run active private workflows before adding scheduled jobs"
                 if active_rows
