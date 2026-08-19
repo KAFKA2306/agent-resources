@@ -4,17 +4,67 @@ import test from "node:test";
 
 const source = await readFile(new URL("../../docs/dashboard/dashboard.js", import.meta.url), "utf8");
 
-test("live refresh owns endpoint resolution inside the shared in-flight request", () => {
+function extractRefreshSource() {
   const start = source.indexOf("export async function refreshLiveState");
   const end = source.indexOf("async function loadDashboard", start);
   assert.notEqual(start, -1);
   assert.notEqual(end, -1);
+  return source.slice(start, end).replace("export async function", "async function");
+}
 
-  const refresh = source.slice(start, end);
+test("live refresh owns endpoint resolution inside the shared in-flight request", () => {
+  const refresh = extractRefreshSource();
   const requestAssignment = refresh.indexOf("liveRequest = (async () => {");
   const endpointResolution = refresh.indexOf("await resolveLiveEndpoint()");
 
   assert.ok(requestAssignment >= 0, "refresh must assign the shared liveRequest");
   assert.ok(endpointResolution > requestAssignment, "endpoint resolution must happen inside the shared liveRequest");
   assert.match(refresh, /if \(liveRequest\) return liveRequest;/);
+});
+
+test("concurrent refreshes share one live fetch while endpoint resolution is pending", async () => {
+  let releaseEndpoint;
+  const endpointPending = new Promise((resolve) => {
+    releaseEndpoint = () => resolve("https://example.test/api/dashboard-live");
+  });
+  let fetchCount = 0;
+
+  const buildHarness = new Function(
+    "resolveLiveEndpoint",
+    "fetch",
+    `${extractRefreshSource()}
+    let baselineSnapshot = { generatedAt: "2026-08-20T00:00:00Z", repositories: [], workItems: [], activity: [] };
+    let liveRequest = null;
+    let liveRequestSequence = 0;
+    let latestAppliedSequence = 0;
+    let lastLiveSuccessAt = 0;
+    const MIN_LIVE_SUCCESS_AGE_MS = 60 * 1000;
+    const mergeLiveSnapshot = (_baseline, live) => live;
+    const renderDashboard = () => {};
+    const renderSnapshotMeta = () => {};
+    const renderLiveMeta = () => {};
+    const renderLiveFailure = () => {};
+    return { refreshLiveState };`,
+  );
+
+  const { refreshLiveState } = buildHarness(
+    () => endpointPending,
+    async () => {
+      fetchCount += 1;
+      return {
+        ok: true,
+        async json() {
+          return { fetchedAt: "2026-08-20T00:01:00Z", repositories: [], workItems: [], activity: [] };
+        },
+      };
+    },
+  );
+
+  const first = refreshLiveState({ force: true });
+  const second = refreshLiveState({ force: true });
+  assert.equal(fetchCount, 0, "live fetch must wait for endpoint resolution");
+
+  releaseEndpoint();
+  await Promise.all([first, second]);
+  assert.equal(fetchCount, 1, "concurrent refreshes must produce exactly one live request");
 });
