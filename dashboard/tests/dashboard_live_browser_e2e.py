@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-import contextlib
 import datetime as dt
 import http.server
 import json
 import pathlib
 import shutil
 import socketserver
+import ssl
 import subprocess
+import tempfile
 import threading
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DASHBOARD_DIR = ROOT / "docs" / "dashboard"
-HOSTNAME = "agent-resources-test.vercel.app"
 
 
 def repository(repo_id: str, name: str) -> dict[str, object]:
@@ -99,6 +99,10 @@ class FixtureHandler(http.server.SimpleHTTPRequestHandler):
         if path == "/dashboard.json":
             self.send_json(BASELINE)
             return
+        if path == "/live-config.json":
+            port = self.server.server_address[1]
+            self.send_json({"endpoint": f"https://localhost:{port}/api/dashboard-live"})
+            return
         if path == "/api/dashboard-live":
             type(self).live_requests += 1
             self.send_json(live_payload())
@@ -118,14 +122,47 @@ def find_chrome() -> str:
     raise SystemExit("headless Chrome/Chromium is required for dashboard browser E2E")
 
 
+def create_certificate(directory: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path]:
+    openssl = shutil.which("openssl")
+    if not openssl:
+        raise SystemExit("openssl is required for localhost HTTPS browser E2E")
+    key_path = directory / "localhost.key"
+    cert_path = directory / "localhost.crt"
+    subprocess.run(
+        [
+            openssl,
+            "req",
+            "-x509",
+            "-newkey",
+            "rsa:2048",
+            "-nodes",
+            "-keyout",
+            str(key_path),
+            "-out",
+            str(cert_path),
+            "-subj",
+            "/CN=localhost",
+            "-days",
+            "1",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return cert_path, key_path
+
+
 def main() -> None:
     FixtureHandler.live_requests = 0
-    with ThreadingServer(("127.0.0.1", 0), FixtureHandler) as server:
+    with tempfile.TemporaryDirectory() as tmp, ThreadingServer(("127.0.0.1", 0), FixtureHandler) as server:
+        cert_path, key_path = create_certificate(pathlib.Path(tmp))
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certfile=cert_path, keyfile=key_path)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
         port = server.server_address[1]
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            url = f"http://{HOSTNAME}:{port}/"
             result = subprocess.run(
                 [
                     find_chrome(),
@@ -133,10 +170,10 @@ def main() -> None:
                     "--disable-gpu",
                     "--no-sandbox",
                     "--no-proxy-server",
-                    f"--host-resolver-rules=MAP {HOSTNAME} 127.0.0.1",
+                    "--ignore-certificate-errors",
                     "--virtual-time-budget=4000",
                     "--dump-dom",
-                    url,
+                    f"https://localhost:{port}/",
                 ],
                 check=True,
                 capture_output=True,
