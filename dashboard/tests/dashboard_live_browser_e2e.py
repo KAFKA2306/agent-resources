@@ -1,0 +1,165 @@
+from __future__ import annotations
+
+import contextlib
+import datetime as dt
+import http.server
+import json
+import pathlib
+import shutil
+import socketserver
+import subprocess
+import threading
+
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+DASHBOARD_DIR = ROOT / "docs" / "dashboard"
+HOSTNAME = "agent-resources-test.vercel.app"
+
+
+def repository(repo_id: str, name: str) -> dict[str, object]:
+    return {
+        "id": repo_id,
+        "owner": "KAFKA2306",
+        "name": name,
+        "url": f"https://github.com/KAFKA2306/{name}",
+        "group": "unclassified",
+        "visibility": "public",
+        "archived": False,
+        "updatedAt": "2026-08-20T00:00:00Z",
+    }
+
+
+BASELINE = {
+    "schemaVersion": "1.0.0",
+    "generatedAt": "2026-08-19T00:00:00Z",
+    "summary": {"repositoryCount": 1, "workItemCount": 1, "activityCount": 0},
+    "repositories": [repository("baseline", "baseline-repo")],
+    "workItems": [
+        {
+            "id": "baseline#1",
+            "repositoryId": "baseline",
+            "kind": "issue",
+            "number": 1,
+            "title": "BASELINE-ISSUE",
+            "url": "https://github.com/KAFKA2306/baseline-repo/issues/1",
+            "state": "open",
+            "updatedAt": "2026-08-19T00:00:00Z",
+            "lane": "waiting",
+            "laneReason": "baseline fixture",
+        }
+    ],
+    "activity": [],
+}
+
+
+def live_payload() -> dict[str, object]:
+    fetched_at = dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z")
+    return {
+        "schemaVersion": "1.0.0",
+        "source": "live",
+        "scope": "public",
+        "fetchedAt": fetched_at,
+        "repositories": [repository("live", "live-repo")],
+        "workItems": [
+            {
+                "id": "live#2",
+                "repositoryId": "live",
+                "kind": "issue",
+                "number": 2,
+                "title": "LIVE-ISSUE",
+                "url": "https://github.com/KAFKA2306/live-repo/issues/2",
+                "state": "open",
+                "updatedAt": fetched_at,
+                "lane": "failed",
+                "laneReason": "live fixture",
+            }
+        ],
+        "activity": [],
+    }
+
+
+class FixtureHandler(http.server.SimpleHTTPRequestHandler):
+    live_requests = 0
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=str(DASHBOARD_DIR), **kwargs)
+
+    def log_message(self, *_args):
+        return
+
+    def send_json(self, payload: dict[str, object]) -> None:
+        body = json.dumps(payload).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):  # noqa: N802 - stdlib handler API
+        path = self.path.split("?", 1)[0]
+        if path == "/dashboard.json":
+            self.send_json(BASELINE)
+            return
+        if path == "/api/dashboard-live":
+            type(self).live_requests += 1
+            self.send_json(live_payload())
+            return
+        super().do_GET()
+
+
+class ThreadingServer(socketserver.ThreadingTCPServer):
+    allow_reuse_address = True
+
+
+def find_chrome() -> str:
+    for executable in ("google-chrome", "chromium", "chromium-browser"):
+        resolved = shutil.which(executable)
+        if resolved:
+            return resolved
+    raise SystemExit("headless Chrome/Chromium is required for dashboard browser E2E")
+
+
+def main() -> None:
+    FixtureHandler.live_requests = 0
+    with ThreadingServer(("127.0.0.1", 0), FixtureHandler) as server:
+        port = server.server_address[1]
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = f"http://{HOSTNAME}:{port}/"
+            result = subprocess.run(
+                [
+                    find_chrome(),
+                    "--headless=new",
+                    "--disable-gpu",
+                    "--no-sandbox",
+                    "--no-proxy-server",
+                    f"--host-resolver-rules=MAP {HOSTNAME} 127.0.0.1",
+                    "--virtual-time-budget=4000",
+                    "--dump-dom",
+                    url,
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
+
+    dom = result.stdout
+    checks = {
+        "live request occurred": FixtureHandler.live_requests >= 1,
+        "live status rendered": 'id="snapshot-status" data-state="live">LIVE<' in dom,
+        "live repository rendered": "live-repo" in dom,
+        "live work item rendered": "LIVE-ISSUE" in dom,
+        "baseline work item replaced": "BASELINE-ISSUE" not in dom,
+    }
+    failures = [name for name, passed in checks.items() if not passed]
+    if failures:
+        raise SystemExit("dashboard browser E2E failed: " + ", ".join(failures))
+    print("dashboard browser E2E: baseline -> live overlay PASS")
+
+
+if __name__ == "__main__":
+    main()
