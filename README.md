@@ -96,7 +96,7 @@ topicがなければ `unclassified` です。Python / TypeScript等のlanguage�
 GitHub Pages snapshot:
 
 - relevant pathの`main`更新
-- 毎時17分
+- 毎日09:17 JST
 - `workflow_dispatch`
 
 Vercel Live APIは閲覧時に最新public stateをoverlayします。
