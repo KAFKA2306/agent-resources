@@ -71,8 +71,6 @@ test("concurrent refreshes share one live fetch while endpoint resolution is pen
 
 test("failed live refresh preserves the baseline and can be retried", async () => {
   let fetchCount = 0;
-  let dashboardRenderCount = 0;
-  let fallbackCount = 0;
 
   const buildHarness = new Function(
     "fetch",
@@ -87,6 +85,8 @@ test("failed live refresh preserves the baseline and can be retried", async () =
     let liveRequestSequence = 0;
     let latestAppliedSequence = 0;
     let lastLiveSuccessAt = 0;
+    let dashboardRenderCount = 0;
+    let fallbackCount = 0;
     const MIN_LIVE_SUCCESS_AGE_MS = 60 * 1000;
     const resolveLiveEndpoint = async () => "https://example.test/api/dashboard-live";
     const mergeLiveSnapshot = (_baseline, live) => live;
