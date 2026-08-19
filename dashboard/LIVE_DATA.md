@@ -5,10 +5,21 @@ The public dashboard separates static UI deployment from volatile GitHub state.
 ## Data flow
 
 1. GitHub Pages loads `docs/dashboard/dashboard.json` as a validated public-only baseline.
-2. The browser resolves a live endpoint from `docs/dashboard/live-config.json` (or `/api/dashboard-live` when the UI itself is served by Vercel).
+2. The browser resolves the production live endpoint from `docs/dashboard/live-config.json` (or `/api/dashboard-live` when the UI itself is served by Vercel).
 3. The live endpoint reads current public repositories, open Issue/PR state, latest workflow run per repository, and recent Issue/PR activity from GitHub REST.
 4. The browser overlays only volatile `repositories`, `workItems`, and `activity`. Heavy monthly stats remain from the baseline snapshot.
 5. If the live endpoint is missing, stale, rate-limited, or invalid, the browser keeps the baseline and displays `SNAPSHOT FALLBACK` or `STALE`; it never labels stale data as live.
+
+## Baseline refresh and UI deployment
+
+The baseline snapshot is a fallback and the source for heavy monthly statistics; it is not the normal freshness path for Issue/PR/workflow/activity state.
+
+- `push` to relevant dashboard/docs paths rebuilds and deploys the static UI and baseline.
+- `workflow_dispatch` performs an explicit full baseline refresh.
+- The scheduled baseline refresh runs once per day at 09:17 Asia/Tokyo (`17 0 * * *` in UTC).
+- Page open and tab return freshness come from the live endpoint and do not require a Pages rebuild.
+
+Keeping the scheduled baseline away from the start of the UTC hour also avoids GitHub Actions' documented high-load period for scheduled workflows.
 
 ## Credential boundary
 
@@ -39,14 +50,12 @@ The live layer retains the same boundary as the canonical snapshot:
 
 ## Production provisioning
 
-Until a verified production function URL exists, `docs/dashboard/live-config.json` keeps `endpoint: null`. GitHub Pages therefore remains truthful and shows `SNAPSHOT FALLBACK` rather than attempting an unverified URL.
+`docs/dashboard/live-config.json` contains the verified production HTTPS endpoint used by GitHub Pages. The static artifact contains only that public endpoint URL; the GitHub credential remains server-side.
 
-To enable live reads on GitHub Pages:
+Production verification must check both layers independently:
 
-1. provision the server-side project containing `api/dashboard-live.js`,
-2. set `DASHBOARD_GITHUB_TOKEN` in that server-side environment,
-3. verify `/api/dashboard-live` returns a public-only payload and acceptable `requestBudget`,
-4. set the verified HTTPS URL in `docs/dashboard/live-config.json`,
-5. run the production browser smoke test.
+1. the live endpoint returns a valid public-only payload with acceptable `requestBudget` and freshness metadata,
+2. the Pages dashboard loads its baseline, overlays the live response, and renders `LIVE`,
+3. endpoint failure or stale data renders `SNAPSHOT FALLBACK` or `STALE` rather than claiming freshness.
 
-After that one-time configuration, page opens and tab returns refresh through the live endpoint; Pages rebuilds are no longer the freshness path.
+If the production live endpoint changes, update `docs/dashboard/live-config.json` only after verifying the new endpoint and rerunning the production smoke test.
