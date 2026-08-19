@@ -5,9 +5,15 @@ import { LIVE_MAX_AGE_MS, classifyLive, mergeLiveSnapshot } from "../../docs/das
 
 test("live freshness is explicit and bounded", () => {
   const now = Date.parse("2026-08-14T05:30:00Z");
-  assert.equal(classifyLive("2026-08-14T05:29:00Z", now).label, "LIVE");
-  assert.equal(classifyLive(new Date(now - LIVE_MAX_AGE_MS - 1).toISOString(), now).label, "STALE");
-  assert.equal(classifyLive("not-a-date", now).label, "SNAPSHOT FALLBACK");
+  const fresh = classifyLive("2026-08-14T05:29:00Z", now);
+  const stale = classifyLive(new Date(now - LIVE_MAX_AGE_MS - 1).toISOString(), now);
+  const failed = classifyLive("not-a-date", now);
+  assert.deepEqual({ label: fresh.label, state: fresh.state }, { label: "LIVE", state: "fresh" });
+  assert.deepEqual({ label: stale.label, state: stale.state }, { label: "STALE", state: "stale" });
+  assert.deepEqual(
+    { label: failed.label, state: failed.state },
+    { label: "SNAPSHOT FALLBACK", state: "failed" },
+  );
 });
 
 test("live overlay replaces volatile state but preserves heavy baseline stats and public links", () => {
