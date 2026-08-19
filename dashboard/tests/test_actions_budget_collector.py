@@ -26,7 +26,20 @@ class FakeApi:
             return (
                 {
                     "usageItems": [
-                        {"product": "Actions", "unitType": "minutes", "quantity": 1250},
+                        {
+                            "product": "Actions",
+                            "unitType": "minutes",
+                            "quantity": 1000,
+                            "repositoryName": "KAFKA2306/busy",
+                            "sku": "actions_linux",
+                        },
+                        {
+                            "product": "Actions",
+                            "unitType": "minutes",
+                            "quantity": 250,
+                            "repositoryName": "KAFKA2306/idle",
+                            "sku": "actions_windows",
+                        },
                         {"product": "Actions", "unitType": "GB-hours", "quantity": 4},
                         {"product": "Codespaces", "unitType": "minutes", "quantity": 999},
                     ]
@@ -65,12 +78,27 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(payload["billing"]["reported_actions_minutes"], 1250.0)
         self.assertEqual(payload["billing"]["remaining_included_minutes"], 750.0)
         self.assertEqual(payload["billing"]["budget_state"], "warning")
+        self.assertEqual(
+            payload["billing"]["reported_actions_minutes_by_repository"],
+            [
+                {"name": "KAFKA2306/busy", "minutes": 1000.0},
+                {"name": "KAFKA2306/idle", "minutes": 250.0},
+            ],
+        )
+        self.assertEqual(
+            payload["billing"]["reported_actions_minutes_by_sku"],
+            [
+                {"name": "actions_linux", "minutes": 1000.0},
+                {"name": "actions_windows", "minutes": 250.0},
+            ],
+        )
         self.assertEqual(payload["activity"]["private_repository_count"], 3)
         self.assertEqual(payload["activity"]["forward_active_repository_count"], 1)
         self.assertEqual(payload["activity"]["month_to_date_runs"], 31)
         self.assertEqual(payload["activity"]["rolling_7d_runs"], 14)
         self.assertFalse(payload["activity"]["projection_is_billed_minutes"])
         self.assertEqual(payload["decision"]["highest_run_repository"], "KAFKA2306/busy")
+        self.assertEqual(payload["decision"]["highest_billed_repository"], "KAFKA2306/busy")
         self.assertTrue(payload["decision"]["can_assert_remaining_minutes"])
 
         archived = next(row for row in payload["repositories"] if row["name"] == "archive")
@@ -89,8 +117,11 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(payload["billing"]["status"], "unavailable")
         self.assertEqual(payload["billing"]["reason"], "github_api_http_403")
         self.assertIsNone(payload["billing"]["reported_actions_minutes"])
+        self.assertIsNone(payload["billing"]["reported_actions_minutes_by_repository"])
+        self.assertIsNone(payload["billing"]["reported_actions_minutes_by_sku"])
         self.assertIsNone(payload["billing"]["remaining_included_minutes"])
         self.assertEqual(payload["billing"]["budget_state"], "unknown")
+        self.assertIsNone(payload["decision"]["highest_billed_repository"])
         self.assertFalse(payload["decision"]["can_assert_remaining_minutes"])
 
     def test_thresholds_must_be_ordered(self):
