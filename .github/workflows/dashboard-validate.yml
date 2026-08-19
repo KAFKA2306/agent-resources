@@ -55,6 +55,9 @@ jobs:
           python -m unittest discover -s dashboard/tests -p 'test_*.py' -v
           npm run test:dashboard
 
+      - name: Verify baseline to live overlay in headless Chrome
+        run: python dashboard/tests/dashboard_live_browser_e2e.py
+
       - name: Validate dashboard JavaScript syntax
         run: |
           set -euo pipefail
