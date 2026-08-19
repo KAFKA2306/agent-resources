@@ -304,15 +304,14 @@ export async function refreshLiveState({ force = false } = {}) {
   if (!force && lastLiveSuccessAt && Date.now() - lastLiveSuccessAt < MIN_LIVE_SUCCESS_AGE_MS) return null;
   if (liveRequest) return liveRequest;
 
-  const endpoint = await resolveLiveEndpoint();
-  if (!endpoint) {
-    renderLiveFailure("endpoint未設定");
-    return null;
-  }
-
   const sequence = ++liveRequestSequence;
   liveRequest = (async () => {
     try {
+      const endpoint = await resolveLiveEndpoint();
+      if (!endpoint) {
+        renderLiveFailure("endpoint未設定");
+        return null;
+      }
       const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const live = await response.json();
