@@ -9,7 +9,17 @@ from dashboard.collectors.github_api import atomic_write_json
 from dashboard.domain.lanes import add_lane
 
 ACTIVITY_WINDOW_DAYS = 7
-OPENCLAW_AUTOMATION_STATUSES = {"disabled", "running", "ok", "error", "skipped", "idle", "unknown"}
+OPENCLAW_AUTOMATION_STATUSES = {
+    "disabled",
+    "running",
+    "ok",
+    "error",
+    "skipped",
+    "idle",
+    "unknown",
+}
+REPOSITORY_OPERATION_STATUSES = {"candidate", "confirmed", "deleted", "blocked"}
+REPOSITORY_CLASSIFICATION_SOURCES = {"agent-zone-topic", "unclassified"}
 
 
 def load_json(path):
@@ -75,9 +85,13 @@ def canonical_openclaw_runtime(runtime):
             raise ValueError("OpenClaw runtime agent id is invalid")
         if not isinstance(session_count, int) or session_count < 0:
             raise ValueError("OpenClaw runtime sessionCount is invalid")
-        if not isinstance(models, list) or any(not isinstance(model, str) or not model for model in models):
+        if not isinstance(models, list) or any(
+            not isinstance(model, str) or not model for model in models
+        ):
             raise ValueError("OpenClaw runtime model list is invalid")
-        agents.append({"id": agent_id, "sessionCount": session_count, "models": sorted(set(models))})
+        agents.append(
+            {"id": agent_id, "sessionCount": session_count, "models": sorted(set(models))}
+        )
     agents.sort(key=lambda row: row["id"])
 
     automations = []
@@ -95,6 +109,73 @@ def canonical_openclaw_runtime(runtime):
         "collectedAt": runtime["collectedAt"],
         "agents": agents,
         "automations": automations,
+    }
+
+
+def canonical_repository_operations(operations, public_repositories):
+    if operations is None:
+        return None
+    if operations.get("scope") != "public-nonarchived-owned-repositories":
+        raise ValueError("repository operations input must be public/non-archived only")
+    owner = operations.get("owner")
+    collected_at = operations.get("collectedAt")
+    if not isinstance(owner, str) or not owner or not isinstance(collected_at, str) or not collected_at:
+        raise ValueError("repository operations owner/collectedAt is invalid")
+
+    public_names = {f"{repo['owner']}/{repo['name']}" for repo in public_repositories}
+    repositories = []
+    for row in operations.get("repositories", []):
+        required = ("name", "fullName", "url", "group", "classificationSource")
+        if any(not isinstance(row.get(key), str) or not row.get(key) for key in required):
+            raise ValueError("repository operations repository row is incomplete")
+        if row["fullName"] not in public_names:
+            raise ValueError("repository operations references a non-canonical repository")
+        if row["classificationSource"] not in REPOSITORY_CLASSIFICATION_SOURCES:
+            raise ValueError("repository operations classification source is invalid")
+        repositories.append({key: row[key] for key in required})
+    repositories.sort(key=lambda row: row["fullName"].casefold())
+
+    branches = []
+    for row in operations.get("branches", []):
+        required = ("repository", "branch", "status", "reason")
+        if any(not isinstance(row.get(key), str) or not row.get(key) for key in required):
+            raise ValueError("repository operations branch row is incomplete")
+        if row["repository"] not in public_names:
+            raise ValueError("repository operations branch references a non-canonical repository")
+        if row["status"] not in REPOSITORY_OPERATION_STATUSES:
+            raise ValueError("repository operations branch status is invalid")
+        item = {key: row[key] for key in required}
+        for source_key, target_key in (
+            ("commit_date", "commitDate"),
+            ("first_seen", "firstSeen"),
+            ("confirmed_at", "confirmedAt"),
+        ):
+            value = row.get(source_key)
+            if isinstance(value, str) and value:
+                item[target_key] = value
+        branches.append(item)
+    branches.sort(key=lambda row: (row["repository"].casefold(), row["branch"].casefold()))
+
+    summary = {
+        "repositoryCount": len(repositories),
+        "classifiedCount": sum(
+            row["classificationSource"] != "unclassified" for row in repositories
+        ),
+        "unclassifiedCount": sum(
+            row["classificationSource"] == "unclassified" for row in repositories
+        ),
+        "candidateCount": sum(row["status"] == "candidate" for row in branches),
+        "confirmedCount": sum(row["status"] == "confirmed" for row in branches),
+        "deletedCount": sum(row["status"] == "deleted" for row in branches),
+        "blockedCount": sum(row["status"] == "blocked" for row in branches),
+    }
+    return {
+        "scope": "public-nonarchived-owned-repositories",
+        "owner": owner,
+        "collectedAt": collected_at,
+        "repositories": repositories,
+        "branches": branches,
+        "summary": summary,
     }
 
 
@@ -192,6 +273,7 @@ def build_snapshot(
     activity_items=None,
     stats=None,
     openclaw_runtime=None,
+    repository_operations=None,
     generated_at=None,
 ):
     public_repositories = [
@@ -243,6 +325,10 @@ def build_snapshot(
         snapshot["stats"] = canonical_stats(stats, len(public_repositories))
     if openclaw_runtime is not None:
         snapshot["openclawRuntime"] = canonical_openclaw_runtime(openclaw_runtime)
+    if repository_operations is not None:
+        snapshot["repositoryOperations"] = canonical_repository_operations(
+            repository_operations, public_repositories
+        )
     return snapshot
 
 
@@ -254,11 +340,19 @@ def validate_snapshot(snapshot, schema):
         details = "; ".join(error.message for error in errors[:5])
         raise ValueError(f"dashboard schema validation failed: {details}")
 
-    counts = (("repositoryCount", "repositories"), ("workItemCount", "workItems"), ("activityCount", "activity"))
+    counts = (
+        ("repositoryCount", "repositories"),
+        ("workItemCount", "workItems"),
+        ("activityCount", "activity"),
+    )
     if any(snapshot["summary"][key] != len(snapshot[field]) for key, field in counts):
         raise ValueError("dashboard summary counts diverged from canonical collections")
     repository_ids = {repository["id"] for repository in snapshot["repositories"]}
-    if any(item["repositoryId"] not in repository_ids for field in ("workItems", "activity") for item in snapshot[field]):
+    if any(
+        item["repositoryId"] not in repository_ids
+        for field in ("workItems", "activity")
+        for item in snapshot[field]
+    ):
         raise ValueError("dashboard item references a non-canonical repository")
     if snapshot.get("stats", {}).get("publicRepositories", len(repository_ids)) != len(repository_ids):
         raise ValueError("dashboard stats repository count diverged from canonical repositories")
@@ -272,6 +366,7 @@ def main(argv=None):
     parser.add_argument("--activity")
     parser.add_argument("--stats")
     parser.add_argument("--openclaw-runtime")
+    parser.add_argument("--repository-operations")
     parser.add_argument("--schema", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
@@ -283,6 +378,9 @@ def main(argv=None):
         activity_items=load_json(args.activity) if args.activity else None,
         stats=load_json(args.stats) if args.stats else None,
         openclaw_runtime=load_json(args.openclaw_runtime) if args.openclaw_runtime else None,
+        repository_operations=(
+            load_json(args.repository_operations) if args.repository_operations else None
+        ),
     )
     schema = load_json(args.schema)
     validate_snapshot(snapshot, schema)
