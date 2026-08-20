@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-08-21T00:00:00Z",
+  "sourceRevision": "github-public-state:2026-08-21",
+  "runId": "fixture-run-1",
+  "repositories": [
+    {
+      "name": "KAFKA2306/agent-resources",
+      "url": "https://github.com/KAFKA2306/agent-resources",
+      "classification": {
+        "domain": "agent-web",
+        "source": "repository-topic",
+        "evidence": [
+          "https://github.com/KAFKA2306/agent-resources"
+        ]
+      },
+      "branches": [
+        {
+          "name": "main",
+          "commitSha": "1111111111111111111111111111111111111111",
+          "isDefault": true,
+          "protected": false,
+          "deletionCandidate": false,
+          "deletionConfirmed": false,
+          "deleted": false,
+          "blockedReason": null
+        },
+        {
+          "name": "example-stale-branch",
+          "commitSha": "2222222222222222222222222222222222222222",
+          "isDefault": false,
+          "protected": false,
+          "deletionCandidate": true,
+          "deletionConfirmed": false,
+          "deleted": false,
+          "blockedReason": null
+        }
+      ]
+    }
+  ]
+}
