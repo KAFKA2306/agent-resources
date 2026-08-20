@@ -1,5 +1,6 @@
 import argparse
 import os
+from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from urllib.parse import urlencode
@@ -53,7 +54,7 @@ def _owned_repositories(owner, token, paginate_fn=fetch_paginated, request_fn=re
 def _artifact_usage(owner, repo, token, request_fn, paginate_fn):
     try:
         artifacts = paginate_fn(
-            f"https://api.github.com/repos/{owner}/{repo}/actions/artifacts?per_page=100",
+            f"{API_ROOT}/repos/{owner}/{repo}/actions/artifacts?per_page=100",
             token,
             request_fn=request_fn,
             item_key="artifacts",
@@ -105,7 +106,7 @@ def _artifact_log_retention(owner, repo, token, request_fn):
 def _cache_usage(owner, repo, token, request_fn):
     try:
         payload, _ = request_fn(
-            f"https://api.github.com/repos/{owner}/{repo}/actions/cache/usage",
+            f"{API_ROOT}/repos/{owner}/{repo}/actions/cache/usage",
             token,
         )
     except GitHubApiError as exc:
@@ -116,6 +117,65 @@ def _cache_usage(owner, repo, token, request_fn):
         {
             "count": int(payload.get("active_caches_count") or 0),
             "size_in_bytes": int(payload.get("active_caches_size_in_bytes") or 0),
+        },
+    )
+
+
+def _cache_inventory(owner, repo, token, request_fn, paginate_fn):
+    try:
+        caches = paginate_fn(
+            f"{API_ROOT}/repos/{owner}/{repo}/actions/caches?per_page=100",
+            token,
+            request_fn=request_fn,
+            item_key="actions_caches",
+        )
+    except GitHubApiError as exc:
+        return MetricResult("unavailable", None, _unavailable_reason(exc))
+
+    entries = []
+    key_ref_counts = Counter()
+    for item in caches:
+        key = item.get("key")
+        ref = item.get("ref")
+        if not isinstance(key, str) or not isinstance(ref, str):
+            continue
+        key_ref_counts[(key, ref)] += 1
+        entries.append(
+            {
+                "key": key,
+                "ref": ref,
+                "version": item.get("version"),
+                "created_at": item.get("created_at"),
+                "last_accessed_at": item.get("last_accessed_at"),
+                "size_in_bytes": int(item.get("size_in_bytes") or 0),
+            }
+        )
+
+    last_accessed = sorted(
+        entry["last_accessed_at"]
+        for entry in entries
+        if isinstance(entry.get("last_accessed_at"), str)
+    )
+    return MetricResult(
+        "available",
+        {
+            "entry_count": len(entries),
+            "unique_key_count": len({entry["key"] for entry in entries}),
+            "unique_ref_count": len({entry["ref"] for entry in entries}),
+            "key_ref_pairs_with_multiple_entries": sum(
+                1 for count in key_ref_counts.values() if count > 1
+            ),
+            "max_entries_per_key_ref": max(key_ref_counts.values(), default=0),
+            "oldest_last_accessed_at": last_accessed[0] if last_accessed else None,
+            "newest_last_accessed_at": last_accessed[-1] if last_accessed else None,
+            "entries": sorted(
+                entries,
+                key=lambda entry: (
+                    entry["key"],
+                    entry["ref"],
+                    entry.get("created_at") or "",
+                ),
+            ),
         },
     )
 
@@ -132,6 +192,7 @@ def collect_repository_storage(
     artifacts = _artifact_usage(owner, repo, token, request_fn, paginate_fn)
     retention = _artifact_log_retention(owner, repo, token, request_fn)
     caches = _cache_usage(owner, repo, token, request_fn)
+    cache_inventory = _cache_inventory(owner, repo, token, request_fn, paginate_fn)
 
     return {
         "name": f"{owner}/{repo}",
@@ -153,6 +214,9 @@ def collect_repository_storage(
             "status": caches.status,
             "usage": caches.value,
             "reason": caches.reason,
+            "inventory_status": cache_inventory.status,
+            "inventory": cache_inventory.value,
+            "inventory_reason": cache_inventory.reason,
         },
     }
 
@@ -198,6 +262,11 @@ def collect_storage_budget(
     unavailable_cache_repositories = [
         row["name"] for row in rows if row["actions_cache"]["status"] != "available"
     ]
+    unavailable_cache_inventory_repositories = [
+        row["name"]
+        for row in rows
+        if row["actions_cache"]["inventory_status"] != "available"
+    ]
 
     return {
         "schema_version": "storage-budget.v1",
@@ -207,6 +276,7 @@ def collect_storage_budget(
         "unavailable_actions_artifact_repositories": unavailable_artifact_repositories,
         "unavailable_actions_artifact_log_retention_repositories": unavailable_retention_repositories,
         "unavailable_actions_cache_repositories": unavailable_cache_repositories,
+        "unavailable_actions_cache_inventory_repositories": unavailable_cache_inventory_repositories,
         "repositories": rows,
         "notes": {
             "unknown_is_zero": False,
