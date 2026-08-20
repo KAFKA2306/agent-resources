@@ -19,7 +19,11 @@ OPENCLAW_AUTOMATION_STATUSES = {
     "unknown",
 }
 REPOSITORY_OPERATION_STATUSES = {"candidate", "confirmed", "deleted", "blocked"}
-REPOSITORY_CLASSIFICATION_SOURCES = {"agent-zone-topic", "unclassified"}
+REPOSITORY_CLASSIFICATION_SOURCES = {
+    "agent-zone-topic",
+    "local-model-suggestion",
+    "unclassified",
+}
 
 
 def load_json(path):
@@ -132,7 +136,16 @@ def canonical_repository_operations(operations, public_repositories):
             raise ValueError("repository operations references a non-canonical repository")
         if row["classificationSource"] not in REPOSITORY_CLASSIFICATION_SOURCES:
             raise ValueError("repository operations classification source is invalid")
-        repositories.append({key: row[key] for key in required})
+        item = {key: row[key] for key in required}
+        confidence = row.get("classificationConfidence")
+        if row["classificationSource"] == "local-model-suggestion":
+            if isinstance(confidence, bool) or not isinstance(confidence, (int, float)):
+                raise ValueError("local-model repository classification requires numeric confidence")
+            confidence = float(confidence)
+            if not 0 <= confidence <= 1:
+                raise ValueError("repository classification confidence is outside 0..1")
+            item["classificationConfidence"] = confidence
+        repositories.append(item)
     repositories.sort(key=lambda row: row["fullName"].casefold())
 
     branches = []
@@ -160,6 +173,12 @@ def canonical_repository_operations(operations, public_repositories):
         "repositoryCount": len(repositories),
         "classifiedCount": sum(
             row["classificationSource"] != "unclassified" for row in repositories
+        ),
+        "explicitClassifiedCount": sum(
+            row["classificationSource"] == "agent-zone-topic" for row in repositories
+        ),
+        "modelSuggestedCount": sum(
+            row["classificationSource"] == "local-model-suggestion" for row in repositories
         ),
         "unclassifiedCount": sum(
             row["classificationSource"] == "unclassified" for row in repositories
