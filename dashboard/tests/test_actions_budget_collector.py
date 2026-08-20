@@ -50,15 +50,23 @@ class FakeApi:
             return (
                 {
                     "workflows": [
-                        {"name": "Nightly", "path": ".github/workflows/nightly.yml", "state": "active"},
-                        {"name": "CI", "path": ".github/workflows/ci.yml", "state": "active"},
-                        {"name": "Old", "path": ".github/workflows/old.yml", "state": "disabled_manually"},
+                        {"id": 102, "name": "Nightly", "path": ".github/workflows/nightly.yml", "state": "active"},
+                        {"id": 101, "name": "CI", "path": ".github/workflows/ci.yml", "state": "active"},
+                        {"id": 103, "name": "Old", "path": ".github/workflows/old.yml", "state": "disabled_manually"},
                     ]
                 },
                 {},
             )
         if url.endswith("/idle/actions/workflows?per_page=100"):
-            return ({"workflows": [{"name": "CI", "path": ".github/workflows/ci.yml", "state": "active"}]}, {})
+            return ({"workflows": [{"id": 201, "name": "CI", "path": ".github/workflows/ci.yml", "state": "active"}]}, {})
+        if "/busy/actions/workflows/101/runs?" in url:
+            if "2026-08-09..2026-08-15" in url:
+                return ({"total_count": 10}, {})
+            return ({"total_count": 20}, {})
+        if "/busy/actions/workflows/102/runs?" in url:
+            if "2026-08-09..2026-08-15" in url:
+                return ({"total_count": 4}, {})
+            return ({"total_count": 9}, {})
         if "/busy/actions/runs?" in url:
             if "2026-08-09..2026-08-15" in url:
                 return ({"total_count": 14}, {})
@@ -105,6 +113,8 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(payload["activity"]["forward_active_repository_count"], 1)
         self.assertEqual(payload["activity"]["month_to_date_runs"], 31)
         self.assertEqual(payload["activity"]["rolling_7d_runs"], 14)
+        self.assertEqual(payload["activity"]["rolling_7d_runs_from_active_workflows"], 14)
+        self.assertEqual(payload["activity"]["projected_monthly_runs_from_active_workflows"], 62.0)
         self.assertFalse(payload["activity"]["projection_is_billed_minutes"])
         self.assertEqual(payload["decision"]["highest_run_repository"], "KAFKA2306/busy")
         self.assertEqual(payload["decision"]["highest_billed_repository"], "KAFKA2306/busy")
@@ -115,14 +125,44 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(
             busy["active_workflow_inventory"],
             [
-                {"name": "CI", "path": ".github/workflows/ci.yml"},
-                {"name": "Nightly", "path": ".github/workflows/nightly.yml"},
+                {
+                    "id": 101,
+                    "name": "CI",
+                    "path": ".github/workflows/ci.yml",
+                    "month_to_date_runs": 20,
+                    "rolling_7d_runs": 10,
+                },
+                {
+                    "id": 102,
+                    "name": "Nightly",
+                    "path": ".github/workflows/nightly.yml",
+                    "month_to_date_runs": 9,
+                    "rolling_7d_runs": 4,
+                },
             ],
         )
+        self.assertEqual(busy["month_to_date_runs_from_active_workflows"], 29)
+        self.assertEqual(busy["rolling_7d_runs_from_active_workflows"], 14)
+        self.assertEqual(busy["month_to_date_unattributed_runs"], 2)
+        self.assertEqual(busy["rolling_7d_unattributed_runs"], 0)
+        self.assertTrue(busy["forward_active"])
 
         idle = next(row for row in payload["repositories"] if row["name"] == "idle")
         self.assertEqual(idle["active_workflows"], 1)
-        self.assertEqual(idle["active_workflow_inventory"], [{"name": "CI", "path": ".github/workflows/ci.yml"}])
+        self.assertEqual(
+            idle["active_workflow_inventory"],
+            [
+                {
+                    "id": 201,
+                    "name": "CI",
+                    "path": ".github/workflows/ci.yml",
+                    "month_to_date_runs": 0,
+                    "rolling_7d_runs": 0,
+                }
+            ],
+        )
+        self.assertEqual(idle["month_to_date_runs_from_active_workflows"], 0)
+        self.assertEqual(idle["rolling_7d_runs_from_active_workflows"], 0)
         self.assertFalse(idle["forward_active"])
 
         archived = next(row for row in payload["repositories"] if row["name"] == "archive")
@@ -130,6 +170,7 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(archived["active_workflows"], 0)
         self.assertEqual(archived["active_workflow_inventory"], [])
         self.assertEqual(archived["month_to_date_runs"], 0)
+        self.assertEqual(archived["rolling_7d_runs_from_active_workflows"], 0)
 
     def test_billing_403_is_unknown_not_zero(self):
         api = FakeApi(billing_available=False)
