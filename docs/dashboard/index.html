@@ -11,9 +11,10 @@
   <link rel="stylesheet" href="./stats.css">
   <link rel="stylesheet" href="./activity-timeline.css">
   <link rel="stylesheet" href="./openclaw-runtime.css">
+  <link rel="stylesheet" href="./repository-operations.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["dashboard.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "openclaw-runtime.js"];
+    const modules = ["dashboard.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "openclaw-runtime.js", "repository-operations.js"];
     Promise.allSettled(modules.map((name) => import(`./${name}?v=${assetVersion}`))).then((results) => {
       for (const [index, result] of results.entries()) {
         if (result.status === "rejected") console.error(`Failed to load ${modules[index]}`, result.reason);
@@ -43,6 +44,14 @@
           <span id="openclaw-runtime-meta" class="muted">Local snapshot: 未取得</span>
         </div>
         <div id="openclaw-runtime-agents" class="openclaw-runtime-grid"></div>
+      </section>
+      <section id="repository-operations" class="repository-operations" aria-labelledby="repository-operations-title" hidden>
+        <div class="repository-operations-heading">
+          <div><p class="eyebrow">REPOSITORY MAINTENANCE</p><h2 id="repository-operations-title">継続運用</h2></div>
+          <span id="repository-operations-meta" class="muted">Snapshot: 未取得</span>
+        </div>
+        <div id="repository-operations-summary" class="repository-operations-summary"></div>
+        <div id="repository-operations-branches" class="repository-operations-branches"></div>
       </section>
       <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
