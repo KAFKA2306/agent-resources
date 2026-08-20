@@ -76,11 +76,14 @@ def _active_workflows(owner, repo, token, request_fn=request_json):
     for workflow in payload["workflows"]:
         if not isinstance(workflow, dict) or workflow.get("state") != "active":
             continue
+        workflow_id = workflow.get("id")
         name = workflow.get("name")
         path = workflow.get("path")
+        if not isinstance(workflow_id, int) or isinstance(workflow_id, bool) or workflow_id <= 0:
+            raise GitHubApiError("active Actions workflow is missing a valid id")
         if not isinstance(name, str) or not name or not isinstance(path, str) or not path:
             raise GitHubApiError("active Actions workflow is missing name or path")
-        workflows.append({"name": name, "path": path})
+        workflows.append({"id": workflow_id, "name": name, "path": path})
     return sorted(workflows, key=lambda item: (item["path"].lower(), item["name"].lower()))
 
 
@@ -88,6 +91,40 @@ def _run_count(owner, repo, start, end, token, request_fn=request_json):
     query = urlencode({"created": f"{start.isoformat()}..{end.isoformat()}", "per_page": 1})
     url = f"{API_ROOT}/repos/{owner}/{repo}/actions/runs?{query}"
     return _query_total(url, token, request_fn=request_fn)
+
+
+def _workflow_run_count(owner, repo, workflow_id, start, end, token, request_fn=request_json):
+    query = urlencode({"created": f"{start.isoformat()}..{end.isoformat()}", "per_page": 1})
+    url = f"{API_ROOT}/repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs?{query}"
+    return _query_total(url, token, request_fn=request_fn)
+
+
+def _attribute_active_workflow_runs(
+    owner,
+    repo,
+    workflows,
+    month_start,
+    rolling_start,
+    today,
+    token,
+    request_fn=request_json,
+):
+    attributed = []
+    for workflow in workflows:
+        month_runs = _workflow_run_count(
+            owner, repo, workflow["id"], month_start, today, token, request_fn=request_fn
+        )
+        rolling_runs = _workflow_run_count(
+            owner, repo, workflow["id"], rolling_start, today, token, request_fn=request_fn
+        )
+        attributed.append(
+            {
+                **workflow,
+                "month_to_date_runs": month_runs,
+                "rolling_7d_runs": rolling_runs,
+            }
+        )
+    return attributed
 
 
 def _billing_usage(owner, today, token, request_fn=request_json):
@@ -194,13 +231,36 @@ def collect_actions_budget(
                     "active_workflow_inventory": [],
                     "month_to_date_runs": 0,
                     "rolling_7d_runs": 0,
+                    "month_to_date_runs_from_active_workflows": 0,
+                    "rolling_7d_runs_from_active_workflows": 0,
+                    "month_to_date_unattributed_runs": 0,
+                    "rolling_7d_unattributed_runs": 0,
                     "forward_active": False,
                 }
             )
             continue
-        active_workflow_inventory = _active_workflows(owner, repository["name"], token, request_fn=request_fn)
+        active_workflows = _active_workflows(owner, repository["name"], token, request_fn=request_fn)
         month_runs = _run_count(owner, repository["name"], month_start, today, token, request_fn=request_fn)
         rolling_runs = _run_count(owner, repository["name"], rolling_start, today, token, request_fn=request_fn)
+        active_workflow_inventory = (
+            _attribute_active_workflow_runs(
+                owner,
+                repository["name"],
+                active_workflows,
+                month_start,
+                rolling_start,
+                today,
+                token,
+                request_fn=request_fn,
+            )
+            if active_workflows and month_runs > 0
+            else [
+                {**workflow, "month_to_date_runs": 0, "rolling_7d_runs": 0}
+                for workflow in active_workflows
+            ]
+        )
+        active_month_runs = sum(workflow["month_to_date_runs"] for workflow in active_workflow_inventory)
+        active_rolling_runs = sum(workflow["rolling_7d_runs"] for workflow in active_workflow_inventory)
         rows.append(
             {
                 **repository,
@@ -208,7 +268,11 @@ def collect_actions_budget(
                 "active_workflow_inventory": active_workflow_inventory,
                 "month_to_date_runs": month_runs,
                 "rolling_7d_runs": rolling_runs,
-                "forward_active": bool(active_workflow_inventory) and rolling_runs > 0,
+                "month_to_date_runs_from_active_workflows": active_month_runs,
+                "rolling_7d_runs_from_active_workflows": active_rolling_runs,
+                "month_to_date_unattributed_runs": max(0, month_runs - active_month_runs),
+                "rolling_7d_unattributed_runs": max(0, rolling_runs - active_rolling_runs),
+                "forward_active": active_rolling_runs > 0,
             }
         )
 
@@ -218,8 +282,9 @@ def collect_actions_budget(
     remaining = None if reported_minutes is None else max(0.0, included_minutes - reported_minutes)
 
     active_rows = [row for row in rows if row["forward_active"]]
-    rolling_runs = sum(row["rolling_7d_runs"] for row in active_rows)
-    projected_runs = round((rolling_runs / max(1, (today - rolling_start).days + 1)) * month_end.day, 2)
+    observed_rolling_runs = sum(row["rolling_7d_runs"] for row in rows)
+    active_rolling_runs = sum(row["rolling_7d_runs_from_active_workflows"] for row in active_rows)
+    projected_runs = round((active_rolling_runs / max(1, (today - rolling_start).days + 1)) * month_end.day, 2)
 
     return {
         "schema_version": "actions-budget.v1",
@@ -245,8 +310,9 @@ def collect_actions_budget(
             "private_repository_count": len(rows),
             "forward_active_repository_count": len(active_rows),
             "month_to_date_runs": sum(row["month_to_date_runs"] for row in rows),
-            "rolling_7d_runs": rolling_runs,
-            "projected_monthly_runs_from_active_repositories": projected_runs,
+            "rolling_7d_runs": observed_rolling_runs,
+            "rolling_7d_runs_from_active_workflows": active_rolling_runs,
+            "projected_monthly_runs_from_active_workflows": projected_runs,
             "projection_is_billed_minutes": False,
         },
         "repositories": sorted(
