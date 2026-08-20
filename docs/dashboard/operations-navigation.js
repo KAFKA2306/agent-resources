@@ -21,6 +21,14 @@ function activateLane(container, lane) {
   return true;
 }
 
+function focusLane(container, lane) {
+  if (!VALID_LANES.has(lane)) return false;
+  const button = container.querySelector(`button[data-lane="${lane}"]`);
+  if (!button) return false;
+  button.focus();
+  return true;
+}
+
 function replaceLaneInUrl(lane) {
   const next = urlWithLane(window.location.href, lane);
   window.history.replaceState(null, "", `${next.pathname}${next.search}${next.hash}`);
@@ -31,12 +39,17 @@ function initialiseOperationsNavigation() {
   if (!container) return;
 
   let restoring = false;
+  let pendingKeyboardFocus = null;
   const restore = () => {
     const lane = laneFromUrl(window.location.href);
     if (!lane) return;
     restoring = true;
     activateLane(container, lane);
     restoring = false;
+    if (pendingKeyboardFocus === lane) {
+      focusLane(container, lane);
+      pendingKeyboardFocus = null;
+    }
   };
 
   container.addEventListener("click", (event) => {
@@ -54,6 +67,7 @@ function initialiseOperationsNavigation() {
     event.preventDefault();
     const delta = event.key === "ArrowRight" ? 1 : -1;
     const next = buttons[(index + delta + buttons.length) % buttons.length];
+    pendingKeyboardFocus = next.dataset.lane;
     next.click();
     next.focus();
   });
