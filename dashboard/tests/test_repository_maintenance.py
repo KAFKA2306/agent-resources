@@ -8,12 +8,23 @@ from dashboard.operations.repository_maintenance import (
 
 
 class FakeClient:
-    def __init__(self, *, branch="feature/old", protected=False, active_pr=False, ahead_by=0):
+    def __init__(
+        self,
+        *,
+        branch="feature/old",
+        protected=False,
+        active_pr=False,
+        ahead_by=0,
+        readback_tip=None,
+        token="test-token",
+    ):
         self.branch = branch
         self.protected = protected
         self.active_pr = active_pr
         self.ahead_by = ahead_by
+        self.readback_tip = readback_tip or ("a" * 40)
         self.deleted = []
+        self.token = token
 
     def list(self, url):
         self.assert_url = url
@@ -32,6 +43,12 @@ class FakeClient:
             return {"ahead_by": self.ahead_by}
         if "/commits/" in url:
             return {"commit": {"committer": {"date": "2026-06-01T00:00:00Z"}}}
+        if "/branches/" in url:
+            return {
+                "name": self.branch,
+                "protected": self.protected,
+                "commit": {"sha": self.readback_tip},
+            }
         raise AssertionError(f"unexpected URL: {url}")
 
     def delete_ref(self, owner, repo, branch):
@@ -51,6 +68,9 @@ class RepositoryMaintenanceTest(unittest.TestCase):
                 "default_branch": "main",
                 "html_url": "https://github.com/KAFKA2306/vrmine",
                 "updated_at": "2026-08-20T00:00:00Z",
+                "description": "VRChat and Unity world tooling",
+                "language": "C#",
+                "fork": False,
                 "topics": ["agent-zone-vr-3d", "unity"],
             },
             {
@@ -79,6 +99,8 @@ class RepositoryMaintenanceTest(unittest.TestCase):
         self.assertEqual(1, result["summary"]["repositoryCount"])
         self.assertEqual("vr-3d", result["repositories"][0]["group"])
         self.assertEqual("agent-zone-topic", result["repositories"][0]["classificationSource"])
+        self.assertEqual("VRChat and Unity world tooling", result["repositories"][0]["description"])
+        self.assertEqual("C#", result["repositories"][0]["language"])
         self.assertEqual("public-nonarchived-owned-repositories", result["scope"])
 
     def inventory(self):
@@ -96,6 +118,9 @@ class RepositoryMaintenanceTest(unittest.TestCase):
                     "defaultBranch": "main",
                     "group": "agent-web",
                     "classificationSource": "agent-zone-topic",
+                    "description": "",
+                    "language": "Python",
+                    "fork": False,
                     "topics": ["agent-zone-agent-web"],
                     "updatedAt": "2026-08-20T00:00:00Z",
                 }
@@ -132,6 +157,39 @@ class RepositoryMaintenanceTest(unittest.TestCase):
         self.assertEqual([("KAFKA2306", "example", "feature/old")], client.deleted)
         self.assertEqual({}, next_state["candidates"])
         self.assertEqual(1, second_report["summary"]["deletedCount"])
+
+    def test_branch_tip_change_on_delete_readback_blocks_deletion(self):
+        first_time = datetime(2026, 8, 21, 0, 0, tzinfo=timezone.utc)
+        first_client = FakeClient()
+        _, state = scan_branch_hygiene(
+            self.inventory(),
+            {"schemaVersion": 1, "candidates": {}},
+            first_client,
+            now=first_time,
+            apply=True,
+        )
+        second_client = FakeClient(readback_tip="b" * 40)
+        report, next_state = scan_branch_hygiene(
+            self.inventory(),
+            state,
+            second_client,
+            now=first_time + timedelta(hours=25),
+            apply=True,
+        )
+        self.assertEqual("blocked", report["branches"][0]["status"])
+        self.assertEqual("branch_tip_changed_since_scan", report["branches"][0]["reason"])
+        self.assertEqual([], second_client.deleted)
+        self.assertTrue(next_state["candidates"])
+
+    def test_apply_requires_authenticated_token(self):
+        with self.assertRaisesRegex(Exception, "requires GITHUB_TOKEN"):
+            scan_branch_hygiene(
+                self.inventory(),
+                {"schemaVersion": 1, "candidates": {}},
+                FakeClient(token=None),
+                now=datetime(2026, 8, 21, tzinfo=timezone.utc),
+                apply=True,
+            )
 
     def test_active_pull_request_blocks_candidate(self):
         report, state = scan_branch_hygiene(
