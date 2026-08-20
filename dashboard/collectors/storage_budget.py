@@ -72,6 +72,36 @@ def _artifact_usage(owner, repo, token, request_fn, paginate_fn):
     )
 
 
+def _artifact_log_retention(owner, repo, token, request_fn):
+    try:
+        payload, _ = request_fn(
+            f"{API_ROOT}/repos/{owner}/{repo}/actions/permissions/artifact-and-log-retention",
+            token,
+        )
+    except GitHubApiError as exc:
+        return MetricResult("unavailable", None, _unavailable_reason(exc))
+
+    days = payload.get("days") if isinstance(payload, dict) else None
+    maximum_allowed_days = payload.get("maximum_allowed_days") if isinstance(payload, dict) else None
+    if (
+        not isinstance(days, int)
+        or isinstance(days, bool)
+        or days <= 0
+        or not isinstance(maximum_allowed_days, int)
+        or isinstance(maximum_allowed_days, bool)
+        or maximum_allowed_days <= 0
+    ):
+        raise GitHubApiError("unexpected artifact and log retention response shape")
+
+    return MetricResult(
+        "available",
+        {
+            "days": days,
+            "maximum_allowed_days": maximum_allowed_days,
+        },
+    )
+
+
 def _cache_usage(owner, repo, token, request_fn):
     try:
         payload, _ = request_fn(
@@ -100,6 +130,7 @@ def collect_repository_storage(
     owner = repository["owner"]["login"]
     repo = repository["name"]
     artifacts = _artifact_usage(owner, repo, token, request_fn, paginate_fn)
+    retention = _artifact_log_retention(owner, repo, token, request_fn)
     caches = _cache_usage(owner, repo, token, request_fn)
 
     return {
@@ -112,6 +143,11 @@ def collect_repository_storage(
             "status": artifacts.status,
             "usage": artifacts.value,
             "reason": artifacts.reason,
+        },
+        "actions_artifact_log_retention": {
+            "status": retention.status,
+            "setting": retention.value,
+            "reason": retention.reason,
         },
         "actions_cache": {
             "status": caches.status,
@@ -154,6 +190,11 @@ def collect_storage_budget(
     unavailable_artifact_repositories = [
         row["name"] for row in rows if row["actions_artifacts"]["status"] != "available"
     ]
+    unavailable_retention_repositories = [
+        row["name"]
+        for row in rows
+        if row["actions_artifact_log_retention"]["status"] != "available"
+    ]
     unavailable_cache_repositories = [
         row["name"] for row in rows if row["actions_cache"]["status"] != "available"
     ]
@@ -164,6 +205,7 @@ def collect_storage_budget(
         "known_actions_artifact_bytes": known_artifact_bytes,
         "known_actions_cache_bytes": known_cache_bytes,
         "unavailable_actions_artifact_repositories": unavailable_artifact_repositories,
+        "unavailable_actions_artifact_log_retention_repositories": unavailable_retention_repositories,
         "unavailable_actions_cache_repositories": unavailable_cache_repositories,
         "repositories": rows,
         "notes": {
