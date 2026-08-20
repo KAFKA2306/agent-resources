@@ -82,7 +82,7 @@ class FakeApi:
 
 
 class ActionsBudgetCollectorTests(unittest.TestCase):
-    def test_separates_billing_minutes_from_run_activity(self):
+    def test_separates_billing_minutes_from_run_activity_without_assuming_plan(self):
         api = FakeApi()
         payload = collect_actions_budget(
             today=date(2026, 8, 15),
@@ -93,8 +93,12 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
 
         self.assertEqual(payload["schema_version"], "actions-budget.v1")
         self.assertEqual(payload["billing"]["reported_actions_minutes"], 1250.0)
-        self.assertEqual(payload["billing"]["remaining_included_minutes"], 750.0)
-        self.assertEqual(payload["billing"]["budget_state"], "warning")
+        self.assertIsNone(payload["billing"]["remaining_included_minutes"])
+        self.assertNotIn("budget_state", payload["billing"])
+        self.assertIsNone(payload["policy"]["account_plan"])
+        self.assertIsNone(payload["policy"]["included_actions_minutes_per_month"])
+        self.assertEqual(payload["policy"]["included_usage_alert_percentages"], [90, 100])
+        self.assertEqual(payload["policy"]["budget_alert_percentages"], [75, 90, 100])
         self.assertEqual(
             payload["billing"]["reported_actions_minutes_by_repository"],
             [
@@ -118,7 +122,7 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertFalse(payload["activity"]["projection_is_billed_minutes"])
         self.assertEqual(payload["decision"]["highest_run_repository"], "KAFKA2306/busy")
         self.assertEqual(payload["decision"]["highest_billed_repository"], "KAFKA2306/busy")
-        self.assertTrue(payload["decision"]["can_assert_remaining_minutes"])
+        self.assertFalse(payload["decision"]["can_assert_remaining_minutes"])
 
         busy = next(row for row in payload["repositories"] if row["name"] == "busy")
         self.assertEqual(busy["active_workflows"], 2)
@@ -172,6 +176,22 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(archived["month_to_date_runs"], 0)
         self.assertEqual(archived["rolling_7d_runs_from_active_workflows"], 0)
 
+    def test_verified_plan_input_allows_remaining_minutes(self):
+        api = FakeApi()
+        payload = collect_actions_budget(
+            today=date(2026, 8, 15),
+            token="secret",
+            request_fn=api.request,
+            paginate_fn=api.paginate,
+            account_plan="github_pro_personal",
+            included_minutes=3000,
+        )
+
+        self.assertEqual(payload["policy"]["account_plan"], "github_pro_personal")
+        self.assertEqual(payload["policy"]["included_actions_minutes_per_month"], 3000)
+        self.assertEqual(payload["billing"]["remaining_included_minutes"], 1750.0)
+        self.assertTrue(payload["decision"]["can_assert_remaining_minutes"])
+
     def test_billing_403_is_unknown_not_zero(self):
         api = FakeApi(billing_available=False)
         payload = collect_actions_budget(
@@ -187,17 +207,16 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertIsNone(payload["billing"]["reported_actions_minutes_by_repository"])
         self.assertIsNone(payload["billing"]["reported_actions_minutes_by_sku"])
         self.assertIsNone(payload["billing"]["remaining_included_minutes"])
-        self.assertEqual(payload["billing"]["budget_state"], "unknown")
+        self.assertNotIn("budget_state", payload["billing"])
         self.assertIsNone(payload["decision"]["highest_billed_repository"])
         self.assertFalse(payload["decision"]["can_assert_remaining_minutes"])
 
-    def test_thresholds_must_be_ordered(self):
-        with self.assertRaisesRegex(ValueError, "strictly increasing"):
+    def test_included_minutes_must_be_positive_when_provided(self):
+        with self.assertRaisesRegex(ValueError, "positive integer or None"):
             collect_actions_budget(
                 today=date(2026, 8, 15),
                 token="secret",
-                warning_minutes=1600,
-                critical_minutes=1200,
+                included_minutes=0,
             )
 
 
