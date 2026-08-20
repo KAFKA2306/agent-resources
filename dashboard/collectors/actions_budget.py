@@ -11,10 +11,6 @@ from dashboard.collectors.github_api import GitHubApiError, atomic_write_json, f
 
 API_ROOT = "https://api.github.com"
 DEFAULT_OWNER = "KAFKA2306"
-DEFAULT_INCLUDED_MINUTES = 2000
-DEFAULT_WARNING_MINUTES = 1200
-DEFAULT_CRITICAL_MINUTES = 1600
-DEFAULT_HARD_REMEDIATION_MINUTES = 1800
 
 
 def _as_date(value):
@@ -217,18 +213,6 @@ def _billing_usage(owner, today, token, request_fn=request_json):
     }
 
 
-def _budget_state(minutes, warning, critical, hard):
-    if minutes is None:
-        return "unknown"
-    if minutes >= hard:
-        return "hard_remediation"
-    if minutes >= critical:
-        return "critical"
-    if minutes >= warning:
-        return "warning"
-    return "green"
-
-
 def collect_actions_budget(
     owner=DEFAULT_OWNER,
     today=None,
@@ -236,19 +220,18 @@ def collect_actions_budget(
     request_fn=request_json,
     paginate_fn=fetch_paginated,
     job_usage_fn=None,
-    included_minutes=DEFAULT_INCLUDED_MINUTES,
-    warning_minutes=DEFAULT_WARNING_MINUTES,
-    critical_minutes=DEFAULT_CRITICAL_MINUTES,
-    hard_remediation_minutes=DEFAULT_HARD_REMEDIATION_MINUTES,
+    account_plan=None,
+    included_minutes=None,
 ):
     today = _as_date(today)
     if token is None:
         raise ValueError("token is required to audit private repositories")
-    thresholds = [warning_minutes, critical_minutes, hard_remediation_minutes, included_minutes]
-    if any(not isinstance(value, int) or isinstance(value, bool) or value <= 0 for value in thresholds):
-        raise ValueError("budget thresholds must be positive integers")
-    if not (warning_minutes < critical_minutes < hard_remediation_minutes <= included_minutes):
-        raise ValueError("budget thresholds must be strictly increasing through included minutes")
+    if account_plan is not None and (not isinstance(account_plan, str) or not account_plan.strip()):
+        raise ValueError("account_plan must be a non-empty string or None")
+    if included_minutes is not None and (
+        not isinstance(included_minutes, int) or isinstance(included_minutes, bool) or included_minutes <= 0
+    ):
+        raise ValueError("included_minutes must be a positive integer or None")
 
     month_start, month_end = _month_window(today)
     rolling_start = max(month_start, today - timedelta(days=6))
@@ -328,8 +311,11 @@ def collect_actions_budget(
 
     billing = _billing_usage(owner, today, token, request_fn=request_fn)
     reported_minutes = billing["reported_actions_minutes"]
-    state = _budget_state(reported_minutes, warning_minutes, critical_minutes, hard_remediation_minutes)
-    remaining = None if reported_minutes is None else max(0.0, included_minutes - reported_minutes)
+    remaining = (
+        None
+        if reported_minutes is None or included_minutes is None
+        else max(0.0, included_minutes - reported_minutes)
+    )
 
     active_rows = [row for row in rows if row["forward_active"]]
     observed_rolling_runs = sum(row["rolling_7d_runs"] for row in rows)
@@ -343,17 +329,16 @@ def collect_actions_budget(
         "owner": owner,
         "scope": "private_repositories",
         "policy": {
-            "plan_contract": "github_free_personal",
+            "account_plan": account_plan,
             "included_actions_minutes_per_month": included_minutes,
-            "warning_minutes": warning_minutes,
-            "critical_minutes": critical_minutes,
-            "hard_remediation_minutes": hard_remediation_minutes,
-            "primary_source": "https://docs.github.com/en/billing/reference/product-usage-included",
+            "included_usage_alert_percentages": [90, 100],
+            "budget_alert_percentages": [75, 90, 100],
+            "included_usage_source": "https://docs.github.com/en/billing/reference/product-usage-included",
+            "budget_alerts_source": "https://docs.github.com/en/billing/concepts/budgets-and-alerts",
         },
         "billing": {
             **billing,
             "remaining_included_minutes": remaining,
-            "budget_state": state,
             "usage_source": "https://docs.github.com/en/rest/billing/usage",
         },
         "activity": {
@@ -373,7 +358,7 @@ def collect_actions_budget(
             reverse=True,
         ),
         "decision": {
-            "can_assert_remaining_minutes": reported_minutes is not None,
+            "can_assert_remaining_minutes": reported_minutes is not None and included_minutes is not None,
             "highest_run_repository": max(rows, key=lambda row: row["month_to_date_runs"])["full_name"] if rows else None,
             "highest_job_repository": (
                 max(rows, key=lambda row: row["rolling_7d_jobs_from_active_workflows"])["full_name"]
