@@ -6,6 +6,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from urllib.parse import urlencode
 
+from dashboard.collectors.actions_job_usage import collect_workflow_job_usage
 from dashboard.collectors.github_api import GitHubApiError, atomic_write_json, fetch_paginated, request_json
 
 API_ROOT = "https://api.github.com"
@@ -127,6 +128,35 @@ def _attribute_active_workflow_runs(
     return attributed
 
 
+def _attach_recent_job_usage(
+    owner,
+    repo,
+    workflows,
+    rolling_start,
+    today,
+    token,
+    request_fn,
+    paginate_fn,
+    job_usage_fn,
+):
+    enriched = []
+    for workflow in workflows:
+        job_usage = None
+        if workflow["rolling_7d_runs"] > 0:
+            job_usage = job_usage_fn(
+                owner,
+                repo,
+                workflow["id"],
+                rolling_start,
+                today,
+                token,
+                request_fn=request_fn,
+                paginate_fn=paginate_fn,
+            )
+        enriched.append({**workflow, "rolling_7d_job_usage": job_usage})
+    return enriched
+
+
 def _billing_usage(owner, today, token, request_fn=request_json):
     query = urlencode({"year": today.year, "month": today.month})
     url = f"{API_ROOT}/users/{owner}/settings/billing/usage?{query}"
@@ -203,6 +233,7 @@ def collect_actions_budget(
     token=None,
     request_fn=request_json,
     paginate_fn=fetch_paginated,
+    job_usage_fn=collect_workflow_job_usage,
     included_minutes=DEFAULT_INCLUDED_MINUTES,
     warning_minutes=DEFAULT_WARNING_MINUTES,
     critical_minutes=DEFAULT_CRITICAL_MINUTES,
@@ -233,6 +264,7 @@ def collect_actions_budget(
                     "rolling_7d_runs": 0,
                     "month_to_date_runs_from_active_workflows": 0,
                     "rolling_7d_runs_from_active_workflows": 0,
+                    "rolling_7d_jobs_from_active_workflows": 0,
                     "month_to_date_unattributed_runs": 0,
                     "rolling_7d_unattributed_runs": 0,
                     "forward_active": False,
@@ -259,8 +291,23 @@ def collect_actions_budget(
                 for workflow in active_workflows
             ]
         )
+        active_workflow_inventory = _attach_recent_job_usage(
+            owner,
+            repository["name"],
+            active_workflow_inventory,
+            rolling_start,
+            today,
+            token,
+            request_fn,
+            paginate_fn,
+            job_usage_fn,
+        )
         active_month_runs = sum(workflow["month_to_date_runs"] for workflow in active_workflow_inventory)
         active_rolling_runs = sum(workflow["rolling_7d_runs"] for workflow in active_workflow_inventory)
+        active_rolling_jobs = sum(
+            (workflow["rolling_7d_job_usage"] or {}).get("job_count", 0)
+            for workflow in active_workflow_inventory
+        )
         rows.append(
             {
                 **repository,
@@ -270,6 +317,7 @@ def collect_actions_budget(
                 "rolling_7d_runs": rolling_runs,
                 "month_to_date_runs_from_active_workflows": active_month_runs,
                 "rolling_7d_runs_from_active_workflows": active_rolling_runs,
+                "rolling_7d_jobs_from_active_workflows": active_rolling_jobs,
                 "month_to_date_unattributed_runs": max(0, month_runs - active_month_runs),
                 "rolling_7d_unattributed_runs": max(0, rolling_runs - active_rolling_runs),
                 "forward_active": active_rolling_runs > 0,
@@ -284,6 +332,7 @@ def collect_actions_budget(
     active_rows = [row for row in rows if row["forward_active"]]
     observed_rolling_runs = sum(row["rolling_7d_runs"] for row in rows)
     active_rolling_runs = sum(row["rolling_7d_runs_from_active_workflows"] for row in active_rows)
+    active_rolling_jobs = sum(row["rolling_7d_jobs_from_active_workflows"] for row in active_rows)
     projected_runs = round((active_rolling_runs / max(1, (today - rolling_start).days + 1)) * month_end.day, 2)
 
     return {
@@ -312,6 +361,7 @@ def collect_actions_budget(
             "month_to_date_runs": sum(row["month_to_date_runs"] for row in rows),
             "rolling_7d_runs": observed_rolling_runs,
             "rolling_7d_runs_from_active_workflows": active_rolling_runs,
+            "rolling_7d_jobs_from_active_workflows": active_rolling_jobs,
             "projected_monthly_runs_from_active_workflows": projected_runs,
             "projection_is_billed_minutes": False,
         },
@@ -323,6 +373,11 @@ def collect_actions_budget(
         "decision": {
             "can_assert_remaining_minutes": reported_minutes is not None,
             "highest_run_repository": max(rows, key=lambda row: row["month_to_date_runs"])["full_name"] if rows else None,
+            "highest_job_repository": (
+                max(rows, key=lambda row: row["rolling_7d_jobs_from_active_workflows"])["full_name"]
+                if rows and any(row["rolling_7d_jobs_from_active_workflows"] > 0 for row in rows)
+                else None
+            ),
             "highest_billed_repository": (
                 billing["reported_actions_minutes_by_repository"][0]["name"]
                 if billing.get("reported_actions_minutes_by_repository")
