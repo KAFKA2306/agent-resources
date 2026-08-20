@@ -19,6 +19,10 @@ class FakeApi:
 
     def request(self, url, token=None):
         self._assert_token(token)
+        if url.endswith("/repo-a/actions/permissions/artifact-and-log-retention"):
+            return ({"days": 14, "maximum_allowed_days": 400}, {})
+        if url.endswith("/repo-b/actions/permissions/artifact-and-log-retention"):
+            raise GitHubApiError("forbidden", status=403)
         if url.endswith("/repo-a/actions/cache/usage"):
             return (
                 {
@@ -81,6 +85,9 @@ class FakeOwnerApi:
     def request(self, url, token=None):
         if token != "secret":
             raise AssertionError("storage collector must use the supplied token")
+        if url.endswith("/actions/permissions/artifact-and-log-retention"):
+            maximum = 400 if "/private-repo/" in url else 90
+            return ({"days": 7, "maximum_allowed_days": maximum}, {})
         if url.endswith("/actions/cache/usage"):
             return ({"active_caches_count": 0, "active_caches_size_in_bytes": 0}, {})
         raise AssertionError(f"unexpected URL: {url}")
@@ -130,6 +137,10 @@ class StorageBudgetCollectorTests(unittest.TestCase):
             ["KAFKA2306/repo-b"],
         )
         self.assertEqual(
+            payload["unavailable_actions_artifact_log_retention_repositories"],
+            ["KAFKA2306/repo-b"],
+        )
+        self.assertEqual(
             payload["unavailable_actions_cache_repositories"],
             ["KAFKA2306/repo-b"],
         )
@@ -143,6 +154,14 @@ class StorageBudgetCollectorTests(unittest.TestCase):
             {
                 "status": "available",
                 "usage": {"count": 2, "size_in_bytes": 300, "expired_count": 1},
+                "reason": None,
+            },
+        )
+        self.assertEqual(
+            repo_a["actions_artifact_log_retention"],
+            {
+                "status": "available",
+                "setting": {"days": 14, "maximum_allowed_days": 400},
                 "reason": None,
             },
         )
@@ -161,6 +180,12 @@ class StorageBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(repo_b["actions_artifacts"]["status"], "unavailable")
         self.assertEqual(repo_b["actions_artifacts"]["reason"], "github_api_http_403")
         self.assertIsNone(repo_b["actions_artifacts"]["usage"])
+        self.assertEqual(repo_b["actions_artifact_log_retention"]["status"], "unavailable")
+        self.assertEqual(
+            repo_b["actions_artifact_log_retention"]["reason"],
+            "github_api_http_403",
+        )
+        self.assertIsNone(repo_b["actions_artifact_log_retention"]["setting"])
         self.assertEqual(repo_b["actions_cache"]["status"], "unavailable")
         self.assertEqual(repo_b["actions_cache"]["reason"], "github_api_http_404")
         self.assertIsNone(repo_b["actions_cache"]["usage"])
@@ -184,6 +209,14 @@ class StorageBudgetCollectorTests(unittest.TestCase):
         )
         self.assertTrue(payload["repositories"][0]["private"])
         self.assertFalse(payload["repositories"][1]["private"])
+        self.assertEqual(
+            payload["repositories"][0]["actions_artifact_log_retention"]["setting"],
+            {"days": 7, "maximum_allowed_days": 400},
+        )
+        self.assertEqual(
+            payload["repositories"][1]["actions_artifact_log_retention"]["setting"],
+            {"days": 7, "maximum_allowed_days": 90},
+        )
 
 
 if __name__ == "__main__":
