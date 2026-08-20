@@ -166,8 +166,15 @@
         "fullName": {"type": "string", "minLength": 3},
         "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
         "group": {"type": "string", "minLength": 1},
-        "classificationSource": {"type": "string", "enum": ["agent-zone-topic", "unclassified"]}
-      }
+        "classificationSource": {"type": "string", "enum": ["agent-zone-topic", "local-model-suggestion", "unclassified"]},
+        "classificationConfidence": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"classificationSource": {"const": "local-model-suggestion"}}},
+          "then": {"required": ["classificationConfidence"]}
+        }
+      ]
     },
     "repositoryOperationBranch": {
       "type": "object",
@@ -186,10 +193,12 @@
     "repositoryOperationSummary": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["repositoryCount", "classifiedCount", "unclassifiedCount", "candidateCount", "confirmedCount", "deletedCount", "blockedCount"],
+      "required": ["repositoryCount", "classifiedCount", "explicitClassifiedCount", "modelSuggestedCount", "unclassifiedCount", "candidateCount", "confirmedCount", "deletedCount", "blockedCount"],
       "properties": {
         "repositoryCount": {"type": "integer", "minimum": 0},
         "classifiedCount": {"type": "integer", "minimum": 0},
+        "explicitClassifiedCount": {"type": "integer", "minimum": 0},
+        "modelSuggestedCount": {"type": "integer", "minimum": 0},
         "unclassifiedCount": {"type": "integer", "minimum": 0},
         "candidateCount": {"type": "integer", "minimum": 0},
         "confirmedCount": {"type": "integer", "minimum": 0},
