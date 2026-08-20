@@ -67,11 +67,21 @@ def _private_repositories(owner, token, request_fn=request_json, paginate_fn=fet
     return sorted(result, key=lambda item: item["full_name"].lower())
 
 
-def _active_workflow_count(owner, repo, token, request_fn=request_json):
+def _active_workflows(owner, repo, token, request_fn=request_json):
     payload, _ = request_fn(f"{API_ROOT}/repos/{owner}/{repo}/actions/workflows?per_page=100", token)
     if not isinstance(payload, dict) or not isinstance(payload.get("workflows"), list):
         raise GitHubApiError("unexpected Actions workflows response shape")
-    return sum(1 for workflow in payload["workflows"] if workflow.get("state") == "active")
+
+    workflows = []
+    for workflow in payload["workflows"]:
+        if not isinstance(workflow, dict) or workflow.get("state") != "active":
+            continue
+        name = workflow.get("name")
+        path = workflow.get("path")
+        if not isinstance(name, str) or not name or not isinstance(path, str) or not path:
+            raise GitHubApiError("active Actions workflow is missing name or path")
+        workflows.append({"name": name, "path": path})
+    return sorted(workflows, key=lambda item: (item["path"].lower(), item["name"].lower()))
 
 
 def _run_count(owner, repo, start, end, token, request_fn=request_json):
@@ -181,22 +191,24 @@ def collect_actions_budget(
                 {
                     **repository,
                     "active_workflows": 0,
+                    "active_workflow_inventory": [],
                     "month_to_date_runs": 0,
                     "rolling_7d_runs": 0,
                     "forward_active": False,
                 }
             )
             continue
-        active_workflows = _active_workflow_count(owner, repository["name"], token, request_fn=request_fn)
+        active_workflow_inventory = _active_workflows(owner, repository["name"], token, request_fn=request_fn)
         month_runs = _run_count(owner, repository["name"], month_start, today, token, request_fn=request_fn)
         rolling_runs = _run_count(owner, repository["name"], rolling_start, today, token, request_fn=request_fn)
         rows.append(
             {
                 **repository,
-                "active_workflows": active_workflows,
+                "active_workflows": len(active_workflow_inventory),
+                "active_workflow_inventory": active_workflow_inventory,
                 "month_to_date_runs": month_runs,
                 "rolling_7d_runs": rolling_runs,
-                "forward_active": active_workflows > 0 and rolling_runs > 0,
+                "forward_active": bool(active_workflow_inventory) and rolling_runs > 0,
             }
         )
 
