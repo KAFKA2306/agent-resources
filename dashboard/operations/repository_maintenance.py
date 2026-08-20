@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
+import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -39,6 +41,28 @@ class BranchObservation:
     confirmed_at: str | None = None
 
 
+def resolve_github_token() -> str | None:
+    for name in ("GITHUB_TOKEN", "GH_TOKEN"):
+        value = os.environ.get(name)
+        if value and value.strip():
+            return value.strip()
+    gh = shutil.which("gh")
+    if gh is None:
+        return None
+    try:
+        result = subprocess.run(
+            [gh, "auth", "token"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    token = result.stdout.strip() if result.returncode == 0 else ""
+    return token or None
+
+
 class GitHubClient:
     def __init__(self, token: str | None):
         self.token = token
@@ -50,15 +74,19 @@ class GitHubClient:
         return fetch_paginated(url, token=self.token)
 
     def delete_ref(self, owner: str, repo: str, branch: str) -> None:
+        if not self.token:
+            raise RepositoryMaintenanceError("authenticated GitHub token is required for branch deletion")
         encoded_branch = quote(branch, safe="")
-        url = f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}/git/refs/heads/{encoded_branch}"
+        url = (
+            f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}"
+            f"/git/refs/heads/{encoded_branch}"
+        )
         headers = {
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": API_VERSION,
             "User-Agent": "KAFKA2306-agent-resources-maintenance",
+            "Authorization": f"Bearer {self.token}",
         }
-        if self.token:
-            headers["Authorization"] = f"Bearer {self.token}"
         request = Request(url, headers=headers, method="DELETE")
         try:
             with urlopen(request, timeout=30) as response:
@@ -72,7 +100,7 @@ class GitHubClient:
             ) from exc
         except (URLError, TimeoutError, OSError) as exc:
             raise RepositoryMaintenanceError(
-                f"GitHub branch delete transport failure: {owner}/{repo}:{branch}: {exc}"
+                f"GitHub branch delete transport failure: {owner}/{repo}:{branch}: {type(exc).__name__}"
             ) from exc
 
 
@@ -122,9 +150,14 @@ def collect_operations_inventory(
         default_branch = raw.get("default_branch")
         html_url = raw.get("html_url")
         updated_at = raw.get("updated_at")
-        if not all(isinstance(value, str) and value for value in (name, node_id, default_branch, html_url, updated_at)):
+        if not all(
+            isinstance(value, str) and value
+            for value in (name, node_id, default_branch, html_url, updated_at)
+        ):
             raise RepositoryMaintenanceError(f"repository payload incomplete: {name!r}")
         group, source = _classification(raw)
+        description = raw.get("description")
+        language = raw.get("language")
         rows.append(
             {
                 "id": node_id,
@@ -134,11 +167,16 @@ def collect_operations_inventory(
                 "defaultBranch": default_branch,
                 "group": group,
                 "classificationSource": source,
-                "topics": sorted(topic for topic in (raw.get("topics") or []) if isinstance(topic, str)),
+                "description": description if isinstance(description, str) else "",
+                "language": language if isinstance(language, str) else "",
+                "fork": raw.get("fork") is True,
+                "topics": sorted(
+                    topic for topic in (raw.get("topics") or []) if isinstance(topic, str)
+                ),
                 "updatedAt": updated_at,
             }
         )
-    rows.sort(key=lambda row: row["name"].casefold())
+    rows.sort(key=lambda repo: repo["name"].casefold())
     now = collected_at or utc_now()
     return {
         "schemaVersion": SCHEMA_VERSION,
@@ -148,8 +186,12 @@ def collect_operations_inventory(
         "repositories": rows,
         "summary": {
             "repositoryCount": len(rows),
-            "classifiedCount": sum(row["classificationSource"] != "unclassified" for row in rows),
-            "unclassifiedCount": sum(row["classificationSource"] == "unclassified" for row in rows),
+            "classifiedCount": sum(
+                row["classificationSource"] != "unclassified" for row in rows
+            ),
+            "unclassifiedCount": sum(
+                row["classificationSource"] == "unclassified" for row in rows
+            ),
         },
     }
 
@@ -181,7 +223,9 @@ def load_candidate_state(path: Path) -> dict[str, Any]:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise RepositoryMaintenanceError(f"invalid branch candidate state: {path}") from exc
-    if payload.get("schemaVersion") != SCHEMA_VERSION or not isinstance(payload.get("candidates"), dict):
+    if payload.get("schemaVersion") != SCHEMA_VERSION or not isinstance(
+        payload.get("candidates"), dict
+    ):
         raise RepositoryMaintenanceError("branch candidate state schema mismatch")
     return payload
 
@@ -214,6 +258,40 @@ def _is_merged_into_default(
     return ahead_by == 0
 
 
+def _branch_detail(client: GitHubClient, owner: str, repo: str, branch: str) -> dict[str, Any]:
+    encoded_branch = quote(branch, safe="")
+    url = (
+        f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}"
+        f"/branches/{encoded_branch}"
+    )
+    payload = client.get(url)
+    if not isinstance(payload, dict):
+        raise RepositoryMaintenanceError("unexpected branch detail response shape")
+    return payload
+
+
+def _delete_after_readback(
+    client: GitHubClient,
+    owner: str,
+    repo: str,
+    default_branch: str,
+    branch: str,
+    expected_tip: str,
+) -> tuple[bool, str]:
+    current = _branch_detail(client, owner, repo, branch)
+    current_tip = (current.get("commit") or {}).get("sha")
+    if current_tip != expected_tip:
+        return False, "branch_tip_changed_since_scan"
+    if current.get("protected") is True or _protected_name(branch):
+        return False, "branch_became_protected"
+    if _active_pull_requests(client, owner, repo, branch):
+        return False, "active_pull_request_on_readback"
+    if not _is_merged_into_default(client, owner, repo, default_branch, branch):
+        return False, "not_merged_on_readback"
+    client.delete_ref(owner, repo, branch)
+    return True, "confirmed_stale_merged_branch"
+
+
 def scan_branch_hygiene(
     inventory: dict[str, Any],
     state: dict[str, Any],
@@ -226,10 +304,16 @@ def scan_branch_hygiene(
     max_deletes: int = DEFAULT_MAX_DELETES,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     if inventory.get("scope") != "public-nonarchived-owned-repositories":
-        raise RepositoryMaintenanceError("branch hygiene accepts only the sanitized public inventory scope")
+        raise RepositoryMaintenanceError(
+            "branch hygiene accepts only the sanitized public inventory scope"
+        )
     owner = inventory.get("owner")
     if not isinstance(owner, str) or not owner:
         raise RepositoryMaintenanceError("inventory owner missing")
+    if apply and not client.token:
+        raise RepositoryMaintenanceError(
+            "branch --apply requires GITHUB_TOKEN/GH_TOKEN or an authenticated gh CLI"
+        )
     now = now or utc_now()
     age_cutoff = now - timedelta(days=min_age_days)
     confirm_delta = timedelta(hours=confirm_hours)
@@ -242,10 +326,13 @@ def scan_branch_hygiene(
         repo = repo_row.get("name")
         default_branch = repo_row.get("defaultBranch")
         full_name = repo_row.get("fullName")
-        if not all(isinstance(value, str) and value for value in (repo, default_branch, full_name)):
+        if not all(
+            isinstance(value, str) and value for value in (repo, default_branch, full_name)
+        ):
             continue
         branches_url = (
-            f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}/branches?per_page=100"
+            f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}"
+            "/branches?per_page=100"
         )
         for branch_row in client.list(branches_url):
             branch = branch_row.get("name")
@@ -260,23 +347,30 @@ def scan_branch_hygiene(
             key = _candidate_key(full_name, branch)
             if _active_pull_requests(client, owner, repo, branch):
                 observations.append(
-                    BranchObservation(full_name, branch, tip_sha, "blocked", "active_pull_request").__dict__
+                    BranchObservation(
+                        full_name, branch, tip_sha, "blocked", "active_pull_request"
+                    ).__dict__
                 )
                 continue
             if not _is_merged_into_default(client, owner, repo, default_branch, branch):
                 observations.append(
-                    BranchObservation(full_name, branch, tip_sha, "blocked", "not_merged_into_default").__dict__
+                    BranchObservation(
+                        full_name, branch, tip_sha, "blocked", "not_merged_into_default"
+                    ).__dict__
                 )
                 continue
 
             commit_url = (
-                f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}/commits/{tip_sha}"
+                f"https://api.github.com/repos/{quote(owner, safe='')}/{quote(repo, safe='')}"
+                f"/commits/{tip_sha}"
             )
             commit_payload = client.get(commit_url)
             commit_date = _commit_date(commit_payload if isinstance(commit_payload, dict) else {})
             if commit_date is None:
                 observations.append(
-                    BranchObservation(full_name, branch, tip_sha, "blocked", "commit_date_missing").__dict__
+                    BranchObservation(
+                        full_name, branch, tip_sha, "blocked", "commit_date_missing"
+                    ).__dict__
                 )
                 continue
             if parse_utc(commit_date) > age_cutoff:
@@ -286,7 +380,11 @@ def scan_branch_hygiene(
             same_tip = isinstance(prior, dict) and prior.get("tipSha") == tip_sha
             first_seen = prior.get("firstSeen") if same_tip else iso_utc(now)
             consecutive = int(prior.get("consecutiveScans", 0)) + 1 if same_tip else 1
-            confirmed = same_tip and consecutive >= 2 and now - parse_utc(first_seen) >= confirm_delta
+            confirmed = (
+                same_tip
+                and consecutive >= 2
+                and now - parse_utc(first_seen) >= confirm_delta
+            )
             status = "confirmed" if confirmed else "candidate"
             confirmed_at = iso_utc(now) if confirmed else None
 
@@ -306,11 +404,24 @@ def scan_branch_hygiene(
                     status = "blocked"
                     reason = "delete_budget_exhausted"
                 else:
-                    client.delete_ref(owner, repo, branch)
-                    deletes += 1
-                    status = "deleted"
-                    reason = "confirmed_stale_merged_branch"
-                    next_candidates.pop(key, None)
+                    try:
+                        deleted, reason = _delete_after_readback(
+                            client,
+                            owner,
+                            repo,
+                            default_branch,
+                            branch,
+                            tip_sha,
+                        )
+                    except RepositoryMaintenanceError as exc:
+                        deleted = False
+                        reason = f"delete_failed:{str(exc).split(':', 1)[0]}"
+                    if deleted:
+                        deletes += 1
+                        status = "deleted"
+                        next_candidates.pop(key, None)
+                    else:
+                        status = "blocked"
             else:
                 reason = "stable_stale_merged_branch" if confirmed else "awaiting_second_scan"
 
@@ -327,7 +438,9 @@ def scan_branch_hygiene(
                 ).__dict__
             )
 
-    observations.sort(key=lambda row: (row["repository"].casefold(), row["branch"].casefold()))
+    observations.sort(
+        key=lambda row: (row["repository"].casefold(), row["branch"].casefold())
+    )
     report = {
         "schemaVersion": SCHEMA_VERSION,
         "scope": inventory["scope"],
@@ -341,6 +454,7 @@ def scan_branch_hygiene(
             "requiresMergedIntoDefault": True,
             "requiresNoOpenPullRequest": True,
             "requiresUnprotectedBranch": True,
+            "requiresSameTipOnDeleteReadback": True,
         },
         "branches": observations,
         "summary": {
@@ -385,7 +499,7 @@ def main(argv: list[str] | None = None) -> int:
     branches_parser.add_argument("--max-deletes", type=int, default=DEFAULT_MAX_DELETES)
 
     args = parser.parse_args(argv)
-    token = os.environ.get("GITHUB_TOKEN")
+    token = resolve_github_token()
     try:
         if args.command == "inventory":
             inventory = collect_operations_inventory(args.owner, token=token)
