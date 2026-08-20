@@ -1,0 +1,81 @@
+.repository-operations {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--panel-border, #d7dce2);
+  border-radius: 14px;
+  background: var(--panel-bg, rgba(255, 255, 255, 0.78));
+}
+
+.repository-operations[data-stale="true"] {
+  outline: 2px dashed currentColor;
+  outline-offset: 2px;
+}
+
+.repository-operations-heading,
+.repository-operation-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.repository-operations-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.repository-operations-stat {
+  padding: 10px;
+  border: 1px solid var(--panel-border, #d7dce2);
+  border-radius: 10px;
+}
+
+.repository-operations-stat strong,
+.repository-operations-stat span {
+  display: block;
+}
+
+.repository-operations-stat strong {
+  font-size: 1.25rem;
+}
+
+.repository-operations-stat span,
+.repository-operation-row span,
+.repository-operation-row code {
+  font-size: 0.82rem;
+}
+
+.repository-operations-branches {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.repository-operation-row {
+  padding: 10px 0;
+  border-top: 1px solid var(--panel-border, #d7dce2);
+}
+
+.repository-operation-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.repository-operation-row > div:last-child {
+  text-align: right;
+}
+
+.repository-operation-row code {
+  overflow-wrap: anywhere;
+}
+
+.repository-operation-row[data-status="blocked"] > div:last-child strong,
+.repository-operation-row[data-status="confirmed"] > div:last-child strong {
+  text-decoration: underline;
+}
+
+.repository-operations-empty {
+  margin: 0;
+}
