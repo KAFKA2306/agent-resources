@@ -47,9 +47,18 @@ class FakeApi:
                 {},
             )
         if url.endswith("/busy/actions/workflows?per_page=100"):
-            return ({"workflows": [{"state": "active"}, {"state": "disabled_manually"}]}, {})
+            return (
+                {
+                    "workflows": [
+                        {"name": "Nightly", "path": ".github/workflows/nightly.yml", "state": "active"},
+                        {"name": "CI", "path": ".github/workflows/ci.yml", "state": "active"},
+                        {"name": "Old", "path": ".github/workflows/old.yml", "state": "disabled_manually"},
+                    ]
+                },
+                {},
+            )
         if url.endswith("/idle/actions/workflows?per_page=100"):
-            return ({"workflows": [{"state": "active"}]}, {})
+            return ({"workflows": [{"name": "CI", "path": ".github/workflows/ci.yml", "state": "active"}]}, {})
         if "/busy/actions/runs?" in url:
             if "2026-08-09..2026-08-15" in url:
                 return ({"total_count": 14}, {})
@@ -101,8 +110,25 @@ class ActionsBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(payload["decision"]["highest_billed_repository"], "KAFKA2306/busy")
         self.assertTrue(payload["decision"]["can_assert_remaining_minutes"])
 
+        busy = next(row for row in payload["repositories"] if row["name"] == "busy")
+        self.assertEqual(busy["active_workflows"], 2)
+        self.assertEqual(
+            busy["active_workflow_inventory"],
+            [
+                {"name": "CI", "path": ".github/workflows/ci.yml"},
+                {"name": "Nightly", "path": ".github/workflows/nightly.yml"},
+            ],
+        )
+
+        idle = next(row for row in payload["repositories"] if row["name"] == "idle")
+        self.assertEqual(idle["active_workflows"], 1)
+        self.assertEqual(idle["active_workflow_inventory"], [{"name": "CI", "path": ".github/workflows/ci.yml"}])
+        self.assertFalse(idle["forward_active"])
+
         archived = next(row for row in payload["repositories"] if row["name"] == "archive")
         self.assertFalse(archived["forward_active"])
+        self.assertEqual(archived["active_workflows"], 0)
+        self.assertEqual(archived["active_workflow_inventory"], [])
         self.assertEqual(archived["month_to_date_runs"], 0)
 
     def test_billing_403_is_unknown_not_zero(self):
