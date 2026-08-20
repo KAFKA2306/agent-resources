@@ -13,7 +13,8 @@
     "workItems": {"type": "array", "items": {"$ref": "#/$defs/workItem"}},
     "activity": {"type": "array", "items": {"$ref": "#/$defs/activityItem"}},
     "stats": {"$ref": "#/$defs/stats"},
-    "openclawRuntime": {"$ref": "#/$defs/openclawRuntime"}
+    "openclawRuntime": {"$ref": "#/$defs/openclawRuntime"},
+    "repositoryOperations": {"$ref": "#/$defs/repositoryOperations"}
   },
   "$defs": {
     "summary": {
@@ -94,11 +95,7 @@
         "timezone": {"type": "string", "const": "Asia/Tokyo"},
         "publicRepositories": {"type": "integer", "minimum": 0},
         "archivedPublicRepositories": {"type": "integer", "minimum": 0},
-        "monthly": {
-          "type": "array",
-          "minItems": 1,
-          "items": {"$ref": "#/$defs/monthlyStats"}
-        }
+        "monthly": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/monthlyStats"}}
       }
     },
     "monthlyStats": {
@@ -145,6 +142,59 @@
         "agentId": {"type": "string", "minLength": 1, "maxLength": 80},
         "name": {"type": "string", "minLength": 1, "maxLength": 200},
         "status": {"type": "string", "enum": ["disabled", "running", "ok", "error", "skipped", "idle", "unknown"]}
+      }
+    },
+    "repositoryOperations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "owner", "collectedAt", "repositories", "branches", "summary"],
+      "properties": {
+        "scope": {"type": "string", "const": "public-nonarchived-owned-repositories"},
+        "owner": {"type": "string", "minLength": 1},
+        "collectedAt": {"type": "string", "format": "date-time"},
+        "repositories": {"type": "array", "items": {"$ref": "#/$defs/repositoryOperationRepository"}},
+        "branches": {"type": "array", "items": {"$ref": "#/$defs/repositoryOperationBranch"}},
+        "summary": {"$ref": "#/$defs/repositoryOperationSummary"}
+      }
+    },
+    "repositoryOperationRepository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "fullName", "url", "group", "classificationSource"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "fullName": {"type": "string", "minLength": 3},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
+        "group": {"type": "string", "minLength": 1},
+        "classificationSource": {"type": "string", "enum": ["agent-zone-topic", "unclassified"]}
+      }
+    },
+    "repositoryOperationBranch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "branch", "status", "reason"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 3},
+        "branch": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "enum": ["candidate", "confirmed", "deleted", "blocked"]},
+        "reason": {"type": "string", "minLength": 1},
+        "commitDate": {"type": "string", "format": "date-time"},
+        "firstSeen": {"type": "string", "format": "date-time"},
+        "confirmedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "repositoryOperationSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryCount", "classifiedCount", "unclassifiedCount", "candidateCount", "confirmedCount", "deletedCount", "blockedCount"],
+      "properties": {
+        "repositoryCount": {"type": "integer", "minimum": 0},
+        "classifiedCount": {"type": "integer", "minimum": 0},
+        "unclassifiedCount": {"type": "integer", "minimum": 0},
+        "candidateCount": {"type": "integer", "minimum": 0},
+        "confirmedCount": {"type": "integer", "minimum": 0},
+        "deletedCount": {"type": "integer", "minimum": 0},
+        "blockedCount": {"type": "integer", "minimum": 0}
       }
     }
   }
