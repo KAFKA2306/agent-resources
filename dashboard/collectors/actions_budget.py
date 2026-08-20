@@ -139,6 +139,8 @@ def _attach_recent_job_usage(
     paginate_fn,
     job_usage_fn,
 ):
+    if job_usage_fn is None:
+        return workflows
     enriched = []
     for workflow in workflows:
         job_usage = None
@@ -233,7 +235,7 @@ def collect_actions_budget(
     token=None,
     request_fn=request_json,
     paginate_fn=fetch_paginated,
-    job_usage_fn=collect_workflow_job_usage,
+    job_usage_fn=None,
     included_minutes=DEFAULT_INCLUDED_MINUTES,
     warning_minutes=DEFAULT_WARNING_MINUTES,
     critical_minutes=DEFAULT_CRITICAL_MINUTES,
@@ -305,7 +307,7 @@ def collect_actions_budget(
         active_month_runs = sum(workflow["month_to_date_runs"] for workflow in active_workflow_inventory)
         active_rolling_runs = sum(workflow["rolling_7d_runs"] for workflow in active_workflow_inventory)
         active_rolling_jobs = sum(
-            (workflow["rolling_7d_job_usage"] or {}).get("job_count", 0)
+            (workflow.get("rolling_7d_job_usage") or {}).get("job_count", 0)
             for workflow in active_workflow_inventory
         )
         rows.append(
@@ -400,7 +402,7 @@ def main():
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         parser.error("GITHUB_TOKEN with private-repository access is required")
-    payload = collect_actions_budget(owner=args.owner, token=token)
+    payload = collect_actions_budget(owner=args.owner, token=token, job_usage_fn=collect_workflow_job_usage)
     atomic_write_json(args.output, payload)
 
 
