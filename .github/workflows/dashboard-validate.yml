@@ -58,6 +58,9 @@ jobs:
       - name: Verify baseline to live overlay in headless Chrome
         run: python dashboard/tests/dashboard_live_browser_e2e.py
 
+      - name: Verify operations navigation in headless Chrome
+        run: python dashboard/tests/dashboard_operations_browser_e2e.py
+
       - name: Validate dashboard JavaScript syntax
         run: |
           set -euo pipefail
