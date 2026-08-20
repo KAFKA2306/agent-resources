@@ -54,8 +54,8 @@ function initialiseOperationsNavigation() {
     event.preventDefault();
     const delta = event.key === "ArrowRight" ? 1 : -1;
     const next = buttons[(index + delta + buttons.length) % buttons.length];
-    next.focus();
     next.click();
+    next.focus();
   });
 
   new MutationObserver(restore).observe(container, { childList: true });
