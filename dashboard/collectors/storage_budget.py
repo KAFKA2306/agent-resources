@@ -1,5 +1,6 @@
 import argparse
 import os
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from urllib.parse import urlencode
 
@@ -15,11 +16,11 @@ DEFAULT_OWNER = "KAFKA2306"
 DEFAULT_OUTPUT = "dashboard/generated/storage-budget.json"
 
 
+@dataclass(frozen=True)
 class MetricResult:
-    def __init__(self, status, value, reason=None):
-        self.status = status
-        self.value = value
-        self.reason = reason
+    status: str
+    value: object
+    reason: str | None = None
 
 
 def _unavailable_reason(exc):
