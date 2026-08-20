@@ -15,6 +15,35 @@ class FakeApi:
             ]
         if url.endswith("/repo-b/actions/artifacts?per_page=100"):
             raise GitHubApiError("forbidden", status=403)
+        if url.endswith("/repo-a/actions/caches?per_page=100"):
+            return [
+                {
+                    "key": "uv-linux-abc",
+                    "ref": "refs/heads/main",
+                    "version": "v1",
+                    "created_at": "2026-08-01T00:00:00Z",
+                    "last_accessed_at": "2026-08-10T00:00:00Z",
+                    "size_in_bytes": 1000,
+                },
+                {
+                    "key": "uv-linux-abc",
+                    "ref": "refs/heads/main",
+                    "version": "v2",
+                    "created_at": "2026-08-11T00:00:00Z",
+                    "last_accessed_at": "2026-08-20T00:00:00Z",
+                    "size_in_bytes": 1100,
+                },
+                {
+                    "key": "node-linux-def",
+                    "ref": "refs/heads/feature",
+                    "version": "v1",
+                    "created_at": "2026-08-12T00:00:00Z",
+                    "last_accessed_at": "2026-08-15T00:00:00Z",
+                    "size_in_bytes": 2000,
+                },
+            ]
+        if url.endswith("/repo-b/actions/caches?per_page=100"):
+            raise GitHubApiError("not found", status=404)
         raise AssertionError(f"unexpected paginated URL: {url}")
 
     def request(self, url, token=None):
@@ -80,6 +109,8 @@ class FakeOwnerApi:
             ]
         if "/actions/artifacts?per_page=100" in url:
             return []
+        if "/actions/caches?per_page=100" in url:
+            return []
         raise AssertionError(f"unexpected paginated URL: {url}")
 
     def request(self, url, token=None):
@@ -144,6 +175,10 @@ class StorageBudgetCollectorTests(unittest.TestCase):
             payload["unavailable_actions_cache_repositories"],
             ["KAFKA2306/repo-b"],
         )
+        self.assertEqual(
+            payload["unavailable_actions_cache_inventory_repositories"],
+            ["KAFKA2306/repo-b"],
+        )
         self.assertFalse(payload["notes"]["unknown_is_zero"])
         self.assertEqual(payload["notes"]["pages_bandwidth"], "unavailable")
         self.assertEqual(payload["notes"]["git_lfs_usage"], "unavailable")
@@ -165,14 +200,18 @@ class StorageBudgetCollectorTests(unittest.TestCase):
                 "reason": None,
             },
         )
-        self.assertEqual(
-            repo_a["actions_cache"],
-            {
-                "status": "available",
-                "usage": {"count": 3, "size_in_bytes": 4096},
-                "reason": None,
-            },
-        )
+        self.assertEqual(repo_a["actions_cache"]["status"], "available")
+        self.assertEqual(repo_a["actions_cache"]["usage"], {"count": 3, "size_in_bytes": 4096})
+        self.assertEqual(repo_a["actions_cache"]["inventory_status"], "available")
+        inventory = repo_a["actions_cache"]["inventory"]
+        self.assertEqual(inventory["entry_count"], 3)
+        self.assertEqual(inventory["unique_key_count"], 2)
+        self.assertEqual(inventory["unique_ref_count"], 2)
+        self.assertEqual(inventory["key_ref_pairs_with_multiple_entries"], 1)
+        self.assertEqual(inventory["max_entries_per_key_ref"], 2)
+        self.assertEqual(inventory["oldest_last_accessed_at"], "2026-08-10T00:00:00Z")
+        self.assertEqual(inventory["newest_last_accessed_at"], "2026-08-20T00:00:00Z")
+        self.assertEqual(len(inventory["entries"]), 3)
         self.assertEqual(repo_a["repository_size_kb"], 123)
         self.assertTrue(repo_a["pages_enabled"])
 
@@ -189,6 +228,9 @@ class StorageBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(repo_b["actions_cache"]["status"], "unavailable")
         self.assertEqual(repo_b["actions_cache"]["reason"], "github_api_http_404")
         self.assertIsNone(repo_b["actions_cache"]["usage"])
+        self.assertEqual(repo_b["actions_cache"]["inventory_status"], "unavailable")
+        self.assertEqual(repo_b["actions_cache"]["inventory_reason"], "github_api_http_404")
+        self.assertIsNone(repo_b["actions_cache"]["inventory"])
 
     def test_owner_inventory_includes_public_and_private_active_repositories(self):
         api = FakeOwnerApi()
@@ -217,6 +259,9 @@ class StorageBudgetCollectorTests(unittest.TestCase):
             payload["repositories"][1]["actions_artifact_log_retention"]["setting"],
             {"days": 7, "maximum_allowed_days": 90},
         )
+        for row in payload["repositories"]:
+            self.assertEqual(row["actions_cache"]["inventory_status"], "available")
+            self.assertEqual(row["actions_cache"]["inventory"]["entry_count"], 0)
 
 
 if __name__ == "__main__":
