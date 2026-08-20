@@ -1,7 +1,7 @@
 import unittest
 
 from dashboard.collectors.github_api import GitHubApiError
-from dashboard.collectors.storage_budget import collect_storage_budget
+from dashboard.collectors.storage_budget import collect_owner_storage_budget, collect_storage_budget
 
 
 class FakeApi:
@@ -35,6 +35,55 @@ class FakeApi:
     def _assert_token(token):
         if token != "secret":
             raise AssertionError("storage collector must use the supplied token")
+
+
+class FakeOwnerApi:
+    def paginate(self, url, token=None, request_fn=None, item_key=None):
+        if token != "secret":
+            raise AssertionError("storage collector must use the supplied token")
+        if url.startswith("https://api.github.com/user/repos?"):
+            return [
+                {
+                    "name": "public-repo",
+                    "owner": {"login": "KAFKA2306"},
+                    "private": False,
+                    "archived": False,
+                    "size": 10,
+                    "has_pages": True,
+                },
+                {
+                    "name": "private-repo",
+                    "owner": {"login": "KAFKA2306"},
+                    "private": True,
+                    "archived": False,
+                    "size": 20,
+                    "has_pages": False,
+                },
+                {
+                    "name": "archived-repo",
+                    "owner": {"login": "KAFKA2306"},
+                    "private": False,
+                    "archived": True,
+                    "size": 30,
+                    "has_pages": False,
+                },
+                {
+                    "name": "other-owner",
+                    "owner": {"login": "someone-else"},
+                    "private": False,
+                    "archived": False,
+                },
+            ]
+        if "/actions/artifacts?per_page=100" in url:
+            return []
+        raise AssertionError(f"unexpected paginated URL: {url}")
+
+    def request(self, url, token=None):
+        if token != "secret":
+            raise AssertionError("storage collector must use the supplied token")
+        if url.endswith("/actions/cache/usage"):
+            return ({"active_caches_count": 0, "active_caches_size_in_bytes": 0}, {})
+        raise AssertionError(f"unexpected URL: {url}")
 
 
 class StorageBudgetCollectorTests(unittest.TestCase):
@@ -115,6 +164,26 @@ class StorageBudgetCollectorTests(unittest.TestCase):
         self.assertEqual(repo_b["actions_cache"]["status"], "unavailable")
         self.assertEqual(repo_b["actions_cache"]["reason"], "github_api_http_404")
         self.assertIsNone(repo_b["actions_cache"]["usage"])
+
+    def test_owner_inventory_includes_public_and_private_active_repositories(self):
+        api = FakeOwnerApi()
+
+        payload = collect_owner_storage_budget(
+            "KAFKA2306",
+            token="secret",
+            request_fn=api.request,
+            paginate_fn=api.paginate,
+        )
+
+        self.assertEqual(payload["owner"], "KAFKA2306")
+        self.assertEqual(payload["scope"], "owned_active_repositories")
+        self.assertEqual(payload["repository_count"], 2)
+        self.assertEqual(
+            [row["name"] for row in payload["repositories"]],
+            ["KAFKA2306/private-repo", "KAFKA2306/public-repo"],
+        )
+        self.assertTrue(payload["repositories"][0]["private"])
+        self.assertFalse(payload["repositories"][1]["private"])
 
 
 if __name__ == "__main__":
