@@ -32,6 +32,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       DASHBOARD_PUBLIC_SNAPSHOT_URL: https://kafka2306.github.io/agent-resources/dashboard/dashboard.json
+      REPOSITORY_OPERATIONS_PUBLIC_SNAPSHOT_URL: https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json
     steps:
       - uses: actions/checkout@v6
 
@@ -108,6 +109,39 @@ jobs:
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
           python -m dashboard.collectors.recent_activity --repositories dashboard/generated/repositories.json --window-days 7 --output dashboard/generated/recent-activity.json
 
+          if [ "$reuse_previous" -eq 1 ]; then
+            python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          from pathlib import Path
+
+          target = Path('docs/dashboard/repository-operations.json')
+          request = urllib.request.Request(
+              os.environ['REPOSITORY_OPERATIONS_PUBLIC_SNAPSHOT_URL'],
+              headers={'Cache-Control': 'no-cache', 'User-Agent': 'agent-resources-operations-baseline'},
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  payload = json.loads(response.read().decode('utf-8'))
+              required = ('generatedAt', 'sourceRevision', 'runId', 'repositories')
+              if not isinstance(payload, dict) or any(not payload.get(key) for key in required):
+                  raise ValueError('previous repository operations snapshot is incomplete')
+              if not isinstance(payload['repositories'], list) or not payload['repositories']:
+                  raise ValueError('previous repository operations snapshot has zero repositories')
+              target.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+              print('repository operations baseline: previous production snapshot')
+          except Exception as exc:
+              print(f'repository operations baseline unavailable; full refresh: {exc}')
+          PY
+          fi
+
+          if [ ! -s docs/dashboard/repository-operations.json ]; then
+            python -m dashboard.collectors.repository_operations \
+              --output docs/dashboard/repository-operations.json \
+              --run-id "${GITHUB_RUN_ID}"
+          fi
+
       - name: Build and validate canonical dashboard snapshot
         run: |
           set -euo pipefail
@@ -138,6 +172,7 @@ jobs:
           import json
           from pathlib import Path
 
+          from jsonschema import Draft202012Validator
           from dashboard.build import validate_snapshot
 
           root = Path('deploy/dashboard')
@@ -147,6 +182,14 @@ jobs:
           snapshot = json.loads((root / 'dashboard.json').read_text(encoding='utf-8'))
           schema = json.loads(Path('dashboard/schema/dashboard.schema.json').read_text(encoding='utf-8'))
           validate_snapshot(snapshot, schema)
+
+          operations = json.loads((root / 'repository-operations.json').read_text(encoding='utf-8'))
+          operations_schema = json.loads(Path('dashboard/schema/repository-operations.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator(operations_schema).validate(operations)
+          if not operations.get("generatedAt") or not operations.get("sourceRevision") or not operations.get("runId"):
+              raise SystemExit('repository operations snapshot is missing provenance')
+          if not operations.get('repositories'):
+              raise SystemExit('repository operations snapshot has zero repositories')
 
           if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
               raise SystemExit('retired dashboard view leaked into deploy bundle')
@@ -161,6 +204,7 @@ jobs:
               raise SystemExit('deploy snapshot has zero recent activity')
           print(f"deploy repositories: {len(snapshot['repositories'])}")
           print(f"deploy activity: {len(snapshot['activity'])}")
+          print(f"deploy repository operations: {len(operations['repositories'])}")
           PY
 
       - name: Upload artifact
@@ -214,6 +258,7 @@ jobs:
                   dashboard_js = fetch('dashboard.js')
                   stats_js = fetch('stats.js')
                   snapshot = json.loads(fetch('dashboard.json'))
+                  operations = json.loads(fetch('repository-operations.json'))
                   if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
                       raise RuntimeError('retired view is still deployed')
                   if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
@@ -226,6 +271,10 @@ jobs:
                       raise RuntimeError('deployed dashboard has zero recent activity')
                   if not snapshot.get('stats', {}).get('monthly'):
                       raise RuntimeError('deployed dashboard has no monthly stats')
+                  if not operations.get("generatedAt") or not operations.get("sourceRevision") or not operations.get("runId"):
+                      raise RuntimeError('deployed repository operations snapshot is missing provenance')
+                  if not operations.get('repositories'):
+                      raise RuntimeError('deployed repository operations snapshot has zero repositories')
                   try:
                       fetch('public-links.js')
                   except urllib.error.HTTPError as exc:
@@ -236,6 +285,7 @@ jobs:
                   print(f"deployed repositories: {len(snapshot['repositories'])}")
                   print(f"deployed activity: {len(snapshot['activity'])}")
                   print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
+                  print(f"deployed repository operations: {len(operations['repositories'])}")
                   break
               except Exception:
                   if attempt == 5:
