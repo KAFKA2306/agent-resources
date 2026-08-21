@@ -1,4 +1,4 @@
-name: Validate Dashboard
+name: Validate Dashboard PR
 
 on:
   pull_request:
@@ -10,17 +10,7 @@ on:
       - 'package.json'
       - 'vercel.json'
       - '.github/workflows/dashboard-validate.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - 'api/dashboard-live.js'
-      - 'dashboard/**'
-      - '!dashboard/data/repository-index.json'
-      - 'docs/dashboard/**'
-      - 'package.json'
-      - 'vercel.json'
-      - '.github/workflows/dashboard-validate.yml'
+      - '.github/workflows/dashboard-release-verify.yml'
 
 permissions:
   contents: read
@@ -60,9 +50,6 @@ jobs:
 
       - name: Verify operations navigation in headless Chrome
         run: python dashboard/tests/dashboard_operations_browser_e2e.py
-
-      - name: Verify repository operations on production dashboard
-        run: python dashboard/tests/dashboard_repository_operations_production_e2e.py
 
       - name: Validate dashboard JavaScript syntax
         run: |

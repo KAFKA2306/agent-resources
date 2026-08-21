@@ -39,6 +39,15 @@ Dashboard変更ではrepository内の既存test/build commandを優先し、該�
 - `skills/` をrepository内skillの正準配置とする。
 - `agr` と `agrx` の共有責務は可能な限り共通実装へ寄せ、挙動を不必要に分岐させない。
 
+## Merge and release conditions
+
+PR mergeとproduct releaseは別の判定です。
+
+- PR merge条件は、exact PR headに対する変更surfaceのdeterministic test / build / lint / type checkと、必要なpreview validationです。現在productionの状態、post-deploy smoke、release artifactの公開結果をmerge条件にしません。
+- Product release条件は、mergeまたはtag作成後に、release対象のexact revision / artifactがtarget environmentへ実際にdeploy / publishされ、そのenvironmentで必要なsmoke / browser / package verificationが成功することです。
+- PRがmerge済みでもproduct release完了とは扱いません。deployment成功だけでもproduction verificationが未実行ならrelease完了とは扱いません。
+- production verificationの失敗はreleaseを未完了にしますが、そのproduction状態と無関係なPR headのmerge可否へ逆流させません。
+
 ## Documentation
 
 Documentationもmaintained surfaceとして扱います。
@@ -55,7 +64,7 @@ obsoleteな文書は削除し、重複文書は統合します。source code、s
 1. write直前に対象branch / PR / Issue / CIを再取得する。
 2. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。
 3. 同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
-4. mergeはexact PR headで必要なCIがgreenであることを確認し、可能ならexpected head SHAを固定する。
+4. mergeはexact PR headでPR merge条件がgreenであることを確認し、可能ならexpected head SHAを固定する。product release条件をmerge判定へ混ぜない。
 5. host-side rejectionを認証失敗と決めつけず、stateを再取得して同じcanonical actionを1回だけ再試行する。2回目も拒否されたらそのrunのmutationを止める。
 6. merge後はmain / PR / Issue / branchを再確認してからcleanupする。未完了branchを削除しない。
 7. 未実行・未観測のtest、deployment、runtime layerをPASSと報告しない。
