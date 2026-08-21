@@ -1,9 +1,9 @@
 site_name: Agent Resources
-site_url: https://kasperjunge.github.io/agent-resources/site/
-site_description: A package manager for AI agent skills.
-site_author: Kasper Junge
-repo_url: https://github.com/kasperjunge/agent-resources
-repo_name: kasperjunge/agent-resources
+site_url: https://kafka2306.github.io/agent-resources/site/
+site_description: Public agent operations dashboard and package manager for AI agent skills.
+site_author: KAFKA2306
+repo_url: https://github.com/KAFKA2306/agent-resources
+repo_name: KAFKA2306/agent-resources
 
 docs_dir: docs
 site_dir: site
@@ -13,12 +13,9 @@ theme:
   palette:
     primary: black
     accent: deep orange
-
   font:
     code: Roboto Mono
-
   logo: images/puzzle.png
-
   features:
     - navigation.instant
     - navigation.tracking
@@ -28,7 +25,7 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/kasperjunge/agent-resources
+      link: https://github.com/KAFKA2306/agent-resources
       name: Agent Resources on GitHub
   generator: false
 
