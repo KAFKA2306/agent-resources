@@ -37,22 +37,34 @@ def classification_from_repository(raw):
     return {"domain": None, "source": "no-agent-zone-topic", "evidence": evidence}
 
 
-def normalize_branch(raw, default_branch):
+def normalize_branch(raw, default_branch, *, deletion_candidate=False):
     name = raw.get("name")
     commit_sha = (raw.get("commit") or {}).get("sha")
     protected = raw.get("protected")
     if not name or not commit_sha or not isinstance(protected, bool):
         raise ValueError("branch payload is missing name, commit sha, or protected flag")
+    if name == default_branch or protected:
+        deletion_candidate = False
     return {
         "name": name,
         "commitSha": commit_sha,
         "isDefault": name == default_branch,
         "protected": protected,
-        "deletionCandidate": False,
+        "deletionCandidate": deletion_candidate,
         "deletionConfirmed": False,
         "deleted": False,
         "blockedReason": None,
     }
+
+
+def branch_is_fully_merged(api_url, branch_name, default_branch, *, token, request_fn):
+    base = quote(branch_name, safe="")
+    head = quote(default_branch, safe="")
+    comparison, _ = request_fn(f"{api_url}/compare/{base}...{head}", token)
+    behind_by = comparison.get("behind_by")
+    if not isinstance(behind_by, int) or isinstance(behind_by, bool) or behind_by < 0:
+        raise ValueError(f"compare payload is missing valid behind_by: {branch_name}")
+    return behind_by == 0
 
 
 def collect_repository_operations(
@@ -76,7 +88,26 @@ def collect_repository_operations(
         if not default_branch:
             raise ValueError(f"repository payload is missing default_branch: {repository['name']}")
         branches = pagination_fetcher(f"{api_url}/branches?per_page=100", token=token)
-        normalized_branches = [normalize_branch(branch, default_branch) for branch in branches]
+        normalized_branches = []
+        for branch in branches:
+            branch_name = branch.get("name")
+            protected = branch.get("protected")
+            deletion_candidate = False
+            if branch_name and branch_name != default_branch and protected is False:
+                deletion_candidate = branch_is_fully_merged(
+                    api_url,
+                    branch_name,
+                    default_branch,
+                    token=token,
+                    request_fn=request_fn,
+                )
+            normalized_branches.append(
+                normalize_branch(
+                    branch,
+                    default_branch,
+                    deletion_candidate=deletion_candidate,
+                )
+            )
         normalized_branches.sort(key=lambda branch: branch["name"].lower())
         snapshots.append(
             {
