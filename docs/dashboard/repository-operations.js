@@ -1,3 +1,8 @@
+const REPOSITORY_OPERATIONS_SOURCES = [
+  "./repository-operations.json",
+  "https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json",
+];
+
 function formatTimestamp(value) {
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return "invalid timestamp";
@@ -37,15 +42,22 @@ export function renderRepositoryOperationsSummary(payload, documentRef = documen
 export async function loadRepositoryOperations({ fetchImpl = fetch, documentRef = document } = {}) {
   const generatedAt = documentRef.getElementById("operations-generated-at");
   const summary = documentRef.getElementById("operations-summary");
-  try {
-    const response = await fetchImpl("./repository-operations.json", { cache: "no-store" });
-    if (!response.ok) throw new Error(`repository operations HTTP ${response.status}`);
-    renderRepositoryOperationsSummary(await response.json(), documentRef);
-  } catch (error) {
-    if (generatedAt) generatedAt.textContent = "Operations snapshot: unavailable";
-    if (summary) summary.textContent = "Operations: unavailable";
-    console.warn("Repository operations snapshot unavailable", error);
+  let lastError = null;
+
+  for (const source of REPOSITORY_OPERATIONS_SOURCES) {
+    try {
+      const response = await fetchImpl(source, { cache: "no-store" });
+      if (!response.ok) throw new Error(`repository operations HTTP ${response.status}`);
+      renderRepositoryOperationsSummary(await response.json(), documentRef);
+      return;
+    } catch (error) {
+      lastError = error;
+    }
   }
+
+  if (generatedAt) generatedAt.textContent = "Operations snapshot: unavailable";
+  if (summary) summary.textContent = "Operations: unavailable";
+  console.warn("Repository operations snapshot unavailable", lastError);
 }
 
 if (typeof document !== "undefined") {
