@@ -1,114 +1,74 @@
 # Agent Resources
 
-A package manager for AI agents. 
+このファイルをrepository運用の正準とします。`CLAUDE.md` などtool固有のinstruction fileには、ここにない差分だけを書きます。
+
+## Scope
+
+このrepositoryは主に次を保守します。
+
+- public GitHub状態を観測するDashboard / API / snapshot
+- `agr` / `agrx` CLI
+- reusable skills / plugins
+- GitHub Pages上のCLI documentation
+
+public Dashboardはprivate repository、secret、private work itemを扱いません。
 
 ## Commands
 
-This project uses `uv` for Python environment management. **Always use `uv run` to execute Python commands** to ensure they run in the correct virtual environment.
+Python環境は `uv` を使います。Python commandは原則 `uv run` で実行します。
 
 ```bash
-# Run tests
 uv run pytest
-
-# Run linters/formatters
 uv run ruff check .
 uv run ruff format .
-
-# Run type checker
 uv run ty check
-
-# Test the CLI tools
 uv run agr --help
 uv run agrx --help
 ```
 
-## Architecture
-...
+Dashboard変更ではrepository内の既存test/build commandを優先し、該当するGitHub Actionsも確認します。
 
-## agr.toml Format
+## Change policy
 
-The configuration file uses a flat array of dependencies:
+- current user instruction > このファイル > current official upstream docs > current GitHub/production state > historical context の順で判断する。
+- 既存の標準機能・既存実装を再利用し、`DELETE > MERGE > REPLACE > ADD` を優先する。
+- 同じ責務のwrapper、config、workflow、schema、documentation、status authorityを増やさない。
+- repository固有の略語、maturity level、named gate、confidence score、独自taxonomyを、外部標準や実要件なしに作らない。
+- Dashboardではlive / snapshot / unavailableを区別し、未観測状態を推測で埋めない。
+- repository domain classificationは現在のexplicit `agent-zone-*` authorityに従い、repo名・language・LLM推測から正準値を作らない。
+- `skills/` をrepository内skillの正準配置とする。
+- `agr` と `agrx` の共有責務は可能な限り共通実装へ寄せ、挙動を不必要に分岐させない。
 
-```toml
-dependencies = [
-    {handle = "username/repo/skill", type = "skill"},
-    {handle = "username/skill", type = "skill"},
-    {path = "./local/skill", type = "skill"},
-]
-```
+## Documentation
 
-Each dependency has:
-- `type`: Always "skill" for now
-- `handle`: Remote GitHub reference (username/repo/skill or username/skill)
-- `path`: Local path (alternative to handle)
+Documentationもmaintained surfaceとして扱います。
 
-Future: A `tools` section will configure which tools to sync to:
-```toml
-tools = ["claude", "cursor"]
-```
+- `README.md`: 人間向けの短い入口、主要surface、最短の利用・検証経路
+- `AGENTS.md`: repository/agent運用契約
+- `docs/docs/`: CLI利用者向けの恒久的なguide/reference
+- その他のdocs: 独立した現在有効な役割がある場合だけ残す
 
-## Code Style
-...
+obsoleteな文書は削除し、重複文書は統合します。source code、schema、workflow、upstream docsを長文で複製せず、安定した正準sourceへlinkします。削除済みfile、command、workflow、endpointへの参照を残しません。
 
-## Boundaries
+## GitHub writes
 
-### Always Do
-- agr and agrx should always be unified and synced.
-- include in the plan to write tests for what is implemented
-- Save all skills in `skills/` directory (not `.claude/skills/` which is gitignored)
-
-### Ask First
-...
-
-### Never Do
-...
-
-## GitHub write reliability contract
-
-GitHub mutations must use a narrow, state-verified sequence. The goal is to make each write deterministic, reversible where possible, and easy to resume after a connector-side rejection.
-
-1. **Read before every state transition.** Re-fetch the repository, target branch/PR/Issue, and relevant CI state immediately before the write. Do not rely on an earlier snapshot after another mutation has occurred.
-2. **Use one canonical work line.** Reuse the existing canonical branch and PR when one exists. Before creating a branch or PR, verify that the same branch/PR does not already exist. Never create duplicate recovery branches or PRs.
-3. **Make one mutation at a time.** Do not issue parallel writes to the same repository state. After each successful mutation, re-read the resulting state before the next mutation.
-4. **Pin destructive or irreversible actions to current state.** Merge only when the exact PR head SHA has the required CI green, and pass that expected head SHA to the merge action when supported. Never force-push or direct-push as a workaround for a rejected merge.
-5. **Treat host-side safety rejection as transient, not as an authentication diagnosis.** If a mutation is rejected before GitHub executes it, re-read the target state and retry the exact same canonical action once. Do not switch to a broader or more destructive action to bypass the rejection.
-6. **After a second host-side rejection, stop mutations for that run.** Preserve the single canonical branch/PR, record the blocker and next action, and resume from fresh state on the next run. Do not loop, fabricate success, or leave a partial alternative work line.
-7. **Distinguish GitHub errors from connector safety rejection.** GitHub API responses such as mergeability/branch-protection/conflict errors require fixing the repository state. A host-side pre-execution rejection requires the bounded recovery sequence above; it is not evidence that GitHub credentials expired.
-8. **Separate merge and cleanup.** After merge succeeds, re-fetch `main`, PR state, Issue state, and branch state. Then perform cleanup as separate verified mutations. Delete only branches proven merged/superseded and never delete the canonical unfinished branch.
-9. **Prefer idempotent continuation.** A later run should be able to observe that a prior step already succeeded and continue from the next step without repeating completed writes.
-10. **Report evidence, not assumptions.** Record the target URL, exact head/merge commit SHA, CI result, mutation result, cleanup result, and any remaining blocker.
-
-This contract does not bypass ChatGPT/OpenAI safety controls. It minimizes ambiguous or unnecessarily broad mutations so legitimate writes are easier to evaluate and recover safely.
+1. write直前に対象branch / PR / Issue / CIを再取得する。
+2. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。
+3. 同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
+4. mergeはexact PR headで必要なCIがgreenであることを確認し、可能ならexpected head SHAを固定する。
+5. host-side rejectionを認証失敗と決めつけず、stateを再取得して同じcanonical actionを1回だけ再試行する。2回目も拒否されたらそのrunのmutationを止める。
+6. merge後はmain / PR / Issue / branchを再確認してからcleanupする。未完了branchを削除しない。
+7. 未実行・未観測のtest、deployment、runtime layerをPASSと報告しない。
 
 ## Security
-...
 
-# Docs
+- credentialをbrowser bundle、public snapshot、fixture、log、docsへ入れない。
+- external skillを実行する前にsource、`SKILL.md`、shell/network/file mutation、secret要求、helper dependencyを確認する。
+- destructive actionや権限拡大は現在stateと明示的な意図を確認する。
 
-General
-https://agentskills.io/
-https://agents.md/
+## Primary references
 
-Claude Code:
-https://code.claude.com/docs/en/skills
-https://code.claude.com/docs/en/slash-commands
-https://code.claude.com/docs/en/sub-agents
-https://code.claude.com/docs/en/memory
+- Agent Skills: https://agentskills.io/
+- AGENTS.md: https://agents.md/
 
-Cursor:
-https://cursor.com/docs/context/skills
-https://cursor.com/docs/context/commands
-https://cursor.com/docs/context/subagents
-https://cursor.com/docs/context/rules
-
-GitHub Copilot:
-https://docs.github.com/en/copilot/concepts/agents/about-agent-skills
-
-Codex:
-https://developers.openai.com/codex/skills
-https://developers.openai.com/codex/custom-prompts/
-
-Open Code:
-https://opencode.ai/docs/skills
-https://opencode.ai/docs/commands
-https://opencode.ai/docs/agents/
+各tool固有仕様は必要時にそのtoolの現行公式documentationを参照し、このファイルへコピーしません。
