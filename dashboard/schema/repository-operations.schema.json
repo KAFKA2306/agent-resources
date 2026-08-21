@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/KAFKA2306/agent-resources/blob/main/dashboard/schema/repository-operations.schema.json",
+  "title": "Repository operations snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["generatedAt", "sourceRevision", "runId", "repositories"],
+  "properties": {
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "sourceRevision": {"type": "string", "minLength": 1},
+    "runId": {"type": "string", "minLength": 1},
+    "repositories": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/repository"}
+    }
+  },
+  "$defs": {
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain", "source", "evidence"],
+      "properties": {
+        "domain": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        },
+        "source": {"type": "string", "minLength": 1},
+        "evidence": {
+          "type": "array",
+          "items": {"type": "string", "format": "uri"}
+        }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "commitSha",
+        "isDefault",
+        "protected",
+        "deletionCandidate",
+        "deletionConfirmed",
+        "deleted",
+        "blockedReason"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "commitSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "isDefault": {"type": "boolean"},
+        "protected": {"type": "boolean"},
+        "deletionCandidate": {"type": "boolean"},
+        "deletionConfirmed": {"type": "boolean"},
+        "deleted": {"type": "boolean"},
+        "blockedReason": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"isDefault": {"const": true}}, "required": ["isDefault"]},
+          "then": {
+            "properties": {
+              "deletionCandidate": {"const": false},
+              "deletionConfirmed": {"const": false},
+              "deleted": {"const": false}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"protected": {"const": true}}, "required": ["protected"]},
+          "then": {"properties": {"deleted": {"const": false}}}
+        }
+      ]
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url", "classification", "branches"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/KAFKA2306/"
+        },
+        "classification": {"$ref": "#/$defs/classification"},
+        "branches": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/branch"}
+        }
+      }
+    }
+  }
+}
