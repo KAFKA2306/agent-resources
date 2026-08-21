@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -27,6 +28,14 @@ test("repository operations summary rejects missing provenance", () => {
   assert.throws(
     () => summarizeRepositoryOperations({ repositories: [] }),
     /missing generatedAt/,
+  );
+});
+
+test("dashboard links classification work to the canonical zone workflow", () => {
+  const html = readFileSync(new URL("../../docs/dashboard/index.html", import.meta.url), "utf8");
+  assert.match(
+    html,
+    /id="operations-zone-action"[^>]+href="https:\/\/github\.com\/KAFKA2306\/agent-resources\/actions\/workflows\/topic-bootstrap-67\.yml"/,
   );
 });
 
