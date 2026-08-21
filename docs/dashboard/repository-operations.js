@@ -2,6 +2,7 @@ const REPOSITORY_OPERATIONS_SOURCES = [
   "./repository-operations.json",
   "https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json",
 ];
+const ZONE_WORKFLOW_URL = "https://github.com/KAFKA2306/agent-resources/actions/workflows/topic-bootstrap-67.yml";
 
 function formatTimestamp(value) {
   const timestamp = Date.parse(value);
@@ -31,12 +32,14 @@ export function summarizeRepositoryOperations(payload) {
 export function renderRepositoryOperationsSummary(payload, documentRef = document) {
   const generatedAt = documentRef.getElementById("operations-generated-at");
   const summary = documentRef.getElementById("operations-summary");
+  const zoneAction = documentRef.getElementById("operations-zone-action");
   if (!generatedAt || !summary) return;
 
   const state = summarizeRepositoryOperations(payload);
   generatedAt.dateTime = state.generatedAt;
   generatedAt.textContent = `Operations snapshot: ${state.generatedLabel}`;
   summary.textContent = `Operations: ${state.repositoryCount} repos · ${state.classifiedCount} classified · ${state.unclassifiedCount} unclassified`;
+  if (zoneAction) zoneAction.href = ZONE_WORKFLOW_URL;
 }
 
 export async function loadRepositoryOperations({ fetchImpl = fetch, documentRef = document } = {}) {
