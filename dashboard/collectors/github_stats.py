@@ -5,7 +5,9 @@ import os
 import time
 from datetime import datetime
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 from dashboard.collectors.github_api import GitHubApiError, atomic_write_json, request_json
@@ -16,6 +18,7 @@ DEFAULT_START_MONTH = "2026-01"
 DEFAULT_TIMEZONE = "Asia/Tokyo"
 DEFAULT_REQUEST_INTERVAL = 2.2
 DEFAULT_RATE_RETRIES = 2
+DEFAULT_ISSUE_BACKLOG_OUTPUT = "dashboard/issue-backlog-history.json"
 MONTHLY_METRIC_KEYS = (
     "commits",
     "prsCreated",
@@ -163,8 +166,127 @@ def _canonical_previous_months(previous_stats, owner, start_month, now):
     return reusable
 
 
+def _canonical_previous_issue_backlog(previous_history, owner):
+    if not isinstance(previous_history, dict):
+        return []
+    if (
+        previous_history.get("schemaVersion") != 1
+        or previous_history.get("owner") != owner
+        or previous_history.get("scope") != "public"
+        or previous_history.get("timezone") != DEFAULT_TIMEZONE
+    ):
+        return []
+
+    canonical = []
+    seen_dates = set()
+    for row in previous_history.get("snapshots", []):
+        if not isinstance(row, dict):
+            continue
+        date = row.get("date")
+        observed_at = row.get("observedAt")
+        all_open = row.get("allOpen")
+        authored_open = row.get("authoredOpen")
+        if not isinstance(date, str) or not isinstance(observed_at, str):
+            continue
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+            datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if (
+            not isinstance(all_open, int)
+            or isinstance(all_open, bool)
+            or all_open < 0
+            or not isinstance(authored_open, int)
+            or isinstance(authored_open, bool)
+            or authored_open < 0
+            or date in seen_dates
+        ):
+            continue
+        seen_dates.add(date)
+        canonical.append(
+            {
+                "date": date,
+                "observedAt": observed_at,
+                "allOpen": all_open,
+                "authoredOpen": authored_open,
+            }
+        )
+    canonical.sort(key=lambda row: row["date"])
+    return canonical
+
+
+def collect_issue_backlog_history(
+    owner=DEFAULT_OWNER,
+    now=None,
+    token=None,
+    request_fn=request_json,
+    request_interval=0.0,
+    sleep_fn=time.sleep,
+    previous_history=None,
+):
+    tz = ZoneInfo(DEFAULT_TIMEZONE)
+    now = now.astimezone(tz) if now is not None else datetime.now(tz)
+
+    def search(query):
+        total = _search_total(
+            "issues",
+            query,
+            token=token,
+            request_fn=request_fn,
+            sleep_fn=sleep_fn,
+        )
+        if request_interval > 0:
+            sleep_fn(request_interval)
+        return total
+
+    all_open = search(f"user:{owner} is:issue is:open is:public")
+    authored_open = search(f"author:{owner} is:issue is:open is:public")
+    date = now.date().isoformat()
+    snapshots = [
+        row
+        for row in _canonical_previous_issue_backlog(previous_history, owner)
+        if row["date"] != date
+    ]
+    snapshots.append(
+        {
+            "date": date,
+            "observedAt": now.isoformat(),
+            "allOpen": all_open,
+            "authoredOpen": authored_open,
+        }
+    )
+    snapshots.sort(key=lambda row: row["date"])
+    return {
+        "schemaVersion": 1,
+        "generatedAt": now.isoformat(),
+        "owner": owner,
+        "scope": "public",
+        "timezone": DEFAULT_TIMEZONE,
+        "snapshots": snapshots,
+    }
+
+
 def _load_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _load_previous_issue_backlog(url):
+    request = Request(
+        url,
+        headers={"User-Agent": "KAFKA2306-agent-resources-dashboard"},
+    )
+    try:
+        with urlopen(request, timeout=20) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise GitHubApiError(
+            f"previous issue backlog request failed with HTTP {exc.code}: {url}"
+        ) from exc
+    except (URLError, TimeoutError, json.JSONDecodeError) as exc:
+        raise GitHubApiError(f"previous issue backlog could not be read: {url}") from exc
 
 
 def _repository_count(path):
@@ -268,6 +390,7 @@ def main():
     parser.add_argument("--repositories")
     parser.add_argument("--previous-dashboard")
     parser.add_argument("--output", default="dashboard/generated/github-stats.json")
+    parser.add_argument("--issue-backlog-output")
     args = parser.parse_args()
     if args.request_interval < 0:
         parser.error("--request-interval must be non-negative")
@@ -283,6 +406,23 @@ def main():
         public_repository_count=public_repository_count,
     )
     atomic_write_json(args.output, payload)
+
+    public_snapshot_url = os.environ.get("DASHBOARD_PUBLIC_SNAPSHOT_URL")
+    issue_backlog_output = args.issue_backlog_output
+    if issue_backlog_output is None and public_snapshot_url:
+        issue_backlog_output = DEFAULT_ISSUE_BACKLOG_OUTPUT
+    if issue_backlog_output:
+        history_url = os.environ.get("DASHBOARD_ISSUE_BACKLOG_HISTORY_URL")
+        if history_url is None and public_snapshot_url:
+            history_url = f"{public_snapshot_url.rsplit('/', 1)[0]}/issue-backlog-history.json"
+        previous_history = _load_previous_issue_backlog(history_url) if history_url else None
+        history = collect_issue_backlog_history(
+            owner=args.owner,
+            token=os.environ.get("GITHUB_TOKEN"),
+            request_interval=args.request_interval,
+            previous_history=previous_history,
+        )
+        atomic_write_json(issue_backlog_output, history)
 
 
 if __name__ == "__main__":
