@@ -27,8 +27,23 @@ def test_collect_repository_operations_uses_topics_and_branch_facts():
             )
         if url == "https://api.github.com/repos/KAFKA2306/alpha/compare/merged...main":
             return ({"behind_by": 0}, {})
+        if url == "https://api.github.com/repos/KAFKA2306/alpha/compare/squash-merged...main":
+            return ({"behind_by": 1}, {})
+        if url == "https://api.github.com/repos/KAFKA2306/alpha/commits/5555555555555555555555555555555555555555/pulls":
+            return (
+                [
+                    {
+                        "merged_at": "2026-08-21T00:00:00Z",
+                        "head": {"sha": "5" * 40},
+                        "base": {"ref": "main"},
+                    }
+                ],
+                {},
+            )
         if url == "https://api.github.com/repos/KAFKA2306/alpha/compare/unmerged...main":
             return ({"behind_by": 2}, {})
+        if url == "https://api.github.com/repos/KAFKA2306/alpha/commits/4444444444444444444444444444444444444444/pulls":
+            return ([], {})
         raise AssertionError(f"unexpected request: {url}")
 
     def pagination_fetcher(url, token=None):
@@ -48,6 +63,11 @@ def test_collect_repository_operations_uses_topics_and_branch_facts():
             {
                 "name": "unmerged",
                 "commit": {"sha": "4" * 40},
+                "protected": False,
+            },
+            {
+                "name": "squash-merged",
+                "commit": {"sha": "5" * 40},
                 "protected": False,
             },
             {
@@ -87,10 +107,80 @@ def test_collect_repository_operations_uses_topics_and_branch_facts():
         "deleted": False,
         "blockedReason": None,
     }
+    assert branches["squash-merged"]["deletionCandidate"] is True
     assert branches["unmerged"]["deletionCandidate"] is False
     assert branches["protected-feature"]["deletionCandidate"] is False
     assert branches["main"]["isDefault"] is True
     assert branches["main"]["deletionCandidate"] is False
+
+
+def test_merged_pr_must_match_current_tip_and_default_branch():
+    config = {"owner": "KAFKA2306"}
+
+    def repository_collector(_config, token=None):
+        return [
+            {
+                "owner": "KAFKA2306",
+                "name": "alpha",
+                "url": "https://github.com/KAFKA2306/alpha",
+            }
+        ]
+
+    def request_fn(url, token=None):
+        if url.endswith("/alpha"):
+            return (
+                {
+                    "html_url": "https://github.com/KAFKA2306/alpha",
+                    "topics": [],
+                    "default_branch": "main",
+                },
+                {},
+            )
+        if "/compare/feature...main" in url:
+            return ({"behind_by": 1}, {})
+        if "/commits/2222222222222222222222222222222222222222/pulls" in url:
+            return (
+                [
+                    {
+                        "merged_at": "2026-08-21T00:00:00Z",
+                        "head": {"sha": "9" * 40},
+                        "base": {"ref": "main"},
+                    },
+                    {
+                        "merged_at": "2026-08-21T00:00:00Z",
+                        "head": {"sha": "2" * 40},
+                        "base": {"ref": "release"},
+                    },
+                ],
+                {},
+            )
+        raise AssertionError(f"unexpected request: {url}")
+
+    def pagination_fetcher(_url, token=None):
+        return [
+            {
+                "name": "feature",
+                "commit": {"sha": "2" * 40},
+                "protected": False,
+            },
+            {
+                "name": "main",
+                "commit": {"sha": "1" * 40},
+                "protected": False,
+            },
+        ]
+
+    snapshot = collect_repository_operations(
+        config,
+        run_id="run-pr-match",
+        generated_at="2026-08-21T00:00:00Z",
+        repository_collector=repository_collector,
+        request_fn=request_fn,
+        pagination_fetcher=pagination_fetcher,
+    )
+
+    branches = {branch["name"]: branch for branch in snapshot["repositories"][0]["branches"]}
+    assert branches["feature"]["deletionCandidate"] is False
 
 
 def test_branch_names_are_url_encoded_for_compare():
