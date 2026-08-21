@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
   loadRepositoryOperations,
+  renderRepositoryOperationsSummary,
   summarizeRepositoryOperations,
 } from "../../docs/dashboard/repository-operations.js";
 
@@ -31,11 +31,26 @@ test("repository operations summary rejects missing provenance", () => {
   );
 });
 
-test("dashboard links classification work to the canonical zone workflow", () => {
-  const html = readFileSync(new URL("../../docs/dashboard/index.html", import.meta.url), "utf8");
-  assert.match(
-    html,
-    /id="operations-zone-action"[^>]+href="https:\/\/github\.com\/KAFKA2306\/agent-resources\/actions\/workflows\/topic-bootstrap-67\.yml"/,
+test("repository operations links classification work to the canonical zone workflow", () => {
+  const elements = new Map([
+    ["operations-generated-at", { dateTime: "", textContent: "" }],
+    ["operations-summary", { textContent: "" }],
+    ["operations-zone-action", { href: "" }],
+  ]);
+  const documentRef = {
+    getElementById(id) {
+      return elements.get(id) ?? null;
+    },
+  };
+
+  renderRepositoryOperationsSummary({
+    generatedAt: "2026-08-21T00:00:00Z",
+    repositories: [{ classification: { domain: null } }],
+  }, documentRef);
+
+  assert.equal(
+    elements.get("operations-zone-action").href,
+    "https://github.com/KAFKA2306/agent-resources/actions/workflows/topic-bootstrap-67.yml",
   );
 });
 
