@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="./openclaw-runtime.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["dashboard.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "openclaw-runtime.js"];
+    const modules = ["dashboard.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "openclaw-runtime.js", "repository-operations.js"];
     Promise.allSettled(modules.map((name) => import(`./${name}?v=${assetVersion}`))).then((results) => {
       for (const [index, result] of results.entries()) {
         if (result.status === "rejected") console.error(`Failed to load ${modules[index]}`, result.reason);
@@ -34,6 +34,8 @@
           <span class="status-chip" id="snapshot-status" data-state="loading">読込中</span>
           <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
           <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
+          <time id="operations-generated-at" class="snapshot-time">Operations snapshot: 読込中</time>
+          <span id="operations-summary" class="snapshot-time">Operations: 読込中</span>
         </div>
       </div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
