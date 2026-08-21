@@ -6,7 +6,7 @@
 
 **AIエージェントを増やすほど、「いま何が動いていて、何が止まっていて、どこまで任せられるか」が見えなくなる。**
 
-`agent-resources` は、KAFKA2306 の公開GitHub作業を横断して現在状態を観測し、必要なagent skillを導入・一時実行し、証拠と状態を優先するUIで運用を確認する中央ハブです。
+`agent-resources` は、KAFKA2306 の公開GitHub作業を横断して現在状態を観測し、必要なagent skillを導入・一時実行し、証拠と状態を優先するUIで運用を確認する人間向けoverviewです。各repository・GitHub・productionの現在状態がsource of truthであり、このrepositoryやDashboard自体を別の正本にはしません。
 
 - Live Dashboard: https://agent-resources-one.vercel.app/
 - Live API: https://agent-resources-one.vercel.app/api/dashboard-live
@@ -28,7 +28,7 @@ AIエージェント運用を「裏で何かが動いている」状態から、
 
 ## Design philosophy
 
-- **現在状態を推測しない。** Dashboardはpublic GitHub stateと生成snapshotを読み、架空の進捗を作らない。
+- **現在状態を推測しない。** Dashboardはpublic GitHub stateと生成snapshotを読み、架空の進捗を作らない。各repository・GitHub・productionの直接証拠を優先し、Dashboardはoverviewとして表示する。
 - **分類根拠を混ぜない。** project zoneは`agent-zone-*` topicで定義し、programming languageからdomainを推測しない。
 - **Liveとsnapshotを分ける。** Live APIが取れない場合はfallbackを明示し、古いsnapshotを「最新」と表示しない。
 - **private境界を越えない。** public dashboardへprivate repo・secret・private work itemを混ぜない。
@@ -156,7 +156,7 @@ agr sync
 - [Design system skill](skills/kafka-evidence-ui/SKILL.md)
 - [Agent plugin](plugins/kafka-evidence-ui/README.md)
 
-visual asset自身にはstatusを持たせません。状態・link・work itemはDashboard snapshot / Live APIが正本です。
+visual asset自身にはstatusを持たせません。Dashboard snapshot / Live APIは表示・観測用の入力であり、状態のsource of truthは各repository・GitHub・productionの直接証拠です。
 
 ## Data flow
 
@@ -164,7 +164,7 @@ visual asset自身にはstatusを持たせません。状態・link・work item�
 public GitHub
   → collectors
   → schema / privacy validation
-  → canonical snapshot
+  → validated snapshot
   → GitHub Pages fallback
   → Vercel Live API overlay
   → operator decision
