@@ -1,0 +1,91 @@
+name: Verify Dashboard Release
+
+on:
+  repository_dispatch:
+    types:
+      - vercel.deployment.success
+  workflow_dispatch:
+    inputs:
+      deployment_url:
+        description: 'Vercel deployment or production URL to verify'
+        required: false
+        default: 'https://agent-resources-one.vercel.app'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dashboard-release-verification
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RELEASE_URL: ${{ github.event.client_payload.url || inputs.deployment_url || 'https://agent-resources-one.vercel.app' }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_TEAM_ID: team_WAiNUdK4pWv6eK8LxnaVY1mC
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Classify Vercel deployment
+        id: deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          hostname="${RELEASE_URL#https://}"
+          hostname="${hostname#http://}"
+          hostname="${hostname%%/*}"
+
+          if [ -z "$VERCEL_TOKEN" ]; then
+            if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+              echo "is_production=true" >> "$GITHUB_OUTPUT"
+              echo "target_url=https://agent-resources-one.vercel.app" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "VERCEL_TOKEN is required to classify repository_dispatch deployments" >&2
+            exit 1
+          fi
+
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v13/deployments/${hostname}?teamId=${VERCEL_TEAM_ID}&withGitRepoInfo=true" \
+            > "$RUNNER_TEMP/deployment.json"
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          deployment = json.loads(Path(os.environ['RUNNER_TEMP'], 'deployment.json').read_text())
+          target = deployment.get('target')
+          aliases = set(deployment.get('alias') or [])
+          production_alias = 'agent-resources-one.vercel.app'
+          is_production = target == 'production' and production_alias in aliases
+
+          with Path(os.environ['GITHUB_OUTPUT']).open('a', encoding='utf-8') as output:
+              output.write(f"is_production={'true' if is_production else 'false'}\n")
+              output.write(f"target_url={'https://' + production_alias if is_production else ''}\n")
+
+          print(
+              f"deployment={deployment.get('id')} target={target} "
+              f"production_alias={production_alias in aliases}"
+          )
+          PY
+
+      - name: Skip non-production deployment
+        if: steps.deployment.outputs.is_production != 'true'
+        run: echo 'Preview deployment succeeded; product release verification is not applicable.'
+
+      - name: Verify released production dashboard
+        if: steps.deployment.outputs.is_production == 'true'
+        env:
+          AGENT_RESOURCES_DASHBOARD_URL: ${{ steps.deployment.outputs.target_url }}/dashboard/
+        run: python dashboard/tests/dashboard_repository_operations_production_e2e.py
