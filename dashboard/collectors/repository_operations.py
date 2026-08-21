@@ -57,14 +57,34 @@ def normalize_branch(raw, default_branch, *, deletion_candidate=False):
     }
 
 
-def branch_is_fully_merged(api_url, branch_name, default_branch, *, token, request_fn):
+def branch_is_fully_merged(
+    api_url,
+    branch_name,
+    branch_sha,
+    default_branch,
+    *,
+    token,
+    request_fn,
+):
     base = quote(branch_name, safe="")
     head = quote(default_branch, safe="")
     comparison, _ = request_fn(f"{api_url}/compare/{base}...{head}", token)
     behind_by = comparison.get("behind_by")
     if not isinstance(behind_by, int) or isinstance(behind_by, bool) or behind_by < 0:
         raise ValueError(f"compare payload is missing valid behind_by: {branch_name}")
-    return behind_by == 0
+    if behind_by == 0:
+        return True
+
+    pull_requests, _ = request_fn(f"{api_url}/commits/{branch_sha}/pulls", token)
+    if not isinstance(pull_requests, list):
+        raise ValueError(f"commit pull request payload must be a list: {branch_name}")
+    return any(
+        isinstance(pull_request, dict)
+        and pull_request.get("merged_at")
+        and (pull_request.get("head") or {}).get("sha") == branch_sha
+        and (pull_request.get("base") or {}).get("ref") == default_branch
+        for pull_request in pull_requests
+    )
 
 
 def collect_repository_operations(
@@ -91,12 +111,14 @@ def collect_repository_operations(
         normalized_branches = []
         for branch in branches:
             branch_name = branch.get("name")
+            branch_sha = (branch.get("commit") or {}).get("sha")
             protected = branch.get("protected")
             deletion_candidate = False
-            if branch_name and branch_name != default_branch and protected is False:
+            if branch_name and branch_sha and branch_name != default_branch and protected is False:
                 deletion_candidate = branch_is_fully_merged(
                     api_url,
                     branch_name,
+                    branch_sha,
                     default_branch,
                     token=token,
                     request_fn=request_fn,
