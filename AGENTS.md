@@ -94,13 +94,13 @@ obsoleteな文書は削除し、重複文書は統合します。source code、s
 ## GitHub writes
 
 1. write直前に対象branch / PR / Issue / CIを再取得する。
-2. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。
-3. 同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
+2. default branchを除き、存在を許容するbranchはcurrent open PRのhead branchだけとする。新規branchはcanonical PRを直ちにopenするためにだけ作り、open PRに対応しないorphan branchを残さない。
+3. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
 4. mergeはexact PR headでPR merge条件を満たすことを確認し、可能ならexpected head SHAを固定する。product release条件をmerge判定へ混ぜない。
 5. CI結果は、そのworkflowがexact SHAで実行したcheckの範囲だけに使う。CI greenを製品完成の代用にしない。
 6. 実機/productionが利用不能なら対応claimを `UNVERIFIED` とし、利用不能そのものを自動merge blockerにしない。
 7. host-side rejectionを認証失敗と決めつけず、stateを再取得して同じcanonical actionを1回だけ再試行する。2回目も拒否されたらそのrunのmutationを止める。
-8. merge後はmain / PR / Issue / branchを再確認してからcleanupする。未完了branchを削除しない。
+8. PRをmergeまたはcloseしたら、そのhead branchを必ず削除してbranch一覧をread-backする。削除できていない状態ではcleanup完了としない。
 9. 未実行・未観測のtest、deployment、runtime layerをPASSと報告しない。
 
 ## Security

@@ -1,0 +1,104 @@
+name: Enforce branch hygiene
+
+on:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - '.github/workflows/branch-hygiene.yml'
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types:
+      - closed
+  workflow_dispatch:
+
+concurrency:
+  group: branch-hygiene
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Verify PR head is an allowed branch
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const repositoryFullName = `${owner}/${repo}`;
+            const currentHead = context.payload.pull_request.head;
+            if (currentHead.repo?.full_name !== repositoryFullName) {
+              core.info('Fork PR head is outside this repository; no local head branch to retain.');
+              return;
+            }
+
+            const openPulls = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const allowedHeads = new Set(
+              openPulls
+                .filter((pull) => pull.head.repo?.full_name === repositoryFullName)
+                .map((pull) => pull.head.ref),
+            );
+            if (!allowedHeads.has(currentHead.ref)) {
+              core.setFailed(`PR head is not in the current open-PR head set: ${currentHead.ref}`);
+              return;
+            }
+            core.info(`Allowed open PR head: ${currentHead.ref}`);
+
+  cleanup:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Delete branches that are not open PR heads
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const repositoryFullName = `${owner}/${repo}`;
+            const repository = await github.rest.repos.get({ owner, repo });
+            const openPulls = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const allowed = new Set([repository.data.default_branch]);
+            for (const pull of openPulls) {
+              if (pull.head.repo?.full_name === repositoryFullName) {
+                allowed.add(pull.head.ref);
+              }
+            }
+
+            const branches = await github.paginate(github.rest.repos.listBranches, {
+              owner,
+              repo,
+              per_page: 100,
+            });
+            const orphaned = branches
+              .map((branch) => branch.name)
+              .filter((branch) => !allowed.has(branch));
+
+            for (const branch of orphaned) {
+              core.info(`Deleting orphan branch: ${branch}`);
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `heads/${branch}`,
+              });
+            }
+
+            core.notice(
+              `Branch hygiene complete: kept ${allowed.size} allowed branch(es), deleted ${orphaned.length} orphan branch(es).`,
+            );
