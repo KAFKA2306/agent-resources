@@ -61,6 +61,9 @@ jobs:
       - name: Verify operations navigation in headless Chrome
         run: python dashboard/tests/dashboard_operations_browser_e2e.py
 
+      - name: Verify repository operations on production dashboard
+        run: python dashboard/tests/dashboard_repository_operations_production_e2e.py
+
       - name: Validate dashboard JavaScript syntax
         run: |
           set -euo pipefail
