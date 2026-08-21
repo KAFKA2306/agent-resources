@@ -71,12 +71,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/333/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "da8e84d049c1d32cfa7cf280164ae80738f0dd78"
+          "fingerprint": "9504ce6586775ba7487c46f358064daeacfdd19a"
         }
       ],
-      "sourceFingerprint": "1f0dced2b6922f6676a44f3b52e1c19492c912d1fb45161e7355372f6247dc1d",
+      "sourceFingerprint": "7749dbc25a18440d39cb138e32bae8a8a85de2548de28e5fb1bafbb005d578d8",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "abestudy",
@@ -123,12 +123,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/aboutkafka/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "eda5417452f621198306001f847a7e5280555fa6"
+          "fingerprint": "61ee5df44113ec9ab9fd8b9a088c251e2af0d886"
         }
       ],
-      "sourceFingerprint": "bed90d33427c03e282a20b9dc6643b3eb21804b77c30a3ddc246b25ac77db095",
+      "sourceFingerprint": "f0f35cdef1281215856d2e7415e5cc6cd6b3a2e6c25df0218ab991a587efd388",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "adaptive_wear_generator_pro",
@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e92495d9897ee1cd772070f2ff2a4a95a42c7413"
+          "fingerprint": "f52aecbd95680f314a6e7b79d53a0fdf0196cd91"
         }
       ],
-      "sourceFingerprint": "2ecaed592174d0963d277b49ceff978dc186451165b485c9674d32b86a98a379",
+      "sourceFingerprint": "a716610eadb08969f5f74ef58550168b5b36f895d546dde5f86a10fea1bd303b",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -331,10 +331,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-logistics/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "68405752ccc88e40aa493351d5dc94cc538811e7"
+          "fingerprint": "a8f17dd9dfc5885f4696ca4e26840ec23293a4a7"
         }
       ],
-      "sourceFingerprint": "df5af78bb4d0295905b7139cea1e9338ff6f9ebaa9b6caea2f11f1cd466493d5",
+      "sourceFingerprint": "55dbe5817ae4ca880c7560f10f86f483bdd50ed6414c69620f35baf4483dfc28",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -580,12 +580,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/books/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "46bfd6719e3c6ffc1590c4e0075b5b92804921b2"
+          "fingerprint": "99d993dabe3bfc503b5664861708f36788b97f9b"
         }
       ],
-      "sourceFingerprint": "ebd8bc3fa326e8ff59b2970f694062b9e9aef6062e98ae1f61237b789566b985",
+      "sourceFingerprint": "bb0a2ce0b0831295156737ce923ae6dbc06319e69480f2829746c3411c5fa3f6",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "boothitemmanager",
@@ -710,12 +710,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/cedar-pollen-bi/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "249a490e053b0d2a2f2e2cd482cf06b319db4ae7"
+          "fingerprint": "028454c5ce215cc016cd182d87050f3f18c21236"
         }
       ],
-      "sourceFingerprint": "49febf1134cc3ccfdf33c7e21046bd22b17f5c6ec86e1bb3b5d81f0d07450c32",
+      "sourceFingerprint": "0f58a480015fe53b4be2f5ba8cbeea88ce615ddc4234fcecba284ea9a0499c9d",
       "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "claude-code",
@@ -871,10 +871,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/dancer/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "acde896a03954901854ba5cd448d0e79f5dc3a4b"
+          "fingerprint": "bab25c47acafb2021433b825ccf6c223b1061902"
         }
       ],
-      "sourceFingerprint": "6b3b1aefdc94410027264efc598578b2d611a6ab0029c74f54994b0c8c500f8a",
+      "sourceFingerprint": "88afcd2ef4c02064fad7959311f9bc6d340255a6f817d9c06cbed1b30926b4b1",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1401,12 +1401,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/image2outfit/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6b551449204b4f6c44ffbfd7d3c3912afc392d0a"
+          "fingerprint": "534a6710047489eec8859980d26061ff4e217b8e"
         }
       ],
-      "sourceFingerprint": "e43ee1c8c2f8930ea0d877cc492f40554c26cb370c9a96ca7c34ea7e368a8502",
+      "sourceFingerprint": "42f445dd9ceacd40950d0cabd050c4d2055b34862a03cb0fcd3b95300a63e8e2",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "investor",
@@ -2913,12 +2913,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vlog/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "cf7bcf2746d99a977e79955b25288a801fd1c93d"
+          "fingerprint": "3c508306d3fef461aa9ae727852dc196508c46f5"
         }
       ],
-      "sourceFingerprint": "c08d8beb7093ba5a243fb107e18f32dbfb4177ea653856cf54f390bdffcace91",
+      "sourceFingerprint": "a39d3631eb7f64c9c44eaee45225993dd0d13fcb127107779291613515d20ff7",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "vlogrs",
@@ -3250,10 +3250,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrmine/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "7f40a0ea149ee720637488f4d5a7d6e428dbe923"
+          "fingerprint": "2bd38478573f268a3f15254d9bd4603a95215fe5"
         }
       ],
-      "sourceFingerprint": "7645a7ae3eaa3adf4a5b9790def1262eea846aee5e9a1cc33fe2f0d360b6e28d",
+      "sourceFingerprint": "2a7509c27001fdea5d8b6e6362bb9415148c8143f540745c4f6de7e3d620970a",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -3442,10 +3442,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/yt3/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3dd3e8cfc6baff75259701a79f77c299e4cc1d6c"
+          "fingerprint": "63be17981d1237d99bf2e12b397430500bc67237"
         }
       ],
-      "sourceFingerprint": "2723b99911a18b52ce2bf1d4fb610d38bf0346af0c5525d422c3db70ab7b287d",
+      "sourceFingerprint": "0694d34f330be8dcd176c5efe54364e902f0efb6e3572a557e7b5fc5a92b54c3",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
