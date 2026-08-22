@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "f52aecbd95680f314a6e7b79d53a0fdf0196cd91"
+          "fingerprint": "d6285b0011c37cac24b52c9bf4bcae13d26e5e10"
         }
       ],
-      "sourceFingerprint": "a716610eadb08969f5f74ef58550168b5b36f895d546dde5f86a10fea1bd303b",
+      "sourceFingerprint": "2013ed5322de76326190a7100d8e27c2cd63ce9fc020d949c84c89e6844b0c68",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -331,10 +331,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-logistics/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "a8f17dd9dfc5885f4696ca4e26840ec23293a4a7"
+          "fingerprint": "10abb2fe3888370db65b38ada64c84151ce8c98c"
         }
       ],
-      "sourceFingerprint": "55dbe5817ae4ca880c7560f10f86f483bdd50ed6414c69620f35baf4483dfc28",
+      "sourceFingerprint": "7c52f4529473cd8f5f048c9c5f5e7e42f10dfebb5c0799279960cdc39731cde8",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -357,10 +357,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-vehicles/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "c89c88df511a90dbc0bae07366c392844680477a"
+          "fingerprint": "904548d98756924c062cc3f89560cf7c2740e9ba"
         }
       ],
-      "sourceFingerprint": "d5f6ca00972b05567cfb094803cd331c3a0d60e7c7775e2624530183e31c5add",
+      "sourceFingerprint": "3192fb156f6e891422649026d5ad136017281e6b7a12e663d2452d46286b7621",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -388,10 +388,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/AutoPhotogrammetry/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3a85eb040b9229584cd156402cfd284d51c9581a"
+          "fingerprint": "78fb1a0565db8df9f5d95ce070bc8927e2d2a2de"
         }
       ],
-      "sourceFingerprint": "64ae2cc699efb7025446f457987acec1c64f2a86856734bb4679821e71a2a0d6",
+      "sourceFingerprint": "f5a0ea1009a20549400c8ceba0859ae5f7638403997daf65b66c52ee8743412f",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -1453,10 +1453,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/investor2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "47fa65616f3bc8331811cb7396bf9ddf742ea074"
+          "fingerprint": "d72697aa5e87edbfc4fbec04fabefc7cf2a07cd0"
         }
       ],
-      "sourceFingerprint": "42f88614a53d9b54e868688746351a36765dca8164c7dc11c94cd5f0c458777e",
+      "sourceFingerprint": "14514d6f7c051d9219abdd7a97291988ff631d6f2b13005c3bf87a000225cb2f",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2412,12 +2412,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/rule-scribe-games/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "28b8d2396ea8a0277a9ee0d2697dcd09b3556465"
+          "fingerprint": "aac504db2597190d1bd163c117aa9f4438126429"
         }
       ],
-      "sourceFingerprint": "918816dc187a51ea82a75597668bba472a26e0e0f4fc089a285055723f85683c",
+      "sourceFingerprint": "eb951965b4e3aae6791db58d170ef7ba86814641fa7355e32f4c5e5ec238aa3b",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "salary",
@@ -2913,10 +2913,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vlog/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3c508306d3fef461aa9ae727852dc196508c46f5"
+          "fingerprint": "67b5315a77bf59960e3a0754ae0b068b65d0b577"
         }
       ],
-      "sourceFingerprint": "a39d3631eb7f64c9c44eaee45225993dd0d13fcb127107779291613515d20ff7",
+      "sourceFingerprint": "9699f41f242498b8a66b40c57db0e6a5c0ff0fa3827c596d4cb837efb0ed77c6",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
