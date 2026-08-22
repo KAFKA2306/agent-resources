@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenClaw local gateway
+Requires=llama-server.service
+After=llama-server.service
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/openclaw-autonomous-worker/env
+ExecStart=/usr/bin/env bash -lc 'exec "$OPENCLAW_GATEWAY_RUNNER"'
+Restart=always
+RestartSec=5
+TimeoutStartSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
