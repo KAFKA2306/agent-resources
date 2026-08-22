@@ -7,12 +7,11 @@
   "exclude_labels": ["manual", "blocked", "no-autonomy", "wontfix"],
   "issue_limit_per_repo": 100,
   "poll_seconds": 120,
-  "dispatch_command": [
-    "/home/kafka/projects/bounded-worker/dispatch-existing-issue.sh",
-    "{worktree}",
-    "{issue_number}"
-  ],
-  "dispatch_timeout_seconds": 7200,
+  "openclaw_bin": "/root/.openclaw/bin/openclaw",
+  "openclaw_agent": "coding-worker",
+  "openclaw_harness": "opencode",
+  "issue_body_max_chars": 12000,
+  "agent_timeout_seconds": 7200,
   "validation_timeout_seconds": 1800,
   "verification_commands": [],
   "ci_poll_seconds": 15,
