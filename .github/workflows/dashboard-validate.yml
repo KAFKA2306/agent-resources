@@ -9,6 +9,7 @@ on:
       - 'docs/dashboard/**'
       - 'package.json'
       - 'vercel.json'
+      - '.github/workflows/docs.yml'
       - '.github/workflows/dashboard-validate.yml'
       - '.github/workflows/dashboard-release-verify.yml'
 
