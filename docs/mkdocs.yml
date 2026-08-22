@@ -46,5 +46,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - OpenClaw Local Worker: openclaw-local-worker.md
   - Creating Skills: creating.md
   - Reference: reference.md
