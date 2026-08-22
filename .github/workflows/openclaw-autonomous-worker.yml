@@ -1,0 +1,48 @@
+name: Validate OpenClaw autonomous worker
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/openclaw-autonomous-worker/**'
+      - 'tests/test_openclaw_autonomous_worker.py'
+      - '.github/workflows/openclaw-autonomous-worker.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/openclaw-autonomous-worker/**'
+      - 'tests/test_openclaw_autonomous_worker.py'
+      - '.github/workflows/openclaw-autonomous-worker.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependency
+        run: python -m pip install pytest
+
+      - name: Compile supervisor
+        run: python -m py_compile scripts/openclaw-autonomous-worker/supervisor.py
+
+      - name: Run supervisor unit tests
+        run: python -m pytest -q tests/test_openclaw_autonomous_worker.py
+
+      - name: Validate installer shell syntax
+        run: bash -n scripts/openclaw-autonomous-worker/install-systemd.sh
+
+      - name: Validate systemd units
+        run: |
+          systemd-analyze verify \
+            scripts/openclaw-autonomous-worker/systemd/llama-server.service \
+            scripts/openclaw-autonomous-worker/systemd/openclaw-gateway.service \
+            scripts/openclaw-autonomous-worker/systemd/openclaw-autonomous-worker.service
