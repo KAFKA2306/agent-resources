@@ -1,12 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "(cd docs && uvx --from mkdocs-material mkdocs build) && mkdir -p deploy/site && cp docs/index.html deploy/index.html && cp -r docs/dashboard deploy/dashboard && cp -r docs/site/* deploy/site/",
+  "buildCommand": "(cd docs && uvx --from mkdocs-material mkdocs build) && mkdir -p deploy/site && cp -r docs/dashboard deploy/dashboard && cp -r docs/site/* deploy/site/",
   "outputDirectory": "deploy",
   "functions": {
     "api/dashboard-live.js": {
       "maxDuration": 60
     }
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/dashboard/",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/dashboard/dashboard.json",
