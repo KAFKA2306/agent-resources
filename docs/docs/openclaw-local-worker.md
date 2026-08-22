@@ -1,297 +1,303 @@
 ---
-title: OpenClaw Local Bounded Worker
+title: OpenClaw Local Autonomous Worker
 ---
 
-# OpenClaw Local Bounded Worker
+# OpenClaw Local Autonomous Worker
 
-既存GitHub Issueを、ローカルLLMだけで限定実行するOpenClaw環境の運用マニュアルです。
+OpenClaw / OpenCode / llama.cpp を使い、GitHub Issue の backlog をローカルLLMだけで継続処理する自律 coding worker の運用契約です。
+
+通常運用では人間の dispatch、commit、PR作成、merge判断を要求しません。常駐 supervisor が対象Issueの選択から検証、GitHub反映、次Issueへの遷移までを行います。
 
 ## 目的
 
-\`\`\`text
-既存GitHub Issue
+```text
+GitHub open Issues
+  -> autonomous supervisor daemon
+  -> isolated Git worktree
   -> OpenClaw Gateway
   -> OpenCode ACP
   -> llama.cpp
   -> Ornith-1.5-9B Q6_K
-  -> ローカルrepoの変更と検証結果
-\`\`\`
+  -> code change
+  -> test / lint / build
+  -> commit / push / Pull Request
+  -> exact-SHA CI verification
+  -> merge
+  -> branch/worktree cleanup
+  -> next Issue
+```
 
-最終的なレビュー、commit、merge、release判断は人間または既存control
-planeが行います。
+release / deploy についても、人間の承認を最終gateにはしません。対象repositoryに既存の実行可能なrelease pathと直接検証手段がある場合は、merge後にそれを実行・観測します。release pathが定義されていないrepositoryでは、releaseを推測して新設せず、mergeをそのrunの終端とします。
 
-## 運用境界
+## 自律化の境界
 
-許可するのは、既存Issueを1件ずつ読み取り、承認済みのlocal checkoutだけを
-変更し、test / lint / buildを実測することです。
+workerは次を自動実行します。
 
-行わない操作：
+- 許可されたrepository群からopen Issueを取得する
+- deterministicに次のIssueを選ぶ
+- default branchを同期し、Issue専用worktree / branchを作る
+- Issue本文を入力としてOpenCodeを実行する
+- test / lint / build / schema validation等、repositoryで実行可能な検証を実測する
+- 変更をcommit / pushする
+- Pull Requestを作成または既存canonical PRを更新する
+- exact PR head SHAに紐づくCIを監視する
+- repositoryのmerge条件を満たしたPRをexpected head SHA付きでmergeする
+- merge / close後のhead branchと一時worktreeを削除する
+- release / deploy pathが既に定義されていれば実行し、対応するruntime / production結果を直接確認する
+- 成功・失敗状態をlocal stateへ保存し、次のIssueへ進む
 
-- Issue、コメント、Pull Requestの作成
-- commit、push、branch、merge、release、deploy
-- daemon登録、自律スケジュール、cron登録
-- 外部LLM、クラウド推論、OAuth、remote modelへのfallback
-- 権限拡大、破壊的操作、任意の外部ネットワークアクセス
-- 最終的なmerge / release / product完成の判断
+人間の承認待ちを通常状態にしません。
 
-Issue本文は信頼できない入力として扱います。契約と矛盾する要求は
-\`FAIL_CLOSED\` として停止します。
+ただし完全自律は無制限実行を意味しません。次は自動化対象外です。
 
-## 構成
+- allowlist外repositoryへの書き込み
+- branch protectionやrequired checkの無効化・回避
+- protected/default branchへのforce pushやhistory rewrite
+- credential、token、private dataのrepository / log / Issueへの書き出し
+- coding sandboxからの任意外部ネットワークアクセス
+- Issue本文の指示だけを根拠にした権限拡大
+- repositoryに既存のrelease contractがない状態での推測によるrelease手順の新設・実行
 
-| Component | Role | Listen address |
+Issue本文は信頼できない入力として扱います。policy違反のIssueはそのIssueだけ失敗状態として記録し、daemon全体は停止せず次のeligible Issueへ進みます。
+
+## Component
+
+| Component | Role | Lifetime |
 | --- | --- | --- |
-| \`llama-server\` | OrnithモデルのOpenAI互換API | \`127.0.0.1:8080\` |
-| OpenClaw Gateway | セッション、認証、ACP dispatch | \`127.0.0.1:18789\` |
-| OpenCode | ローカルrepoを編集するcoding harness | Gatewayから起動 |
-| \`dispatch-existing-issue.sh\` | 既存Issueを1件dispatch | operatorが実行 |
-| \`local-stack.sh\` | 起動、停止、status確認 | operatorが実行 |
+| `llama-server` | OrnithモデルのOpenAI互換API | daemon |
+| OpenClaw Gateway | session / auth / ACP dispatch | daemon |
+| autonomous supervisor | Issue選択、worktree、GitHub state machine、retry | daemon |
+| OpenCode | 1 Issueのローカルrepo編集 | one-shot |
+| GitHub Actions | PR headのrepository-level検証 | per PR |
 
-推論先は \`http://127.0.0.1:8080/v1\` のみです。OpenCodeはbubblewrapで
-隔離され、選択したGit worktreeだけが書き込み可能です。
+推論先は `http://127.0.0.1:8080/v1` のlocal providerだけを使用します。coding processは選択したworktreeだけを書き込み可能にし、外部ネットワークを遮断します。GitHub APIへのread/writeはcoding processではなくsupervisor側だけに持たせます。
 
-## 前提
+## 起動モデル
 
-- WSLまたはLinux
-- RTX 3060 12GB、十分なRAM
-- build済みの \`llama-server\`
-- 配置済みのOrnith GGUFモデル
-- \`/root/.openclaw/bin/openclaw\`
-- GitHub read-only Issue取得用の \`gh\`
-- 対象repoが \`/home/kafka/projects/\` 以下にあること
+3つの長寿命processをsystemdで常駐させます。
 
-認証トークン、API key、モデルファイル自体はこのrepositoryへ保存しません。
+```text
+llama-server.service
+        |
+        v
+openclaw-gateway.service
+        |
+        v
+openclaw-autonomous-worker.service
+```
 
-## 起動
+通常運用はsystemdに任せます。
 
-通常は次の1コマンドだけを使います。
+```bash
+systemctl --user enable --now llama-server.service
+systemctl --user enable --now openclaw-gateway.service
+systemctl --user enable --now openclaw-autonomous-worker.service
+```
 
-\`\`\`bash
-/home/kafka/projects/bounded-worker/local-stack.sh start
-\`\`\`
+serviceは異常終了時に再起動し、PC / WSL再起動後にも復帰する構成にします。login sessionがなくてもuser serviceを起動し続ける必要がある環境では、systemdのlingerを有効にします。
 
-wrapperは次の順で処理します。
+```bash
+loginctl enable-linger "$USER"
+```
 
-1. llama.cppを起動
-2. \`127.0.0.1:8080/v1/models\` の応答を待つ
-3. OpenClaw Gatewayを起動
-4. Gateway healthを確認
-5. 両方の状態を表示
+`local-stack.sh start` を毎回手動実行する運用は正準にしません。手動start / stopは保守・debug用だけに残します。
 
-daemonは登録しません。PC / WSL再起動後は、再度 \`start\` を実行します。
+## Supervisor state machine
 
-手動で起動する場合：
+supervisorは1 Issueずつ次のstate machineを実行します。
 
-\`\`\`bash
-/home/kafka/projects/run-ornith-llama-server.sh
-/home/kafka/projects/run-openclaw-local.sh
-\`\`\`
+```text
+DISCOVER
+  -> SELECT
+  -> PREPARE_WORKTREE
+  -> EXECUTE
+  -> VERIFY_LOCAL
+  -> COMMIT
+  -> PUSH
+  -> OPEN_OR_UPDATE_PR
+  -> WAIT_CI
+  -> MERGE
+  -> VERIFY_RELEASE_IF_DEFINED
+  -> CLEANUP
+  -> DISCOVER
+```
 
-通常はllama.cppを先に起動します。
+### DISCOVER / SELECT
 
-## 状態確認
+対象は明示的なrepository allowlist内のopen Issueだけです。
 
-\`\`\`bash
-/home/kafka/projects/bounded-worker/local-stack.sh status
-/root/.openclaw/bin/openclaw gateway health
-/root/.openclaw/bin/openclaw gateway status
-/root/.openclaw/bin/openclaw status --all
-\`\`\`
+同じIssueを二重実行しないため、次は除外します。
 
-正常時の代表表示：
+- 現在active lockを持つIssue
+- 同じIssue用のopen canonical PRがあるもの
+- local stateでretry待ちになっているもの
+- policy違反として記録済みで、入力が更新されていないもの
 
-\`\`\`text
-llama.cpp: ready (127.0.0.1:8080)
-OpenClaw Gateway: ready (127.0.0.1:18789)
-\`\`\`
+複数候補がある場合は、repository側に明示されたpriority情報があればそれを使い、なければ古いeligible Issueから選択します。LLMの自由判断だけで優先順位を作りません。
 
-設定と安全検査：
+### PREPARE_WORKTREE
 
-\`\`\`bash
-/root/.openclaw/bin/openclaw config validate
-/root/.openclaw/bin/openclaw doctor --lint --json --severity-min error
-\`\`\`
+共有checkoutを直接編集しません。default branchの最新SHAからIssue専用worktreeを作ります。
 
-モデルAPI：
+branch名はrepository内で一意かつ再利用可能なdeterministic名にします。既存canonical branch / PRがあれば新規に増やさず再利用します。
 
-\`\`\`bash
+### EXECUTE
+
+Issue本文、repository instruction、現在のcode/configをOpenCodeへ渡します。OpenCodeはそのIssueのworktreeだけを変更できます。
+
+LLMはlocal llama.cpp providerだけを使用し、remote modelへのfallbackは行いません。
+
+### VERIFY_LOCAL
+
+変更surfaceに対応するrepository既存のtest / lint / build / type check / schema validationを実行します。
+
+未実行の検証をPASSとして扱いません。検証失敗時は失敗内容をstateへ保存し、同一入力に対する無限再実行を避けて次のIssueへ進みます。
+
+### COMMIT / PUSH / PR
+
+local verificationを通過した変更だけをcommitします。
+
+supervisorはGitHub write credentialを使ってbranchをpushし、canonical PRを作成または更新します。既存PRがある場合はduplicate PRを作りません。
+
+### WAIT_CI / MERGE
+
+merge判定はPRのexact head SHAに対して行います。
+
+- required checksが成功している
+- merge conflictがない
+- head SHAが検証後に変わっていない
+- repository固有のmerge条件を満たす
+- branch protectionを回避していない
+
+条件を満たしたらexpected head SHAを固定してmergeします。人間レビューをrepository設定が必須としていない限り、人間承認を追加gateにはしません。
+
+CI失敗時はPRを勝手に成功扱いせず、失敗原因を次のrepair runの入力にします。修正可能なら同じcanonical branchへ追加commitし、再度exact SHAでCIを確認します。
+
+### VERIFY_RELEASE_IF_DEFINED
+
+mergeとreleaseは別stateです。
+
+repositoryに既存のrelease / deploy workflowがあり、実行条件とverification targetが明示されている場合だけ自動実行します。
+
+```text
+merge success
+  -> deploy / publish / package
+  -> runtime / production / artifact verification
+  -> release success or release failure
+```
+
+CI greenをrelease成功の代用にしません。deployment成功だけでも、production/runtime verificationが必要な製品では完了扱いしません。
+
+### CLEANUP
+
+PRがmergeまたはcloseされたらhead branchと一時worktreeを削除します。
+
+cleanup後にbranch一覧とworktree一覧をread-backし、orphanが残っていないことを確認してから次のIssueへ進みます。
+
+## Retryと継続運転
+
+1件の失敗でdaemon全体を停止しません。
+
+- llama.cpp / Gateway / GitHub APIなど一時障害: backoffして再試行
+- local test failure: state保存後、次Issueへ進む
+- CI failure: 同一PRのrepair runへ戻す
+- merge conflict: default branchを再同期して同じcanonical worklineで解消を試みる
+- policy違反: Issue入力が変わるまで再実行しない
+- release verification failure: merge済み状態は維持し、releaseを失敗状態として保存する
+
+無限loopを避けるため、同一Issue・同一入力hash・同一失敗原因へのretry回数と次回実行時刻をstateへ保持します。
+
+## 状態保存
+
+runtime stateはrepositoryへcommitしません。
+
+```text
+$HOME/.local/state/openclaw-autonomous-worker/
+  state.json
+  locks/
+  runs/
+  logs/
+```
+
+少なくとも次を保存します。
+
+- repository / issue number / issue updated_at
+- issue input hash
+- branch / PR / head SHA
+- current state
+- local validation結果
+- CI結果
+- merge SHA
+- release / production verification結果
+- retry count / next retry time
+- last error
+
+credential、Issueのprivate本文、Dashboard token付きURLはstate snapshotやpublic docsへ複製しません。
+
+## Health check
+
+```bash
+systemctl --user status llama-server.service
+systemctl --user status openclaw-gateway.service
+systemctl --user status openclaw-autonomous-worker.service
+
 curl -H 'Authorization: Bearer llama.cpp-local' \
   http://127.0.0.1:8080/v1/models
-\`\`\`
 
-プロセスとポート：
+/root/.openclaw/bin/openclaw gateway health
+/root/.openclaw/bin/openclaw status --all
+```
 
-\`\`\`bash
-pgrep -af 'openclaw-gateway|llama-server'
-ss -ltnp | rg '8080|18789'
-\`\`\`
+supervisorはprocess aliveだけでhealthyとしません。少なくとも次を監視します。
 
-## Dashboard
+- llama.cpp model APIが応答する
+- Gateway healthが成功する
+- supervisor heartbeatが更新される
+- active runのstateが一定時間以上停止していない
+- GitHub APIへ必要なread/writeが可能
 
-認証済みURLを生成します。
+## 観測
 
-\`\`\`bash
+```bash
+journalctl --user -u llama-server.service -f
+journalctl --user -u openclaw-gateway.service -f
+journalctl --user -u openclaw-autonomous-worker.service -f
+```
+
+Dashboard / TUIは保守用です。
+
+```bash
 /root/.openclaw/bin/openclaw dashboard --no-open
-\`\`\`
-
-生成されたURLをブラウザで開きます。URLには認証情報が含まれるため、
-Issue、チャット、README、ログ、スクリーンショットへ貼り付けません。
-
-手動入力する場合：
-
-- WebSocket URL: \`ws://127.0.0.1:18789\`
-- Gateway token: 実際のローカルトークン
-- Password: 空欄
-
-\`OPENCLAW_GATEWAY_TOKEN\` は環境変数名であり、入力する文字列では
-ありません。WSLのGatewayへWindowsブラウザから接続する場合も、まず
-\`127.0.0.1\`で試します。
-
-認証エラーの確認：
-
-\`\`\`bash
-/root/.openclaw/bin/openclaw logs --limit 100 --local-time
-\`\`\`
-
-| Log reason | Meaning | Action |
-| --- | --- | --- |
-| \`token_missing\` | token未送信 | Dashboard URLを再生成 |
-| \`token_mismatch\` | 古いtokenまたは誤ったtoken | 新しいURLを再生成 |
-| \`connection refused\` | Gateway停止 | \`local-stack.sh start\` |
-| \`origin not allowed\` | 想定外のブラウザ経路 | \`127.0.0.1\`で開き直す |
-
-## Terminal UIとログ
-
-\`\`\`bash
 /root/.openclaw/bin/openclaw tui
 /root/.openclaw/bin/openclaw sessions --all-agents --limit 20
-/root/.openclaw/bin/openclaw sessions tail
-/root/.openclaw/bin/openclaw logs --follow --local-time
-\`\`\`
+```
 
-wrapperログ：
-
-\`\`\`bash
-tail -f "$HOME/.local/state/bounded-worker/llama-server.log"
-tail -f "$HOME/.local/state/bounded-worker/openclaw-gateway.log"
-\`\`\`
-
-## 停止・再起動
-
-\`\`\`bash
-/home/kafka/projects/bounded-worker/local-stack.sh stop
-/home/kafka/projects/bounded-worker/local-stack.sh restart
-\`\`\`
-
-通常はwrapperでllama.cppとGatewayをまとめて扱います。
-
-## Issue dispatch
-
-事前にworktreeがcleanであることを確認します。
-
-\`\`\`bash
-git -C /home/kafka/projects/AutoPhotogrammetry status --short --branch
-\`\`\`
-
-変更が表示される場合は、勝手に上書きせず、人間が整理してから実行します。
-
-\`\`\`bash
-/home/kafka/projects/bounded-worker/dispatch-existing-issue.sh \
-  /home/kafka/projects/AutoPhotogrammetry <issue-number-or-url>
-\`\`\`
-
-例：
-
-\`\`\`bash
-/home/kafka/projects/bounded-worker/dispatch-existing-issue.sh \
-  /home/kafka/projects/AutoPhotogrammetry 111
-\`\`\`
-
-scriptはIssueをread-onlyで取得し、OpenClawからOpenCode ACPを1回だけ
-起動します。結果には変更ファイル、test / lint / build、exit code、riskが
-含まれます。
-
-次の場合は実行しません。
-
-- Issue、repo、Gateway、llama.cppの取得または接続に失敗
-- repoがGit worktreeでない、または承認済みrootの外
-- worktreeがdirty
-- remote modelやremote credentialが有効
-- 権限拡大、破壊的操作、外部ネットワーク、merge、releaseを要求
-
-失敗しても別Issueへ自動切替しません。
-
-## 結果確認
-
-\`\`\`bash
-git -C /home/kafka/projects/AutoPhotogrammetry status --short
-git -C /home/kafka/projects/AutoPhotogrammetry diff --stat
-git -C /home/kafka/projects/AutoPhotogrammetry diff --check
-\`\`\`
-
-未実行の検証をPASSとして扱いません。workerの終了はmergeやreleaseの成功を
-意味しません。
+Dashboard URLに含まれる認証情報はIssue、README、log、screenshotへ貼りません。
 
 ## 完了条件
 
-1. Gatewayが \`127.0.0.1:18789\` でhealthを返す
-2. llama.cppが \`127.0.0.1:8080/v1/models\` を返す
-3. local provider \`llama.cpp/ornith-1.5-9b\` を使用する
-4. OpenClawからOpenCode ACPの実リクエストが成功する
-5. OpenCode sandboxから外部ネットワークへ到達できない
-6. 再起動後も設定が保持される
-7. 既存Issueを1件bounded実行し、変更と検証結果をreadbackする
+完全自律化の完了は、daemon登録だけではなくE2Eで判定します。
 
-「プロセスが起動した」だけではE2E完了とは扱いません。
+1. `llama-server` が再起動後も自動復帰する
+2. OpenClaw Gatewayが再起動後も自動復帰する
+3. autonomous supervisorが再起動後も自動復帰する
+4. supervisorが人間操作なしでopen Issueを取得・選択する
+5. Issue専用worktreeでOpenCodeを1回以上実行する
+6. local test / lint / build結果を実測する
+7. 成功した変更を自動commit / pushする
+8. canonical PRを自動作成または更新する
+9. exact PR head SHAのCI結果を自動確認する
+10. merge条件を満たしたPRを自動mergeする
+11. merge / close後にhead branchとworktreeを自動削除する
+12. release pathが定義されたrepositoryではreleaseと直接verificationまで自動実行する
+13. 失敗Issueがあってもdaemonが次のeligible Issueへ進む
+14. coding sandboxから任意外部ネットワークへ到達できない
+15. remote LLM fallbackが無効である
 
-## 設定と機密情報
+「processが起動した」「1件dispatchできた」「PRを作った」だけでは完全自律化完了とは扱いません。
 
-| Path | Purpose | Public? |
-| --- | --- | --- |
-| \`/root/.openclaw/openclaw.json\` | Gateway、provider、ACP設定 | No: tokenを含む |
-| \`bounded-worker/opencode-local.json\` | OpenCode local provider設定 | Yes: secretを含めない |
-| \`bounded-worker/WORKER.md\` | worker契約 | Yes |
-| \`bounded-worker/local-stack.sh\` | 起動・停止・status | Yes |
-| \`$HOME/.local/state/bounded-worker/\` | PIDとruntime log | No: runtime情報を含む |
+## 現在の証拠境界
 
-token、API key、OAuth credential、GitHub credential、private Issue本文、
-Dashboardのtoken付きURL、runtime logはpublic docsやsnapshotへコピー
-しません。
+このrepositoryの文書更新だけでは、対象PC / WSL上のsystemd service、local supervisor、GitHub credential、実際のE2E runが稼働していることまでは証明しません。
 
-認証情報を公開場所へ貼った場合は、まずcredentialを無効化またはローテーション
-し、古いURLやtokenを再利用せず、新しいDashboard URLを生成します。
-
-## トラブルシューティング
-
-llama.cpp：
-
-\`\`\`bash
-tail -n 100 "$HOME/.local/state/bounded-worker/llama-server.log"
-ls -lh /home/kafka/models/ornith-1.5-9b/
-ls -lh /home/kafka/projects/llama.cpp/build/bin/llama-server
-\`\`\`
-
-Gateway：
-
-\`\`\`bash
-tail -n 100 "$HOME/.local/state/bounded-worker/openclaw-gateway.log"
-/root/.openclaw/bin/openclaw config validate
-/root/.openclaw/bin/openclaw gateway status
-\`\`\`
-
-Issue dispatch：
-
-\`\`\`bash
-git -C /home/kafka/projects/AutoPhotogrammetry status --short
-/root/.openclaw/bin/openclaw gateway health
-curl -H 'Authorization: Bearer llama.cpp-local' \
-  http://127.0.0.1:8080/v1/models
-\`\`\`
-
-既存Gatewayが残っている場合は二重起動せず、まず状態を確認します。
-
-\`\`\`bash
-pgrep -af openclaw-gateway
-ss -ltnp | rg 18789
-\`\`\`
-
+runtime完成判定は上記15条件を対象host上で直接確認した時点で行います。repository-levelでは、この文書を以後の正準運用契約とします。
