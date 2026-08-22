@@ -9,6 +9,12 @@ MODULE_PATH = (
     / "openclaw-autonomous-worker"
     / "supervisor.py"
 )
+INSTALLER_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "openclaw-autonomous-worker"
+    / "install-systemd.sh"
+)
 spec = importlib.util.spec_from_file_location("openclaw_autonomous_supervisor", MODULE_PATH)
 assert spec and spec.loader
 worker = importlib.util.module_from_spec(spec)
@@ -73,3 +79,10 @@ def test_docs_only_requires_nonempty_and_doc_suffixes():
     assert worker.docs_only(["README.md", "docs/guide.rst"])
     assert not worker.docs_only([])
     assert not worker.docs_only(["README.md", "src/main.py"])
+
+
+def test_installer_does_not_dispatch_issue_during_preflight():
+    text = INSTALLER_PATH.read_text()
+    assert "supervisor.py\" --config \"$CONFIG_FILE\" --once" not in text
+    assert "gh auth status" in text
+    assert "dispatch_command" in text
