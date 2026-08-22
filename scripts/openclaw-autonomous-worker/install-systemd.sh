@@ -4,11 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/openclaw-autonomous-worker"
 UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
-STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/openclaw-autonomous-worker"
 ENV_FILE="$CONFIG_DIR/env"
 CONFIG_FILE="$CONFIG_DIR/config.json"
 
-mkdir -p "$CONFIG_DIR" "$UNIT_DIR" "$STATE_DIR"
+mkdir -p "$CONFIG_DIR" "$UNIT_DIR"
 
 require() {
   command -v "$1" >/dev/null 2>&1 || {
@@ -52,11 +51,44 @@ install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/llama-server.s
 install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/openclaw-gateway.service" "$UNIT_DIR/openclaw-gateway.service"
 install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/openclaw-autonomous-worker.service" "$UNIT_DIR/openclaw-autonomous-worker.service"
 
+# Preflight must be non-mutating. Do not run the supervisor with --once here:
+# --once intentionally processes one real Issue end-to-end.
 python3 -m py_compile "$ROOT/scripts/openclaw-autonomous-worker/supervisor.py"
-python3 "$ROOT/scripts/openclaw-autonomous-worker/supervisor.py" --config "$CONFIG_FILE" --once || {
-  echo "supervisor preflight/one-shot failed; services were not enabled" >&2
-  exit 1
-}
+gh auth status
+python3 - "$CONFIG_FILE" <<'PY'
+import json
+import os
+import sys
+from pathlib import Path
+
+config_path = Path(sys.argv[1])
+config = json.loads(config_path.read_text())
+dispatch = config.get("dispatch_command")
+if not isinstance(dispatch, list) or not dispatch:
+    raise SystemExit("dispatch_command must be a non-empty list")
+executable = Path(dispatch[0]).expanduser()
+if "/" in dispatch[0] and not executable.is_file():
+    raise SystemExit(f"dispatch executable not found: {executable}")
+if "/" in dispatch[0] and not os.access(executable, os.X_OK):
+    raise SystemExit(f"dispatch executable is not executable: {executable}")
+roots = [Path(value).expanduser() for value in config.get("repository_roots", [])]
+if not roots and not config.get("repositories"):
+    raise SystemExit("no repository_roots or explicit repositories configured")
+state_dir = Path(
+    config.get("state_dir", "~/.local/state/openclaw-autonomous-worker")
+).expanduser()
+state_dir.mkdir(parents=True, exist_ok=True)
+print(
+    json.dumps(
+        {
+            "preflight": "pass",
+            "config": str(config_path),
+            "state_dir": str(state_dir),
+        },
+        sort_keys=True,
+    )
+)
+PY
 
 if command -v loginctl >/dev/null 2>&1; then
   if ! loginctl show-user "$USER" -p Linger --value 2>/dev/null | grep -qx yes; then
@@ -95,16 +127,39 @@ else
   exit 1
 fi
 
-python3 - <<'PY' "$STATE_DIR/state.json"
+STATE_FILE="$(python3 - "$CONFIG_FILE" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+config = json.loads(Path(sys.argv[1]).read_text())
+state_dir = Path(
+    config.get("state_dir", "~/.local/state/openclaw-autonomous-worker")
+).expanduser()
+print(state_dir / "state.json")
+PY
+)"
+
+deadline=$((SECONDS + 30))
+while [[ ! -f "$STATE_FILE" ]] && (( SECONDS < deadline )); do
+  sleep 1
+done
+
+python3 - "$STATE_FILE" <<'PY'
 import json
 import sys
 from pathlib import Path
 
 path = Path(sys.argv[1])
 if not path.exists():
-    raise SystemExit("state.json was not created")
+    raise SystemExit("state.json was not created by the running supervisor")
 data = json.loads(path.read_text())
 if data.get("version") != 1 or "tasks" not in data:
     raise SystemExit("invalid supervisor state")
-print(json.dumps({"ready": True, "state": str(path), "task_count": len(data["tasks"])}, sort_keys=True))
+print(
+    json.dumps(
+        {"ready": True, "state": str(path), "task_count": len(data["tasks"])},
+        sort_keys=True,
+    )
+)
 PY
