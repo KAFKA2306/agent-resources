@@ -6,7 +6,6 @@
   <title>Agent Resources Dashboard</title>
   <meta name="description" content="GitHub上の公開作業を一画面で確認するAgent Resources dashboard">
   <link rel="stylesheet" href="./dashboard.css">
-  <link rel="stylesheet" href="./game.css">
   <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
   <link rel="stylesheet" href="./activity-timeline.css">
@@ -21,7 +20,7 @@
     });
   </script>
 </head>
-<body class="game-dashboard">
+<body>
   <header class="topbar">
     <div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div>
     <nav class="public-links" aria-label="公開リンク">
@@ -31,7 +30,6 @@
   </header>
   <div class="dashboard-shell">
     <main class="main-panel" aria-labelledby="workspace-title">
-      <div class="world-decor" aria-hidden="true"><span class="decor-building"></span><span class="decor-sign">HUB</span><span class="decor-character"></span></div>
       <div class="panel-heading">
         <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
         <div class="snapshot-meta">
@@ -55,10 +53,10 @@
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section class="agent-world" aria-labelledby="agent-world-title">
         <div class="world-heading">
-          <div><p class="eyebrow">LIVE AGENT WORLD</p><h2 id="agent-world-title">エージェント作業場</h2></div>
+          <div><p class="eyebrow">PUBLIC REPOSITORY STATUS</p><h2 id="agent-world-title">リポジトリ状況</h2></div>
           <span id="agent-world-summary" class="world-summary">0 agents</span>
         </div>
-        <p class="world-note muted">project区画 → repository station → Issue / PR / workflow agent。背景参照はprompt-vaultのcommit固定asset、状態と操作はlive public GitHub stateを優先し、取得不能時だけsnapshotへfallbackします。</p>
+        <p class="world-note muted">明示されたproject zoneごとにrepositoryとIssue / PR / workflowを表示します。状態と操作はlive public GitHub stateを優先し、取得不能時だけsnapshotへfallbackします。</p>
         <div id="agent-world-zones" class="world-zones" aria-live="polite"></div>
       </section>
       <p id="workspace-message" class="muted workspace-message" hidden></p>
