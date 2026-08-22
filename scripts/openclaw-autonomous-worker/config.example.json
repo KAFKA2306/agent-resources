@@ -1,0 +1,26 @@
+{
+  "owners": ["KAFKA2306"],
+  "repository_roots": ["/home/kafka/projects"],
+  "repository_scan_depth": 2,
+  "exclude_repositories": [],
+  "include_labels": [],
+  "exclude_labels": ["manual", "blocked", "no-autonomy", "wontfix"],
+  "issue_limit_per_repo": 100,
+  "poll_seconds": 120,
+  "dispatch_command": [
+    "/home/kafka/projects/bounded-worker/dispatch-existing-issue.sh",
+    "{worktree}",
+    "{issue_number}"
+  ],
+  "dispatch_timeout_seconds": 7200,
+  "validation_timeout_seconds": 1800,
+  "verification_commands": [],
+  "ci_poll_seconds": 15,
+  "ci_timeout_seconds": 3600,
+  "merge_method": "squash",
+  "retry_backoff_seconds": [60, 300, 1800, 21600],
+  "state_dir": "~/.local/state/openclaw-autonomous-worker",
+  "worktree_root": "~/.local/share/openclaw-autonomous-worker/worktrees",
+  "post_merge_commands": [],
+  "post_merge_timeout_seconds": 1800
+}

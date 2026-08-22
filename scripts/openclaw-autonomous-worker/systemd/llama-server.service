@@ -1,0 +1,16 @@
+[Unit]
+Description=Local llama.cpp inference for OpenClaw
+After=default.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/openclaw-autonomous-worker/env
+ExecStart=/usr/bin/env bash -lc 'exec "$LLAMA_RUNNER"'
+Restart=always
+RestartSec=5
+TimeoutStartSec=120
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
