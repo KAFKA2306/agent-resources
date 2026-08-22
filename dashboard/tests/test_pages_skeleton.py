@@ -36,7 +36,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('SIDEBAR · LAST 7 DAYS', html)
         self.assertIn('name="viewport"', html)
 
-    def test_hub_hierarchy_is_preserved_without_header_links(self):
+    def test_hub_hierarchy_is_preserved_with_compact_public_links(self):
         html = HTML.read_text(encoding="utf-8")
         self.assertIn('<span class="decor-sign">HUB</span>', html)
         self.assertIn('<p class="eyebrow">WORKSPACE</p>', html)
@@ -46,9 +46,10 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('id="repository-count"', html)
         self.assertIn('id="snapshot-status"', html)
         self.assertNotIn('class="top-actions"', html)
-        self.assertNotIn('CLI / Skills docs', html)
-        self.assertNotIn('https://github.com/KAFKA2306/agent-resources', html)
-        self.assertNotIn('https://pypi.org/project/agent-resources/', html)
+        self.assertIn('class="public-links"', html)
+        self.assertIn('https://github.com/KAFKA2306/agent-resources', html)
+        self.assertIn('https://kafka2306.github.io/agent-resources/site/', html)
+        self.assertIn('https://pypi.org/project/agent-resources/', html)
 
     def test_main_information_order_stays_stable(self):
         html = HTML.read_text(encoding="utf-8")
@@ -69,16 +70,18 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn(".activity-sidebar{position:static;max-height:none;overflow:visible}", css)
         self.assertIn(".panel-heading,.section-heading{align-items:flex-start;flex-direction:column}", css)
         self.assertIn(".hub{align-items:flex-start;flex-direction:column}", css)
+        self.assertIn(".topbar{align-items:flex-start;flex-direction:column;padding:18px}", css)
 
-    def test_root_promotes_dashboard_without_dashboard_header_routes(self):
+    def test_root_promotes_dashboard_and_dashboard_links_to_products(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
         dashboard_html = HTML.read_text(encoding="utf-8")
         self.assertIn('content="0; url=./dashboard/"', root_html)
         self.assertIn('window.location.replace("./dashboard/")', root_html)
         self.assertIn('href="./site/"', root_html)
         self.assertNotIn('href="../site/"', dashboard_html)
-        self.assertNotIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
-        self.assertNotIn('https://pypi.org/project/agent-resources/', dashboard_html)
+        self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
+        self.assertIn('https://kafka2306.github.io/agent-resources/site/', dashboard_html)
+        self.assertIn('https://pypi.org/project/agent-resources/', dashboard_html)
 
     def test_agent_world_is_canonical_repository_view(self):
         html = HTML.read_text(encoding="utf-8")
@@ -104,7 +107,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('new URL(import.meta.url).searchParams.get("v")', world_js)
         self.assertIn('import(`./ranking.js?v=${assetVersion}`)', world_js)
 
-    def test_public_presence_is_out_of_dashboard_scope(self):
+    def test_public_presence_keeps_no_duplicate_dashboard_feature_layer(self):
         html = HTML.read_text(encoding="utf-8")
         stats_js = STATS_JS.read_text(encoding="utf-8")
         self.assertNotIn("PUBLIC PRESENCE", html)
