@@ -1,10 +1,9 @@
 # KAFKA Evidence UI
 
-Evidence-first design system derived from the KAFKA2306 portfolio.
+Evidence-first design system for dense operational interfaces.
 
-- Repository inventory snapshot: **165 owned repositories on 2026-07-17**
-- Implementation review: representative projects across finance, public-data BI, catalogs, VR, browser extensions, and personal sites
 - Delivery: plain HTML/CSS/JavaScript showcase plus reusable Claude Code, Codex, and `agr` skills
+- Canonical rules live in the current tokens, components, showcase, and reusable skill assets
 
 ## Design thesis
 
@@ -22,10 +21,7 @@ design-systems/kafka/
 ├── index.html
 ├── app.js
 ├── tokens.css
-├── components.css
-├── audit-report.md
-├── audit-scope.md
-└── decision-log.md
+└── components.css
 ```
 
 The reusable plugin is under `plugins/kafka-evidence-ui/`.
@@ -60,7 +56,3 @@ Codex can also discover the repository skill at `.agents/skills/kafka-evidence-u
 ```bash
 agr add KAFKA2306/agent-resources/kafka-evidence-ui
 ```
-
-## Evidence boundary
-
-The complete repository inventory was enumerated. Implementation-level findings are based on the representative projects listed in [audit-report.md](audit-report.md); the report does not claim that every visual file in all 165 repositories was rendered and inspected.
