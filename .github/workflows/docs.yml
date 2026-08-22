@@ -42,6 +42,7 @@ jobs:
           python-version: '3.12'
 
       - name: Set up Node
+        if: github.event_name != 'schedule'
         uses: actions/setup-node@v6
         with:
           node-version: '24'
@@ -51,6 +52,7 @@ jobs:
         run: pip install mkdocs-material -r dashboard/requirements.txt
 
       - name: Run dashboard QA
+        if: github.event_name != 'schedule'
         run: |
           set -euo pipefail
           python -m unittest discover -s dashboard/tests -p 'test_*.py' -v
