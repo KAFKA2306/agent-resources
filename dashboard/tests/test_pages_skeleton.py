@@ -38,7 +38,8 @@ class DashboardSkeletonTest(unittest.TestCase):
 
     def test_hub_hierarchy_is_preserved_with_compact_public_links(self):
         html = HTML.read_text(encoding="utf-8")
-        self.assertIn('<span class="decor-sign">HUB</span>', html)
+        self.assertNotIn('game.css', html)
+        self.assertNotIn('class="world-decor"', html)
         self.assertIn('<p class="eyebrow">WORKSPACE</p>', html)
         self.assertIn('>中央ハブ</h2>', html)
         self.assertIn('GitHub Public Hub', html)
