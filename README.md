@@ -1,4 +1,4 @@
-# agent-resources — Public Agent Operations Hub
+# agent-resources — 公開Agent運用ハブ
 
 [![Skill catalog integrity](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml)
 [![Build and Deploy Docs](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml)
@@ -12,7 +12,6 @@ KAFKA2306 の公開GitHub作業を横断して、**何が動いているか、�
 
 - **Live Dashboard** — https://agent-resources-one.vercel.app/
 - **CLI / Skills docs** — https://kafka2306.github.io/agent-resources/site/
-- **PyPI** — https://pypi.org/project/agent-resources/
 - **GitHub Pages fallback** — https://kafka2306.github.io/agent-resources/dashboard/
 
 ## できること
@@ -30,10 +29,10 @@ DashboardはKAFKA2306所有のpublic / non-archived repositoryを対象に、Iss
 
 ### Agent skillを使う
 
-Install:
+このrepositoryのCLIを直接導入します。
 
 ```bash
-pip install agr
+uv tool install git+https://github.com/KAFKA2306/agent-resources.git
 ```
 
 skillを追加:
