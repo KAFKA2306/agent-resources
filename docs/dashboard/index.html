@@ -9,10 +9,9 @@
   <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
   <link rel="stylesheet" href="./activity-timeline.css">
-  <link rel="stylesheet" href="./openclaw-runtime.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["dashboard.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "openclaw-runtime.js", "repository-operations.js"];
+    const modules = ["dashboard.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js"];
     Promise.allSettled(modules.map((name) => import(`./${name}?v=${assetVersion}`))).then((results) => {
       for (const [index, result] of results.entries()) {
         if (result.status === "rejected") console.error(`Failed to load ${modules[index]}`, result.reason);
@@ -42,13 +41,6 @@
         </div>
       </div>
       <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
-      <section id="openclaw-runtime" class="openclaw-runtime" aria-labelledby="openclaw-runtime-title" hidden>
-        <div class="openclaw-runtime-heading">
-          <div><p class="eyebrow">LOCAL OPENCLAW</p><h2 id="openclaw-runtime-title">Domain Agent runtime</h2></div>
-          <span id="openclaw-runtime-meta" class="muted">Local snapshot: 未取得</span>
-        </div>
-        <div id="openclaw-runtime-agents" class="openclaw-runtime-grid"></div>
-      </section>
       <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section class="agent-world" aria-labelledby="agent-world-title">

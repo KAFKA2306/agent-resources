@@ -73,12 +73,12 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn(".hub{align-items:flex-start;flex-direction:column}", css)
         self.assertIn(".topbar{align-items:flex-start;flex-direction:column;padding:18px}", css)
 
-    def test_root_promotes_dashboard_and_dashboard_links_to_products(self):
+    def test_root_redirects_to_dashboard_and_dashboard_links_to_products(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
         dashboard_html = HTML.read_text(encoding="utf-8")
         self.assertIn('content="0; url=./dashboard/"', root_html)
         self.assertIn('window.location.replace("./dashboard/")', root_html)
-        self.assertIn('href="./site/"', root_html)
+        self.assertNotIn('href="./site/"', root_html)
         self.assertNotIn('href="../site/"', dashboard_html)
         self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
         self.assertIn('https://kafka2306.github.io/agent-resources/site/', dashboard_html)
