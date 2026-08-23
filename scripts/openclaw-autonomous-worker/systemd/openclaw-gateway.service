@@ -1,17 +1,18 @@
 [Unit]
 Description=OpenClaw local gateway
-Requires=llama-server.service
-After=llama-server.service
+Requires=freetoken.service
+After=freetoken.service
 
 [Service]
 Type=simple
 EnvironmentFile=%h/.config/openclaw-autonomous-worker/env
-ExecStart=/usr/bin/env bash -lc 'exec "$OPENCLAW_GATEWAY_RUNNER"'
+ExecStart=/usr/bin/env bash -lc 'exec bash "$OPENCLAW_GATEWAY_RUNNER"'
 Restart=always
 RestartSec=5
 TimeoutStartSec=120
 NoNewPrivileges=true
 PrivateTmp=true
+UnsetEnvironment=OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY GEMINI_API_KEY
 
 [Install]
 WantedBy=default.target
