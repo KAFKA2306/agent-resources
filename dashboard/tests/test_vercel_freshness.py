@@ -12,15 +12,12 @@ LIVE_API = ROOT / "api" / "dashboard-live.js"
 
 
 class VercelFreshnessTest(unittest.TestCase):
-    def test_vercel_keeps_snapshot_as_baseline_and_builds_live_function(self):
+    def test_vercel_serves_dashboard_state_from_live_function(self):
         config = json.loads(VERCEL.read_text(encoding="utf-8"))
         self.assertEqual(config["outputDirectory"], "deploy")
         rewrite = config["rewrites"][0]
         self.assertEqual(rewrite["source"], "/dashboard/dashboard.json")
-        self.assertEqual(
-            rewrite["destination"],
-            "https://kafka2306.github.io/agent-resources/dashboard/dashboard.json",
-        )
+        self.assertEqual(rewrite["destination"], "/api/dashboard-live")
         self.assertIn("api/dashboard-live.js", config["functions"])
         self.assertGreaterEqual(config["functions"]["api/dashboard-live.js"]["maxDuration"], 30)
 
