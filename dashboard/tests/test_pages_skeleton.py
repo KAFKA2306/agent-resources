@@ -49,7 +49,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertNotIn('class="top-actions"', html)
         self.assertIn('class="public-links"', html)
         self.assertIn('https://github.com/KAFKA2306/agent-resources', html)
-        self.assertIn('https://kafka2306.github.io/agent-resources/site/', html)
+        self.assertIn('https://agent-resources-one.vercel.app/site/', html)
         self.assertNotIn('https://pypi.org/project/agent-resources/', html)
 
     def test_main_information_order_stays_stable(self):
@@ -81,7 +81,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertNotIn('href="./site/"', root_html)
         self.assertNotIn('href="../site/"', dashboard_html)
         self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
-        self.assertIn('https://kafka2306.github.io/agent-resources/site/', dashboard_html)
+        self.assertIn('https://agent-resources-one.vercel.app/site/', dashboard_html)
         self.assertNotIn('https://pypi.org/project/agent-resources/', dashboard_html)
 
     def test_agent_world_is_canonical_repository_view(self):
