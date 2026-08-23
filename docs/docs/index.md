@@ -6,18 +6,10 @@ title: Home
 
 A package and project manager for AI agent skills. Install, share, and run skills from GitHub with a single command.
 
-!!! note "Migrating from rules, subagents, or slash commands?"
-    Support for rules, subagents, and slash commands has been removed. Most AI coding agents are converging on skills as the standard format, so agr now focuses exclusively on skills. To convert your existing files to skills, run:
-
-    ```bash
-    agrx kasperjunge/migrate-to-skills
-    agrx kasperjunge/migrate-to-skills -p "convert files in ./my-commands"
-    ```
-
 ## Install
 
 ```bash
-pip install agr
+uv tool install git+https://github.com/KAFKA2306/agent-resources.git
 ```
 
 ## Choose Your Path
@@ -68,12 +60,6 @@ agr init my-skill
 Then edit `my-skill/SKILL.md`. If you want it in this repo, place it under
 `./skills/`.
 
-### Migrate Old Rules or Commands
-
-```bash
-agrx kasperjunge/migrate-to-skills
-```
-
 ## Commands (Quick Reference)
 
 | Command | What it does |
@@ -94,17 +80,6 @@ agr add user/skill              # From user's "skills" repo
 agr add user/repo/skill         # From a different repo
 agr add ./path/to/skill         # Local path
 ```
-
-If a user's repo is named `skills`, you can skip the repo name:
-
-```bash
-agr add kasperjunge/commit                    # From kasperjunge/skills
-agr add kasperjunge/skills/commit             # Same thing (explicit)
-```
-
-Note: `user/skill` now defaults to `skills`. During a deprecation period, agr
-will fall back to `agent-resources` (with a warning) if the skill isn't found in
-`skills`.
 
 ## How Skill Discovery Works
 
