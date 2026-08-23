@@ -75,7 +75,7 @@ npm run test:dashboard
 
 ```text
 dashboard/     public state collectors / build / tests
-docs/          GitHub Pages dashboard / CLI docs
+docs/          public Dashboard / CLI docs sources
 skills/        reusable agent skills
 plugins/       packaged integrations
 src/           agr / agrx implementation
