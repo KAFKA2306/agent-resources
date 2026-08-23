@@ -55,6 +55,13 @@ def test_duplicate_id_and_missing_directory_are_rejected(tmp_path: Path) -> None
     assert "missing directory: skills/missing" in errors
 
 
+def test_unlisted_skill_directory_is_rejected(tmp_path: Path) -> None:
+    catalog = make_catalog(tmp_path)
+    (tmp_path / "skills" / "new-skill").mkdir()
+    errors = validate_catalog(catalog, tmp_path)
+    assert "catalog missing skill directory: skills/new-skill" in errors
+
+
 def test_manifest_checksum_mismatch_is_rejected(tmp_path: Path) -> None:
     catalog = make_catalog(tmp_path)
     catalog_path = tmp_path / "catalog.json"
