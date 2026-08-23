@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d6285b0011c37cac24b52c9bf4bcae13d26e5e10"
+          "fingerprint": "df6be36e7669813e46e77e34e0bd797a63db7e19"
         }
       ],
-      "sourceFingerprint": "2013ed5322de76326190a7100d8e27c2cd63ce9fc020d949c84c89e6844b0c68",
+      "sourceFingerprint": "b8427b97952782990fe578c3ef81e88657f2a81ba2dc6d5c2dfdba1616618e4a",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -357,10 +357,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-vehicles/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "904548d98756924c062cc3f89560cf7c2740e9ba"
+          "fingerprint": "2c78f9307641783025a449279f64462cae1ef614"
         }
       ],
-      "sourceFingerprint": "3192fb156f6e891422649026d5ad136017281e6b7a12e663d2452d46286b7621",
+      "sourceFingerprint": "a4cf5012eac03fb2659bb81c62c3058858e38a02fc8816c4588934ecf518313e",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -414,12 +414,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/BestEthernet/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "5ff45797801f83f59a5d325f8dceb3b90b91a7f2"
+          "fingerprint": "863225503f517558dc624f815917f0b59b54106d"
         }
       ],
-      "sourceFingerprint": "85b8ed9edce67382c69272657921fa9671d731cba1ea8234396c4e5faf8aea8b",
+      "sourceFingerprint": "1b3aa96f843b873f1c94be83633fead3eb784440269d1afef8a7062b08217489",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "blendshapedeformer",
@@ -658,12 +658,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/CantStopExpressLearn/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "173cb41a2827e62de4801b45a1b53ce80c231b41"
+          "fingerprint": "b85073551c3742da826e9d3a26d41705c762667f"
         }
       ],
-      "sourceFingerprint": "cced25e948b9a216c734aa84d8e7a16250cd2bd1d3d909ddadd839a5e46bc35d",
+      "sourceFingerprint": "125c7abbf7a5ff9d455c17731048c0bc6eb6bd81ac4f8eefa02a42e6b4898daf",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "cast_event_cal",
@@ -905,6 +905,32 @@
       "needsReview": false
     },
     {
+      "name": "DeFi",
+      "purpose": "DeFi Primary Evidence",
+      "matches": [
+        "DeFi Primary Evidence"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/DeFi",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/DeFi",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/DeFi/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "bf28d0317c21b8111d59b8ec2f3a4e3f03073466"
+        }
+      ],
+      "sourceFingerprint": "302a11a51c37d597cd86650c4e574f53158f9c250f0e15af38a5ef792e754c24",
+      "checkedAt": "2026-08-23T22:55:48Z",
+      "needsReview": false
+    },
+    {
       "name": "detective",
       "purpose": "detective は、2022–2026の公開技術文章を同じ条件で比較し、2026年の研究と公開OSSが捉える文章統計の時系列変化を継続監査するメタレビュー基盤です。watermarkや独自AI detectorを前提にせず、年代・媒体・著者・文章長などのdistribution shiftそのものを測ります。",
       "matches": [
@@ -1006,12 +1032,38 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/econalert/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4f950ee2037645d117451726b5ce7542a389175b"
+          "fingerprint": "bb835a58afd7903b5e749f06102b2e3359fb117d"
         }
       ],
-      "sourceFingerprint": "6939cb03b9e9f3a30e468bc11729f23c7d4a2394d62b4e5efd7dc0085e3290db",
+      "sourceFingerprint": "ea8435b262ff1fdff466eac156adc8a9b2d604adbd7e884c0bcb9d964e504e47",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
+    },
+    {
+      "name": "Electricity",
+      "purpose": "Electricity — U.S. grid evidence",
+      "matches": [
+        "Electricity — U.S. grid evidence"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/Electricity",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/Electricity",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/Electricity/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "f719700a406f8eccdcc02914d9ff8cb33dbbaadc"
+        }
+      ],
+      "sourceFingerprint": "04db1163b91d16af57bce6f9d6be61bb2951fe259114644c56d1fe7e1d6a2508",
+      "checkedAt": "2026-08-23T22:55:48Z",
+      "needsReview": false
     },
     {
       "name": "etf",
@@ -1084,10 +1136,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finAnalist/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "03018efafb901018fb2ef42dad6b7f65ceb76fc8"
+          "fingerprint": "3efe7243f86645ae3500559fb6ebbfe143321e2f"
         }
       ],
-      "sourceFingerprint": "acc47b758dc6a79122c661224316f032e8fdd44d17eae8e52139b0d86ae721b3",
+      "sourceFingerprint": "ea2db918e14db61413ea468556ba16b07ccea4fabdd24344c623f699ad807a65",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1136,12 +1188,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finBI/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4c7bb4f2a21620165c30f973b1b5e1f7acc98a39"
+          "fingerprint": "e47e32290d87f4d60897a6ca445673f620e83c78"
         }
       ],
-      "sourceFingerprint": "a1658f56d36775174df225c7ebfb5b94568f1d5b171ac81944160946a75eb004",
+      "sourceFingerprint": "ad8f20ee18f0c2b1c0a3209d5f648e52abf69dd28fa58d5902a23ad96c5adf77",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "fit",
@@ -1225,32 +1277,6 @@
       "sourceFingerprint": "0bd0178e56fac35466496d45e2088c540eda11e8a559b1c348f103b74fa4dd5a",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": false
-    },
-    {
-      "name": "fx",
-      "purpose": "This repository is being repurposed from an old FX design note into a small primary-source dataset for tokenized assets. The current implementation covers USDC issuer-reported circulation snapshots and an Ethereum USDC transfer-event collector.",
-      "matches": [
-        "This repository is being repurposed from an old FX design note into a small primary-source dataset for tokenized assets. The current implementation covers USDC issuer-reported circulation snapshots and an Ethereum USDC transfer-event collector."
-      ],
-      "notFor": [],
-      "url": "https://github.com/KAFKA2306/fx",
-      "sources": [
-        {
-          "kind": "repository",
-          "url": "https://github.com/KAFKA2306/fx",
-          "status": "ok",
-          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
-        },
-        {
-          "kind": "readme",
-          "url": "https://github.com/KAFKA2306/fx/blob/main/README.md",
-          "status": "ok",
-          "fingerprint": "0f5eb7fe637cbd3cfbe9812ef8c4ce3e1274a18b"
-        }
-      ],
-      "sourceFingerprint": "3c26975d40f6a103ff8301f8cb49f0ab6661224e1c9aeaf1bd41f4f99b36cd18",
-      "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": true
     },
     {
       "name": "game-library-dashboard",
@@ -1593,12 +1619,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/KAFKA2306/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "459a6c79a5f323b7869ef1803516051250f76a20"
+          "fingerprint": "0b714a2be92eb006106c250d3e41ca636775a3fe"
         }
       ],
-      "sourceFingerprint": "4c27620827edab5c6df73fc09cfc07bceea5e688e4dcb42870bb7f5858afce14",
+      "sourceFingerprint": "aa574762e9041d3b3e9ace89e55ee87aab43cd079c27a4a67d833c4f77dcd1a1",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "kakeibo",
@@ -1910,10 +1936,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/mstr/blob/main/readme.md",
           "status": "ok",
-          "fingerprint": "be7dd571a21816d42db4ba0f3945b3ad64de5c81"
+          "fingerprint": "c6e9bbe68a9f33d7902072a457ea54e23ae66225"
         }
       ],
-      "sourceFingerprint": "1078d52b04fe3479597a5511f9e08606e0ffe9c60ab7408d7b4cfed436dd1b34",
+      "sourceFingerprint": "fa3f1e5dfced0a75eefaf36175daf79b7bfdff88db2c280487674061177ea8ca",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2084,32 +2110,6 @@
       "needsReview": false
     },
     {
-      "name": "oil",
-      "purpose": "原油や石油製品のデータは公開されていても、毎週必要なのは「全部の表」ではなく、自分が見ている系列で何が動いたかです。このリポジトリは、U.S. Energy Information Administration (EIA) の検証済みsnapshotから、設定した系列だけを抽出し、前週差・前週比・直近平均との差・閾値アラートを自動生成します。",
-      "matches": [
-        "原油や石油製品のデータは公開されていても、毎週必要なのは「全部の表」ではなく、自分が見ている系列で何が動いたかです。このリポジトリは、U.S. Energy Information Administration (EIA) の検証済みsnapshotから、設定した系列だけを抽出し、前週差・前週比・直近平均との差・閾値アラートを自動生成します。"
-      ],
-      "notFor": [],
-      "url": "https://github.com/KAFKA2306/oil",
-      "sources": [
-        {
-          "kind": "repository",
-          "url": "https://github.com/KAFKA2306/oil",
-          "status": "ok",
-          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
-        },
-        {
-          "kind": "readme",
-          "url": "https://github.com/KAFKA2306/oil/blob/main/README.md",
-          "status": "ok",
-          "fingerprint": "e53e970ca235aa9713467a8cfffde1abc1b9cc64"
-        }
-      ],
-      "sourceFingerprint": "bd29ca63e7c594c3b2b8be07d83ce7c5fd43e9fb754416a2e3c77e3832693575",
-      "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": true
-    },
-    {
       "name": "open-fitter",
       "purpose": "An open-source implementation compatible with \"もちふぃった～\", based on the GPL-3 core logic released by NINE GATES.",
       "matches": [
@@ -2180,10 +2180,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/option/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "299c7d305497af607a03669c0bf9c6a6f4d78fcc"
+          "fingerprint": "1e6e1c383c13ad1eeaaf9035da9dbcc0972eac25"
         }
       ],
-      "sourceFingerprint": "d241d6b135ceb49ff3345460b0997e3b4484770e9e911c1d68440c105898f526",
+      "sourceFingerprint": "6058d58f2e0b34986482119c27fcac26d743db2fb655456f03694b3e2aab89f2",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2354,41 +2354,6 @@
       "needsReview": true
     },
     {
-      "name": "robot",
-      "purpose": "非正準の空repository。ARK Big Ideas 2026 Roboticsの正準実装先はKAFKA2306/factoryであり、このrepositoryには並行実装を作らない",
-      "matches": [
-        "非正準の空repository",
-        "deprecated robotics placeholder"
-      ],
-      "notFor": [
-        "robot",
-        "robotics",
-        "ロボット",
-        "automation",
-        "自動化",
-        "factory",
-        "工場"
-      ],
-      "url": "https://github.com/KAFKA2306/robot",
-      "sources": [
-        {
-          "kind": "repository",
-          "url": "https://github.com/KAFKA2306/robot",
-          "status": "ok",
-          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
-        },
-        {
-          "kind": "readme",
-          "url": "https://github.com/KAFKA2306/robot/blob/main/README.md",
-          "status": "ok",
-          "fingerprint": "42e602874b04385ab09be517416e46d4faf66a8a"
-        }
-      ],
-      "sourceFingerprint": "5ffea0670ca7e09e81c36743e152fceac915d96d4364b3d57a2ea0f90e499e01",
-      "checkedAt": "2026-08-18T03:40:48Z",
-      "needsReview": false
-    },
-    {
       "name": "rule-scribe-games",
       "purpose": "ボードゲームを検索し、準備・ゲームプレイ・終了条件を日本語で構造化してルール理解へつなぐReact・FastAPIアプリ",
       "matches": [
@@ -2438,12 +2403,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/salary/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "06783a69dca4c76d61fc8d858d80f6a35a806d09"
+          "fingerprint": "b216496ed72571be7d070a91e4f2334026b92364"
         }
       ],
-      "sourceFingerprint": "ee358e69d0427e1143f7f7bd45dff144cacf4a078d689e2b7de5096db6d0ad8a",
+      "sourceFingerprint": "00e86ddd91fa451a1b44df1f347b06198e68bf934519771847f5e715828ca125",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "semiconductor-earnings-model",
@@ -2470,37 +2435,6 @@
       "sourceFingerprint": "034b345f4ccc116089594b41bbd2eeba72bc8bec59949a84e566e3fed5c5ed35",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": false
-    },
-    {
-      "name": "skew",
-      "purpose": "Yahoo Financeの価格系列を取得し、終値・SMA5・SMA20・平均リターン・標準偏差・Sharpeを表示してCSV/YAMLへ出力するTauriデスクトップアプリ",
-      "matches": [
-        "Yahoo Financeの株価をTauriアプリで取得して分析",
-        "株価のSMAとSharpeを表示してCSVに保存",
-        "KAFKAミニyfダッシュボード"
-      ],
-      "notFor": [
-        "半導体企業の長期決算モデルを作る",
-        "BLS雇用統計を配布する"
-      ],
-      "url": "https://github.com/KAFKA2306/skew",
-      "sources": [
-        {
-          "kind": "repository",
-          "url": "https://github.com/KAFKA2306/skew",
-          "status": "ok",
-          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
-        },
-        {
-          "kind": "readme",
-          "url": "https://github.com/KAFKA2306/skew/blob/main/README.md",
-          "status": "ok",
-          "fingerprint": "15e523ee0ddbdcd4833ced490cbb8f1dbe9e5c4f"
-        }
-      ],
-      "sourceFingerprint": "a3c747f01c294691f3a57d96e100ca0e4b66f80af9ae0314f4050c2aa81846f1",
-      "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": true
     },
     {
       "name": "space",
@@ -2538,6 +2472,32 @@
       ],
       "sourceFingerprint": "64e8c7735379e357c6a5e1cdbdae32c5cc137c8140937ceeb42c5352eca757e6",
       "checkedAt": "2026-08-18T03:40:48Z",
+      "needsReview": false
+    },
+    {
+      "name": "space_launches",
+      "purpose": "Space Launches — reusable launch primary evidence",
+      "matches": [
+        "Space Launches — reusable launch primary evidence"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/space_launches",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/space_launches",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/space_launches/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "1fee13430652942e18bffcd370e66ab2a6e5ef92"
+        }
+      ],
+      "sourceFingerprint": "d66837e4a164ca541c4f1865a41df7f4c06a0fbfbf6fed88800b60a42bd20cb1",
+      "checkedAt": "2026-08-23T22:55:48Z",
       "needsReview": false
     },
     {
@@ -2619,6 +2579,32 @@
       "needsReview": false
     },
     {
+      "name": "tokenized_assets",
+      "purpose": "Tokenized assetを発行体の一次開示・法的asset identity・Ethereum上のtoken deployment・block-level evidenceへ分離し、raw evidenceから再生成可能なdatasetとして保存します。 api/v1/tokenized-assets/ が正準成果物です。",
+      "matches": [
+        "Tokenized assetを発行体の一次開示・法的asset identity・Ethereum上のtoken deployment・block-level evidenceへ分離し、raw evidenceから再生成可能なdatasetとして保存します。 api/v1/tokenized-assets/ が正準成果物です。"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/tokenized_assets",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/tokenized_assets",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/tokenized_assets/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "8c58c2f3356d7d68689f3529a69c5f00df31e3b0"
+        }
+      ],
+      "sourceFingerprint": "636566201b1a724ee9f0967cef4ee83ec494b5de558d21ac5cd031e5ee42a2ba",
+      "checkedAt": "2026-08-23T22:55:48Z",
+      "needsReview": false
+    },
+    {
       "name": "TradingView-Screener",
       "purpose": "A package that lets you create TradingView screeners in Python",
       "matches": [
@@ -2643,32 +2629,6 @@
       "sourceFingerprint": "f38eba9c50d3ee247f048fa0f8b9f5ac49419e3f6c1e1f47d31486e13097743c",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": false
-    },
-    {
-      "name": "trahist",
-      "purpose": "Trade History Analyzer (TraHist)",
-      "matches": [
-        "Trade History Analyzer (TraHist)"
-      ],
-      "notFor": [],
-      "url": "https://github.com/KAFKA2306/trahist",
-      "sources": [
-        {
-          "kind": "repository",
-          "url": "https://github.com/KAFKA2306/trahist",
-          "status": "ok",
-          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
-        },
-        {
-          "kind": "readme",
-          "url": "https://github.com/KAFKA2306/trahist/blob/main/README.md",
-          "status": "ok",
-          "fingerprint": "2e096900a3db389f69a0dc814963039bce27611d"
-        }
-      ],
-      "sourceFingerprint": "0ae0c13d97349b3bf4b09a5d4b3c1b7cedd5d81dab1150bfafc1b2afb8b7bb9e",
-      "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": true
     },
     {
       "name": "travel",
@@ -2835,12 +2795,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/uranium/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "dd5541f2d623dc58e9a0cbbb450f15d068f39b96"
+          "fingerprint": "5fa4cb3873b2696e1daea656fbf841655f541d67"
         }
       ],
-      "sourceFingerprint": "6cee8b74a59d961beeaddf4d30e337ee607cb65f5d105570cceb7cfeedd221cb",
+      "sourceFingerprint": "28ad2aadc9e927895754bf04ad862aa56589937ce6717a26c41a53d023e28b26",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "us-swing-strategy-bi-pages",
@@ -2913,10 +2873,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vlog/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "67b5315a77bf59960e3a0754ae0b068b65d0b577"
+          "fingerprint": "6e6635d70efc09e89507b2035f7afe3acd40a1df"
         }
       ],
-      "sourceFingerprint": "9699f41f242498b8a66b40c57db0e6a5c0ff0fa3827c596d4cb837efb0ed77c6",
+      "sourceFingerprint": "4cd7b157cd319f9bee617e0223026f129e876477109cfbfa99fa1135d8b90b98",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -3281,10 +3241,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/VRPhotoJourney/blob/master/README.md",
           "status": "ok",
-          "fingerprint": "1f86fd6a4673ac113c01b50e697e542732857b28"
+          "fingerprint": "48dc3ebb3de70da141cef739b876cc4e5ec23553"
         }
       ],
-      "sourceFingerprint": "0959d1f6c4798481d21726189376f576c442a29a10e5ef343b996f8a8e76fa35",
+      "sourceFingerprint": "f4ecf0e349a224429162eab2d741f64d6bff8f6abb0a7e0c335aefdf6caaf15b",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -3442,10 +3402,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/yt3/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "63be17981d1237d99bf2e12b397430500bc67237"
+          "fingerprint": "2c3795733959fba7bc933102ed8b1ac13b903f16"
         }
       ],
-      "sourceFingerprint": "0694d34f330be8dcd176c5efe54364e902f0efb6e3572a557e7b5fc5a92b54c3",
+      "sourceFingerprint": "bc3a4685229d388c0f0166165b8a0cab93720fb64d9f3f4c75976a5246fc286b",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
