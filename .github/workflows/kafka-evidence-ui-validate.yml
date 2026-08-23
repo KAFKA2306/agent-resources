@@ -79,7 +79,7 @@ jobs:
 
           readme = Path('README.md').read_text(encoding='utf-8')
           required_links = [
-              'https://kafka2306.github.io/agent-resources/',
+              'https://agent-resources-one.vercel.app/',
               '(skills/kafka-evidence-ui/SKILL.md)',
               '(plugins/kafka-evidence-ui/README.md)',
           ]
