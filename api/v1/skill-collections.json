@@ -1,6 +1,6 @@
 {
   "schema": "kafka.agent-resources.skill-collections.v1",
-  "generated_at": "2026-08-07T08:12:51+09:00",
+  "generated_at": "2026-08-23T20:06:09Z",
   "source": {
     "provider": "GitHub",
     "repository": "KAFKA2306/agent-resources",
@@ -8,7 +8,7 @@
     "tree_api": "https://api.github.com/repos/KAFKA2306/agent-resources/contents/skills?ref=main",
     "license": "MIT"
   },
-  "count": 7,
+  "count": 8,
   "collections": [
     {
       "id": "agr",
@@ -49,6 +49,14 @@
       "kind": "collection",
       "title": "Product Strategy",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/product-strategy"
+    },
+    {
+      "id": "repository-recall",
+      "path": "skills/repository-recall",
+      "tree_sha": "6d3ef234bdd9486648b254abea02b604cb44ffba",
+      "kind": "skill",
+      "title": "Repository Recall",
+      "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/repository-recall"
     },
     {
       "id": "skill-development",

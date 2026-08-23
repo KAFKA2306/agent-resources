@@ -71,6 +71,15 @@ def validate_catalog(catalog: dict[str, Any], root: Path) -> list[str]:
             "https://github.com/KAFKA2306/agent-resources/tree/"
         ):
             errors.append(f"{prefix}.source_url is not a canonical repository URL")
+
+    skills_dir = root / "skills"
+    actual_paths = {
+        f"skills/{child.name}"
+        for child in skills_dir.iterdir()
+        if child.is_dir() and not child.name.startswith(".")
+    }
+    for path in sorted(actual_paths - seen_paths):
+        errors.append(f"catalog missing skill directory: {path}")
     return errors
 
 
