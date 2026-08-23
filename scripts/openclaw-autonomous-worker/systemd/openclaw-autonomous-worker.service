@@ -1,7 +1,7 @@
 [Unit]
 Description=OpenClaw autonomous GitHub issue supervisor
-Requires=llama-server.service openclaw-gateway.service
-After=llama-server.service openclaw-gateway.service network-online.target
+Requires=freetoken.service openclaw-gateway.service
+After=freetoken.service openclaw-gateway.service network-online.target
 Wants=network-online.target
 
 [Service]
