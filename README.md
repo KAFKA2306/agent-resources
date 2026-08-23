@@ -19,7 +19,7 @@ KAFKA2306 の公開GitHub作業を横断して、**何が動いているか、�
 
 DashboardはKAFKA2306所有のpublic / non-archived repositoryを対象に、Issue、PR、GitHub Actions、直近activityを横断表示します。
 
-- Live APIとsnapshot fallbackを区別する
+- Live APIの取得状態を明示する
 - private repository、secret、private work itemを公開面へ出さない
 - repository domainは明示された`agent-zone-*` topicだけを正準値として扱う
 - 取得不能な状態を推測で補完しない
