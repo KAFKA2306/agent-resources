@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "(cd docs && uvx --from mkdocs-material mkdocs build) && mkdir -p deploy/site && cp -r docs/dashboard deploy/dashboard && cp -r docs/site/* deploy/site/",
   "outputDirectory": "deploy",
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ':!dashboard/data/repository-index.json'",
   "functions": {
     "api/dashboard-live.js": {
       "maxDuration": 60
