@@ -9,6 +9,14 @@ ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "supervisor.py"
 INSTALLER_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "install-systemd.sh"
 CONFIG_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "config.example.json"
+FREETOKEN_RUNNER_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "run-freetoken.sh"
+FREETOKEN_PREPARE_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "prepare-freetoken.sh"
+FREETOKEN_VERIFY_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "verify-freetoken.sh"
+FREETOKEN_UNIT_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "systemd" / "freetoken.service"
+GATEWAY_UNIT_PATH = ROOT / "scripts" / "openclaw-autonomous-worker" / "systemd" / "openclaw-gateway.service"
+SUPERVISOR_UNIT_PATH = (
+    ROOT / "scripts" / "openclaw-autonomous-worker" / "systemd" / "openclaw-autonomous-worker.service"
+)
 
 spec = importlib.util.spec_from_file_location("openclaw_autonomous_supervisor", MODULE_PATH)
 assert spec and spec.loader
@@ -128,3 +136,38 @@ def test_installer_configures_direct_acp_agent_and_removes_embedded_fields():
     assert "model tools subagents contextTokens contextInjection" in text
     assert "supervisor.py\" --config \"$CONFIG_FILE\" --once" not in text
     assert "gh auth status" in text
+
+
+def test_freetoken_profile_is_pinned_and_bounded_for_8gb_baseline():
+    prepare = FREETOKEN_PREPARE_PATH.read_text()
+    runner = FREETOKEN_RUNNER_PATH.read_text()
+    assert 'FREETOKEN_VERSION="${FREETOKEN_VERSION:-0.1.2}"' in prepare
+    assert "freetoken[accel]==${FREETOKEN_VERSION}" in prepare
+    assert "bench bw --dtype nvfp4" in prepare
+    assert "ornith-ai/Ornith-1.5-35B-A3B-NVFP4" in runner
+    assert 'FREETOKEN_MAX_SEQ_LEN="${FREETOKEN_MAX_SEQ_LEN:-8192}"' in runner
+    assert 'FREETOKEN_NUM_TOKENS="${FREETOKEN_NUM_TOKENS:-8192}"' in runner
+    assert 'FREETOKEN_MAX_PREFILL_LENGTH="${FREETOKEN_MAX_PREFILL_LENGTH:-2048}"' in runner
+    assert 'FREETOKEN_MAX_RUNNING_REQUESTS="${FREETOKEN_MAX_RUNNING_REQUESTS:-1}"' in runner
+    assert 'FREETOKEN_MOE_BACKEND="${FREETOKEN_MOE_BACKEND:-auto}"' in runner
+    assert "--reasoning-parser auto" in runner
+
+
+def test_freetoken_runtime_records_direct_evidence():
+    verifier = FREETOKEN_VERIFY_PATH.read_text()
+    for endpoint in ("/health", "/v1/models", "/v1/chat/completions", "/v1/stats", "/v1/cache/status"):
+        assert endpoint in verifier
+
+
+def test_systemd_contract_uses_freetoken_not_llama_cpp():
+    freetoken = FREETOKEN_UNIT_PATH.read_text()
+    gateway = GATEWAY_UNIT_PATH.read_text()
+    supervisor = SUPERVISOR_UNIT_PATH.read_text()
+    installer = INSTALLER_PATH.read_text()
+    assert "FREETOKEN_RUNNER" in freetoken
+    assert "Requires=freetoken.service" in gateway
+    assert "Requires=freetoken.service openclaw-gateway.service" in supervisor
+    assert "systemctl --user enable freetoken.service" in installer
+    assert "http://${FREETOKEN_HOST}:${FREETOKEN_PORT}" in installer
+    assert "launch openclaw --server" in installer
+    assert "LLAMA_RUNNER=" not in installer

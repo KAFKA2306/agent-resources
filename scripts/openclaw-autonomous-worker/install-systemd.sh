@@ -10,6 +10,18 @@ OPENCLAW_BIN="${OPENCLAW_BIN:-/root/.openclaw/bin/openclaw}"
 WORKER_AGENT="${OPENCLAW_WORKER_AGENT:-coding-worker}"
 WORKER_HARNESS="${OPENCLAW_WORKER_HARNESS:-opencode}"
 WORKER_WORKSPACE="${OPENCLAW_WORKER_WORKSPACE:-/home/kafka/projects}"
+FREETOKEN_VERSION="${FREETOKEN_VERSION:-0.1.2}"
+FREETOKEN_HOME="${FREETOKEN_HOME:-$HOME/.local/share/freetoken-ornith}"
+FREETOKEN_BIN="${FREETOKEN_BIN:-$FREETOKEN_HOME/venv/bin/ft}"
+FREETOKEN_MODEL="${FREETOKEN_MODEL:-ornith-ai/Ornith-1.5-35B-A3B-NVFP4}"
+FREETOKEN_SERVED_MODEL="${FREETOKEN_SERVED_MODEL:-ornith-1.5-35b-a3b-nvfp4}"
+FREETOKEN_HOST="${FREETOKEN_HOST:-127.0.0.1}"
+FREETOKEN_PORT="${FREETOKEN_PORT:-1919}"
+FREETOKEN_BASE_URL="http://${FREETOKEN_HOST}:${FREETOKEN_PORT}"
+FREETOKEN_RUNNER="${FREETOKEN_RUNNER:-$ROOT/scripts/openclaw-autonomous-worker/run-freetoken.sh}"
+FREETOKEN_VERIFY="${FREETOKEN_VERIFY:-$ROOT/scripts/openclaw-autonomous-worker/verify-freetoken.sh}"
+OPENCLAW_GATEWAY_RUNNER="${OPENCLAW_GATEWAY_RUNNER:-$ROOT/scripts/openclaw-autonomous-worker/run-openclaw-gateway.sh}"
+FREETOKEN_START_TIMEOUT_SECONDS="${FREETOKEN_START_TIMEOUT_SECONDS:-1800}"
 
 mkdir -p "$CONFIG_DIR" "$UNIT_DIR"
 
@@ -25,6 +37,9 @@ require python3
 require git
 require gh
 require curl
+require uv
+require nvidia-smi
+require nvcc
 
 if [[ ! -x "$OPENCLAW_BIN" ]]; then
   echo "OpenClaw CLI is missing or not executable: $OPENCLAW_BIN" >&2
@@ -53,23 +68,45 @@ data["openclaw_harness"] = sys.argv[4]
 path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
 PY
 
+FREETOKEN_VERSION="$FREETOKEN_VERSION" \
+FREETOKEN_HOME="$FREETOKEN_HOME" \
+FREETOKEN_MODEL="$FREETOKEN_MODEL" \
+  bash "$ROOT/scripts/openclaw-autonomous-worker/prepare-freetoken.sh"
+
+if [[ ! -x "$FREETOKEN_BIN" ]]; then
+  echo "FreeToken CLI was not installed at $FREETOKEN_BIN" >&2
+  exit 1
+fi
+
 cat >"$ENV_FILE" <<EOF
 AGENT_RESOURCES_ROOT=$ROOT
 WORKER_CONFIG=$CONFIG_FILE
-LLAMA_RUNNER=${LLAMA_RUNNER:-/home/kafka/projects/run-ornith-llama-server.sh}
-OPENCLAW_GATEWAY_RUNNER=${OPENCLAW_GATEWAY_RUNNER:-/home/kafka/projects/run-openclaw-local.sh}
+OPENCLAW_BIN=$OPENCLAW_BIN
+FREETOKEN_BIN=$FREETOKEN_BIN
+FREETOKEN_RUNNER=$FREETOKEN_RUNNER
+FREETOKEN_MODEL=$FREETOKEN_MODEL
+FREETOKEN_SERVED_MODEL=$FREETOKEN_SERVED_MODEL
+FREETOKEN_HOST=$FREETOKEN_HOST
+FREETOKEN_PORT=$FREETOKEN_PORT
+FREETOKEN_MAX_SEQ_LEN=${FREETOKEN_MAX_SEQ_LEN:-8192}
+FREETOKEN_NUM_TOKENS=${FREETOKEN_NUM_TOKENS:-8192}
+FREETOKEN_MAX_PREFILL_LENGTH=${FREETOKEN_MAX_PREFILL_LENGTH:-2048}
+FREETOKEN_MAX_OUTPUT_TOKENS=${FREETOKEN_MAX_OUTPUT_TOKENS:-4096}
+FREETOKEN_MAX_RUNNING_REQUESTS=${FREETOKEN_MAX_RUNNING_REQUESTS:-1}
+FREETOKEN_MEMORY_RATIO=${FREETOKEN_MEMORY_RATIO:-0.88}
+FREETOKEN_MOE_BACKEND=${FREETOKEN_MOE_BACKEND:-auto}
+OPENCLAW_GATEWAY_RUNNER=$OPENCLAW_GATEWAY_RUNNER
 EOF
 chmod 600 "$ENV_FILE"
 
-source "$ENV_FILE"
-for runner in "$LLAMA_RUNNER" "$OPENCLAW_GATEWAY_RUNNER"; do
-  if [[ ! -x "$runner" ]]; then
-    echo "runner is missing or not executable: $runner" >&2
+for runner in "$FREETOKEN_RUNNER" "$FREETOKEN_VERIFY" "$OPENCLAW_GATEWAY_RUNNER"; do
+  if [[ ! -f "$runner" ]]; then
+    echo "runner is missing: $runner" >&2
     exit 1
   fi
 done
 
-install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/llama-server.service" "$UNIT_DIR/llama-server.service"
+install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/freetoken.service" "$UNIT_DIR/freetoken.service"
 install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/openclaw-gateway.service" "$UNIT_DIR/openclaw-gateway.service"
 install -m 0644 "$ROOT/scripts/openclaw-autonomous-worker/systemd/openclaw-autonomous-worker.service" "$UNIT_DIR/openclaw-autonomous-worker.service"
 
@@ -81,6 +118,7 @@ ALLOWED="$($OPENCLAW_BIN config get acp.allowedAgents --json 2>/dev/null || prin
 MERGED_ALLOWED="$(python3 - "$ALLOWED" "$WORKER_HARNESS" <<'PY'
 import json
 import sys
+
 values = json.loads(sys.argv[1]) if sys.argv[1].strip() else []
 if not isinstance(values, list):
     values = []
@@ -114,7 +152,6 @@ if [[ -z "$AGENT_INDEX" ]]; then
   exit 1
 fi
 
-# Remove embedded-agent/router-only state from this worker.
 for field in model tools subagents contextTokens contextInjection bootstrapMaxChars bootstrapTotalMaxChars experimental; do
   "$OPENCLAW_BIN" config unset "agents.list[$AGENT_INDEX].$field" >/dev/null 2>&1 || true
 done
@@ -126,8 +163,8 @@ PY
 "$OPENCLAW_BIN" config set "agents.list[$AGENT_INDEX].runtime" "$RUNTIME" --strict-json
 "$OPENCLAW_BIN" config validate
 
-# Preflight is non-mutating with respect to repositories and GitHub work items.
 python3 -m py_compile "$ROOT/scripts/openclaw-autonomous-worker/supervisor.py"
+bash -n "$FREETOKEN_RUNNER" "$FREETOKEN_VERIFY" "$OPENCLAW_GATEWAY_RUNNER"
 gh auth status
 python3 - "$CONFIG_FILE" <<'PY'
 import json
@@ -159,26 +196,46 @@ if command -v loginctl >/dev/null 2>&1; then
   fi
 fi
 
+# Remove the service owned by the previous llama.cpp runtime contract.
+systemctl --user disable --now llama-server.service >/dev/null 2>&1 || true
+rm -f "$UNIT_DIR/llama-server.service"
+
 systemctl --user daemon-reload
-systemctl --user enable llama-server.service openclaw-gateway.service openclaw-autonomous-worker.service
-systemctl --user restart llama-server.service openclaw-gateway.service
+systemctl --user enable freetoken.service openclaw-gateway.service openclaw-autonomous-worker.service
 
-for unit in llama-server.service openclaw-gateway.service; do
-  systemctl --user is-enabled "$unit"
-  systemctl --user is-active "$unit"
-done
+# Start inference first. Initial model download can be large, so readiness has its own timeout.
+systemctl --user restart freetoken.service
+systemctl --user is-enabled freetoken.service
+systemctl --user is-active freetoken.service
 
-deadline=$((SECONDS + 120))
+deadline=$((SECONDS + FREETOKEN_START_TIMEOUT_SECONDS))
 while (( SECONDS < deadline )); do
-  if curl -fsS -H 'Authorization: Bearer llama.cpp-local' http://127.0.0.1:8080/v1/models >/dev/null 2>&1; then
+  if curl -fsS "$FREETOKEN_BASE_URL/health" >/dev/null 2>&1 && \
+     curl -fsS "$FREETOKEN_BASE_URL/v1/models" >/dev/null 2>&1; then
     break
+  fi
+  if ! systemctl --user is-active freetoken.service >/dev/null 2>&1; then
+    systemctl --user status freetoken.service --no-pager >&2 || true
+    exit 1
   fi
   sleep 2
 done
-curl -fsS -H 'Authorization: Bearer llama.cpp-local' http://127.0.0.1:8080/v1/models >/dev/null
+curl -fsS "$FREETOKEN_BASE_URL/health" >/dev/null
+curl -fsS "$FREETOKEN_BASE_URL/v1/models" >/dev/null
+
+# Let FreeToken own the local OpenClaw provider configuration.
+"$FREETOKEN_BIN" launch openclaw --server "$FREETOKEN_BASE_URL" --config --yes
+
+systemctl --user restart openclaw-gateway.service
+systemctl --user is-enabled openclaw-gateway.service
+systemctl --user is-active openclaw-gateway.service
 "$OPENCLAW_BIN" gateway health
 
-# Start the autonomous supervisor only after the local model and Gateway are healthy.
+# A real completion and runtime/cache snapshots are required before the supervisor starts.
+FREETOKEN_BASE_URL="$FREETOKEN_BASE_URL" \
+FREETOKEN_SERVED_MODEL="$FREETOKEN_SERVED_MODEL" \
+  bash "$FREETOKEN_VERIFY"
+
 systemctl --user restart openclaw-autonomous-worker.service
 systemctl --user is-enabled openclaw-autonomous-worker.service
 systemctl --user is-active openclaw-autonomous-worker.service
@@ -187,6 +244,7 @@ STATE_FILE="$(python3 - "$CONFIG_FILE" <<'PY'
 import json
 import sys
 from pathlib import Path
+
 config = json.loads(Path(sys.argv[1]).read_text())
 print(Path(config.get("state_dir", "~/.local/state/openclaw-autonomous-worker")).expanduser() / "state.json")
 PY
@@ -200,6 +258,7 @@ python3 - "$STATE_FILE" <<'PY'
 import json
 import sys
 from pathlib import Path
+
 path = Path(sys.argv[1])
 if not path.exists():
     raise SystemExit("state.json was not created by the running supervisor")
