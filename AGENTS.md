@@ -9,7 +9,7 @@
 - public GitHub状態を観測するDashboard / API / snapshot
 - `agr` / `agrx` CLI
 - reusable skills / plugins
-- GitHub Pages上のCLI documentation
+- public CLI documentation
 - KAFKA2306 portfolioのagent / platform / Web運用に関するcross-repository auditとIssue routing
 
 `agent-resources` とDashboardは人間向けoverviewであり、portfolio状態のsource of truthではありません。各owner repository、GitHub、deployment、production、一次情報の直接証拠を優先します。
