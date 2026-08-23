@@ -37,12 +37,17 @@ jobs:
       - name: Run supervisor unit tests
         run: python -m pytest -q tests/test_openclaw_autonomous_worker.py
 
-      - name: Validate installer shell syntax
-        run: bash -n scripts/openclaw-autonomous-worker/install-systemd.sh
+      - name: Validate shell syntax
+        run: |
+          bash -n scripts/openclaw-autonomous-worker/install-systemd.sh
+          bash -n scripts/openclaw-autonomous-worker/prepare-freetoken.sh
+          bash -n scripts/openclaw-autonomous-worker/run-freetoken.sh
+          bash -n scripts/openclaw-autonomous-worker/run-openclaw-gateway.sh
+          bash -n scripts/openclaw-autonomous-worker/verify-freetoken.sh
 
       - name: Validate systemd units
         run: |
           systemd-analyze verify \
-            scripts/openclaw-autonomous-worker/systemd/llama-server.service \
+            scripts/openclaw-autonomous-worker/systemd/freetoken.service \
             scripts/openclaw-autonomous-worker/systemd/openclaw-gateway.service \
             scripts/openclaw-autonomous-worker/systemd/openclaw-autonomous-worker.service
