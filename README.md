@@ -11,8 +11,7 @@ KAFKA2306 の公開GitHub作業を横断して、**何が動いているか、�
 ## 入口
 
 - **Live Dashboard** — https://agent-resources-one.vercel.app/
-- **CLI / Skills docs** — https://kafka2306.github.io/agent-resources/site/
-- **GitHub Pages fallback** — https://kafka2306.github.io/agent-resources/dashboard/
+- **CLI / Skills docs** — https://agent-resources-one.vercel.app/site/
 
 ## できること
 
@@ -53,7 +52,7 @@ team dependencyを同期:
 agr sync
 ```
 
-CLIの詳細は [CLI / Skills docs](https://kafka2306.github.io/agent-resources/site/) を参照してください。
+CLIの詳細は [CLI / Skills docs](https://agent-resources-one.vercel.app/site/) を参照してください。
 
 ### Evidence-first UIを再利用する
 
