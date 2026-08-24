@@ -65,7 +65,7 @@ function setCommonHeaders(response) {
   response.setHeader("Cache-Control", "no-store, max-age=0");
   response.setHeader(
     "Vercel-CDN-Cache-Control",
-    `public, max-age=${LIVE_CACHE_SECONDS}, stale-while-revalidate=${LIVE_STALE_WHILE_REVALIDATE_SECONDS}`,
+    `public, max-age=${LIVE_CACHE_SECONDS}, stale-while-revalidate=${LIVE_STALE_WHILE_REVALIDATE_SECONDS}, stale-if-error=3600`,
   );
 }
 
