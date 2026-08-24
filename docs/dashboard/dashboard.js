@@ -288,7 +288,7 @@ function renderLiveMeta(fetchedAt) {
 
 function renderLiveFailure(message = "Live取得失敗") {
   snapshotStatus.dataset.state = "failed";
-  snapshotStatus.textContent = "SNAPSHOT FALLBACK";
+  snapshotStatus.textContent = "LIVE ERROR";
   liveFetchedAt.removeAttribute("datetime");
   liveFetchedAt.textContent = `Live: ${message}`;
 }
