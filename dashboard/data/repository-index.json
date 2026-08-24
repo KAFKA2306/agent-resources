@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "df6be36e7669813e46e77e34e0bd797a63db7e19"
+          "fingerprint": "fda245ec252566e57bdbb3424f5fcdf33d64e5f8"
         }
       ],
-      "sourceFingerprint": "b8427b97952782990fe578c3ef81e88657f2a81ba2dc6d5c2dfdba1616618e4a",
+      "sourceFingerprint": "c5408ef97d38fd445c4412769e39e8cca684be4c3a756ce53b150b55e854bdfc",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -923,12 +923,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/DeFi/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "bf28d0317c21b8111d59b8ec2f3a4e3f03073466"
+          "fingerprint": "c09ce991b16d57b36380caa67c0021f843224c17"
         }
       ],
-      "sourceFingerprint": "302a11a51c37d597cd86650c4e574f53158f9c250f0e15af38a5ef792e754c24",
+      "sourceFingerprint": "9b4f90660076d79e449b796f1fb1dd07bf21cb8592ac0439adf390f57c5a59e7",
       "checkedAt": "2026-08-23T22:55:48Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "detective",
@@ -1136,10 +1136,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finAnalist/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3efe7243f86645ae3500559fb6ebbfe143321e2f"
+          "fingerprint": "ec3118b0e257a998eac5c0a27e8fd41a62d24dca"
         }
       ],
-      "sourceFingerprint": "ea2db918e14db61413ea468556ba16b07ccea4fabdd24344c623f699ad807a65",
+      "sourceFingerprint": "40fa379944a01b149982b89d1a7de62561072d5c3daa3307da89d3ada976a0f8",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1479,10 +1479,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/investor2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d72697aa5e87edbfc4fbec04fabefc7cf2a07cd0"
+          "fingerprint": "2b1e28623cca3dc79eb4db3f4f230ff2dcc882ad"
         }
       ],
-      "sourceFingerprint": "14514d6f7c051d9219abdd7a97291988ff631d6f2b13005c3bf87a000225cb2f",
+      "sourceFingerprint": "77ba8e4b8a818c8086363cb546bf44d9f15b10fe88c2977d8bd51d1937a5991f",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2873,10 +2873,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vlog/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6e6635d70efc09e89507b2035f7afe3acd40a1df"
+          "fingerprint": "f4788543ad3df2adf499a18e307c210f79b5ff52"
         }
       ],
-      "sourceFingerprint": "4cd7b157cd319f9bee617e0223026f129e876477109cfbfa99fa1135d8b90b98",
+      "sourceFingerprint": "170b8452765420a295ce09cd3541c9f472b5de4a03232e6525e26471d1edb72a",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
