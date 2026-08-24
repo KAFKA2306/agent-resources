@@ -28,11 +28,9 @@ assets/components.css
 
 ## Codex
 
-```text
-codex plugin marketplace add KAFKA2306/agent-resources
-```
+Install plugins through the Codex / ChatGPT Plugin Directory on supported surfaces.
 
-The plugin can also be discovered directly as a repository skill under `.agents/skills/kafka-evidence-ui`.
+The repository skill is also available directly at `.agents/skills/kafka-evidence-ui/SKILL.md`.
 
 ## agr-compatible installation
 
