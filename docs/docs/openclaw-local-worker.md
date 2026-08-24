@@ -4,7 +4,7 @@ title: OpenClaw Local Autonomous Worker
 
 # OpenClaw Local Autonomous Worker
 
-GitHub Issue を **1 Issue = 1 one-shot OpenCode ACP run** として処理するローカル coding worker の運用契約です。OpenClaw は ACP control plane、Python supervisor は deterministic control plane、OpenCode は repository 編集だけを担当します。
+GitHub Issue を **1 Issue = 1 one-shot OpenCode ACP run** として処理するローカル coding worker の運用契約です。FreeToken + Ornith がローカル推論を提供し、OpenClaw は ACP control plane、Python supervisor は deterministic control plane、OpenCode は repository 編集だけを担当します。
 
 ## 正準構成
 
@@ -68,8 +68,8 @@ OpenCodeにはGitHub control-plane責務を持たせません。Issue/comment作
 LLM contextの寿命とdaemonの寿命を分離します。
 
 ```text
-Gateway / supervisor / llama.cpp: long-lived
-Issue inference context:         one-shot
+FreeToken / OpenClaw Gateway / supervisor: long-lived
+Issue inference context:                    one-shot
 ```
 
 各runでは新規session keyを使います。同じ `coding-worker` transcriptへ #14 → #8 → #45 のように別Issueを蓄積しません。
@@ -78,7 +78,7 @@ Issue本文は `issue_body_max_chars` で上限を設け、task fileへ保存し
 
 ## 削除済みの旧経路
 
-旧実装の親LLM router、外部dispatch wrapper、共有session、compaction依存、native-subagent fallback、親agentへのfilesystem権限追加は正準構成から削除済みです。互換経路は保持しません。
+旧実装の親LLM router、外部dispatch wrapper、共有session、compaction依存、native-subagent fallback、親agentへのfilesystem権限追加、llama.cpp runtimeは正準構成から削除済みです。互換経路は保持しません。
 
 ## 設定
 
@@ -96,12 +96,14 @@ repository側のexampleは `scripts/openclaw-autonomous-worker/config.example.js
 
 `install-systemd.sh` は既存の `coding-worker` からembedded-router用の `model` / `tools` / `subagents` / context overrideを除去し、one-shot OpenCode ACP runtimeへ置換します。agentが無ければ作成します。`acp.allowedAgents` は既存値を保持したまま `opencode` を追加します。
 
+ローカル推論は FreeToken `0.1.2` と `ornith-ai/Ornith-1.5-35B-A3B-NVFP4` を使います。installerはhardware preflightと `ft bench bw --dtype nvfp4` を実行し、FreeToken endpointを起動して実completionとruntime/cache evidenceを確認してからsupervisorを開始します。
+
 ## systemd
 
 長寿命processは3つです。
 
 ```text
-llama-server.service
+freetoken.service
 openclaw-gateway.service
 openclaw-autonomous-worker.service
 ```
@@ -110,7 +112,7 @@ openclaw-autonomous-worker.service
 scripts/openclaw-autonomous-worker/install-systemd.sh
 ```
 
-installerはrepositoryを処理する前にconfig、GitHub auth、OpenClaw ACP config、llama.cpp、Gateway healthを検証します。workerはmodel/Gateway health確認後に起動します。
+installerはrepositoryを処理する前にconfig、GitHub auth、GPU/CUDA、FreeToken installation / bandwidth benchmark、FreeToken health / model / completion、OpenClaw ACP config、Gateway healthを検証します。workerはFreeTokenとGatewayの実health確認後に起動します。旧 `llama-server.service` はinstallerが停止・削除します。
 
 ## State
 
@@ -120,6 +122,8 @@ runtime stateはrepositoryへcommitしません。
 ~/.local/state/openclaw-autonomous-worker/
   state.json
   events.jsonl
+  freetoken-preflight.json
+  freetoken-evidence/
   runs/<task-id>/<run-id>/
     task.md
     result.json
@@ -142,18 +146,20 @@ bash -n scripts/openclaw-autonomous-worker/install-systemd.sh
 
 host E2E完了条件:
 
-1. llama.cpp / Gateway / supervisorがsystemdで復帰する
-2. `coding-worker` runtime read-backが `acp -> opencode -> oneshot` である
-3. 1 Issueにつきfresh session keyが発行される
-4. ACP childのcwdがそのIssue専用worktreeと一致する
-5. 親embedded LLM sessionを生成しない
-6. OpenCodeがworktreeを変更し、local validation結果を返す
-7. supervisorがvalidationを再実測する
-8. 成功変更をcommit / push / canonical PRへ反映する
-9. exact PR head SHAのCIを確認する
-10. merge条件を満たす場合だけmergeする
-11. 既存release pathがある場合だけreleaseと直接verificationを行う
-12. 失敗Issueがあってもretry stateを保存し、daemon自体は継続可能である
+1. FreeToken / Gateway / supervisorがsystemdで復帰する
+2. FreeToken `/health` と `/v1/models` が成功し、Ornith modelを返す
+3. OpenAI-compatible `/v1/chat/completions` の実completionが成功する
+4. `coding-worker` runtime read-backが `acp -> opencode -> oneshot` である
+5. 1 Issueにつきfresh session keyが発行される
+6. ACP childのcwdがそのIssue専用worktreeと一致する
+7. 親embedded LLM sessionを生成しない
+8. OpenCodeがworktreeを変更し、local validation結果を返す
+9. supervisorがvalidationを再実測する
+10. 成功変更をcommit / push / canonical PRへ反映する
+11. exact PR head SHAのCIを確認する
+12. merge条件を満たす場合だけmergeする
+13. 既存release pathがある場合だけreleaseと直接verificationを行う
+14. 失敗Issueがあってもretry stateを保存し、daemon自体は継続可能である
 
 CI greenはhost E2Eやproduction成功の代用ではありません。repositoryへ統合しただけの段階ではhost runtimeを `UNVERIFIED` とします。
 
