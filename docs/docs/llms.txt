@@ -1,66 +1,34 @@
-# Agent Resources (agr)
+# Agent Resources
 
-> A package and project manager for AI agent skills.
+> Public operations hub and CLI for reusable Agent Skills.
 
-## What This Is
+## Canonical public surfaces
 
-agr is a CLI tool that lets developers install, share, and manage AI agent skills from GitHub.
+- Dashboard: https://agent-resources-one.vercel.app/
+- CLI / Skills docs: https://agent-resources-one.vercel.app/site/
+- Source: https://github.com/KAFKA2306/agent-resources
 
-## Quick Start
+## Install
 
 ```bash
-pip install agr
+uv tool install git+https://github.com/KAFKA2306/agent-resources.git
+```
+
+## Common commands
+
+```bash
 agr add anthropics/skills/frontend-design
+agrx anthropics/skills/pdf
+agr sync
+agr list
 ```
 
-Run once without installing:
+## Documentation
 
-```bash
-agrx anthropics/skills/pdf -p "Extract tables from report.pdf"
-```
+- Creating skills: https://agent-resources-one.vercel.app/site/creating/
+- CLI reference: https://agent-resources-one.vercel.app/site/reference/
+- Agent Skills specification: https://agentskills.io/
 
-## Key Pages
+## Scope
 
-- [Home](https://kasperjunge.github.io/agent-resources/site/) - Install and use skills
-- [Creating Skills](https://kasperjunge.github.io/agent-resources/site/creating/) - Author your own
-- [Reference](https://kasperjunge.github.io/agent-resources/site/reference/) - CLI commands and troubleshooting
-
-## Common Commands
-
-```bash
-agr add user/skill         # Install from GitHub
-agr add user/repo/skill    # From a specific repo
-agr add ./path/to/skill    # Local path
-agr remove user/skill      # Uninstall
-agr sync                   # Install all dependencies
-agr list                   # Show installed skills
-agr init                   # Create agr.toml (auto-discovery)
-agr init my-skill          # Create a skill scaffold
-agrx user/skill            # Run temporarily
-agrx user/skill -i         # Run, then continue chatting
-```
-
-## agr.toml Dependencies
-
-Each dependency includes a `type`:
-
-```toml
-dependencies = [
-    {handle = "user/skill", type = "skill"},
-    {path = "./skills/my-skill", type = "skill"},
-]
-```
-
-## Source Code
-
-- GitHub: https://github.com/kasperjunge/agent-resources
-- PyPI: https://pypi.org/project/agr/
-
-## Related
-
-- Skills Specification: https://agentskills.io/specification
-- Example Skills: https://github.com/anthropics/skills
-
-## License
-
-MIT License
+The repository provides `agr` / `agrx`, reusable skills and plugins, public CLI documentation, and a public Dashboard for KAFKA2306 GitHub operations. Repository, GitHub, deployment, production, and primary sources remain the canonical evidence for underlying state.
