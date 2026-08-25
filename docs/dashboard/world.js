@@ -156,7 +156,7 @@ function createWorkItemView(repository, workItems) {
     (item) => item.kind === "issue" || item.kind === "pull_request",
   );
   if (issuePullRequests.length <= WORK_ITEM_COLLAPSE_THRESHOLD) {
-    return createAgentList(workItems, `${repository.name} agents`);
+    return createAgentList(workItems, `${repository.name} work items`);
   }
 
   const container = document.createElement("div");
@@ -254,7 +254,7 @@ function createStation(repository, workItems, heat) {
   const name = document.createElement("strong");
   name.textContent = repository.name;
   const count = document.createElement("span");
-  count.textContent = `${workItems.length} agents · heat ${Math.round(heat)}`;
+  count.textContent = `作業項目 ${workItems.length}件 · heat ${Math.round(heat)}`;
   repositoryLink.append(name, count);
 
   const agents = createWorkItemView(repository, workItems);
@@ -322,7 +322,7 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
     (repository) => (repository.group || "unclassified") !== "unclassified",
   ).length;
   const unclassifiedRepositories = repositories.length - classifiedRepositories;
-  summary.textContent = `${workItems.length} agents · ${classifiedRepositories}/${repositories.length} zoned · ${unclassifiedRepositories} unclassified`;
+  summary.textContent = `作業項目 ${workItems.length}件 · ${classifiedRepositories}/${repositories.length} zoned · ${unclassifiedRepositories} unclassified`;
 
   if (repositories.length === 0) {
     const empty = document.createElement("p");
