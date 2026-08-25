@@ -190,6 +190,8 @@ def main() -> None:
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
         "live repository rendered": "live-repo" in dom,
         "live work item rendered": "LIVE-ISSUE" in dom,
+        "work item terminology rendered": "作業項目 1件" in dom,
+        "misleading agent count absent": "1 agents" not in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
     }
     failures = [name for name, passed in checks.items() if not passed]
