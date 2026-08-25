@@ -100,14 +100,15 @@ obsoleteな文書は削除し、重複文書は統合します。source code、s
 ## GitHub writes
 
 1. write直前に対象branch / PR / Issue / CIを再取得する。
-2. 新規branchはcanonical PRを直ちにopenするためにだけ作り、既存のcanonical branch / PRがあれば再利用する。orphan branchの棚卸し・削除そのものはこのagentのworkline、blocker、completion criteriaにしない。
-3. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
-4. mergeはexact PR headでPR merge条件を満たすことを確認し、可能ならexpected head SHAを固定する。product release条件をmerge判定へ混ぜない。
-5. CI結果は、そのworkflowがexact SHAで実行したcheckの範囲だけに使う。CI greenを製品完成の代用にしない。
-6. 実機/productionが利用不能なら対応claimを `UNVERIFIED` とし、利用不能そのものを自動merge blockerにしない。
-7. host-side rejectionを認証失敗と決めつけず、stateを再取得して同じcanonical actionを1回だけ再試行する。2回目も拒否されたらそのrunのmutationを止める。
-8. branch lifecycle cleanupは既存のrepository automationまたはwrite-capable operatorへ委譲できる。cleanup未完了だけを理由にIssue / PR / worklineを作らず、このagentの成果未達理由にも使わない。
-9. 未実行・未観測のtest、deployment、runtime layerをPASSと報告しない。
+2. permission / capability確認のためにdummy file、no-op commit、使い捨てmutationを作らない。read-only permission/API確認を優先し、writeは実際のcanonical worklineだけで行う。
+3. 新規branchはcanonical PRを直ちにopenするためにだけ作り、既存のcanonical branch / PRがあれば再利用する。orphan branchの棚卸し・削除そのものはこのagentのworkline、blocker、completion criteriaにしない。
+4. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
+5. mergeはexact PR headでPR merge条件を満たすことを確認し、可能ならexpected head SHAを固定する。product release条件をmerge判定へ混ぜない。
+6. CI結果は、そのworkflowがexact SHAで実行したcheckの範囲だけに使う。CI greenを製品完成の代用にしない。
+7. 実機/productionが利用不能なら対応claimを `UNVERIFIED` とし、利用不能そのものを自動merge blockerにしない。
+8. host-side rejectionを認証失敗と決めつけず、stateを再取得して同じcanonical actionを1回だけ再試行する。2回目も拒否されたらそのrunのmutationを止める。
+9. branch lifecycle cleanupは既存のrepository automationまたはwrite-capable operatorへ委譲できる。cleanup未完了だけを理由にIssue / PR / worklineを作らず、このagentの成果未達理由にも使わない。
+10. 未実行・未観測のtest、deployment、runtime layerをPASSと報告しない。
 
 ## Security
 
