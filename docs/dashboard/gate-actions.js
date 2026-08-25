@@ -10,7 +10,7 @@ export function enhanceGateItems(root = gateDetail) {
     const separator = " · ";
     const [repositoryName] = canonicalLink.textContent.split(separator, 1);
 
-    const owner = document.createElement("div");
+    const owner = document.createElement("span");
     owner.className = "gate-item-meta gate-item-owner";
     owner.textContent = `Owner repository: ${repositoryName || "unknown"}`;
 
@@ -21,8 +21,7 @@ export function enhanceGateItems(root = gateDetail) {
     action.rel = "noreferrer";
     action.textContent = "対応先を開く";
 
-    canonicalLink.insertAdjacentElement("afterend", owner);
-    row.append(action);
+    canonicalLink.parentElement?.append(owner, action);
   }
 }
 
