@@ -358,9 +358,9 @@ jobs:
           if not repo_match or int(repo_match.group(1)) <= 0:
               raise SystemExit('rendered dashboard has zero repositories')
 
-          agent_match = re.search(r'id="agent-world-summary"[^>]*>\s*(\d+) agents', html)
-          if not agent_match or int(agent_match.group(1)) <= 0:
-              raise SystemExit('rendered dashboard has zero agents')
+          work_item_match = re.search(r'id="agent-world-summary"[^>]*>\s*作業項目\s+(\d+)件', html)
+          if not work_item_match or int(work_item_match.group(1)) <= 0:
+              raise SystemExit('rendered dashboard has zero work items')
 
           status_match = re.search(r'id="snapshot-status"[^>]*>([^<]+)<', html)
           status = status_match.group(1).strip() if status_match else ''
@@ -373,7 +373,7 @@ jobs:
               raise SystemExit('rendered dashboard monthly statistics did not render')
 
           print(f"browser repositories: {repo_match.group(1)}")
-          print(f"browser agents: {agent_match.group(1)}")
+          print(f"browser work items: {work_item_match.group(1)}")
           print(f"browser snapshot status: {status}")
           PY
               then

@@ -145,7 +145,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("--headless=new", workflow)
         self.assertIn("--dump-dom", workflow)
         self.assertIn("rendered dashboard has zero repositories", workflow)
-        self.assertIn("rendered dashboard has zero agents", workflow)
+        self.assertIn("rendered dashboard has zero work items", workflow)
         self.assertIn("rendered dashboard has no recent activity items", workflow)
         self.assertIn("rendered dashboard monthly statistics did not render", workflow)
         self.assertIn("PUBLIC PRESENCE", workflow)
