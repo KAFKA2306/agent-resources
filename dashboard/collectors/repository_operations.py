@@ -6,6 +6,7 @@ from urllib.parse import quote
 
 from dashboard.collectors.github_api import (
     API_VERSION,
+    GitHubApiError,
     atomic_write_json,
     fetch_paginated,
     request_json,
@@ -68,7 +69,12 @@ def branch_is_fully_merged(
 ):
     base = quote(branch_name, safe="")
     head = quote(default_branch, safe="")
-    comparison, _ = request_fn(f"{api_url}/compare/{base}...{head}", token)
+    try:
+        comparison, _ = request_fn(f"{api_url}/compare/{base}...{head}", token)
+    except GitHubApiError as exc:
+        if exc.status == 404:
+            return False
+        raise
     behind_by = comparison.get("behind_by")
     if not isinstance(behind_by, int) or isinstance(behind_by, bool) or behind_by < 0:
         raise ValueError(f"compare payload is missing valid behind_by: {branch_name}")
