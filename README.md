@@ -1,5 +1,8 @@
 # agent-resources — 公開Agent運用ハブ
 
+https://agent-resources-one.vercel.app/
+https://agent-resources-one.vercel.app/site/
+
 [![Skill catalog integrity](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml)
 [![Build and Deploy Docs](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml)
 [![Validate Dashboard](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml)
@@ -7,11 +10,6 @@
 KAFKA2306 の公開GitHub作業を横断して、**何が動いているか、何が失敗したか、何に対応が必要か、その証拠はどこか**を確認する人間向けoverviewです。同時に、`agr` / `agrx` で必要なagent skillだけを導入・実行できます。
 
 このrepositoryやDashboard自体を状態の正本にはしません。各repository、GitHub、deployment、productionの直接証拠を優先します。
-
-## 入口
-
-- **Live Dashboard** — https://agent-resources-one.vercel.app/
-- **CLI / Skills docs** — https://agent-resources-one.vercel.app/site/
 
 ## できること
 
