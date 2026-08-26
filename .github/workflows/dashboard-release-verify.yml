@@ -50,13 +50,13 @@ jobs:
 
           if [ "$DEPLOYMENT_ENVIRONMENT" = "production" ]; then
             echo "is_production=true" >> "$GITHUB_OUTPUT"
-            echo "target_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+            echo "target_url=https://agent-resources-one.vercel.app" >> "$GITHUB_OUTPUT"
           else
             echo "is_production=false" >> "$GITHUB_OUTPUT"
             echo "target_url=" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "environment=$DEPLOYMENT_ENVIRONMENT url=$RELEASE_URL"
+          echo "environment=$DEPLOYMENT_ENVIRONMENT deployment_url=$RELEASE_URL"
 
       - name: Skip non-production deployment
         if: steps.deployment.outputs.is_production != 'true'
