@@ -25,6 +25,10 @@ def make_catalog(root: Path) -> dict:
     }
 
 
+def no_git_tree_sha(_root: Path, _path_text: str) -> None:
+    return None
+
+
 def test_valid_catalog_and_manifest(tmp_path: Path) -> None:
     catalog = make_catalog(tmp_path)
     catalog_path = tmp_path / "catalog.json"
@@ -40,7 +44,9 @@ def test_valid_catalog_and_manifest(tmp_path: Path) -> None:
             }
         ],
     }
-    assert validate_catalog(catalog, tmp_path) == []
+    assert validate_catalog(
+        catalog, tmp_path, tree_sha_resolver=no_git_tree_sha
+    ) == []
     assert validate_manifest(manifest, catalog_path, catalog) == []
 
 
@@ -50,7 +56,7 @@ def test_duplicate_id_and_missing_directory_are_rejected(tmp_path: Path) -> None
     duplicate["path"] = "skills/missing"
     catalog["collections"].append(duplicate)
     catalog["count"] = 2
-    errors = validate_catalog(catalog, tmp_path)
+    errors = validate_catalog(catalog, tmp_path, tree_sha_resolver=no_git_tree_sha)
     assert "duplicate id: example" in errors
     assert "missing directory: skills/missing" in errors
 
@@ -58,8 +64,21 @@ def test_duplicate_id_and_missing_directory_are_rejected(tmp_path: Path) -> None
 def test_unlisted_skill_directory_is_rejected(tmp_path: Path) -> None:
     catalog = make_catalog(tmp_path)
     (tmp_path / "skills" / "new-skill").mkdir()
-    errors = validate_catalog(catalog, tmp_path)
+    errors = validate_catalog(catalog, tmp_path, tree_sha_resolver=no_git_tree_sha)
     assert "catalog missing skill directory: skills/new-skill" in errors
+
+
+def test_stale_tree_sha_is_rejected(tmp_path: Path) -> None:
+    catalog = make_catalog(tmp_path)
+
+    def current_tree_sha(_root: Path, _path_text: str) -> str:
+        return "b" * 40
+
+    errors = validate_catalog(catalog, tmp_path, tree_sha_resolver=current_tree_sha)
+    assert (
+        "collections[0].tree_sha does not match current Git tree for skills/example"
+        in errors
+    )
 
 
 def test_manifest_checksum_mismatch_is_rejected(tmp_path: Path) -> None:
