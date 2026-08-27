@@ -6,7 +6,7 @@ on:
       - 'api/dashboard-live.js'
       - 'dashboard/**'
       - '!dashboard/data/repository-index.json'
-      - 'docs/dashboard/**'
+      - 'docs/**'
       - 'package.json'
       - 'vercel.json'
       - '.github/workflows/docs.yml'
@@ -35,7 +35,7 @@ jobs:
           package-manager-cache: false
 
       - name: Install dashboard dependencies
-        run: pip install -r dashboard/requirements.txt
+        run: pip install mkdocs-material -r dashboard/requirements.txt
 
       - name: Validate dashboard Python syntax
         run: python -m compileall -q dashboard
@@ -45,6 +45,10 @@ jobs:
           set -euo pipefail
           python -m unittest discover -s dashboard/tests -p 'test_*.py' -v
           npm run test:dashboard
+
+      - name: Build public docs
+        working-directory: docs
+        run: mkdocs build --strict
 
       - name: Verify baseline to live overlay in headless Chrome
         run: python dashboard/tests/dashboard_live_browser_e2e.py
