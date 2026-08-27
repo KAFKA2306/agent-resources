@@ -1,6 +1,6 @@
 site_name: Agent Resources
 site_url: https://agent-resources-one.vercel.app/site/
-site_description: Public agent operations dashboard and package manager for AI agent skills.
+site_description: 公開Agent運用ハブと、AI agent skillsを導入・共有・実行するAGR CLIのドキュメント。
 site_author: KAFKA2306
 repo_url: https://github.com/KAFKA2306/agent-resources
 repo_name: KAFKA2306/agent-resources
