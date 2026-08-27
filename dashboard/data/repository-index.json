@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "fda245ec252566e57bdbb3424f5fcdf33d64e5f8"
+          "fingerprint": "2ba8565b5b9e3cd15a9e416e4e2bfb1a7b2da32b"
         }
       ],
-      "sourceFingerprint": "c5408ef97d38fd445c4412769e39e8cca684be4c3a756ce53b150b55e854bdfc",
+      "sourceFingerprint": "efc2d4f277e0a2785af14f218aeff29cffaed74bba18424bd2a27ca4317f34c4",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -1619,10 +1619,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/KAFKA2306/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "0b714a2be92eb006106c250d3e41ca636775a3fe"
+          "fingerprint": "ce8358c669e06fdf1028b5e28e7c04386fa449e8"
         }
       ],
-      "sourceFingerprint": "aa574762e9041d3b3e9ace89e55ee87aab43cd079c27a4a67d833c4f77dcd1a1",
+      "sourceFingerprint": "79b2a6e70a49528cfe2c6299536819c428eb2ad4c0a368ff590e50ce79536ec2",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -2346,10 +2346,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/readable-github/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "a2456f97501350a3fe06477d9524d58751e3ed93"
+          "fingerprint": "21897bf972fbccad3238ea493050d9e15e17012e"
         }
       ],
-      "sourceFingerprint": "d1d49f3110c0b21bd1a6873616770e3216727c992463213a7dc689d4da7063b6",
+      "sourceFingerprint": "244ee677c66b02ae2ce71034a270686bc54054ffa87fedda5da89629b19700d5",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
