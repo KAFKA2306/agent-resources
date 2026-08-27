@@ -1,6 +1,6 @@
 export const OWNER = "KAFKA2306";
 export const LIVE_SCHEMA_VERSION = "1.0.0";
-export const LIVE_CACHE_SECONDS = 120;
+export const LIVE_CACHE_SECONDS = 600;
 export const LIVE_STALE_WHILE_REVALIDATE_SECONDS = 30;
 export const ACTIVITY_WINDOW_DAYS = 7;
 export const MAX_ACTIVITY_ITEMS = 200;
