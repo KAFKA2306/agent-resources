@@ -1,6 +1,6 @@
 {
   "schema": "kafka.agent-resources.skill-collections.v1",
-  "generated_at": "2026-08-27T02:06:00Z",
+  "generated_at": "2026-08-27T09:07:04Z",
   "source": {
     "provider": "GitHub",
     "repository": "KAFKA2306/agent-resources",
@@ -8,12 +8,12 @@
     "tree_api": "https://api.github.com/repos/KAFKA2306/agent-resources/contents/skills?ref=main",
     "license": "MIT"
   },
-  "count": 9,
+  "count": 10,
   "collections": [
     {
       "id": "agr",
       "path": "skills/agr",
-      "tree_sha": "e2a29c8e09fc152022c4ac33209d006ae3d29934",
+      "tree_sha": "9195eae488a2a0a0bab2ce0d3ea22b5eb55e0d3c",
       "kind": "skill",
       "title": "agr",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/agr"
@@ -21,7 +21,7 @@
     {
       "id": "development",
       "path": "skills/development",
-      "tree_sha": "477dc786764e9c8c2232c8181f350a1e296e0201",
+      "tree_sha": "3f49fddbf883e952bcccc423bd127e4c2015d769",
       "kind": "collection",
       "title": "Development",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/development"
@@ -45,7 +45,7 @@
     {
       "id": "product-development",
       "path": "skills/product-development",
-      "tree_sha": "4ecc82cbb9771f59c86a7abcc395d129d16e1734",
+      "tree_sha": "3ffc8b41f9990ca84f678699d120fe7832a4d918",
       "kind": "collection",
       "title": "Product Development",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/product-development"
@@ -53,7 +53,7 @@
     {
       "id": "product-strategy",
       "path": "skills/product-strategy",
-      "tree_sha": "ddb1e28353961d68e0dc64ea1c9b3787071e81f0",
+      "tree_sha": "bdba7a00acac0766c6458eadcdaa58f94a989231",
       "kind": "collection",
       "title": "Product Strategy",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/product-strategy"
@@ -69,15 +69,23 @@
     {
       "id": "skill-development",
       "path": "skills/skill-development",
-      "tree_sha": "735471ded3938d7feef607c4fd2454e47753b3b1",
+      "tree_sha": "fd27452a311bf41f0f32e56c9a5891e0b8ff35f8",
       "kind": "collection",
       "title": "Skill Development",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/skill-development"
     },
     {
+      "id": "verification",
+      "path": "skills/verification",
+      "tree_sha": "d09d15cc522ff2b36d33d393de576eeea3a3568e",
+      "kind": "skill",
+      "title": "Verification",
+      "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/verification"
+    },
+    {
       "id": "writing",
       "path": "skills/writing",
-      "tree_sha": "97be190daf86baf332db3e00102e9d7c2cf6ffb5",
+      "tree_sha": "516180ee45989219bd36a80026e8c367e22b91cd",
       "kind": "collection",
       "title": "Writing",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/writing"

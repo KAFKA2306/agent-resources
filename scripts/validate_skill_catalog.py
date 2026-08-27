@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +26,28 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def validate_catalog(catalog: dict[str, Any], root: Path) -> list[str]:
+def resolve_git_tree_sha(root: Path, path_text: str) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", f"HEAD:{path_text}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return None
+    tree_sha = result.stdout.strip()
+    if len(tree_sha) == 40 and all(char in HEX40 for char in tree_sha):
+        return tree_sha
+    return None
+
+
+def validate_catalog(
+    catalog: dict[str, Any],
+    root: Path,
+    *,
+    tree_sha_resolver: Callable[[Path, str], str | None] = resolve_git_tree_sha,
+) -> list[str]:
     errors: list[str] = []
     if catalog.get("schema") != CATALOG_SCHEMA:
         errors.append("catalog schema is not supported")
@@ -58,6 +81,13 @@ def validate_catalog(catalog: dict[str, Any], root: Path) -> list[str]:
             seen_paths.add(path_text)
             if not (root / path_text).is_dir():
                 errors.append(f"missing directory: {path_text}")
+            else:
+                actual_tree_sha = tree_sha_resolver(root, path_text)
+                if actual_tree_sha is not None and tree_sha != actual_tree_sha:
+                    errors.append(
+                        f"{prefix}.tree_sha does not match current Git tree "
+                        f"for {path_text}"
+                    )
         if (
             not isinstance(tree_sha, str)
             or len(tree_sha) != 40
