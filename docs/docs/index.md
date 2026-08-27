@@ -2,9 +2,9 @@
 title: Home
 ---
 
-# AGR — Skills for AI Agents
+# AGR CLI — Skills for AI Agents
 
-A package and project manager for AI agent skills. Install, share, and run skills from GitHub with a single command.
+AGR は、この公開Agent運用ハブでAI agent skillsを導入・共有・実行するためのCLIです。repository全体の運用状況は https://agent-resources-one.vercel.app/ で確認できます。
 
 ## Install
 
