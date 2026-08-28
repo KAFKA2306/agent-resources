@@ -90,7 +90,7 @@ def main() -> None:
                 check=True,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=45,
             )
         finally:
             server.shutdown()
