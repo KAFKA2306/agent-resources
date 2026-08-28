@@ -1,7 +1,6 @@
-# agent-resources — 公開Agent運用ハブ
-
 https://agent-resources-one.vercel.app/
-https://agent-resources-one.vercel.app/site/
+
+# agent-resources — 公開Agent運用ハブ
 
 [![Skill catalog integrity](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml)
 [![Build and Deploy Docs](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml)
