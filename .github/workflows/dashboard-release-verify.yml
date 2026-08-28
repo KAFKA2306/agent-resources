@@ -26,6 +26,7 @@ jobs:
     env:
       RELEASE_URL: ${{ github.event.client_payload.url || inputs.deployment_url || 'https://agent-resources-one.vercel.app' }}
       DEPLOYMENT_ENVIRONMENT: ${{ github.event.client_payload.environment || 'production' }}
+      EXPECTED_SHA: ${{ github.event.client_payload.git.sha || github.sha }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -61,6 +62,12 @@ jobs:
       - name: Skip non-production deployment
         if: steps.deployment.outputs.is_production != 'true'
         run: echo 'Preview deployment succeeded; product release verification is not applicable.'
+
+      - name: Verify production live payload
+        if: steps.deployment.outputs.is_production == 'true'
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.target_url }}
+        run: python dashboard/production_live_smoke.py
 
       - name: Verify released production dashboard
         if: steps.deployment.outputs.is_production == 'true'
