@@ -48,6 +48,10 @@ def main() -> None:
         r'id="repository-count"[^>]*>\s*(\d+) repositories\s*</span>'
     )
     repository_count_match = repository_count_pattern.search(dom)
+    live_timestamp_pattern = re.compile(
+        r'id="live-fetched-at"[^>]*datetime="([^"]+)"[^>]*>\s*Live:\s*([^<]+)</time>'
+    )
+    live_timestamp_match = live_timestamp_pattern.search(dom)
     poker_surface_pattern = re.compile(
         r'<article class="world-station"[^>]*>.*?'
         r'<strong>poker-raise-quiz</strong>.*?'
@@ -58,7 +62,7 @@ def main() -> None:
 
     checks = {
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
-        "live timestamp rendered": "Live: 読込中" not in dom and "Live: 取得できません" not in dom,
+        "live timestamp rendered": live_timestamp_match is not None,
         "live error absent": "LIVE ERROR" not in dom,
         "repository count rendered": repository_count_match is not None,
         "operations timestamp rendered": "Operations snapshot:" in dom
@@ -91,9 +95,13 @@ def main() -> None:
             "repository operations production browser E2E failed: classification counts do not sum to repository count"
         )
 
+    live_datetime, live_text = live_timestamp_match.groups()
+    if live_text.strip() in {"読込中", "取得できません"}:
+        raise SystemExit("repository operations production browser E2E failed: live timestamp is unavailable")
+
     print(
         "repository operations production browser E2E: "
-        f"live {rendered_repository_count} repos, operations {repository_count} repos, "
+        f"live {rendered_repository_count} repos at {live_datetime}, operations {repository_count} repos, "
         f"{classified_count} classified, {unclassified_count} unclassified, "
         f"poker-raise-quiz FRONT {POKER_RAISE_QUIZ_URL} PASS"
     )
