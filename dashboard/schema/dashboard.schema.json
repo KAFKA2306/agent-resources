@@ -12,8 +12,7 @@
     "repositories": {"type": "array", "items": {"$ref": "#/$defs/repository"}},
     "workItems": {"type": "array", "items": {"$ref": "#/$defs/workItem"}},
     "activity": {"type": "array", "items": {"$ref": "#/$defs/activityItem"}},
-    "stats": {"$ref": "#/$defs/stats"},
-    "openclawRuntime": {"$ref": "#/$defs/openclawRuntime"}
+    "stats": {"$ref": "#/$defs/stats"}
   },
   "$defs": {
     "summary": {
@@ -113,38 +112,6 @@
         "issuesCreated": {"type": "integer", "minimum": 0},
         "issuesClosed": {"type": "integer", "minimum": 0},
         "partial": {"type": "boolean"}
-      }
-    },
-    "openclawRuntime": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["scope", "collectedAt", "agents", "automations"],
-      "properties": {
-        "scope": {"type": "string", "const": "domain-agents"},
-        "collectedAt": {"type": "string", "format": "date-time"},
-        "agents": {"type": "array", "items": {"$ref": "#/$defs/openclawAgent"}},
-        "automations": {"type": "array", "items": {"$ref": "#/$defs/openclawAutomation"}}
-      }
-    },
-    "openclawAgent": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "sessionCount", "models"],
-      "properties": {
-        "id": {"type": "string", "minLength": 1, "maxLength": 80},
-        "sessionCount": {"type": "integer", "minimum": 0},
-        "models": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 160}, "uniqueItems": true}
-      }
-    },
-    "openclawAutomation": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "agentId", "name", "status"],
-      "properties": {
-        "id": {"type": "string", "minLength": 1, "maxLength": 160},
-        "agentId": {"type": "string", "minLength": 1, "maxLength": 80},
-        "name": {"type": "string", "minLength": 1, "maxLength": 200},
-        "status": {"type": "string", "enum": ["disabled", "running", "ok", "error", "skipped", "idle", "unknown"]}
       }
     }
   }
