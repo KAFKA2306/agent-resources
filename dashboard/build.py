@@ -9,7 +9,6 @@ from dashboard.collectors.github_api import atomic_write_json
 from dashboard.domain.lanes import add_lane
 
 ACTIVITY_WINDOW_DAYS = 7
-OPENCLAW_AUTOMATION_STATUSES = {"disabled", "running", "ok", "error", "skipped", "idle", "unknown"}
 
 
 def load_json(path):
@@ -57,44 +56,6 @@ def canonical_stats(stats, public_repository_count):
         "publicRepositories": public_repository_count,
         "archivedPublicRepositories": stats["archivedPublicRepositories"],
         "monthly": monthly,
-    }
-
-
-def canonical_openclaw_runtime(runtime):
-    if runtime is None:
-        return None
-    if runtime.get("scope") != "domain-agents":
-        raise ValueError("OpenClaw runtime input must be limited to domain-agents")
-
-    agents = []
-    for row in runtime.get("agents", []):
-        agent_id = row.get("id")
-        session_count = row.get("sessionCount")
-        models = row.get("models", [])
-        if not isinstance(agent_id, str) or not agent_id:
-            raise ValueError("OpenClaw runtime agent id is invalid")
-        if not isinstance(session_count, int) or session_count < 0:
-            raise ValueError("OpenClaw runtime sessionCount is invalid")
-        if not isinstance(models, list) or any(not isinstance(model, str) or not model for model in models):
-            raise ValueError("OpenClaw runtime model list is invalid")
-        agents.append({"id": agent_id, "sessionCount": session_count, "models": sorted(set(models))})
-    agents.sort(key=lambda row: row["id"])
-
-    automations = []
-    for row in runtime.get("automations", []):
-        required = ("id", "agentId", "name", "status")
-        if any(not isinstance(row.get(key), str) or not row.get(key) for key in required):
-            raise ValueError("OpenClaw runtime automation is incomplete")
-        if row["status"] not in OPENCLAW_AUTOMATION_STATUSES:
-            raise ValueError("OpenClaw runtime automation status is invalid")
-        automations.append({key: row[key] for key in required})
-    automations.sort(key=lambda row: (row["agentId"], row["name"], row["id"]))
-
-    return {
-        "scope": "domain-agents",
-        "collectedAt": runtime["collectedAt"],
-        "agents": agents,
-        "automations": automations,
     }
 
 
@@ -191,7 +152,6 @@ def build_snapshot(
     workflow_runs,
     activity_items=None,
     stats=None,
-    openclaw_runtime=None,
     generated_at=None,
 ):
     public_repositories = [
@@ -241,8 +201,6 @@ def build_snapshot(
     }
     if stats is not None:
         snapshot["stats"] = canonical_stats(stats, len(public_repositories))
-    if openclaw_runtime is not None:
-        snapshot["openclawRuntime"] = canonical_openclaw_runtime(openclaw_runtime)
     return snapshot
 
 
@@ -271,7 +229,6 @@ def main(argv=None):
     parser.add_argument("--workflow-runs", required=True)
     parser.add_argument("--activity")
     parser.add_argument("--stats")
-    parser.add_argument("--openclaw-runtime")
     parser.add_argument("--schema", required=True)
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
@@ -282,7 +239,6 @@ def main(argv=None):
         load_json(args.workflow_runs),
         activity_items=load_json(args.activity) if args.activity else None,
         stats=load_json(args.stats) if args.stats else None,
-        openclaw_runtime=load_json(args.openclaw_runtime) if args.openclaw_runtime else None,
     )
     schema = load_json(args.schema)
     validate_snapshot(snapshot, schema)
