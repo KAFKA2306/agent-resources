@@ -13,6 +13,7 @@ import threading
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DASHBOARD_DIR = ROOT / "docs" / "dashboard"
+PUBLIC_SURFACE_URL = "https://kafka2306.github.io/poker-raise-quiz/"
 
 
 def repository(repo_id: str, name: str) -> dict[str, object]:
@@ -28,19 +29,22 @@ def repository(repo_id: str, name: str) -> dict[str, object]:
     }
 
 
+baseline_repository = repository("shared", "poker-raise-quiz")
+baseline_repository["publicLinks"] = [{"kind": "front", "url": PUBLIC_SURFACE_URL}]
+
 BASELINE = {
     "schemaVersion": "1.0.0",
     "generatedAt": "2026-08-19T00:00:00Z",
     "summary": {"repositoryCount": 1, "workItemCount": 1, "activityCount": 0},
-    "repositories": [repository("baseline", "baseline-repo")],
+    "repositories": [baseline_repository],
     "workItems": [
         {
-            "id": "baseline#1",
-            "repositoryId": "baseline",
+            "id": "shared#1",
+            "repositoryId": "shared",
             "kind": "issue",
             "number": 1,
             "title": "BASELINE-ISSUE",
-            "url": "https://github.com/KAFKA2306/baseline-repo/issues/1",
+            "url": "https://github.com/KAFKA2306/poker-raise-quiz/issues/1",
             "state": "open",
             "updatedAt": "2026-08-19T00:00:00Z",
             "lane": "waiting",
@@ -58,15 +62,15 @@ def live_payload() -> dict[str, object]:
         "source": "live",
         "scope": "public",
         "fetchedAt": fetched_at,
-        "repositories": [repository("live", "live-repo")],
+        "repositories": [repository("shared", "poker-raise-quiz")],
         "workItems": [
             {
-                "id": "live#2",
-                "repositoryId": "live",
+                "id": "shared#2",
+                "repositoryId": "shared",
                 "kind": "issue",
                 "number": 2,
                 "title": "LIVE-ISSUE",
-                "url": "https://github.com/KAFKA2306/live-repo/issues/2",
+                "url": "https://github.com/KAFKA2306/poker-raise-quiz/issues/2",
                 "state": "open",
                 "updatedAt": fetched_at,
                 "lane": "failed",
@@ -188,8 +192,10 @@ def main() -> None:
     checks = {
         "live request occurred": FixtureHandler.live_requests >= 1,
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
-        "live repository rendered": "live-repo" in dom,
+        "live repository rendered": "poker-raise-quiz" in dom,
         "live work item rendered": "LIVE-ISSUE" in dom,
+        "baseline public link survived live overlay": PUBLIC_SURFACE_URL in dom,
+        "public surface action rendered": "FRONT ↗" in dom,
         "work item terminology rendered": "作業項目 1件" in dom,
         "misleading agent count absent": "1 agents" not in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
@@ -197,7 +203,7 @@ def main() -> None:
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
         raise SystemExit("dashboard browser E2E failed: " + ", ".join(failures))
-    print("dashboard browser E2E: baseline -> live overlay PASS")
+    print("dashboard browser E2E: baseline publicLinks -> live overlay PASS")
 
 
 if __name__ == "__main__":
