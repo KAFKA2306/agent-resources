@@ -580,10 +580,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/books/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "99d993dabe3bfc503b5664861708f36788b97f9b"
+          "fingerprint": "fbe458ce3ae3d13f51cc9a855f824fe42aa83022"
         }
       ],
-      "sourceFingerprint": "bb0a2ce0b0831295156737ce923ae6dbc06319e69480f2829746c3411c5fa3f6",
+      "sourceFingerprint": "bc7d302149d1fdfa06ca573cab03f4a89480cc6376311f5fee80d07a18b526ad",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -684,12 +684,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/cast_event_cal/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "47775c43e69551f71e435b0c9cb3028270568b89"
+          "fingerprint": "bb447ec790eb293784bbc702c92665979e1c4519"
         }
       ],
-      "sourceFingerprint": "5ef36646f7319aea7f3d347ed565dbd575484c9c4ef7d75d1626b99cbd3f4c21",
+      "sourceFingerprint": "7b57cfa93a5dc7e8a53cbf751a9a3b6ee56cfbdc0c84fca80eac48d4c9f97a86",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "cedar-pollen-bi",
@@ -1619,10 +1619,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/KAFKA2306/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "ce8358c669e06fdf1028b5e28e7c04386fa449e8"
+          "fingerprint": "fe68582004592e3235f56a9a4014ef931ea3854c"
         }
       ],
-      "sourceFingerprint": "79b2a6e70a49528cfe2c6299536819c428eb2ad4c0a368ff590e50ce79536ec2",
+      "sourceFingerprint": "d80cc20534fb928aca398393b67b38f6e394bb42ff42ab967ab38ecf1c4fb2c5",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -1801,12 +1801,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/magicaltexture/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "db4015b3d23eb2dbba835bad43b7188ed5fd4892"
+          "fingerprint": "441c22289d9408058e71cfcbd8f135b4cf54d427"
         }
       ],
-      "sourceFingerprint": "c6ff7f6eaca27c2a20a6a210b5a89b07d96b257878e1e2a73dc532461cda916e",
+      "sourceFingerprint": "96baff202048f71546e578c55a10bdaf088ebe9616857a4ce10ac12712e71a93",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "marvelousdesigner",
@@ -1858,12 +1858,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/mitsuikaggle/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "8c1cb6e55d02c5a8b9b9dc42f272a1eed8660d77"
+          "fingerprint": "70adda09516427fa476ae693e4f15c99ec3b13f2"
         }
       ],
-      "sourceFingerprint": "9ee653778afcf6822b45c35147d0be8fe7475652fcc35d6e9ec3cb49cb5729a3",
+      "sourceFingerprint": "e0c19c3aa87f0d183cac78f16679b6c848879368c03c7da7ef147c375a80be9f",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "mj",
@@ -2292,6 +2292,32 @@
       "needsReview": false
     },
     {
+      "name": "poker-raise-quiz",
+      "purpose": "四択を1回タップして、その場で正誤を確認する静的な資格クイズです。回答状態はブラウザに保存され、回答履歴をChatGPT向けにコピーできます。",
+      "matches": [
+        "四択を1回タップして、その場で正誤を確認する静的な資格クイズです。回答状態はブラウザに保存され、回答履歴をChatGPT向けにコピーできます。"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/poker-raise-quiz",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/poker-raise-quiz",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/poker-raise-quiz/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "cf4bd75317f4bdee3b976229fd94eca8ec046d1b"
+        }
+      ],
+      "sourceFingerprint": "406e494d0bada0131f98a20acc91d2b053cc4863ddea51c94502db1531668833",
+      "checkedAt": "2026-08-28T06:18:50Z",
+      "needsReview": false
+    },
+    {
       "name": "prompt-vault",
       "purpose": "生成プロンプト本文・再利用部品・template・生成画像・用途・来歴を分離して管理し、再構成可能にする保管庫",
       "matches": [
@@ -2377,10 +2403,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/rule-scribe-games/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "aac504db2597190d1bd163c117aa9f4438126429"
+          "fingerprint": "c798fa9b9f7dd847254e970373085da8b171b9d4"
         }
       ],
-      "sourceFingerprint": "eb951965b4e3aae6791db58d170ef7ba86814641fa7355e32f4c5e5ec238aa3b",
+      "sourceFingerprint": "d533742e2a4005f3a2299f9aae97d3d6d25b5692475f2c553021b3d1a45919b4",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -3210,10 +3236,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrmine/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "2bd38478573f268a3f15254d9bd4603a95215fe5"
+          "fingerprint": "8b588ee0ffedeec4eab3808a043e1b3b76dd9087"
         }
       ],
-      "sourceFingerprint": "2a7509c27001fdea5d8b6e6362bb9415148c8143f540745c4f6de7e3d620970a",
+      "sourceFingerprint": "f513fcab98a518ba4cff19c998beec159f741d15ceb7cdb8335e2a3ac0c902fb",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
