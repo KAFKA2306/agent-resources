@@ -8,6 +8,12 @@
     },
     {
       "owner": "KAFKA2306",
+      "name": "poker-raise-quiz",
+      "url": "https://kafka2306.github.io/poker-raise-quiz/",
+      "provider": "github-pages"
+    },
+    {
+      "owner": "KAFKA2306",
       "name": "rule-scribe-games",
       "url": "https://bodoge-no-mikata.vercel.app",
       "provider": "vercel"
