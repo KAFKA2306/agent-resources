@@ -33,8 +33,8 @@ test("live overlay replaces volatile state but preserves heavy baseline stats an
     scope: "public",
     fetchedAt: "2026-08-14T05:30:00Z",
     repositories: [{ id: "repo", visibility: "public", archived: false, updatedAt: "2026-08-14T05:29:00Z" }],
-    workItems: [{ id: "item", repositoryId: "repo" }],
-    activity: [{ id: "activity", repositoryId: "repo" }],
+    workItems: [{ id: "item", repositoryId: "repo", kind: "issue", number: 1 }],
+    activity: [{ id: "activity", repositoryId: "repo", kind: "issue", occurredAt: "2026-08-14T05:29:00Z" }],
     requestBudget: { requestCount: 1 },
   };
   const merged = mergeLiveSnapshot(baseline, live);
@@ -43,6 +43,36 @@ test("live overlay replaces volatile state but preserves heavy baseline stats an
   assert.deepEqual(merged.repositories[0].publicLinks, baseline.repositories[0].publicLinks);
   assert.equal(merged.stats, baseline.stats);
   assert.equal(merged.liveFetchedAt, live.fetchedAt);
+  assert.equal(merged.workItems.length, 1);
+  assert.equal(merged.activity.length, 1);
+});
+
+test("live overlay keeps workflow evidence from the canonical snapshot while refreshing issue and PR state", () => {
+  const baseline = {
+    generatedAt: "2026-08-14T04:00:00Z",
+    repositories: [{ id: "repo", visibility: "public" }],
+    workItems: [
+      { id: "old-issue", repositoryId: "repo", kind: "issue", number: 1, state: "open" },
+      { id: "workflow", repositoryId: "repo", kind: "workflow_run", number: 20, state: "failed" },
+    ],
+    activity: [
+      { id: "activity:old-issue", repositoryId: "repo", kind: "issue", occurredAt: "2026-08-14T03:00:00Z" },
+      { id: "activity:workflow", repositoryId: "repo", kind: "workflow_run", occurredAt: "2026-08-14T03:30:00Z" },
+    ],
+  };
+  const live = {
+    scope: "public",
+    fetchedAt: "2026-08-14T05:30:00Z",
+    repositories: [{ id: "repo", visibility: "public", archived: false }],
+    workItems: [{ id: "new-issue", repositoryId: "repo", kind: "issue", number: 2, state: "open" }],
+    activity: [{ id: "activity:new-issue", repositoryId: "repo", kind: "issue", occurredAt: "2026-08-14T05:00:00Z" }],
+  };
+
+  const merged = mergeLiveSnapshot(baseline, live);
+  assert.deepEqual(merged.workItems.map((item) => item.id), ["new-issue", "workflow"]);
+  assert.deepEqual(merged.activity.map((item) => item.id), ["activity:new-issue", "activity:workflow"]);
+  assert.equal(merged.summary.workItemCount, 2);
+  assert.equal(merged.summary.activityCount, 2);
 });
 
 test("live-only repositories remain visible without invented public links", () => {

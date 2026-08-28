@@ -40,6 +40,25 @@ export function mergeLiveSnapshot(baseline, live) {
   for (const item of live.activity) {
     if (!repositoryIds.has(item.repositoryId)) throw new Error("live activity references a non-public repository");
   }
+
+  const workItemsById = new Map();
+  for (const item of baseline.workItems || []) {
+    if (item.kind === "workflow_run" && repositoryIds.has(item.repositoryId)) workItemsById.set(item.id, item);
+  }
+  for (const item of live.workItems) workItemsById.set(item.id, item);
+  const workItems = [...workItemsById.values()].sort((a, b) =>
+    a.repositoryId.localeCompare(b.repositoryId) || a.kind.localeCompare(b.kind) || a.number - b.number,
+  );
+
+  const activityById = new Map();
+  for (const item of baseline.activity || []) {
+    if (item.kind === "workflow_run" && repositoryIds.has(item.repositoryId)) activityById.set(item.id, item);
+  }
+  for (const item of live.activity) activityById.set(item.id, item);
+  const activity = [...activityById.values()].sort(
+    (a, b) => b.occurredAt.localeCompare(a.occurredAt) || b.id.localeCompare(a.id),
+  );
+
   return {
     ...baseline,
     generatedAt: baseline.generatedAt,
@@ -47,13 +66,13 @@ export function mergeLiveSnapshot(baseline, live) {
     liveSource: live.source || "github-rest",
     liveRequestBudget: live.requestBudget || null,
     repositories,
-    workItems: live.workItems,
-    activity: live.activity,
+    workItems,
+    activity,
     summary: {
       ...(baseline.summary || {}),
       repositoryCount: repositories.length,
-      workItemCount: live.workItems.length,
-      activityCount: live.activity.length,
+      workItemCount: workItems.length,
+      activityCount: activity.length,
     },
   };
 }
