@@ -8,7 +8,10 @@ on:
       - '!dashboard/data/repository-index.json'
       - 'docs/**'
       - 'package.json'
+      - 'pyproject.toml'
+      - 'scripts/validate_dashboard_contract.py'
       - 'vercel.json'
+      - '.pre-commit-config.yaml'
       - '.github/workflows/docs.yml'
       - '.github/workflows/dashboard-validate.yml'
       - '.github/workflows/dashboard-release-verify.yml'
@@ -34,17 +37,14 @@ jobs:
           node-version: '24'
           package-manager-cache: false
 
-      - name: Install dashboard dependencies
-        run: pip install mkdocs-material -r dashboard/requirements.txt
+      - name: Install dashboard validation dependencies
+        run: pip install pre-commit==4.6.2 mkdocs-material -r dashboard/requirements.txt
 
-      - name: Validate dashboard Python syntax
-        run: python -m compileall -q dashboard
+      - name: Validate pre-commit configuration
+        run: pre-commit validate-config
 
-      - name: Run dashboard tests
-        run: |
-          set -euo pipefail
-          python -m unittest discover -s dashboard/tests -p 'test_*.py' -v
-          npm run test:dashboard
+      - name: Run commit-time validation
+        run: pre-commit run --all-files --hook-stage pre-commit
 
       - name: Build public docs
         working-directory: docs
@@ -55,10 +55,3 @@ jobs:
 
       - name: Verify operations navigation in headless Chrome
         run: python dashboard/tests/dashboard_operations_browser_e2e.py
-
-      - name: Validate dashboard JavaScript syntax
-        run: |
-          set -euo pipefail
-          for path in docs/dashboard/*.js dashboard/live-core.js api/dashboard-live.js; do
-            node --check "$path"
-          done
