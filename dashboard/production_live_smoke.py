@@ -48,6 +48,12 @@ def validate_live_payload(payload: object, *, now: datetime | None = None) -> fl
     if not isinstance(summary, dict) or summary.get("repositoryCount") != len(repositories):
         raise ValueError("live payload repository count diverged from summary")
 
+    request_budget = payload.get("requestBudget")
+    if not isinstance(request_budget, dict):
+        raise ValueError("live payload requestBudget is missing")
+    if request_budget.get("workflowRequestCount") != 0:
+        raise ValueError("live payload workflowRequestCount is not zero")
+
     current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     fetched_at = _parse_timestamp(payload.get("fetchedAt"))
     age_seconds = (current - fetched_at).total_seconds()
@@ -88,6 +94,7 @@ def main() -> None:
             endpoint, payload, age_seconds = verify_production_live(page_url, expected_sha)
             print(f"live endpoint: {endpoint}")
             print(f"live repositories: {len(payload['repositories'])}")
+            print(f"live workflow requests: {payload['requestBudget']['workflowRequestCount']}")
             print(f"live fetchedAt: {payload['fetchedAt']}")
             print(f"live age seconds: {age_seconds:.1f}")
             return
