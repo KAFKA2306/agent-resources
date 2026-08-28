@@ -4,7 +4,6 @@ export const LIVE_CACHE_SECONDS = 600;
 export const LIVE_STALE_WHILE_REVALIDATE_SECONDS = 30;
 export const ACTIVITY_WINDOW_DAYS = 7;
 export const MAX_ACTIVITY_ITEMS = 200;
-export const WORKFLOW_CONCURRENCY = 6;
 
 export class LiveDataError extends Error {
   constructor(code, message, details = {}) {
@@ -256,34 +255,6 @@ async function searchIssuesAndPullRequests(context, baseQuery, maxPages) {
   return [...issues, ...pullRequests];
 }
 
-async function mapWithConcurrency(items, concurrency, mapper) {
-  const results = new Array(items.length);
-  let cursor = 0;
-  async function worker() {
-    while (true) {
-      const index = cursor;
-      cursor += 1;
-      if (index >= items.length) return;
-      results[index] = await mapper(items[index], index);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(concurrency, Math.max(items.length, 1)) }, () => worker()));
-  return results;
-}
-
-async function collectWorkflowItems(context, repositories) {
-  context.workflowRequestCount = repositories.length;
-  if (repositories.length > 200) throw new LiveDataError("request_budget_exceeded", "workflow fan-out exceeds 200 repositories");
-  const runs = await mapWithConcurrency(repositories, WORKFLOW_CONCURRENCY, async (repository) => {
-    const owner = encodeURIComponent(repository.owner);
-    const name = encodeURIComponent(repository.name);
-    const payload = await requestJson(`https://api.github.com/repos/${owner}/${name}/actions/runs?per_page=1`, context);
-    if (!payload || !Array.isArray(payload.workflow_runs)) throw new LiveDataError("invalid_upstream_payload", "workflow response must contain workflow_runs");
-    return payload.workflow_runs.length ? normalizeWorkflowRun(payload.workflow_runs[0], repository) : null;
-  });
-  return runs.filter(Boolean);
-}
-
 export async function collectLiveState({ token, fetchImpl = globalThis.fetch, owner = OWNER, now = new Date() } = {}) {
   if (!token) throw new LiveDataError("missing_server_credential", "DASHBOARD_GITHUB_TOKEN is required");
   if (typeof fetchImpl !== "function") throw new TypeError("fetchImpl must be a function");
@@ -301,15 +272,13 @@ export async function collectLiveState({ token, fetchImpl = globalThis.fetch, ow
     `user:${owner} updated:>=${isoDateDaysAgo(now, ACTIVITY_WINDOW_DAYS)}`,
     2,
   );
-  const searchActivity = activityRaw
+  const activity = activityRaw
     .map((raw) => normalizeSearchActivity(raw, repositoriesByFullName))
     .filter(Boolean);
 
-  const workflowItems = await collectWorkflowItems(context, repositories);
-  const allWorkItems = [...workItems, ...workflowItems].sort((a, b) =>
+  const allWorkItems = [...workItems].sort((a, b) =>
     a.repositoryId.localeCompare(b.repositoryId) || a.kind.localeCompare(b.kind) || a.number - b.number,
   );
-  const activity = buildActivity(searchActivity, workflowItems, now);
 
   const fetchedAt = now.toISOString();
   return {
