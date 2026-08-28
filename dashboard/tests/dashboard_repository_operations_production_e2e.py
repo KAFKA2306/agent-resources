@@ -49,7 +49,7 @@ def main() -> None:
     )
     repository_count_match = repository_count_pattern.search(dom)
     live_timestamp_pattern = re.compile(
-        r'id="live-fetched-at"[^>]*datetime="([^"]+)"[^>]*>\s*Live:\s*([^<]+)</time>'
+        r'<time(?=[^>]*\bid="live-fetched-at")(?=[^>]*\bdatetime="([^"]+)")[^>]*>\s*Live:\s*([^<]+)</time>'
     )
     live_timestamp_match = live_timestamp_pattern.search(dom)
     poker_surface_pattern = re.compile(
