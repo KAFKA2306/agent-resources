@@ -33,6 +33,21 @@ class ProductionLiveSmokeTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "stale"):
             validate_live_payload(make_payload(fetched_at=NOW - timedelta(seconds=151)), now=NOW)
 
+    def test_rejects_zero_repositories(self):
+        payload = make_payload()
+        payload["repositories"] = []
+        payload["workItems"] = []
+        payload["activity"] = []
+        payload["summary"]["repositoryCount"] = 0
+        with self.assertRaisesRegex(ValueError, "zero repositories"):
+            validate_live_payload(payload, now=NOW)
+
+    def test_rejects_summary_repository_count_mismatch(self):
+        payload = make_payload()
+        payload["summary"]["repositoryCount"] = 2
+        with self.assertRaisesRegex(ValueError, "repository count diverged"):
+            validate_live_payload(payload, now=NOW)
+
     def test_rejects_non_public_repository(self):
         payload = make_payload()
         payload["repositories"][0]["visibility"] = "private"
