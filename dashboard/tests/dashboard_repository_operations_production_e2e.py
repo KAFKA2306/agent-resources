@@ -11,6 +11,7 @@ PRODUCTION_URL = os.environ.get(
     "AGENT_RESOURCES_DASHBOARD_URL",
     "https://agent-resources-one.vercel.app/dashboard/",
 )
+POKER_RAISE_QUIZ_URL = "https://kafka2306.github.io/poker-raise-quiz/"
 
 
 def main() -> None:
@@ -36,12 +37,21 @@ def main() -> None:
         r"Operations:\s*(\d+) repos\s*·\s*(\d+) classified\s*·\s*(\d+) unclassified"
     )
     summary_match = summary_pattern.search(dom)
+    poker_surface_pattern = re.compile(
+        r'<article class="world-station"[^>]*>.*?'
+        r'<strong>poker-raise-quiz</strong>.*?'
+        r'href="https://kafka2306\.github\.io/poker-raise-quiz/"[^>]*>.*?'
+        r'FRONT ↗.*?</a>.*?</article>',
+        re.DOTALL,
+    )
 
     checks = {
         "operations timestamp rendered": "Operations snapshot:" in dom
         and "Operations snapshot: unavailable" not in dom,
         "operations summary rendered": summary_match is not None,
         "operations summary is not unavailable": "Operations: unavailable" not in dom,
+        "poker-raise-quiz production surface rendered": poker_surface_pattern.search(dom)
+        is not None,
     }
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
@@ -60,7 +70,7 @@ def main() -> None:
     print(
         "repository operations production browser E2E: "
         f"{repository_count} repos, {classified_count} classified, "
-        f"{unclassified_count} unclassified PASS"
+        f"{unclassified_count} unclassified, poker-raise-quiz FRONT {POKER_RAISE_QUIZ_URL} PASS"
     )
 
 
