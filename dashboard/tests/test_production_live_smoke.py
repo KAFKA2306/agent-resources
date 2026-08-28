@@ -12,6 +12,7 @@ def make_payload(*, fetched_at=None):
         "scope": "public",
         "fetchedAt": (fetched_at or NOW).isoformat().replace("+00:00", "Z"),
         "summary": {"repositoryCount": 1},
+        "requestBudget": {"workflowRequestCount": 0},
         "repositories": [
             {
                 "id": "R_1",
@@ -58,6 +59,18 @@ class ProductionLiveSmokeTest(unittest.TestCase):
         payload = make_payload()
         payload["activity"][0]["repositoryId"] = "R_private"
         with self.assertRaisesRegex(ValueError, "non-public repository"):
+            validate_live_payload(payload, now=NOW)
+
+    def test_rejects_missing_request_budget(self):
+        payload = make_payload()
+        del payload["requestBudget"]
+        with self.assertRaisesRegex(ValueError, "requestBudget is missing"):
+            validate_live_payload(payload, now=NOW)
+
+    def test_rejects_nonzero_workflow_request_count(self):
+        payload = make_payload()
+        payload["requestBudget"]["workflowRequestCount"] = 1
+        with self.assertRaisesRegex(ValueError, "workflowRequestCount is not zero"):
             validate_live_payload(payload, now=NOW)
 
 
