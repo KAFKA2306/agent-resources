@@ -73,7 +73,7 @@ test("lane and workflow state contracts match canonical dashboard", () => {
   assert.equal(workflowState({ status: "in_progress", conclusion: null }), "in_progress");
 });
 
-test("live collector aggregates repositories, open work, latest workflows, and activity within a bounded request budget", async () => {
+test("live collector aggregates repositories, open work, and activity without per-repository workflow fan-out", async () => {
   const calls = [];
   const fetchImpl = async (url) => {
     calls.push(url);
@@ -97,31 +97,20 @@ test("live collector aggregates repositories, open work, latest workflows, and a
       }
       return response({ total_count: 1, items: [searchItem("alpha", 7)] }, { resource: "search", remaining: 28 });
     }
-    if (parsed.pathname.endsWith("/alpha/actions/runs")) {
-      return response({ workflow_runs: [{
-        id: 101,
-        run_number: 11,
-        name: "CI",
-        status: "completed",
-        conclusion: "success",
-        html_url: "https://github.com/KAFKA2306/alpha/actions/runs/101",
-        updated_at: "2026-08-14T05:25:00Z",
-      }] });
-    }
-    if (parsed.pathname.endsWith("/beta/actions/runs")) return response({ workflow_runs: [] });
     throw new Error(`unexpected URL ${url}`);
   };
 
   const live = await collectLiveState({ token: "test-token", fetchImpl, now: new Date("2026-08-14T05:30:00Z") });
   assert.equal(live.scope, "public");
   assert.equal(live.repositories.length, 2);
-  assert.equal(live.workItems.length, 3);
-  assert.equal(live.workItems.filter((item) => item.kind === "workflow_run").length, 1);
-  assert.equal(live.activity.some((item) => item.kind === "workflow_run"), true);
-  assert.equal(live.requestBudget.requestCount, 7);
-  assert.equal(live.requestBudget.workflowRequestCount, 2);
-  assert.equal(live.requestBudget.theoreticalRequestsPerHourAtMaxAge, Math.ceil(3600 / LIVE_CACHE_SECONDS) * 7);
-  assert.equal(calls.length, 7);
+  assert.equal(live.workItems.length, 2);
+  assert.equal(live.workItems.some((item) => item.kind === "workflow_run"), false);
+  assert.equal(live.activity.some((item) => item.kind === "workflow_run"), false);
+  assert.equal(live.requestBudget.requestCount, 5);
+  assert.equal(live.requestBudget.workflowRequestCount, 0);
+  assert.equal(live.requestBudget.theoreticalRequestsPerHourAtMaxAge, Math.ceil(3600 / LIVE_CACHE_SECONDS) * 5);
+  assert.equal(calls.length, 5);
+  assert.equal(calls.some((url) => url.includes("/actions/runs")), false);
   assert.equal(live.rateLimits.search.remaining, 28);
 });
 
