@@ -1,0 +1,43 @@
+minimum_pre_commit_version: "4.6.2"
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-ast
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: detect-private-key
+      - id: debug-statements
+
+  - repo: local
+    hooks:
+      - id: dashboard-contract
+        name: dashboard contract and unit validation
+        entry: python scripts/validate_dashboard_contract.py
+        language: system
+        pass_filenames: false
+        files: '^(?:api/dashboard-live\.js|dashboard/|docs/dashboard/|vercel\.json|package\.json|pyproject\.toml|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
+
+      - id: dashboard-browser-contract
+        name: dashboard baseline and live browser contract
+        entry: python dashboard/tests/dashboard_live_browser_e2e.py
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        files: '^(?:api/dashboard-live\.js|dashboard/|docs/dashboard/|vercel\.json|package\.json|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
+
+      - id: dashboard-operations-browser-contract
+        name: dashboard operations browser contract
+        entry: python dashboard/tests/dashboard_operations_browser_e2e.py
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+        files: '^(?:api/dashboard-live\.js|dashboard/|docs/dashboard/|vercel\.json|package\.json|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
