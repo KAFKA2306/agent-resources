@@ -73,4 +73,5 @@ jobs:
         if: steps.deployment.outputs.is_production == 'true'
         env:
           AGENT_RESOURCES_DASHBOARD_URL: ${{ steps.deployment.outputs.target_url }}/dashboard/
+          PYTHONPATH: ${{ github.workspace }}
         run: python dashboard/tests/dashboard_repository_operations_production_e2e.py
