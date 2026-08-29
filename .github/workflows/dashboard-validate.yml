@@ -12,6 +12,7 @@ on:
       - 'scripts/validate_dashboard_contract.py'
       - 'vercel.json'
       - '.pre-commit-config.yaml'
+      - '.github/workflows/branch-hygiene.yml'
       - '.github/workflows/docs.yml'
       - '.github/workflows/dashboard-validate.yml'
       - '.github/workflows/dashboard-release-verify.yml'
