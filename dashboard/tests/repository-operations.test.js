@@ -7,20 +7,16 @@ import {
   summarizeRepositoryOperations,
 } from "../../docs/dashboard/repository-operations.js";
 
-test("repository operations summary reports explicit classification coverage", () => {
+test("repository operations summary reports repository count only", () => {
   const summary = summarizeRepositoryOperations({
     generatedAt: "2026-08-21T00:00:00Z",
-    repositories: [
-      { classification: { domain: "agent-web" } },
-      { classification: { domain: null } },
-      { classification: { domain: "finance" } },
-    ],
+    repositories: [{ name: "alpha" }, { name: "beta" }, { name: "gamma" }],
   });
 
   assert.equal(summary.generatedAt, "2026-08-21T00:00:00Z");
   assert.equal(summary.repositoryCount, 3);
-  assert.equal(summary.classifiedCount, 2);
-  assert.equal(summary.unclassifiedCount, 1);
+  assert.equal(Object.hasOwn(summary, "classifiedCount"), false);
+  assert.equal(Object.hasOwn(summary, "unclassifiedCount"), false);
   assert.match(summary.generatedLabel, /2026/);
 });
 
@@ -31,11 +27,10 @@ test("repository operations summary rejects missing provenance", () => {
   );
 });
 
-test("repository operations links classification work to the canonical zone workflow", () => {
+test("repository operations UI has no repository classification action", () => {
   const elements = new Map([
     ["operations-generated-at", { dateTime: "", textContent: "" }],
     ["operations-summary", { textContent: "" }],
-    ["operations-zone-action", { href: "" }],
   ]);
   const documentRef = {
     getElementById(id) {
@@ -45,13 +40,11 @@ test("repository operations links classification work to the canonical zone work
 
   renderRepositoryOperationsSummary({
     generatedAt: "2026-08-21T00:00:00Z",
-    repositories: [{ classification: { domain: null } }],
+    repositories: [{ name: "alpha" }],
   }, documentRef);
 
-  assert.equal(
-    elements.get("operations-zone-action").href,
-    "https://github.com/KAFKA2306/agent-resources/actions/workflows/topic-bootstrap-67.yml",
-  );
+  assert.equal(elements.get("operations-summary").textContent, "Operations: 1 repos");
+  assert.equal(documentRef.getElementById("operations-zone-action"), null);
 });
 
 test("repository operations falls back to the persisted GitHub Pages snapshot", async () => {
@@ -67,10 +60,7 @@ test("repository operations falls back to the persisted GitHub Pages snapshot", 
   };
   const payload = {
     generatedAt: "2026-08-21T00:00:00Z",
-    repositories: [
-      { classification: { domain: "agent-web" } },
-      { classification: { domain: null } },
-    ],
+    repositories: [{ name: "alpha" }, { name: "beta" }],
   };
   const fetchImpl = async (url) => {
     requests.push(url);
@@ -86,5 +76,5 @@ test("repository operations falls back to the persisted GitHub Pages snapshot", 
   ]);
   assert.equal(elements.get("operations-generated-at").dateTime, payload.generatedAt);
   assert.match(elements.get("operations-generated-at").textContent, /Operations snapshot:/);
-  assert.equal(elements.get("operations-summary").textContent, "Operations: 2 repos · 1 classified · 1 unclassified");
+  assert.equal(elements.get("operations-summary").textContent, "Operations: 2 repos");
 });
