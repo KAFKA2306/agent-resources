@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "2ba8565b5b9e3cd15a9e416e4e2bfb1a7b2da32b"
+          "fingerprint": "d4c856c419410dcdbf8e3857742b6d3aea3089b4"
         }
       ],
-      "sourceFingerprint": "efc2d4f277e0a2785af14f218aeff29cffaed74bba18424bd2a27ca4317f34c4",
+      "sourceFingerprint": "0599091ad28ffe1e00a70cd130338cdf1d1820664ab657d1799d12e25fbcba68",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -388,10 +388,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/AutoPhotogrammetry/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "78fb1a0565db8df9f5d95ce070bc8927e2d2a2de"
+          "fingerprint": "5cc00f49cfa18aa22d208bd1867aa72e806032b6"
         }
       ],
-      "sourceFingerprint": "f5a0ea1009a20549400c8ceba0859ae5f7638403997daf65b66c52ee8743412f",
+      "sourceFingerprint": "e65a5d8de85e2dcf7e34ec486661b651ce4cb1050f7ee5de918e25e5531712c0",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -606,12 +606,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/boothitemmanager/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "87d55e62dc7f8dd5bab961b030c44cbba5772b08"
+          "fingerprint": "3a84b2731cf87029332e7e20384ebcfa756a67a2"
         }
       ],
-      "sourceFingerprint": "27f92cbb54029d8e1d9186fa768d65634f5b0859174caf2b048584284fba81bc",
+      "sourceFingerprint": "6a5e8f0aeb009886293cfc9cbcc563c4b2ce1b2e2fbc78b4a56c80fc29570c12",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "bpyutils",
@@ -2341,12 +2341,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/prompt-vault/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "7c42664a43dd058b4298a13eabcb330c4ac0bd5d"
+          "fingerprint": "20700b98001889ef5e3d4e73dc9ab5a91a90caf0"
         }
       ],
-      "sourceFingerprint": "8e5b198a7b57cdcbb9df1757972c3546676815af0a71d29d708af54783bc31a3",
+      "sourceFingerprint": "d60db4b05c65f4c20af4bd45d6811e02710420fe4c08efc83dae9467c875fea4",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "readable-github",
