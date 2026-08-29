@@ -64,7 +64,7 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn('stations.className = "world-stations"', js)
         self.assertIn("rankRepositories(repositories, workItems, activity, generatedAt)", js)
         self.assertIn("repositoryHeat(repository, workItems, activity, generatedAt)", js)
-        self.assertIn("`${repositories.length} repositories`", js)
+        self.assertIn("${repositories.length} repositories", js)
         self.assertNotIn("unclassified", js)
         self.assertNotIn("agent-zone-", js)
 
