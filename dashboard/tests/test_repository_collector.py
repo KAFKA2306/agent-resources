@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from dashboard.collectors.github_api import GitHubApiError, fetch_paginated
-from dashboard.collectors.repositories import collect_repositories, infer_group, infer_public_links
+from dashboard.collectors.repositories import collect_repositories, infer_public_links
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_FIXTURE = ROOT / "fixtures" / "repositories.config.example.json"
@@ -27,42 +27,11 @@ class RepositoryCollectorTest(unittest.TestCase):
         )
         self.assertTrue(all(repo["visibility"] == "public" for repo in repositories))
         self.assertTrue(all(repo["archived"] is False for repo in repositories))
+        self.assertTrue(all("group" not in repo for repo in repositories))
 
-    def test_project_zone_is_derived_only_from_explicit_agent_zone_topic(self):
+    def test_topics_do_not_create_repository_classification(self):
         repositories = collect_repositories(self.config, fetcher=lambda url, token=None: self.raw)
-        by_name = {repo["name"]: repo for repo in repositories}
-        self.assertEqual(by_name["public-active"]["group"], "core")
-        self.assertEqual(by_name["public-language"]["group"], "unclassified")
-
-    def test_programming_language_never_becomes_a_project_zone(self):
-        self.assertEqual(
-            infer_group({"topics": [], "language": "Python"}),
-            "unclassified",
-        )
-        self.assertEqual(
-            infer_group({"topics": [], "language": "JavaScript"}),
-            "unclassified",
-        )
-
-    def test_agent_zone_topic_wins_without_language_inference(self):
-        self.assertEqual(
-            infer_group(
-                {
-                    "topics": ["agent-zone-investing", "python"],
-                    "language": "Python",
-                }
-            ),
-            "investing",
-        )
-
-    def test_all_unclassified_repositories_share_one_fallback(self):
-        groups = {
-            infer_group({"topics": [], "language": "Python"}),
-            infer_group({"topics": [], "language": "TypeScript"}),
-            infer_group({"topics": [], "language": None}),
-            infer_group({"topics": ["agent-zone-!!!"], "language": "Python"}),
-        }
-        self.assertEqual(groups, {"unclassified"})
+        self.assertTrue(all("group" not in repo for repo in repositories))
 
     def test_public_links_include_homepage_and_github_pages(self):
         links = infer_public_links(
