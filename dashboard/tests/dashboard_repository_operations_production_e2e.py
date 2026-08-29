@@ -40,10 +40,6 @@ def main() -> None:
     )
 
     dom = result.stdout
-    summary_pattern = re.compile(
-        r"Operations:\s*(\d+) repos\s*·\s*(\d+) classified\s*·\s*(\d+) unclassified"
-    )
-    summary_match = summary_pattern.search(dom)
     repository_count_pattern = re.compile(
         r'id="repository-count"[^>]*>\s*(\d+) repositories\s*</span>'
     )
@@ -62,8 +58,8 @@ def main() -> None:
         "repository count rendered": repository_count_match is not None,
         "operations timestamp rendered": "Operations snapshot:" in dom
         and "Operations snapshot: unavailable" not in dom,
-        "operations summary rendered": summary_match is not None,
-        "operations summary is not unavailable": "Operations: unavailable" not in dom,
+        "operations is not unavailable": "Operations: unavailable" not in dom,
+        "obsolete classification absent": "classified" not in dom and "unclassified" not in dom,
         "poker-raise-quiz production surface rendered": poker_surface_pattern.search(dom)
         is not None,
     }
@@ -82,18 +78,10 @@ def main() -> None:
             f"rendered repository count {rendered_repository_count} != live API {expected_repository_count}"
         )
 
-    repository_count, classified_count, unclassified_count = map(int, summary_match.groups())
-    if repository_count <= 0:
-        raise SystemExit("repository operations production browser E2E failed: repository count is zero")
-    if classified_count + unclassified_count != repository_count:
-        raise SystemExit(
-            "repository operations production browser E2E failed: classification counts do not sum to repository count"
-        )
-
     print(
         "repository operations production browser E2E: "
-        f"live {rendered_repository_count} repos at {live_payload['fetchedAt']}, operations {repository_count} repos, "
-        f"{classified_count} classified, {unclassified_count} unclassified, "
+        f"live {rendered_repository_count} repos at {live_payload['fetchedAt']}, "
+        f"operations snapshot rendered without obsolete classification, "
         f"poker-raise-quiz FRONT {POKER_RAISE_QUIZ_URL} PASS"
     )
 
