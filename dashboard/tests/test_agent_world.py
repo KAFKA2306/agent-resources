@@ -32,38 +32,41 @@ class AgentWorldTest(unittest.TestCase):
 
     def test_world_layout_is_data_driven(self):
         js = WORLD_JS.read_text(encoding="utf-8")
-        self.assertIn("repository.group", js)
-        self.assertIn('repository.group || "unclassified"', js)
+        self.assertIn("rankRepositories(repositories, workItems, activity, generatedAt)", js)
         self.assertIn("workByRepository.get(repository.id)", js)
         self.assertIn("item.repositoryId", js)
         self.assertIn("item.lane", js)
         self.assertIn("item.kind", js)
         self.assertIn("item.url", js)
+        self.assertNotIn("repository.group", js)
+        self.assertNotIn("agent-zone-", js)
+        self.assertNotIn("unclassified", js)
         self.assertNotIn("api.github.com", js)
         self.assertNotIn("raw.githubusercontent.com", js)
 
-    def test_group_labels_are_visible_once(self):
+    def test_world_has_no_repository_zone_layer(self):
         world_js = WORLD_JS.read_text(encoding="utf-8")
         dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
         html = HTML.read_text(encoding="utf-8")
-        self.assertIn("name.textContent = group", world_js)
+        self.assertNotIn("repository.group", world_js)
+        self.assertNotIn("agent-zone-", world_js)
+        self.assertNotIn("world-unclassified-details", world_js)
+        self.assertNotIn("unclassified", world_js)
+        self.assertNotIn("zoned", world_js)
+        self.assertNotIn('id="operations-zone-action"', html)
+        self.assertNotIn("project zone", html)
         self.assertNotIn('section.className = "project-group repository-directory"', dashboard_js)
-        self.assertNotIn('title.textContent = "Repository details"', dashboard_js)
         self.assertNotIn('id="project-groups"', html)
-        self.assertNotIn("title.textContent = group", dashboard_js)
         self.assertNotIn("groupRepositories(repositories)", dashboard_js)
 
-    def test_unclassified_is_visible_by_default_and_not_the_primary_zone(self):
+    def test_repositories_are_ranked_by_current_work(self):
         js = WORLD_JS.read_text(encoding="utf-8")
-        css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
-        self.assertIn('aGroup === "unclassified" && bGroup !== "unclassified"', js)
-        self.assertIn('details.className = "world-unclassified-details"', js)
-        self.assertIn("details.open = true", js)
-        self.assertIn('summary.textContent = `未分類 ${repositories.length} repositories（通常表示）`', js)
-        self.assertIn('agent-zone-* topic未設定', js)
-        self.assertIn('${classifiedRepositories}/${repositories.length} zoned', js)
-        self.assertIn('.world-zone-unclassified{min-height:auto', css)
-        self.assertIn('.world-unclassified-details>summary{cursor:pointer', css)
+        self.assertIn('stations.className = "world-stations"', js)
+        self.assertIn("rankRepositories(repositories, workItems, activity, generatedAt)", js)
+        self.assertIn("repositoryHeat(repository, workItems, activity, generatedAt)", js)
+        self.assertIn("${repositories.length} repositories", js)
+        self.assertNotIn("unclassified", js)
+        self.assertNotIn("agent-zone-", js)
 
     def test_station_project_header_is_top_aligned(self):
         js = WORLD_JS.read_text(encoding="utf-8")
@@ -71,7 +74,6 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn("station.append(repositoryLink, scene, agents);", js)
         self.assertIn(".world-station{display:grid;align-content:start;", css)
         self.assertIn(".world-station-link{display:flex;align-items:flex-start;", css)
-        self.assertIn(".world-zone-heading>span{white-space:normal}", css)
 
     def test_station_has_one_click_front_and_pages_links(self):
         js = WORLD_JS.read_text(encoding="utf-8")
@@ -100,7 +102,7 @@ class AgentWorldTest(unittest.TestCase):
 
     def test_stable_asset_ids_drive_role_state_and_scene_selection(self):
         js = WORLD_JS.read_text(encoding="utf-8")
-        required_ids = {"role.issue-working.v1","role.pull-request-review.v1","role.workflow-terminal.v1","state.working.v1","state.waiting.v1","state.done.v1","state.failed.v1","scene.desk.v1","scene.review-bench.v1","scene.terminal.v1","scene.sign.v1","scene.floor.v1","prop.small-pack.v1"}
+        required_ids = {"role.issue-working.v1","role.pull-request-review.v1","role.workflow-terminal.v1","state.working.v1","state.waiting.v1","state.done.v1","state.failed.v1","scene.desk.v1","scene.review-bench.v1","scene.terminal.v1","prop.small-pack.v1"}
         for asset_id in required_ids:
             self.assertIn(f'"{asset_id}"', js)
         self.assertIn("function resolveAsset(assetId)", js)
@@ -108,6 +110,8 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn("STATE_ASSET_IDS[lane]", js)
         self.assertIn('item.kind === "workflow_run"', js)
         self.assertIn('item.kind === "pull_request"', js)
+        self.assertNotIn('"scene.sign.v1"', js)
+        self.assertNotIn('"scene.floor.v1"', js)
 
     def test_vendored_asset_hashes_are_a_visual_regression_gate(self):
         manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -133,7 +137,6 @@ class AgentWorldTest(unittest.TestCase):
 
     def test_mobile_falls_back_to_information_first_layout(self):
         css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
-        js = WORLD_JS.read_text(encoding="utf-8")
         self.assertIn("@media(max-width:760px)", css)
         self.assertIn(".world-floor-asset,.world-station-scene{display:none}", css)
         self.assertIn("grid-template-columns:minmax(0,1fr)", css)

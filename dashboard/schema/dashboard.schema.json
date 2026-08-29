@@ -28,13 +28,12 @@
     "repository": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "owner", "name", "url", "group", "visibility", "updatedAt"],
+      "required": ["id", "owner", "name", "url", "visibility", "updatedAt"],
       "properties": {
         "id": {"type": "string", "minLength": 1},
         "owner": {"type": "string", "minLength": 1},
         "name": {"type": "string", "minLength": 1},
         "url": {"type": "string", "format": "uri", "pattern": "^https://github\\.com/"},
-        "group": {"type": "string", "minLength": 1},
         "visibility": {"type": "string", "const": "public"},
         "updatedAt": {"type": "string", "format": "date-time"},
         "publicLinks": {

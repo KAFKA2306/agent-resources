@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import re
 from pathlib import Path
 from urllib.parse import quote, urlsplit
 
@@ -15,8 +14,6 @@ DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / "config" / "repositories.
 DEFAULT_PUBLIC_LINKS_CONFIG = (
     Path(__file__).resolve().parents[1] / "config" / "public-links.json"
 )
-ZONE_TOPIC_PREFIX = "agent-zone-"
-UNCLASSIFIED_GROUP = "unclassified"
 ALLOWED_CONFIG_KEYS = {"owner"}
 
 
@@ -31,27 +28,6 @@ def validate_config(config):
 def load_config(path=DEFAULT_CONFIG):
     with Path(path).open(encoding="utf-8") as handle:
         return validate_config(json.load(handle))
-
-
-def normalize_group_fragment(value):
-    normalized = re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
-    return normalized or UNCLASSIFIED_GROUP
-
-
-def infer_group(raw):
-    topics = raw.get("topics") or []
-    if not isinstance(topics, list):
-        raise ValueError("repository topics must be a list")
-    zone_topics = sorted(
-        topic[len(ZONE_TOPIC_PREFIX) :]
-        for topic in topics
-        if isinstance(topic, str)
-        and topic.startswith(ZONE_TOPIC_PREFIX)
-        and topic[len(ZONE_TOPIC_PREFIX) :]
-    )
-    if zone_topics:
-        return normalize_group_fragment(zone_topics[0])
-    return UNCLASSIFIED_GROUP
 
 
 def normalize_https_url(value):
@@ -117,7 +93,6 @@ def normalize_repository(raw, config):
     for key in ("id", "owner", "name", "url", "visibility", "updatedAt"):
         if not required[key]:
             raise ValueError(f"repository payload is missing {key}: {name!r}")
-    required["group"] = infer_group(raw)
     required["publicLinks"] = infer_public_links(raw, owner, name)
     return required
 

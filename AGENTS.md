@@ -40,7 +40,6 @@ Dashboard変更ではrepository内の既存test/build commandを優先し、該�
 - 同じ責務のwrapper、config、workflow、schema、documentation、status authorityを増やさない。
 - repository固有の略語、maturity level、named gate、confidence score、独自taxonomyを、外部標準や実要件なしに作らない。
 - Dashboardではlive / snapshot / unavailableを区別し、未観測状態を推測で埋めない。
-- repository domain classificationは現在のexplicit `agent-zone-*` authorityに従い、repo名・language・LLM推測から正準値を作らない。
 - `skills/` をrepository内skillの正準配置とする。
 - `agr` と `agrx` の共有責務は可能な限り共通実装へ寄せ、挙動を不必要に分岐させない。
 - cross-repository auditでは既存のcanonical Issue / PRを優先し、新規Issueは現在の問題、非重複、明確な価値、実行可能なscope、evidence、completion criteria、verificationが揃う場合だけowner repositoryに作成する。
