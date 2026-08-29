@@ -15,8 +15,6 @@ const ASSET_BY_ID = Object.freeze({
   "scene.desk.v1": `${ASSET_ROOT}/scene-desk.svg`,
   "scene.review-bench.v1": `${ASSET_ROOT}/scene-review-bench.svg`,
   "scene.terminal.v1": `${ASSET_ROOT}/scene-terminal.svg`,
-  "scene.sign.v1": `${ASSET_ROOT}/scene-sign.svg`,
-  "scene.floor.v1": `${ASSET_ROOT}/scene-floor.svg`,
   "prop.small-pack.v1": `${ASSET_ROOT}/prop-pack.svg`,
 });
 
@@ -68,24 +66,6 @@ function createAssetImage(assetId, className, onLoad = null) {
   return image;
 }
 
-function groupedRepositories(repositories, workItems, activity, generatedAt) {
-  const groups = new Map();
-  for (const repository of repositories) {
-    const group = repository.group || "unclassified";
-    if (!groups.has(group)) groups.set(group, []);
-    groups.get(group).push(repository);
-  }
-  return [...groups.entries()]
-    .map(([group, items]) => [group, rankRepositories(items, workItems, activity, generatedAt)])
-    .sort(([aGroup, aItems], [bGroup, bItems]) => {
-      if (aGroup === "unclassified" && bGroup !== "unclassified") return 1;
-      if (aGroup !== "unclassified" && bGroup === "unclassified") return -1;
-      const aHeat = aItems.length ? repositoryHeat(aItems[0], workItems, activity, generatedAt) : 0;
-      const bHeat = bItems.length ? repositoryHeat(bItems[0], workItems, activity, generatedAt) : 0;
-      return bHeat - aHeat;
-    });
-}
-
 function roleAssetId(kind) {
   return ROLE_ASSET_IDS[kind] || ROLE_ASSET_IDS.issue;
 }
@@ -114,12 +94,10 @@ function createAgent(item) {
   figure.className = "world-agent-figure";
   figure.setAttribute("aria-hidden", "true");
 
-  const roleId = roleAssetId(item.kind);
-  const roleImage = createAssetImage(roleId, "world-role-asset", () => {
+  const roleImage = createAssetImage(roleAssetId(item.kind), "world-role-asset", () => {
     figure.classList.add("has-role-asset");
   });
-  const stateId = stateAssetId(item.lane);
-  const stateImage = createAssetImage(stateId, "world-state-asset");
+  const stateImage = createAssetImage(stateAssetId(item.lane), "world-state-asset");
   figure.append(roleImage, stateImage);
 
   const copy = document.createElement("span");
@@ -265,69 +243,18 @@ function createStation(repository, workItems, heat) {
   return station;
 }
 
-function createZone(group, repositories, workByRepository, workItems, activity, generatedAt) {
-  const isUnclassified = group === "unclassified";
-  const zone = document.createElement("section");
-  zone.className = isUnclassified ? "world-zone world-zone-unclassified" : "world-zone";
-
-  const floor = createAssetImage("scene.floor.v1", "world-floor-asset");
-
-  const content = document.createElement("div");
-  content.className = "world-zone-content";
-  const heading = document.createElement("div");
-  heading.className = "world-zone-heading";
-
-  const identity = document.createElement("div");
-  identity.className = "world-zone-identity";
-  identity.append(createAssetImage("scene.sign.v1", "world-sign-asset"));
-  const name = document.createElement("strong");
-  name.textContent = group;
-  identity.append(name);
-
-  const meta = document.createElement("span");
-  meta.textContent = isUnclassified
-    ? `${repositories.length} stations · agent-zone-* topic未設定`
-    : `${repositories.length} stations · hottest first`;
-  heading.append(identity, meta);
-
-  const stations = document.createElement("div");
-  stations.className = "world-stations";
-  for (const repository of repositories) {
-    const heat = repositoryHeat(repository, workItems, activity, generatedAt);
-    stations.append(createStation(repository, workByRepository.get(repository.id) || [], heat));
-  }
-
-  if (isUnclassified) {
-    const details = document.createElement("details");
-    details.className = "world-unclassified-details";
-    details.open = true;
-    const summary = document.createElement("summary");
-    summary.textContent = `未分類 ${repositories.length} repositories（通常表示）`;
-    details.append(summary, stations);
-    content.append(heading, details);
-  } else {
-    content.append(heading, stations);
-  }
-  zone.append(floor, content);
-  return zone;
-}
-
 export function renderWorld(repositories, workItems, activity = [], generatedAt = null) {
   const root = document.querySelector("#agent-world-zones");
   const summary = document.querySelector("#agent-world-summary");
   if (!root || !summary) return;
 
   root.replaceChildren();
-  const classifiedRepositories = repositories.filter(
-    (repository) => (repository.group || "unclassified") !== "unclassified",
-  ).length;
-  const unclassifiedRepositories = repositories.length - classifiedRepositories;
-  summary.textContent = `作業項目 ${workItems.length}件 · ${classifiedRepositories}/${repositories.length} zoned · ${unclassifiedRepositories} unclassified`;
+  summary.textContent = `作業項目 ${workItems.length}件 · ${repositories.length} repositories`;
 
   if (repositories.length === 0) {
     const empty = document.createElement("p");
     empty.className = "world-empty muted";
-    empty.textContent = "表示できるproject区画は0件です。";
+    empty.textContent = "表示できるrepositoryは0件です。";
     root.append(empty);
     return;
   }
@@ -338,7 +265,11 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
     workByRepository.get(item.repositoryId).push(item);
   }
 
-  groupedRepositories(repositories, workItems, activity, generatedAt).forEach(([group, items]) => {
-    root.append(createZone(group, items, workByRepository, workItems, activity, generatedAt));
-  });
+  const stations = document.createElement("div");
+  stations.className = "world-stations";
+  for (const repository of rankRepositories(repositories, workItems, activity, generatedAt)) {
+    const heat = repositoryHeat(repository, workItems, activity, generatedAt);
+    stations.append(createStation(repository, workByRepository.get(repository.id) || [], heat));
+  }
+  root.append(stations);
 }
