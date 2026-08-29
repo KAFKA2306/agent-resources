@@ -20,7 +20,7 @@ def canonical_repository(repository):
         return None
     canonical = {
         key: repository[key]
-        for key in ("id", "owner", "name", "url", "group", "visibility", "updatedAt")
+        for key in ("id", "owner", "name", "url", "visibility", "updatedAt")
     }
     if "publicLinks" in repository:
         canonical["publicLinks"] = repository["publicLinks"]
