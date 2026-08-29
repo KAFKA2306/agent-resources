@@ -6,7 +6,6 @@ import {
   LiveDataError,
   classifyLane,
   collectLiveState,
-  inferGroup,
   normalizeRepository,
   workflowState,
 } from "../live-core.js";
@@ -41,7 +40,6 @@ function repository(name, nodeId, extra = {}) {
     archived: false,
     updated_at: "2026-08-14T05:00:00Z",
     pushed_at: "2026-08-14T04:59:00Z",
-    topics: ["agent-zone-automation"],
     ...extra,
   };
 }
@@ -58,8 +56,9 @@ function searchItem(repo, number, extra = {}) {
   };
 }
 
-test("repository normalization remains public-only and topic-driven", () => {
-  assert.equal(inferGroup(repository("alpha", "R1")), "automation");
+test("repository normalization remains public-only", () => {
+  const normalized = normalizeRepository(repository("alpha", "R1", { topics: ["agent-zone-automation"] }));
+  assert.equal(Object.hasOwn(normalized, "group"), false);
   assert.equal(normalizeRepository(repository("private", "R2", { private: true, visibility: "private" })), null);
   assert.equal(normalizeRepository(repository("archived", "R3", { archived: true })), null);
   assert.equal(normalizeRepository(repository("other", "R4", { owner: { login: "someone" } })), null);
