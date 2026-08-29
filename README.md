@@ -18,7 +18,6 @@ DashboardはKAFKA2306所有のpublic / non-archived repositoryを対象に、Iss
 
 - Live APIの取得状態を明示する
 - private repository、secret、private work itemを公開面へ出さない
-- repository domainは明示された`agent-zone-*` topicだけを正準値として扱う
 - 取得不能な状態を推測で補完しない
 
 詳細な状態はDashboardから各GitHub evidenceへ辿れます。
