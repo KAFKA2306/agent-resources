@@ -19,19 +19,6 @@ function requireString(value, field) {
   return value;
 }
 
-function normalizeGroupFragment(value) {
-  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "unclassified";
-}
-
-export function inferGroup(raw) {
-  const topics = Array.isArray(raw?.topics) ? raw.topics : [];
-  const zones = topics
-    .filter((topic) => typeof topic === "string" && topic.startsWith("agent-zone-") && topic.length > "agent-zone-".length)
-    .map((topic) => topic.slice("agent-zone-".length))
-    .sort();
-  return zones.length ? normalizeGroupFragment(zones[0]) : "unclassified";
-}
-
 export function normalizeRepository(raw, owner = OWNER) {
   if (raw?.owner?.login !== owner) return null;
   if (raw?.private === true || raw?.visibility !== "public" || raw?.archived === true) return null;
@@ -41,7 +28,6 @@ export function normalizeRepository(raw, owner = OWNER) {
     owner,
     name: requireString(raw.name, "repository name"),
     url: requireString(raw.html_url, "repository html_url"),
-    group: inferGroup(raw),
     visibility: "public",
     archived: false,
     updatedAt: requireString(raw.updated_at, "repository updated_at"),
