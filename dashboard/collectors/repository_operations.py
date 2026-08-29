@@ -11,31 +11,7 @@ from dashboard.collectors.github_api import (
     fetch_paginated,
     request_json,
 )
-from dashboard.collectors.repositories import (
-    ZONE_TOPIC_PREFIX,
-    collect_repositories,
-    load_config,
-    normalize_group_fragment,
-)
-
-
-def classification_from_repository(raw):
-    topics = raw.get("topics") or []
-    if not isinstance(topics, list):
-        raise ValueError("repository topics must be a list")
-    zones = sorted(
-        normalize_group_fragment(topic[len(ZONE_TOPIC_PREFIX) :])
-        for topic in topics
-        if isinstance(topic, str)
-        and topic.startswith(ZONE_TOPIC_PREFIX)
-        and topic[len(ZONE_TOPIC_PREFIX) :]
-    )
-    evidence = [raw["html_url"]]
-    if len(zones) == 1:
-        return {"domain": zones[0], "source": "github-topic", "evidence": evidence}
-    if len(zones) > 1:
-        return {"domain": None, "source": "conflicting-github-topics", "evidence": evidence}
-    return {"domain": None, "source": "no-agent-zone-topic", "evidence": evidence}
+from dashboard.collectors.repositories import collect_repositories, load_config
 
 
 def normalize_branch(raw, default_branch, *, deletion_candidate=False):
@@ -141,7 +117,6 @@ def collect_repository_operations(
             {
                 "name": repository["name"],
                 "url": repository["url"],
-                "classification": classification_from_repository(detail),
                 "branches": normalized_branches,
             }
         )
