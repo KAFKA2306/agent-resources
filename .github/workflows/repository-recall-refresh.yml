@@ -17,7 +17,7 @@ on:
       - '.github/workflows/repository-recall-refresh.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: repository-recall-refresh-${{ github.ref }}
@@ -29,6 +29,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -43,16 +45,46 @@ jobs:
       - name: Validate generated index
         run: python -m dashboard.repository_recall validate
 
-      - name: Commit changed index
+      - name: Open pull request for changed index
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN }}
+          REFRESH_BRANCH: automation/repository-recall-refresh
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain -- dashboard/data/repository-index.json)" ]; then
             echo 'repository recall index unchanged'
             exit 0
           fi
+          if [ -z "${GH_TOKEN}" ]; then
+            echo 'DASHBOARD_GITHUB_TOKEN is not configured; refusing to write directly to main' >&2
+            exit 1
+          fi
+
+          existing_pr="$(gh pr list \
+            --repo "${GITHUB_REPOSITORY}" \
+            --state open \
+            --head "${REFRESH_BRANCH}" \
+            --json number \
+            --jq '.[0].number // empty')"
+          if [ -n "${existing_pr}" ]; then
+            echo "repository recall refresh PR #${existing_pr} is already open"
+            exit 0
+          fi
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${REFRESH_BRANCH}"
           git add dashboard/data/repository-index.json
           git commit -m 'chore: refresh repository recall index'
-          git push
+
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch origin "${REFRESH_BRANCH}" || true
+          git push --force-with-lease origin "HEAD:refs/heads/${REFRESH_BRANCH}"
+
+          gh pr create \
+            --repo "${GITHUB_REPOSITORY}" \
+            --base main \
+            --head "${REFRESH_BRANCH}" \
+            --title 'chore: refresh repository recall index' \
+            --body $'公開repositoryの現在状態から repository recall index を更新します。\n\n- source refresh: GitHub current state\n- validation: `python -m dashboard.repository_recall validate`\n- main への直接pushは行いません。\n\nこのPRのexact head CIを確認してからmergeします。'
