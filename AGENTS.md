@@ -46,6 +46,19 @@ Dashboard変更ではrepository内の既存test/build commandを優先し、該�
 - cross-repository auditでは既存のcanonical Issue / PRを優先し、新規Issueは現在の問題、非重複、明確な価値、実行可能なscope、evidence、completion criteria、verificationが揃う場合だけowner repositoryに作成する。
 - 人間向けCloudflare Pages / Workers production surfaceを持つpublic repositoryでは、そのCloudflare production URLがGoogleに実際にインデックスされることをdistribution milestoneとして扱う。公開検索の`site:`件数だけで完了判定せず、owner repositoryのcanonical IssueでSearch Consoleのindex状態、Google-selected canonical、sitemap/canonical/internal-link host一致を直接確認する。Cloudflareが別hostへのmirror canonicalのままならmilestone達成扱いにしない。
 
+## Low-context handoff
+
+Issue / PR は、長い過去会話や大きなcontext windowを前提にしないhandoff単位にします。新しいagentがAGENTS.mdと対象Issue / PRだけを読んで、安全に次の1手を選べる状態を維持します。
+
+- canonical Issueの冒頭には、`目的`、`Current state`、`Next action`、`Completion criteria`、`Verification` を短く置く。現在値と次の1手をhistoryより先に書く。
+- current stateは、必要最小限のcommit SHA、PR、deployment、production evidence、blockerだけを残す。長い調査過程、旧仮説、詳細benchmark、過去command全文は本文へ累積しない。
+- historical evidenceが必要なら既存comment、merged PR、commit、owner repository、一次情報へlinkし、Issue本文へ複製しない。古い情報を残す場合は `historical` と明示する。
+- 1 Issueに複数の独立decision / experiment / ownerを詰め込まない。重複はMERGEし、独立責務だけを分離する。
+- `Next action` は1つのbounded actionとして書く。未観測の前提を補う必要がある場合は、そのread-back自体を次のactionにする。
+- agentはIssue全文や過去commentをすべて理解してからでないと動けない構造を作らない。必要なauthorityを少数のcanonical sourceへ寄せる。
+- context削減のための別status document、summary database、collector、独自schemaは作らない。GitHub Issue / PR、AGENTS.md、既存repository stateを再利用する。
+- Issue本文が肥大化してcurrent stateを見失わせる場合は、正準要件と現在のhandoffだけへ縮約し、詳細は既存evidenceへのlinkに置換する。
+
 ## Evidence scope
 
 証拠は、それが実際に観測したclaimと実行layerにだけ適用します。
