@@ -15,24 +15,6 @@
     }
   },
   "$defs": {
-    "classification": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["domain", "source", "evidence"],
-      "properties": {
-        "domain": {
-          "oneOf": [
-            {"type": "string", "minLength": 1},
-            {"type": "null"}
-          ]
-        },
-        "source": {"type": "string", "minLength": 1},
-        "evidence": {
-          "type": "array",
-          "items": {"type": "string", "format": "uri"}
-        }
-      }
-    },
     "branch": {
       "type": "object",
       "additionalProperties": false,
@@ -81,14 +63,13 @@
     "repository": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "url", "classification", "branches"],
+      "required": ["name", "url", "branches"],
       "properties": {
         "name": {"type": "string", "minLength": 1},
         "url": {
           "type": "string",
           "pattern": "^https://github\\.com/KAFKA2306/"
         },
-        "classification": {"$ref": "#/$defs/classification"},
         "branches": {
           "type": "array",
           "items": {"$ref": "#/$defs/branch"}
