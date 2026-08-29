@@ -1,6 +1,6 @@
 {
   "schema": "kafka.agent-resources.skill-collections.v1",
-  "generated_at": "2026-08-27T09:07:04Z",
+  "generated_at": "2026-08-29T05:25:13Z",
   "source": {
     "provider": "GitHub",
     "repository": "KAFKA2306/agent-resources",
@@ -21,7 +21,7 @@
     {
       "id": "development",
       "path": "skills/development",
-      "tree_sha": "3f49fddbf883e952bcccc423bd127e4c2015d769",
+      "tree_sha": "8dbd3191a8c993bbc211a83ead24dcc7fa3e48dc",
       "kind": "collection",
       "title": "Development",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/development"
