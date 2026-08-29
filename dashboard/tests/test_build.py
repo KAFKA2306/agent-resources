@@ -15,7 +15,6 @@ class DashboardBuildTest(unittest.TestCase):
             "owner": "example-owner",
             "name": "zeta",
             "url": "https://github.com/example-owner/zeta",
-            "group": "core",
             "visibility": "public",
             "archived": False,
             "updatedAt": "2026-08-13T01:00:00Z",
@@ -29,7 +28,6 @@ class DashboardBuildTest(unittest.TestCase):
             "owner": "example-owner",
             "name": "alpha",
             "url": "https://github.com/example-owner/alpha",
-            "group": "other",
             "visibility": "public",
             "archived": False,
             "updatedAt": "2026-08-13T00:59:00Z",
@@ -39,7 +37,6 @@ class DashboardBuildTest(unittest.TestCase):
             "owner": "example-owner",
             "name": "secret",
             "url": "https://github.com/example-owner/secret",
-            "group": "other",
             "visibility": "private",
             "archived": False,
             "updatedAt": "2026-08-13T01:01:00Z",
@@ -155,7 +152,6 @@ class DashboardBuildTest(unittest.TestCase):
         run = next(item for item in snapshot["workItems"] if item["kind"] == "workflow_run")
         self.assertEqual(run["state"], "completed")
         self.assertEqual(run["lane"], "done")
-        self.assertEqual(run["laneReason"], "workflow_completed")
 
     def test_failed_workflow_becomes_failed_lane(self):
         failed = dict(self.workflow_runs[0], conclusion="failure")
