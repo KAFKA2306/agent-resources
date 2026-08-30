@@ -95,6 +95,7 @@ description: |
 - source failure を成功扱いしない。
 - 古い値へ無言で戻さない。
 - 公式名称を使い、独自略語、独自分類、独自 workflow 名を増やさない。
+- 各 finance repository の文書rootは `docs/` 1つだけにする。`documentation/`、`reports/`、`research/` などを並列の文書rootとして増やさず、文書なら `docs/` 配下へ統合する。repository直下の `README.md` と `AGENTS.md`、機械可読データ、code、公開Web実装はこの統合対象にしない。
 - public Pages / Web site がある場合、README 冒頭に canonical production URL を `https://...` の完全URLで装飾なしの平文として置く。
 - Cloudflare の公開 Web がある場合、deploy 済みだけで完了にしない。production read-back と Google 検索への実 index 確認を別状態として扱う。
 
