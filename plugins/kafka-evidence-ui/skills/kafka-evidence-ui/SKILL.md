@@ -1,92 +1,82 @@
 ---
 name: kafka-evidence-ui
-description: Design or refactor information-dense HTML, CSS, JavaScript, and frontend interfaces in KAFKA2306's evidence-first visual system. Use for dashboards, catalogs, monitoring tools, public-data BI, finance or VR utilities, and design-system migrations. Do not use for backend-only tasks or when another brand system is explicitly required.
+description: Audit and improve information-dense Web UI while preserving current data authority, semantics, production behavior, accessibility, and existing frontend architecture. Use for dashboards, public Web operations, documentation, catalogs, and monitoring interfaces.
 ---
 
-# KAFKA Evidence UI
+# Web UI改善
 
-Build interfaces that make evidence, state, and uncertainty easier to inspect than decoration.
+現在のproductionとrepositoryを直接確認し、利用者が状態を理解し、必要な項目を見つけ、証拠を確認し、次の操作へ進むまでの負荷を下げます。
 
-## Start with the existing product
+## 最初に確認するもの
 
-1. Read the current HTML, CSS, JavaScript, components, and data model before editing.
-2. Preserve working behavior, terminology, routes, and data contracts unless the task explicitly changes them.
-3. Identify the user's primary decision: inspect, compare, monitor, search, operate, or verify.
-4. Inventory the evidence the interface can expose: source, timestamp, sample count, coverage, missing fields, blocked claims, and unresolved records.
+1. current productionをdesktop / mobile幅で確認する。
+2. READMEだけで判断せず、HTML、CSS、JavaScript、component、docs source、test、deploymentを確認する。
+3. 表示値はcanonical production / real dataを使う。fixtureやsampleをproduction評価の代用にしない。
+4. source、freshness、failure、unavailable、owner、evidence、primary actionの現在の意味を確認する。
 
-## Choose one mode
+## 変更方針
 
-- **Terminal mode**: monitoring, finance, operational control, logs, audit matrices, and high-frequency comparison.
-- **Paper mode**: public-data BI, catalogs, reports, libraries, explanatory tools, and source-led browsing.
+- 現在のdata schema、API、collector、backend、CIをdesign都合で作り直さない。
+- 既存framework、theme、CSS、native HTMLを優先する。新frameworkやcomponent libraryを追加しない。
+- `DELETE > MERGE > REPLACE > ADD` を優先し、古いCSS、重複style、不要な装飾を残さない。
+- 一般的な用語で十分な場合、独自のmode、status分類、component分類、workflow名を作らない。
+- 色だけで状態を伝えず、文字でも意味を示す。
+- gradient、glow、particle、過剰なshadow、不要なanimationを標準にしない。
+- responsive layoutとkeyboard操作を後付けにしない。
 
-Use the same spacing, typography, component, and semantic-state rules in both modes. Do not invent a third visual language for each project.
+## Operations / Dashboard
 
-## Use the supplied assets
+利用者が短時間で次を判断できる順に情報を置きます。
 
-- `assets/tokens.css`: semantic colors, type, spacing, radius, density, and terminal/paper themes.
-- `assets/components.css`: shell, navigation, metrics, panels, controls, tables, bars, evidence records, badges, and responsive behavior.
+1. 現在のscopeとfreshness
+2. failure / waitingなど対応が必要な状態
+3. owner repositoryと理由
+4. evidence
+5. primary action
+6. 全件を比較する詳細view
 
-Copy or import these files. Override semantic tokens rather than scattering literal colors through project CSS.
+大量比較にtableが適する場合はtableを残します。first viewportのすべてをcardへ変換しません。
 
-## Required information architecture
+## Documentation
 
-Place these in a stable reading order when the data exists:
+Markdown等のcanonical本文とpresentationを分離します。
 
-1. identity and current scope;
-2. freshness and system/data status;
-3. primary metrics or selected object;
-4. controls and filters;
-5. detailed table, catalog, chart, or workflow;
-6. evidence lane with source, coverage, assumptions, and unresolved items.
+- command、URL、file path、version、number、warning、limitation、code sampleをvisual変更のために書き換えない。
+- 本文幅、heading spacing、table、code block、note / warning、navigation、focus、printを既存theme / CSSで改善する。
+- code blockはcommandを壊すwrapを避け、copy可能性を維持する。
+- 長いpageでは既存themeの目次機能を優先する。
 
-Missing or blocked evidence must remain visible. Never convert an unknown value into a confident claim.
+## Accessibility
 
-## Visual constraints
+- semantic HTMLとnative controlを優先する。
+- interactive elementはkeyboardで到達可能にする。
+- `:focus-visible` を明確にする。
+- 状態変更に必要な既存の`aria-*` semanticsを維持する。
+- `prefers-reduced-motion`を尊重する。
+- mobileで主要操作がhorizontal scrollだけに依存しないようにする。
 
-- Base spacing on 4px increments; use 8px as the default gap.
-- Default radius is 8px. Use only 0, 4px, 8px, or pill radius.
-- Use one focus accent. Reserve positive, warning, negative, information, and special colors for semantic states.
-- Use sans-serif for prose and controls; use monospace for numbers, identifiers, timestamps, paths, statuses, and compact labels.
-- Prefer thin borders and surface contrast. Do not put a shadow on every card.
-- Use shadows only for overlays, popovers, or a genuinely floating control.
-- Keep controls compact and sticky only when they remain useful during scrolling.
-- Tables use sticky headers, aligned numeric columns, clear hover/focus states, and horizontal overflow on small screens.
+## 検証
 
-## Prohibited defaults
+変更前後を同じ実taskで比較します。
 
-Do not introduce these without a specific product reason:
+- 対応が必要な項目を見つける。
+- ownerを特定する。
+- waiting / failure理由を読む。
+- evidenceへ移動する。
+- primary actionを開く。
+- freshness / unavailable / failureを区別する。
+- mobile幅とkeyboardでも同じ操作を行う。
 
-- rainbow accent palettes;
-- gradient-filled headings;
-- pervasive glass blur;
-- glowing panels;
-- hover lift on every card;
-- 18–24px default corner radii;
-- oversized empty hero areas;
-- decorative icons without labels or operational meaning;
-- hidden source, freshness, coverage, or uncertainty information.
+変更後はrepositoryの既存test / build / browser verificationを実行し、PRのexact head CI、merge後main、関係するdeployment / productionまで確認します。CI successだけでproduction successとしません。
 
-## HTML, CSS, and JavaScript rules
+## 完了時の報告
 
-- Prefer semantic HTML and native controls.
-- Make interactive elements keyboard reachable and provide visible `:focus-visible` states.
-- Use `aria-pressed`, `aria-live`, labels, and status roles where state changes need to be announced.
-- Keep JavaScript progressive and local: theme, density, filtering, sorting, copy, disclosure, and synchronized selection.
-- Persist only harmless presentation preferences in `localStorage`.
-- Respect `prefers-reduced-motion`.
-- Do not add a framework when plain HTML, CSS, and JavaScript satisfy the task.
-- Do not remove an established framework solely to satisfy this skill.
+material deltaだけを残します。
 
-## Validation checklist
-
-Before finishing, verify:
-
-- the primary decision is visible without scrolling on a common laptop viewport;
-- source and freshness are present where available;
-- missing, warning, failed, stale, and blocked states are distinguishable without relying only on color;
-- contrast, keyboard navigation, responsive layout, and reduced motion work;
-- literals have been consolidated into semantic tokens;
-- the interface has no unnecessary gradient, glow, blur, lift, shadow, or oversized radius;
-- the implementation still passes its existing build, lint, and test commands.
-
-Report the selected mode, evidence exposed, files changed, validations run, and any remaining proof gaps.
+- Before → After
+- 変更したfile
+- 削除 / 統合したstyleやauthority
+- exact-head CI
+- merge revision
+- deployment / production verification
+- 未確認のlayer

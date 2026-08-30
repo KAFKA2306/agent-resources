@@ -37,7 +37,7 @@
     {
       "id": "kafka-evidence-ui",
       "path": "skills/kafka-evidence-ui",
-      "tree_sha": "3ca2821ee5b96d11455eea202fb6f94d8014134d",
+      "tree_sha": "1f6a0d6fc76fc2c32901c546f8f9da7af4b52bb2",
       "kind": "skill",
       "title": "KAFKA Evidence UI",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/kafka-evidence-ui"

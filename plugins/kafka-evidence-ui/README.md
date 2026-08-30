@@ -1,13 +1,8 @@
-# KAFKA Evidence UI
+# Web UI改善Skill
 
-Evidence-first design system and agent skill for KAFKA2306 projects.
+KAFKA2306のDashboard、public Web、documentationを、現在のdata authorityとproduction behaviorを保ったまま改善するagent skillです。
 
-## Modes
-
-- `terminal`: monitoring, finance, operations, logs, and audit-heavy tools.
-- `paper`: public-data BI, catalogs, reports, libraries, and explanatory tools.
-
-Both modes share the same semantic tokens, spacing, density, components, and evidence rules.
+正準手順は `skills/kafka-evidence-ui/SKILL.md` に置きます。plugin内のSkillは配布用コピーです。
 
 ## Contents
 
@@ -15,9 +10,9 @@ Both modes share the same semantic tokens, spacing, density, components, and evi
 .claude-plugin/plugin.json
 .codex-plugin/plugin.json
 skills/kafka-evidence-ui/SKILL.md
-assets/tokens.css
-assets/components.css
 ```
+
+CSS token、component library、独自themeは配布しません。対象productの既存framework、theme、CSSを優先します。
 
 ## Claude Code
 
@@ -28,26 +23,14 @@ assets/components.css
 
 ## Codex
 
-Install plugins through the Codex / ChatGPT Plugin Directory on supported surfaces.
+対応surfaceではCodex / ChatGPT Plugin Directoryからpluginを導入します。
 
-The repository skill is also available directly at `.agents/skills/kafka-evidence-ui/SKILL.md`.
-
-## agr-compatible installation
+## agr
 
 ```bash
 agr add KAFKA2306/agent-resources/kafka-evidence-ui
 ```
 
-## Plain HTML/CSS/JS
+## Rule
 
-Copy `assets/tokens.css` and `assets/components.css`, then set the theme on the root element:
-
-```html
-<html data-theme="terminal" data-density="compact">
-```
-
-Use `data-theme="paper"` for the warm light mode.
-
-## Design rule
-
-Evidence, freshness, coverage, state, and uncertainty remain visible. Decorative effects never outrank the user's primary decision.
+current repositoryとproductionを直接確認し、実データ、状態の意味、evidence、accessibilityを維持します。visual変更のために新framework、独自UI分類、第二のCSS authorityを増やしません。

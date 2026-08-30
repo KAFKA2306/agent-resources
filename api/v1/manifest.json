@@ -8,7 +8,7 @@
       "path": "api/v1/skill-collections.json",
       "media_type": "application/json",
       "record_count": 10,
-      "sha256": "cb6894f6a553273c8ea0bef91390bddb3c1d45a1c838716eba0d9c822e135423",
+      "sha256": "1612cd1eb4b9922d25424adc36114a207756426323142f63848dadf52214c5e7",
       "schema": "kafka.agent-resources.skill-collections.v1"
     }
   ],
