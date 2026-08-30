@@ -5,7 +5,7 @@ site_author: KAFKA2306
 repo_url: https://github.com/KAFKA2306/agent-resources
 repo_name: KAFKA2306/agent-resources
 
-docs_dir: docs
+docs_dir: content
 site_dir: site
 
 theme:
