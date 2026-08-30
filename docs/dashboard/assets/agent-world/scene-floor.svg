@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 96" role="img" aria-labelledby="t">
-<title id="t">Floor room tile</title>
-<g stroke="#4A4A5A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-  <path fill="#F7F1E8" d="M12 48L96 12l84 36-84 36z"/>
-  <path d="M54 30l84 36M33 57l84-36M75 75l84-36" fill="none" opacity=".45"/>
-  <path fill="#EFE3F5" d="M78 48l18-8 18 8-18 8z"/>
-</g></svg>
