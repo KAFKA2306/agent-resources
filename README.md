@@ -50,12 +50,11 @@ agr sync
 
 CLIの詳細は [CLI / Skills docs](https://agent-resources-one.vercel.app/site/) を参照してください。
 
-### Evidence-first UIを再利用する
+### Web UI改善手順を再利用する
 
-Dashboardで使う高密度な運用UIを再利用できます。
+Dashboardやpublic Web、documentationを改善するときの監査・検証手順をSkillとして再利用できます。CSS component libraryや独自themeは配布せず、対象productの既存frontend authorityを優先します。
 
-- [Showcase](https://agent-resources-one.vercel.app/)
-- [Design system skill](skills/kafka-evidence-ui/SKILL.md)
+- [Web UI改善Skill](skills/kafka-evidence-ui/SKILL.md)
 - [Agent plugin](plugins/kafka-evidence-ui/README.md)
 
 ## 開発
