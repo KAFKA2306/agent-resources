@@ -32,8 +32,7 @@
     <main class="main-panel" id="main" aria-labelledby="workspace-title" tabindex="-1">
       <div class="panel-heading">
         <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
-        <div class="snapshot-meta" aria-label="データ更新状態">
-          <span class="status-chip" role="status" aria-live="polite" id="snapshot-status" data-state="loading">読込中</span>
+        <div class="snapshot-meta" aria-label="データ更新時刻">
           <div class="snapshot-source-row" aria-label="GitHub dashboard state">
             <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
             <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
@@ -44,8 +43,13 @@
           </div>
         </div>
       </div>
-      <section class="hub" aria-label="中央ハブ"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></section>
-      <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
+      <section class="operations-summary" aria-label="運用サマリー">
+        <section class="hub" aria-label="データ鮮度">
+          <div class="hub-copy"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></div>
+          <span class="status-chip" role="status" aria-live="polite" id="snapshot-status" data-state="loading">読込中</span>
+        </section>
+        <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
+      </section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section class="agent-world" aria-labelledby="agent-world-title">
         <div class="world-heading">
