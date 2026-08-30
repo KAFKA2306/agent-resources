@@ -6,7 +6,6 @@ on:
       - "design-systems/kafka/**"
       - "plugins/kafka-evidence-ui/**"
       - "skills/kafka-evidence-ui/**"
-      - ".agents/skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
       - ".claude-plugin/marketplace.json"
       - "README.md"
@@ -17,7 +16,6 @@ on:
       - "design-systems/kafka/**"
       - "plugins/kafka-evidence-ui/**"
       - "skills/kafka-evidence-ui/**"
-      - ".agents/skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
       - ".claude-plugin/marketplace.json"
       - "README.md"
@@ -50,26 +48,23 @@ jobs:
               print(f'valid json: {path}')
           PY
 
-      - name: Validate required skill assets
+      - name: Validate required skill files
         run: |
           python - <<'PY'
           from pathlib import Path
 
           required = [
-              '.agents/skills/kafka-evidence-ui/SKILL.md',
-              '.agents/skills/kafka-evidence-ui/assets/tokens.css',
-              '.agents/skills/kafka-evidence-ui/assets/components.css',
               'skills/kafka-evidence-ui/SKILL.md',
-              'skills/kafka-evidence-ui/assets/tokens.css',
-              'skills/kafka-evidence-ui/assets/components.css',
               'plugins/kafka-evidence-ui/skills/kafka-evidence-ui/SKILL.md',
-              'plugins/kafka-evidence-ui/skills/kafka-evidence-ui/assets/tokens.css',
-              'plugins/kafka-evidence-ui/skills/kafka-evidence-ui/assets/components.css',
           ]
           missing = [path for path in required if not Path(path).is_file()]
           if missing:
               raise SystemExit(f'missing required files: {missing}')
-          print(f'required files: {len(required)}')
+          canonical = Path(required[0]).read_text(encoding='utf-8')
+          packaged = Path(required[1]).read_text(encoding='utf-8')
+          if canonical != packaged:
+              raise SystemExit('packaged skill differs from canonical skill')
+          print(f'required files: {len(required)}; packaged skill matches canonical')
           PY
 
       - name: Validate README resource links
@@ -127,9 +122,6 @@ jobs:
           from pathlib import Path
 
           paths = list(Path('design-systems/kafka').glob('*.css'))
-          paths += list(Path('plugins/kafka-evidence-ui').rglob('*.css'))
-          paths += list(Path('skills/kafka-evidence-ui').rglob('*.css'))
-          paths += list(Path('.agents/skills/kafka-evidence-ui').rglob('*.css'))
           for path in paths:
               text = path.read_text(encoding='utf-8')
               if text.count('{') != text.count('}'):
