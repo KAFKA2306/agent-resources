@@ -3,6 +3,8 @@ name: Validate Dashboard PR
 on:
   pull_request:
     paths:
+      - 'AGENTS.md'
+      - 'README.md'
       - 'api/dashboard-live.js'
       - 'dashboard/**'
       - '!dashboard/data/repository-index.json'
