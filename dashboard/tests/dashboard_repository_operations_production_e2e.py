@@ -62,6 +62,11 @@ def selected_gate_is_pressed(dom: str, lane: str) -> bool:
     )
 
 
+def selected_gate_detail(dom: str) -> str:
+    match = re.search(r'<section id="gate-detail"[^>]*>(.*?)</section>', dom, re.DOTALL)
+    return match.group(1) if match else ""
+
+
 def main() -> None:
     production_root = urljoin(PRODUCTION_URL, "../")
     _endpoint, live_payload, _age_seconds = verify_production_live(production_root, EXPECTED_SHA)
@@ -86,6 +91,7 @@ def main() -> None:
     )
     selected_dom = dump_production_dom(f"{PRODUCTION_URL}?lane={selected_lane}")
     selected_count = gate_counts.get(selected_lane, 0)
+    gate_detail = selected_gate_detail(selected_dom)
 
     checks = {
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
@@ -104,10 +110,20 @@ def main() -> None:
         "query-selected gate exposes pressed state": selected_gate_is_pressed(
             selected_dom, selected_lane
         ),
-        "owner/repository label rendered": "KAFKA2306 /" in selected_dom,
+        "selected gate detail rendered": bool(gate_detail),
     }
     if selected_count > 0:
-        checks["selected gate exposes reason"] = 'class="gate-item-reason"' in selected_dom
+        checks["selected gate owner/repository label rendered"] = (
+            re.search(
+                r'class="gate-item-meta gate-item-owner"[^>]*>\s*'
+                r'Owner repository:\s*KAFKA2306 / [^<]+</span>',
+                gate_detail,
+            )
+            is not None
+        )
+        checks["selected gate exposes reason"] = 'class="gate-item-reason"' in gate_detail
+    else:
+        checks["selected empty gate is explicit"] = "対象は0件です。" in gate_detail
 
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
@@ -128,7 +144,7 @@ def main() -> None:
         "repository operations production browser E2E: "
         f"live {rendered_repository_count} repos at {live_payload['fetchedAt']}, "
         f"operations snapshot rendered without obsolete classification, "
-        f"mobile viewport skip/owner/{selected_lane} pressed state verified, "
+        f"mobile viewport skip/{selected_lane} detail+pressed state verified, "
         f"poker-raise-quiz FRONT {POKER_RAISE_QUIZ_URL} PASS"
     )
 
