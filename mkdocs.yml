@@ -6,7 +6,7 @@ repo_url: https://github.com/KAFKA2306/agent-resources
 repo_name: KAFKA2306/agent-resources
 
 docs_dir: docs
-site_dir: site
+site_dir: docs/site
 
 theme:
   name: material
@@ -20,7 +20,7 @@ theme:
     - navigation.instant
     - navigation.tracking
     - content.code.copy
-  custom_dir: overrides
+  custom_dir: docs/overrides
 
 extra:
   social:

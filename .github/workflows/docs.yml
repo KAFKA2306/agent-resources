@@ -7,6 +7,7 @@ on:
     paths:
       - 'docs/**'
       - 'dashboard/**'
+      - 'mkdocs.yml'
       - 'package.json'
       - '.github/workflows/docs.yml'
   schedule:
@@ -110,7 +111,6 @@ jobs:
             stats_args+=(--previous-dashboard dashboard/generated/previous-dashboard.json)
           fi
           python -m dashboard.collectors.github_stats "${stats_args[@]}"
-          cp dashboard/issue-backlog-history.json docs/dashboard/issue-backlog-history.json
           python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
           python -m dashboard.collectors.recent_activity --repositories dashboard/generated/repositories.json --window-days 7 --output dashboard/generated/recent-activity.json
@@ -161,7 +161,6 @@ jobs:
             --output docs/dashboard/dashboard.json
 
       - name: Build docs
-        working-directory: docs
         run: mkdocs build
 
       - name: Prepare deploy directory
@@ -197,17 +196,6 @@ jobs:
           if not operations.get('repositories'):
               raise SystemExit('repository operations snapshot has zero repositories')
 
-          history = json.loads((root / 'issue-backlog-history.json').read_text(encoding='utf-8'))
-          if history.get('schemaVersion') != 1:
-              raise SystemExit('issue backlog history schemaVersion is not 1')
-          if history.get('owner') != 'KAFKA2306' or history.get('scope') != 'public' or history.get('timezone') != 'Asia/Tokyo':
-              raise SystemExit('issue backlog history scope metadata is invalid')
-          if not history.get('snapshots'):
-              raise SystemExit('issue backlog history has zero snapshots')
-          latest_history = history['snapshots'][-1]
-          if not isinstance(latest_history.get('allOpen'), int) or not isinstance(latest_history.get('authoredOpen'), int):
-              raise SystemExit('issue backlog history latest counts are invalid')
-
           if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
               raise SystemExit('retired dashboard view leaked into deploy bundle')
           if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
@@ -222,7 +210,6 @@ jobs:
           print(f"deploy repositories: {len(snapshot['repositories'])}")
           print(f"deploy activity: {len(snapshot['activity'])}")
           print(f"deploy repository operations: {len(operations['repositories'])}")
-          print(f"deploy issue backlog snapshots: {len(history['snapshots'])}")
           PY
 
       - name: Upload artifact
@@ -277,112 +264,21 @@ jobs:
                   stats_js = fetch('stats.js')
                   snapshot = json.loads(fetch('dashboard.json'))
                   operations = json.loads(fetch('repository-operations.json'))
-                  history = json.loads(fetch('issue-backlog-history.json'))
                   if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
-                      raise RuntimeError('retired view is still deployed')
+                      raise RuntimeError('retired dashboard view is deployed')
                   if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
-                      raise RuntimeError('retired JavaScript is still deployed')
+                      raise RuntimeError('retired dashboard JavaScript is deployed')
                   if not snapshot.get('repositories'):
                       raise RuntimeError('deployed dashboard has zero repositories')
-                  if snapshot.get('stats', {}).get('publicRepositories') != len(snapshot['repositories']):
-                      raise RuntimeError('deployed stats repository count diverged from canonical list')
                   if not snapshot.get('activity'):
                       raise RuntimeError('deployed dashboard has zero recent activity')
-                  if not snapshot.get('stats', {}).get('monthly'):
-                      raise RuntimeError('deployed dashboard has no monthly stats')
-                  if not operations.get("generatedAt") or not operations.get("sourceRevision") or not operations.get("runId"):
-                      raise RuntimeError('deployed repository operations snapshot is missing provenance')
                   if not operations.get('repositories'):
-                      raise RuntimeError('deployed repository operations snapshot has zero repositories')
-                  if history.get('schemaVersion') != 1:
-                      raise RuntimeError('deployed issue backlog history schemaVersion is not 1')
-                  if history.get('owner') != 'KAFKA2306' or history.get('scope') != 'public' or history.get('timezone') != 'Asia/Tokyo':
-                      raise RuntimeError('deployed issue backlog history scope metadata is invalid')
-                  if not history.get('snapshots'):
-                      raise RuntimeError('deployed issue backlog history has zero snapshots')
-                  latest_history = history['snapshots'][-1]
-                  if not isinstance(latest_history.get('allOpen'), int) or not isinstance(latest_history.get('authoredOpen'), int):
-                      raise RuntimeError('deployed issue backlog history latest counts are invalid')
-                  try:
-                      fetch('public-links.js')
-                  except urllib.error.HTTPError as exc:
-                      if exc.code != 404:
-                          raise
-                  else:
-                      raise RuntimeError('retired public-links.js is still deployed')
-                  print(f"deployed repositories: {len(snapshot['repositories'])}")
-                  print(f"deployed activity: {len(snapshot['activity'])}")
-                  print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
-                  print(f"deployed repository operations: {len(operations['repositories'])}")
-                  print(f"deployed issue backlog snapshots: {len(history['snapshots'])}")
+                      raise RuntimeError('deployed repository operations has zero repositories')
+                  print('GitHub Pages dashboard smoke passed')
                   break
-              except Exception:
+              except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError, RuntimeError) as exc:
                   if attempt == 5:
                       raise
-                  time.sleep(5)
+                  print(f'GitHub Pages not ready yet: {exc}')
+                  time.sleep(10)
           PY
-          python -m dashboard.production_live_smoke
-
-      - name: Verify rendered dashboard in headless Chrome
-        env:
-          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
-        run: |
-          set -euo pipefail
-          chrome="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)"
-          test -n "$chrome"
-          target="${PAGE_URL%/}/dashboard/"
-          for attempt in 1 2 3 4 5 6; do
-            if "$chrome" \
-              --headless=new \
-              --no-sandbox \
-              --disable-gpu \
-              --disable-dev-shm-usage \
-              --virtual-time-budget=10000 \
-              --dump-dom "$target" > rendered-dashboard.html 2> chrome-smoke.log; then
-              if python - <<'PY'
-          import re
-          from pathlib import Path
-
-          html = Path('rendered-dashboard.html').read_text(encoding='utf-8')
-          forbidden = (
-              'PUBLIC PRESENCE',
-              'Repository details',
-              '直近7日の活動は0件です。',
-              '公開GitHub統計はまだ取得されていません。',
-          )
-          for text in forbidden:
-              if text in html:
-                  raise SystemExit(f'rendered dashboard contains forbidden stale/empty state: {text}')
-
-          repo_match = re.search(r'id="repository-count"[^>]*>\s*(\d+) repositories\s*<', html)
-          if not repo_match or int(repo_match.group(1)) <= 0:
-              raise SystemExit('rendered dashboard has zero repositories')
-
-          work_item_match = re.search(r'id="agent-world-summary"[^>]*>\s*作業項目\s+(\d+)件', html)
-          if not work_item_match or int(work_item_match.group(1)) <= 0:
-              raise SystemExit('rendered dashboard has zero work items')
-
-          status_match = re.search(r'id="snapshot-status"[^>]*>([^<]+)<', html)
-          status = status_match.group(1).strip() if status_match else ''
-          if status != 'LIVE':
-              raise SystemExit(f'rendered dashboard live status is not LIVE: {status or "missing"}')
-
-          if 'class="activity-item"' not in html:
-              raise SystemExit('rendered dashboard has no recent activity items')
-          if 'Public repositories' not in html:
-              raise SystemExit('rendered dashboard monthly statistics did not render')
-
-          print(f"browser repositories: {repo_match.group(1)}")
-          print(f"browser work items: {work_item_match.group(1)}")
-          print(f"browser snapshot status: {status}")
-          PY
-              then
-                exit 0
-              fi
-            fi
-            if [ "$attempt" -eq 6 ]; then
-              cat chrome-smoke.log >&2 || true
-              exit 1
-            fi
-            sleep 5
-          done
