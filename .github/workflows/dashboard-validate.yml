@@ -7,7 +7,6 @@ on:
       - 'dashboard/**'
       - '!dashboard/data/repository-index.json'
       - 'docs/**'
-      - 'mkdocs.yml'
       - 'package.json'
       - 'pyproject.toml'
       - 'scripts/validate_dashboard_contract.py'
@@ -53,6 +52,7 @@ jobs:
         run: pre-commit run --all-files --hook-stage pre-commit
 
       - name: Build public docs
+        working-directory: docs
         run: mkdocs build --strict
 
       - name: Verify baseline to live overlay in headless Chrome
