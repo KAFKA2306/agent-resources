@@ -46,6 +46,7 @@ class AgentWorldTest(unittest.TestCase):
 
     def test_world_has_no_repository_zone_layer(self):
         world_js = WORLD_JS.read_text(encoding="utf-8")
+        world_css = WORLD_CSS.read_text(encoding="utf-8")
         dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
         html = HTML.read_text(encoding="utf-8")
         self.assertNotIn("repository.group", world_js)
@@ -53,6 +54,10 @@ class AgentWorldTest(unittest.TestCase):
         self.assertNotIn("world-unclassified-details", world_js)
         self.assertNotIn("unclassified", world_js)
         self.assertNotIn("zoned", world_js)
+        self.assertNotIn(".world-zone", world_css)
+        self.assertNotIn("world-floor-asset", world_css)
+        self.assertNotIn("world-sign-asset", world_css)
+        self.assertNotIn('class="world-zones"', html)
         self.assertNotIn('id="operations-zone-action"', html)
         self.assertNotIn("project zone", html)
         self.assertNotIn('section.className = "project-group repository-directory"', dashboard_js)
@@ -93,7 +98,7 @@ class AgentWorldTest(unittest.TestCase):
         self.assertTrue(manifest["policy"]["visualOnly"])
         self.assertTrue(manifest["policy"]["stableAssetIdsRequired"])
         self.assertFalse(manifest["policy"]["mutableMainHotlinksAllowed"])
-        self.assertEqual(len(manifest["assets"]), 13)
+        self.assertEqual(len(manifest["assets"]), 11)
         for asset in manifest["assets"]:
             self.assertEqual(len(asset["blobSha"]), 40)
             self.assertEqual(len(asset["sha256"]), 64)
@@ -138,7 +143,7 @@ class AgentWorldTest(unittest.TestCase):
     def test_mobile_falls_back_to_information_first_layout(self):
         css = WORLD_CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn("@media(max-width:760px)", css)
-        self.assertIn(".world-floor-asset,.world-station-scene{display:none}", css)
+        self.assertIn(".world-station-scene{display:none}", css)
         self.assertIn("grid-template-columns:minmax(0,1fr)", css)
 
     def test_monthly_activity_is_below_active_workspace(self):
