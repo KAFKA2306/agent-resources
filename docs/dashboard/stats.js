@@ -22,6 +22,7 @@ export function renderStats(stats) {
   const statsMonthly = document.querySelector("#stats-monthly");
   const statsNote = document.querySelector("#stats-note");
   const statsScope = document.querySelector("#stats-scope");
+  const statsLegend = document.querySelector("#stats-legend");
   if (!statsSummary || !statsMonthly || !statsNote || !statsScope) return;
 
   statsSummary.replaceChildren();
@@ -29,11 +30,13 @@ export function renderStats(stats) {
   statsScope.textContent = "public only";
 
   if (!stats || stats.scope !== "public" || !Array.isArray(stats.monthly) || stats.monthly.length === 0) {
+    if (statsLegend) statsLegend.hidden = true;
     statsSummary.append(statCard("公開統計", null, "未取得"));
     statsNote.textContent = "公開GitHub統計はまだ取得されていません。";
     return;
   }
 
+  if (statsLegend) statsLegend.hidden = false;
   const monthly = stats.monthly.slice().sort((a, b) => a.month.localeCompare(b.month));
   const latest = monthly[monthly.length - 1];
   const latestLabel = latest.partial ? `${latest.month}（途中）` : latest.month;
