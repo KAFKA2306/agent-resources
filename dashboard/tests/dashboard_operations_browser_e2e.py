@@ -23,20 +23,20 @@ PROBE = """
     attempts += 1;
     const buttons = [...document.querySelectorAll('#lane-gates button[data-lane]')];
     const initialHeading = document.querySelector('#gate-detail h3');
-    const ownerLabel = document.querySelector('#gate-detail .gate-item-owner');
-    if (buttons.length === 3 && initialHeading && ownerLabel) {
+    if (buttons.length === 3 && initialHeading) {
       clearInterval(timer);
       const waiting = buttons.find((button) => button.dataset.lane === 'waiting');
       document.body.dataset.restoredBeforeKeyboard = String(initialHeading.textContent.includes('判断待ち'));
       document.body.dataset.gatesNamed = String(buttons.every((button) => button.type === 'button' && button.textContent.trim().length > 0));
       document.body.dataset.waitingPressed = waiting.getAttribute('aria-pressed') || '';
-      document.body.dataset.ownerVisible = String(ownerLabel.textContent.includes('KAFKA2306 / poker-raise-quiz'));
       document.body.dataset.skipLink = String(document.querySelector('.skip-link[href="#main"]') !== null && document.querySelector('main#main[tabindex="-1"]') !== null);
       document.body.dataset.legendHidden = String(document.querySelector('#stats-legend')?.hidden === true);
       waiting.focus();
       waiting.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
       setTimeout(() => {
         const failed = buttons.find((button) => button.dataset.lane === 'failed');
+        const ownerLabel = document.querySelector('#gate-detail .gate-item-owner');
+        document.body.dataset.ownerVisible = String(ownerLabel?.textContent.includes('KAFKA2306 / poker-raise-quiz') === true);
         document.body.dataset.keyboardLane = new URL(window.location.href).searchParams.get('lane') || '';
         document.body.dataset.keyboardFocus = document.activeElement?.dataset?.lane || '';
         document.body.dataset.keyboardDetail = document.querySelector('#gate-detail h3')?.textContent || '';
@@ -108,7 +108,7 @@ def main() -> None:
         "URL lane restored before keyboard": 'data-restored-before-keyboard="true"' in dom,
         "gate buttons have names": 'data-gates-named="true"' in dom,
         "restored gate exposes pressed state": 'data-waiting-pressed="true"' in dom,
-        "owner/repository is visible in gate detail": 'data-owner-visible="true"' in dom,
+        "owner/repository is visible for live work item": 'data-owner-visible="true"' in dom,
         "skip link targets focusable main": 'data-skip-link="true"' in dom,
         "empty stats hides legend": 'data-legend-hidden="true"' in dom,
         "ArrowRight updates URL": 'data-keyboard-lane="failed"' in dom,
