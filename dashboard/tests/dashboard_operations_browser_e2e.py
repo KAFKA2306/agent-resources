@@ -26,8 +26,11 @@ PROBE = """
     if (buttons.length === 3 && initialHeading) {
       clearInterval(timer);
       const waiting = buttons.find((button) => button.dataset.lane === 'waiting');
+      const summary = document.querySelector('.operations-summary');
+      const summaryIndicators = summary?.querySelectorAll('#snapshot-status, #lane-gates .lane-gate') || [];
       document.body.dataset.restoredBeforeKeyboard = String(initialHeading.textContent.includes('判断待ち'));
       document.body.dataset.gatesNamed = String(buttons.every((button) => button.type === 'button' && button.textContent.trim().length > 0));
+      document.body.dataset.summaryIndicators = String(summaryIndicators.length === 4 && summary?.querySelector('#repository-count') !== null);
       document.body.dataset.waitingPressed = waiting.getAttribute('aria-pressed') || '';
       document.body.dataset.skipLink = String(document.querySelector('.skip-link[href="#main"]') !== null && document.querySelector('main#main[tabindex="-1"]') !== null);
       document.body.dataset.legendHidden = String(document.querySelector('#stats-legend')?.hidden === true);
@@ -107,6 +110,7 @@ def main() -> None:
     checks = {
         "URL lane restored before keyboard": 'data-restored-before-keyboard="true"' in dom,
         "gate buttons have names": 'data-gates-named="true"' in dom,
+        "first viewport has freshness plus three state gates": 'data-summary-indicators="true"' in dom,
         "restored gate exposes pressed state": 'data-waiting-pressed="true"' in dom,
         "owner/repository is visible for live work item": 'data-owner-visible="true"' in dom,
         "skip link targets focusable main": 'data-skip-link="true"' in dom,
@@ -121,7 +125,7 @@ def main() -> None:
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
         raise SystemExit("operations browser E2E failed: " + ", ".join(failures))
-    print("operations browser E2E: state + owner + a11y + mobile width PASS")
+    print("operations browser E2E: summary + state + owner + a11y + mobile width PASS")
 
 
 if __name__ == "__main__":
