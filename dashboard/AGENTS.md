@@ -49,7 +49,9 @@ uvx pre-commit run --all-files --hook-stage pre-push
 - exact PR headでDashboard CIが成功
 - 検証後にPR headが変わっていない状態でmerge
 - merge SHAのVercel production deploymentがREADY
-- `Verify Dashboard Release` が同じmerge SHAで成功
+- `Verify Dashboard Release` のproduction分類runが同じmerge SHAをcheckoutし、production live payloadとreleased production dashboardを実際に検証して成功
 - 変更したproduction behaviorをbrowser E2Eが直接assertしている
+
+preview / non-production deploymentの`Verify Dashboard Release`成功はproduction完了の証拠にしません。
 
 この5点を満たさない場合は、どの層が未確認かを `UNVERIFIED` として残します。

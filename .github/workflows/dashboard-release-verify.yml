@@ -1,4 +1,8 @@
 name: Verify Dashboard Release
+run-name: >-
+  Dashboard release ·
+  ${{ github.event.client_payload.environment || 'manual' }} ·
+  ${{ github.event.client_payload.git.sha || github.sha }}
 
 on:
   repository_dispatch:
