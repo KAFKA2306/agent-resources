@@ -105,7 +105,7 @@ Documentationもmaintained surfaceとして扱います。
 
 - `README.md`: 人間向けの短い入口、主要surface、最短の利用・検証経路
 - `AGENTS.md`: repository/agent運用契約
-- `docs/docs/`: CLI利用者向けの恒久的なguide/reference
+- `docs/content/`: CLI利用者向けの恒久的なguide/reference
 - その他のdocs: 独立した現在有効な役割がある場合だけ残す
 
 obsoleteな文書は削除し、重複文書は統合します。source code、schema、workflow、upstream docsを長文で複製せず、安定した正準sourceへlinkします。削除済みfile、command、workflow、endpointへの参照を残しません。
