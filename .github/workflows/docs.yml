@@ -121,6 +121,8 @@ jobs:
           import urllib.request
           from pathlib import Path
 
+          from jsonschema import Draft202012Validator
+
           target = Path('docs/dashboard/repository-operations.json')
           request = urllib.request.Request(
               os.environ['REPOSITORY_OPERATIONS_PUBLIC_SNAPSHOT_URL'],
@@ -129,6 +131,8 @@ jobs:
           try:
               with urllib.request.urlopen(request, timeout=15) as response:
                   payload = json.loads(response.read().decode('utf-8'))
+              schema = json.loads(Path('dashboard/schema/repository-operations.schema.json').read_text(encoding='utf-8'))
+              Draft202012Validator(schema).validate(payload)
               required = ('generatedAt', 'sourceRevision', 'runId', 'repositories')
               if not isinstance(payload, dict) or any(not payload.get(key) for key in required):
                   raise ValueError('previous repository operations snapshot is incomplete')
