@@ -23,13 +23,14 @@ PROBE = """
     attempts += 1;
     const buttons = [...document.querySelectorAll('#lane-gates button[data-lane]')];
     const initialHeading = document.querySelector('#gate-detail h3');
-    if (buttons.length === 3 && initialHeading) {
+    const ownerLabel = document.querySelector('#gate-detail .gate-item-owner');
+    if (buttons.length === 3 && initialHeading && ownerLabel) {
       clearInterval(timer);
       const waiting = buttons.find((button) => button.dataset.lane === 'waiting');
       document.body.dataset.restoredBeforeKeyboard = String(initialHeading.textContent.includes('判断待ち'));
       document.body.dataset.gatesNamed = String(buttons.every((button) => button.type === 'button' && button.textContent.trim().length > 0));
       document.body.dataset.waitingPressed = waiting.getAttribute('aria-pressed') || '';
-      document.body.dataset.ownerVisible = String((document.querySelector('#gate-detail')?.textContent || '').includes('KAFKA2306 / poker-raise-quiz'));
+      document.body.dataset.ownerVisible = String(ownerLabel.textContent.includes('KAFKA2306 / poker-raise-quiz'));
       document.body.dataset.skipLink = String(document.querySelector('.skip-link[href="#main"]') !== null && document.querySelector('main#main[tabindex="-1"]') !== null);
       document.body.dataset.legendHidden = String(document.querySelector('#stats-legend')?.hidden === true);
       waiting.focus();
