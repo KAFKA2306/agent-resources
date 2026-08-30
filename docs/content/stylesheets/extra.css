@@ -1,0 +1,144 @@
+:root {
+  --docs-readable-width: 76ch;
+  --docs-focus: #2457d6;
+}
+
+.md-grid {
+  max-width: 92rem;
+}
+
+.md-content__inner {
+  padding-top: 1.4rem;
+}
+
+.md-content__inner > :not(.highlight):not(.tabbed-set):not(table):not(.md-typeset__table) {
+  max-width: var(--docs-readable-width);
+}
+
+.md-typeset {
+  font-size: .82rem;
+  line-height: 1.7;
+}
+
+.md-typeset h1 {
+  margin: 0 0 1.4rem;
+  font-size: 2rem;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+
+.md-typeset h2 {
+  margin-top: 2.4rem;
+  padding-top: .35rem;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.md-typeset h3 {
+  margin-top: 1.8rem;
+  font-size: 1.05rem;
+}
+
+.md-typeset p,
+.md-typeset li {
+  hanging-punctuation: first last;
+}
+
+.md-typeset table:not([class]) {
+  width: max-content;
+  min-width: 100%;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  font-size: .76rem;
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--md-code-bg-color);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) td,
+.md-typeset table:not([class]) th {
+  padding: .65rem .8rem;
+  vertical-align: top;
+}
+
+.md-typeset .highlight,
+.md-typeset pre {
+  max-width: 100%;
+}
+
+.md-typeset pre > code {
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.md-typeset code {
+  font-size: .92em;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  max-width: var(--docs-readable-width);
+  border-width: 1px;
+  box-shadow: none;
+}
+
+.md-typeset a {
+  text-underline-offset: .16em;
+}
+
+.md-typeset a:hover {
+  text-decoration: underline;
+}
+
+.md-typeset a:focus-visible,
+.md-header a:focus-visible,
+.md-nav a:focus-visible,
+.md-search__input:focus-visible,
+.md-clipboard:focus-visible {
+  outline: 2px solid var(--docs-focus);
+  outline-offset: 2px;
+  border-radius: .1rem;
+}
+
+.md-nav__link--active {
+  font-weight: 700;
+}
+
+@media screen and (max-width: 76.234375em) {
+  .md-content__inner > :not(.highlight):not(.tabbed-set):not(table):not(.md-typeset__table) {
+    max-width: none;
+  }
+}
+
+@media print {
+  .md-header,
+  .md-sidebar,
+  .md-footer,
+  .md-top,
+  .md-dialog {
+    display: none !important;
+  }
+
+  .md-main__inner,
+  .md-content,
+  .md-content__inner {
+    display: block;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .md-typeset {
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  .md-typeset pre,
+  .md-typeset table {
+    break-inside: avoid;
+  }
+}
