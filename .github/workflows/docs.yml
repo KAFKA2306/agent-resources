@@ -110,7 +110,6 @@ jobs:
             stats_args+=(--previous-dashboard dashboard/generated/previous-dashboard.json)
           fi
           python -m dashboard.collectors.github_stats "${stats_args[@]}"
-          cp dashboard/issue-backlog-history.json docs/dashboard/issue-backlog-history.json
           python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json
           python -m dashboard.collectors.recent_activity --repositories dashboard/generated/repositories.json --window-days 7 --output dashboard/generated/recent-activity.json
@@ -197,17 +196,6 @@ jobs:
           if not operations.get('repositories'):
               raise SystemExit('repository operations snapshot has zero repositories')
 
-          history = json.loads((root / 'issue-backlog-history.json').read_text(encoding='utf-8'))
-          if history.get('schemaVersion') != 1:
-              raise SystemExit('issue backlog history schemaVersion is not 1')
-          if history.get('owner') != 'KAFKA2306' or history.get('scope') != 'public' or history.get('timezone') != 'Asia/Tokyo':
-              raise SystemExit('issue backlog history scope metadata is invalid')
-          if not history.get('snapshots'):
-              raise SystemExit('issue backlog history has zero snapshots')
-          latest_history = history['snapshots'][-1]
-          if not isinstance(latest_history.get('allOpen'), int) or not isinstance(latest_history.get('authoredOpen'), int):
-              raise SystemExit('issue backlog history latest counts are invalid')
-
           if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
               raise SystemExit('retired dashboard view leaked into deploy bundle')
           if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
@@ -222,7 +210,6 @@ jobs:
           print(f"deploy repositories: {len(snapshot['repositories'])}")
           print(f"deploy activity: {len(snapshot['activity'])}")
           print(f"deploy repository operations: {len(operations['repositories'])}")
-          print(f"deploy issue backlog snapshots: {len(history['snapshots'])}")
           PY
 
       - name: Upload artifact
@@ -277,7 +264,6 @@ jobs:
                   stats_js = fetch('stats.js')
                   snapshot = json.loads(fetch('dashboard.json'))
                   operations = json.loads(fetch('repository-operations.json'))
-                  history = json.loads(fetch('issue-backlog-history.json'))
                   if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
                       raise RuntimeError('retired view is still deployed')
                   if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
@@ -294,15 +280,6 @@ jobs:
                       raise RuntimeError('deployed repository operations snapshot is missing provenance')
                   if not operations.get('repositories'):
                       raise RuntimeError('deployed repository operations snapshot has zero repositories')
-                  if history.get('schemaVersion') != 1:
-                      raise RuntimeError('deployed issue backlog history schemaVersion is not 1')
-                  if history.get('owner') != 'KAFKA2306' or history.get('scope') != 'public' or history.get('timezone') != 'Asia/Tokyo':
-                      raise RuntimeError('deployed issue backlog history scope metadata is invalid')
-                  if not history.get('snapshots'):
-                      raise RuntimeError('deployed issue backlog history has zero snapshots')
-                  latest_history = history['snapshots'][-1]
-                  if not isinstance(latest_history.get('allOpen'), int) or not isinstance(latest_history.get('authoredOpen'), int):
-                      raise RuntimeError('deployed issue backlog history latest counts are invalid')
                   try:
                       fetch('public-links.js')
                   except urllib.error.HTTPError as exc:
@@ -314,7 +291,6 @@ jobs:
                   print(f"deployed activity: {len(snapshot['activity'])}")
                   print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
                   print(f"deployed repository operations: {len(operations['repositories'])}")
-                  print(f"deployed issue backlog snapshots: {len(history['snapshots'])}")
                   break
               except Exception:
                   if attempt == 5:
