@@ -41,6 +41,11 @@ let liveRequestSequence = 0;
 let latestAppliedSequence = 0;
 let lastLiveSuccessAt = 0;
 
+function repositoryLabel(repository) {
+  if (!repository) return "unknown";
+  return repository.owner ? `${repository.owner} / ${repository.name}` : repository.name;
+}
+
 function formatWorkItemAge(value) {
   const updated = new Date(value);
   if (Number.isNaN(updated.getTime())) return "更新時刻不明";
@@ -79,7 +84,7 @@ function showGateItems(label, items, repositoriesById) {
     link.href = item.url;
     link.target = "_blank";
     link.rel = "noreferrer";
-    link.textContent = `${repo ? repo.name : "unknown"} · ${item.title}`;
+    link.textContent = `${repositoryLabel(repo)} · ${item.title}`;
     itemHeading.append(link);
 
     const meta = document.createElement("div");
@@ -113,8 +118,14 @@ function renderGates(workItems, repositoriesById) {
     button.className = "lane-gate";
     button.dataset.lane = gate.lane;
     button.type = "button";
+    button.setAttribute("aria-pressed", "false");
     button.innerHTML = `<span>${gate.label}</span><strong>${items.length}</strong>`;
-    button.addEventListener("click", () => showGateItems(gate.label, items, repositoriesById));
+    button.addEventListener("click", () => {
+      for (const candidate of laneGates.querySelectorAll("button[data-lane]")) {
+        candidate.setAttribute("aria-pressed", String(candidate === button));
+      }
+      showGateItems(gate.label, items, repositoriesById);
+    });
     laneGates.append(button);
   }
 }
@@ -224,7 +235,7 @@ function renderActivity(activity, repositoriesById) {
       const repositoryHeading = document.createElement("div");
       repositoryHeading.className = "activity-repository-heading";
       const repositoryName = document.createElement("strong");
-      repositoryName.textContent = repositoriesById.get(repositoryId)?.name || "unknown";
+      repositoryName.textContent = repositoryLabel(repositoriesById.get(repositoryId));
       const repositorySummary = document.createElement("span");
       repositorySummary.textContent = `${repositoryItems.length}件 · ${formatActivityCounts(repositoryItems)}`;
       repositoryHeading.append(repositoryName, repositorySummary);
@@ -358,7 +369,9 @@ export async function refreshLiveState({ force = false } = {}) {
       renderLiveMeta(live.fetchedAt);
       return merged;
     } catch (error) {
-      if (sequence >= latestAppliedSequence) renderLiveFailure();
+      if (sequence >= latestAppliedSequence) {
+        renderLiveFailure(error instanceof Error ? error.message : "Live取得失敗");
+      }
       console.error("dashboard live refresh failed", error);
       return null;
     } finally {
