@@ -104,6 +104,7 @@ PRがmerge済みでもproduct release完了とは扱いません。deployment成
 Documentationもmaintained surfaceとして扱います。
 
 - `README.md`: 人間向けの短い入口、主要surface、最短の利用・検証経路
+- public Pages / Web siteを持つrepositoryの`README.md`は、冒頭をcanonical production URLの完全な`https://...` URLそのものから始める。URLを見出し・リンク・コードで装飾せず、古いURLや後段の重複導線を残さない。
 - `AGENTS.md`: repository/agent運用契約
 - `docs/content/`: CLI利用者向けの恒久的なguide/reference
 - その他のdocs: 独立した現在有効な役割がある場合だけ残す
