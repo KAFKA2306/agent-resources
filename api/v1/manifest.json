@@ -1,14 +1,14 @@
 {
   "schema": "kafka.agent-resources.api-manifest.v1",
-  "generated_at": "2026-08-29T05:25:13Z",
+  "generated_at": "2026-09-01T10:12:00Z",
   "api_version": "v1",
   "resources": [
     {
       "name": "skill-collections",
       "path": "api/v1/skill-collections.json",
       "media_type": "application/json",
-      "record_count": 10,
-      "sha256": "1612cd1eb4b9922d25424adc36114a207756426323142f63848dadf52214c5e7",
+      "record_count": 11,
+      "sha256": "966a04629e6acdd47dd5d0283ff7172bf5995fe893c9ae375b57feff73e4b7ff",
       "schema": "kafka.agent-resources.skill-collections.v1"
     }
   ],
