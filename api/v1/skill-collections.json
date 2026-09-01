@@ -1,6 +1,6 @@
 {
   "schema": "kafka.agent-resources.skill-collections.v1",
-  "generated_at": "2026-08-29T05:25:13Z",
+  "generated_at": "2026-09-01T10:12:00Z",
   "source": {
     "provider": "GitHub",
     "repository": "KAFKA2306/agent-resources",
@@ -8,7 +8,7 @@
     "tree_api": "https://api.github.com/repos/KAFKA2306/agent-resources/contents/skills?ref=main",
     "license": "MIT"
   },
-  "count": 10,
+  "count": 11,
   "collections": [
     {
       "id": "agr",
@@ -17,6 +17,14 @@
       "kind": "skill",
       "title": "agr",
       "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/agr"
+    },
+    {
+      "id": "claude-code-operations",
+      "path": "skills/claude-code-operations",
+      "tree_sha": "11ce618cf4300f0d41d5234d9aa01273bd6f0903",
+      "kind": "skill",
+      "title": "Claude Code Operations",
+      "source_url": "https://github.com/KAFKA2306/agent-resources/tree/main/skills/claude-code-operations"
     },
     {
       "id": "development",
