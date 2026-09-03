@@ -14,8 +14,7 @@ test("state gate detail identifies owner repository and canonical action", () =>
 test("highest priority human action is promoted before the gate summary", () => {
   assert.match(dashboardSource, /primary\.id = "primary-action"/);
   assert.match(dashboardSource, /最優先の対応/);
-  assert.match(dashboardSource, /data-lane="waiting"/);
-  assert.match(dashboardSource, /data-lane="failed"/);
+  assert.match(dashboardSource, /PRIMARY_LANE_ORDER = \["failed", "waiting"\]/);
   assert.match(dashboardSource, /selected\.click\(\)/);
   assert.match(dashboardSource, /insertBefore\(primary, operationsSummary\)/);
 });
