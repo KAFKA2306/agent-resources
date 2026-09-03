@@ -40,7 +40,7 @@
   <div class="dashboard-shell">
     <main class="main-panel" id="main" aria-labelledby="workspace-title" tabindex="-1">
       <div class="panel-heading">
-        <div><p class="eyebrow">WORKSPACE</p><h2 id="workspace-title">中央ハブ</h2></div>
+        <div><p class="eyebrow">判断と対応</p><h2 id="workspace-title">今対応すること</h2></div>
         <div class="snapshot-meta" aria-label="データ更新時刻">
           <div class="snapshot-source-row" aria-label="GitHub dashboard state">
             <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
@@ -52,25 +52,25 @@
           </div>
         </div>
       </div>
-      <section class="operations-summary" aria-label="運用サマリー">
+      <section class="operations-summary" aria-label="対応判断">
         <section class="hub" aria-label="データ鮮度">
           <div class="hub-copy"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></div>
           <span class="status-chip" role="status" aria-live="polite" id="snapshot-status" data-state="loading">読込中</span>
         </section>
-        <section id="lane-gates" class="lane-gates" aria-label="状態ゲート"></section>
+        <section id="lane-gates" class="lane-gates" aria-label="対応が必要な状態"></section>
       </section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
       <section class="agent-world" aria-labelledby="agent-world-title">
         <div class="world-heading">
-          <div><p class="eyebrow">PUBLIC REPOSITORY STATUS</p><h2 id="agent-world-title">リポジトリ状況</h2></div>
+          <div><p class="eyebrow">公開リポジトリ</p><h2 id="agent-world-title">作業の状態と次の手掛かり</h2></div>
           <span id="agent-world-summary" class="world-summary">作業項目 0件</span>
         </div>
-        <p class="world-note muted">公開repositoryとIssue / PR / workflowを、現在の作業状況が分かる順に表示します。live public GitHub stateの取得状態と最終更新を明示します。</p>
+        <p class="world-note muted">公開repositoryとIssue / PR / workflowを、現在の作業状況が分かる順に表示します。ownerとGitHub evidenceへそのまま辿れます。</p>
         <div id="agent-world-zones" aria-live="polite"></div>
       </section>
       <p id="workspace-message" class="muted workspace-message" hidden></p>
       <section class="github-stats" aria-labelledby="github-stats-title">
-        <div class="stats-heading"><div><p class="eyebrow">PUBLIC GITHUB ACTIVITY</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
+        <div class="stats-heading"><div><p class="eyebrow">公開GitHub活動</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
         <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
         <div id="stats-legend" class="stats-legend" aria-hidden="true" hidden><span data-series="commits">Commit</span><span data-series="prsMerged">Merged PR</span><span data-series="issuesClosed">Closed Issue</span></div>
         <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>
@@ -78,7 +78,7 @@
       </section>
     </main>
     <aside class="activity-sidebar" aria-labelledby="activity-title">
-      <div class="section-heading"><div><p class="eyebrow">SIDEBAR · LAST 7 DAYS</p><h2 id="activity-title">最近の活動</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">直近7日</p><h2 id="activity-title">最近の活動</h2></div></div>
       <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
     </aside>
   </div>

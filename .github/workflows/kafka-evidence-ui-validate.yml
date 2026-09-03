@@ -3,7 +3,6 @@ name: Validate KAFKA Evidence UI
 on:
   pull_request:
     paths:
-      - "design-systems/kafka/**"
       - "plugins/kafka-evidence-ui/**"
       - "skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
@@ -13,7 +12,6 @@ on:
   push:
     branches: [main]
     paths:
-      - "design-systems/kafka/**"
       - "plugins/kafka-evidence-ui/**"
       - "skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
@@ -75,6 +73,7 @@ jobs:
           readme = Path('README.md').read_text(encoding='utf-8')
           required_links = [
               'https://agent-resources-one.vercel.app/',
+              'https://github.com/KAFKA2306/design',
               '(skills/kafka-evidence-ui/SKILL.md)',
               '(plugins/kafka-evidence-ui/README.md)',
           ]
@@ -85,46 +84,4 @@ jobs:
               if not Path(path).is_file():
                   raise SystemExit(f'missing linked file: {path}')
           print('README resource links: valid')
-          PY
-
-      - name: Validate JavaScript syntax
-        run: node --check design-systems/kafka/app.js
-
-      - name: Validate HTML and relative assets
-        run: |
-          python - <<'PY'
-          from html.parser import HTMLParser
-          from pathlib import Path
-
-          class Parser(HTMLParser):
-              def __init__(self):
-                  super().__init__()
-                  self.refs = []
-              def handle_starttag(self, tag, attrs):
-                  values = dict(attrs)
-                  for key in ('href', 'src'):
-                      value = values.get(key)
-                      if value and not value.startswith(('http://', 'https://', '#', 'mailto:')):
-                          self.refs.append(value)
-
-          root = Path('design-systems/kafka')
-          parser = Parser()
-          parser.feed((root / 'index.html').read_text(encoding='utf-8'))
-          missing = [ref for ref in parser.refs if not (root / ref).is_file()]
-          if missing:
-              raise SystemExit(f'missing relative assets: {missing}')
-          print(f'html references: {parser.refs}')
-          PY
-
-      - name: Validate CSS brace balance
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          paths = list(Path('design-systems/kafka').glob('*.css'))
-          for path in paths:
-              text = path.read_text(encoding='utf-8')
-              if text.count('{') != text.count('}'):
-                  raise SystemExit(f'unbalanced braces: {path}')
-          print(f'css files checked: {len(paths)}')
           PY

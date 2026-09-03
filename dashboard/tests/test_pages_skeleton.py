@@ -33,15 +33,15 @@ class DashboardSkeletonTest(unittest.TestCase):
         for marker in ('id="agent-world-zones"', 'id="lane-gates"', 'id="github-stats-title"'):
             self.assertIn(marker, html[main_start:main_end])
         self.assertNotIn('id="project-groups"', html)
-        self.assertIn('SIDEBAR · LAST 7 DAYS', html)
+        self.assertIn('直近7日', html)
         self.assertIn('name="viewport"', html)
 
     def test_hub_hierarchy_is_preserved_with_compact_public_links(self):
         html = HTML.read_text(encoding="utf-8")
         self.assertNotIn('game.css', html)
         self.assertNotIn('class="world-decor"', html)
-        self.assertIn('<p class="eyebrow">WORKSPACE</p>', html)
-        self.assertIn('>中央ハブ</h2>', html)
+        self.assertIn('<p class="eyebrow">判断と対応</p>', html)
+        self.assertIn('>今対応すること</h2>', html)
         self.assertIn('GitHub Public Hub', html)
         self.assertIn('class="hub"', html)
         self.assertIn('id="repository-count"', html)
@@ -128,7 +128,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         html = HTML.read_text(encoding="utf-8")
         js = JS.read_text(encoding="utf-8")
         self.assertIn('id="activity-feed"', html)
-        self.assertIn("SIDEBAR · LAST 7 DAYS", html)
+        self.assertIn("直近7日", html)
         self.assertIn("snapshot.activity", js)
         self.assertNotIn("ACTIVITY_LIMIT", js)
         self.assertIn("b.occurredAt.localeCompare(a.occurredAt)", js)
