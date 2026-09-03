@@ -67,6 +67,11 @@ def selected_gate_detail(dom: str) -> str:
     return match.group(1) if match else ""
 
 
+def primary_action_detail(dom: str) -> str:
+    match = re.search(r'<section id="primary-action"[^>]*>(.*?)</section>', dom, re.DOTALL)
+    return match.group(1) if match else ""
+
+
 def main() -> None:
     production_root = urljoin(PRODUCTION_URL, "../")
     _endpoint, live_payload, _age_seconds = verify_production_live(production_root, EXPECTED_SHA)
@@ -92,6 +97,8 @@ def main() -> None:
     selected_dom = dump_production_dom(f"{PRODUCTION_URL}?lane={selected_lane}")
     selected_count = gate_counts.get(selected_lane, 0)
     gate_detail = selected_gate_detail(selected_dom)
+    primary_action = primary_action_detail(dom)
+    actionable_count = gate_counts.get("waiting", 0) + gate_counts.get("failed", 0)
 
     checks = {
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
@@ -112,6 +119,15 @@ def main() -> None:
         ),
         "selected gate detail rendered": bool(gate_detail),
     }
+    if actionable_count > 0:
+        checks["primary human action rendered"] = bool(primary_action)
+        checks["primary human action heading rendered"] = "最優先の対応" in primary_action
+        checks["primary human action exposes owner"] = "Owner repository:" in primary_action
+        checks["primary human action exposes reason"] = 'class="gate-item-reason"' in primary_action
+        checks["primary human action reaches evidence in one action"] = (
+            "次の行動: 対応先を開く" in primary_action
+            and 'class="gate-item-action"' in primary_action
+        )
     if selected_count > 0:
         checks["selected gate owner/repository label rendered"] = (
             re.search(
@@ -140,10 +156,12 @@ def main() -> None:
             f"rendered repository count {rendered_repository_count} != live API {expected_repository_count}"
         )
 
+    primary_state = "primary action verified" if actionable_count > 0 else "no waiting/failed action"
     print(
         "repository operations production browser E2E: "
         f"live {rendered_repository_count} repos at {live_payload['fetchedAt']}, "
         f"operations snapshot rendered without obsolete classification, "
+        f"{primary_state}, "
         f"mobile viewport skip/{selected_lane} detail+pressed state verified, "
         f"poker-raise-quiz FRONT {POKER_RAISE_QUIZ_URL} PASS"
     )
