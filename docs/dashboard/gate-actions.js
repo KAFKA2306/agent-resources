@@ -61,8 +61,20 @@ function promotePrimaryAction() {
   gateDetail.hidden = true;
 }
 
+function selectedLaneFromUrl() {
+  const lane = new URL(window.location.href).searchParams.get("lane");
+  return lane && laneGates?.querySelector(`button[data-lane="${lane}"]`) ? lane : null;
+}
+
+function restoreUrl(href) {
+  const original = new URL(href);
+  window.history.replaceState(null, "", `${original.pathname}${original.search}${original.hash}`);
+}
+
 function selectPrimaryGate() {
   if (!laneGates || !gateDetail) return;
+  if (selectedLaneFromUrl()) return;
+
   const candidates = [...laneGates.querySelectorAll('button[data-lane="waiting"], button[data-lane="failed"]')];
   const selected = candidates.find((button) => Number(button.querySelector("strong")?.textContent || 0) > 0);
   if (!selected) {
@@ -74,8 +86,10 @@ function selectPrimaryGate() {
     return;
   }
 
+  const originalHref = window.location.href;
   selected.click();
   promotePrimaryAction();
+  restoreUrl(originalHref);
 }
 
 if (gateDetail) {
