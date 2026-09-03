@@ -50,9 +50,11 @@ agr sync
 
 CLIの詳細は [CLI / Skills docs](https://agent-resources-one.vercel.app/site/) を参照してください。
 
-### Web UI改善手順を再利用する
+### Web UIを改善する
 
-Dashboardやpublic Web、documentationを改善するときの監査・検証手順をSkillとして再利用できます。CSS component libraryや独自themeは配布せず、対象productの既存frontend authorityを優先します。
+KAFKA2306の共有Web UI authorityは [`KAFKA2306/design`](https://github.com/KAFKA2306/design) です。visual token、共通component、user journey、interaction grammarはそこで管理し、このrepositoryに第二のdesign systemを持ちません。
+
+このrepositoryにはDashboard固有のbusiness stateと、Web UIを監査・検証する手順だけを残します。
 
 - [Web UI改善Skill](skills/kafka-evidence-ui/SKILL.md)
 - [Agent plugin](plugins/kafka-evidence-ui/README.md)
