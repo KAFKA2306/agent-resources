@@ -2,6 +2,8 @@ const gateDetail = document.querySelector("#gate-detail");
 const laneGates = document.querySelector("#lane-gates");
 const operationsSummary = document.querySelector(".operations-summary");
 
+export const PRIMARY_LANE_ORDER = ["failed", "waiting"];
+
 function ensurePrimaryAction() {
   if (!operationsSummary) return null;
   let primary = document.querySelector("#primary-action");
@@ -75,8 +77,9 @@ function selectPrimaryGate() {
   if (!laneGates || !gateDetail) return;
   if (selectedLaneFromUrl()) return;
 
-  const candidates = [...laneGates.querySelectorAll('button[data-lane="waiting"], button[data-lane="failed"]')];
-  const selected = candidates.find((button) => Number(button.querySelector("strong")?.textContent || 0) > 0);
+  const selected = PRIMARY_LANE_ORDER
+    .map((lane) => laneGates.querySelector(`button[data-lane="${lane}"]`))
+    .find((button) => button && Number(button.querySelector("strong")?.textContent || 0) > 0);
   if (!selected) {
     const primary = ensurePrimaryAction();
     if (primary) {
