@@ -1,4 +1,20 @@
 const gateDetail = document.querySelector("#gate-detail");
+const laneGates = document.querySelector("#lane-gates");
+const operationsSummary = document.querySelector(".operations-summary");
+
+function ensurePrimaryAction() {
+  if (!operationsSummary) return null;
+  let primary = document.querySelector("#primary-action");
+  if (primary) return primary;
+
+  primary = document.createElement("section");
+  primary.id = "primary-action";
+  primary.className = "gate-detail primary-action";
+  primary.setAttribute("aria-live", "polite");
+  primary.hidden = true;
+  operationsSummary.parentElement?.insertBefore(primary, operationsSummary);
+  return primary;
+}
 
 export function enhanceGateItems(root = gateDetail) {
   if (!root) return;
@@ -19,13 +35,55 @@ export function enhanceGateItems(root = gateDetail) {
     action.href = canonicalLink.href;
     action.target = "_blank";
     action.rel = "noreferrer";
-    action.textContent = "対応先を開く";
+    action.textContent = "次の行動: 対応先を開く";
 
     canonicalLink.parentElement?.append(owner, action);
   }
 }
 
+function promotePrimaryAction() {
+  if (!gateDetail) return;
+  enhanceGateItems(gateDetail);
+  const firstItem = gateDetail.querySelector(".gate-item");
+  const primary = ensurePrimaryAction();
+  if (!primary) return;
+
+  if (!firstItem) {
+    primary.hidden = true;
+    primary.replaceChildren();
+    return;
+  }
+
+  const heading = document.createElement("h3");
+  heading.textContent = "最優先の対応";
+  primary.replaceChildren(heading, firstItem.cloneNode(true));
+  primary.hidden = false;
+  gateDetail.hidden = true;
+}
+
+function selectPrimaryGate() {
+  if (!laneGates || !gateDetail) return;
+  const candidates = [...laneGates.querySelectorAll('button[data-lane="waiting"], button[data-lane="failed"]')];
+  const selected = candidates.find((button) => Number(button.querySelector("strong")?.textContent || 0) > 0);
+  if (!selected) {
+    const primary = ensurePrimaryAction();
+    if (primary) {
+      primary.hidden = true;
+      primary.replaceChildren();
+    }
+    return;
+  }
+
+  selected.click();
+  promotePrimaryAction();
+}
+
 if (gateDetail) {
   new MutationObserver(() => enhanceGateItems()).observe(gateDetail, { childList: true, subtree: true });
   enhanceGateItems();
+}
+
+if (laneGates) {
+  new MutationObserver(() => selectPrimaryGate()).observe(laneGates, { childList: true });
+  selectPrimaryGate();
 }
