@@ -194,6 +194,8 @@ def main() -> None:
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
         "live repository rendered": "poker-raise-quiz" in dom,
         "live work item rendered": "LIVE-ISSUE" in dom,
+        "primary action rendered": 'id="primary-action"' in dom and "最優先の対応" in dom,
+        "primary action has one-click evidence": "次の行動: 対応先を開く" in dom,
         "baseline public link survived live overlay": PUBLIC_SURFACE_URL in dom,
         "public surface action rendered": "FRONT ↗" in dom,
         "work item terminology rendered": "作業項目 1件" in dom,
@@ -203,7 +205,7 @@ def main() -> None:
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
         raise SystemExit("dashboard browser E2E failed: " + ", ".join(failures))
-    print("dashboard browser E2E: baseline publicLinks -> live overlay PASS")
+    print("dashboard browser E2E: baseline publicLinks -> live overlay -> primary action PASS")
 
 
 if __name__ == "__main__":
