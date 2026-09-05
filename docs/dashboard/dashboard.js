@@ -284,8 +284,8 @@ function renderSnapshotMeta(snapshot) {
   }
 }
 
-function renderLiveMeta(fetchedAt) {
-  const freshness = classifyLive(fetchedAt);
+function renderLiveMeta(fetchedAt, maxAgeSeconds) {
+  const freshness = classifyLive(fetchedAt, maxAgeSeconds);
   snapshotStatus.dataset.state = freshness.state;
   snapshotStatus.textContent = freshness.label;
   if (!freshness.fetched) {
@@ -366,7 +366,7 @@ export async function refreshLiveState({ force = false } = {}) {
       lastLiveSuccessAt = Date.now();
       renderDashboard(merged);
       renderSnapshotMeta(baselineSnapshot);
-      renderLiveMeta(live.fetchedAt);
+      renderLiveMeta(live.fetchedAt, live.cache?.maxAgeSeconds);
       return merged;
     } catch (error) {
       if (sequence >= latestAppliedSequence) {
