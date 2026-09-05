@@ -9,7 +9,7 @@ on:
       - .github/workflows/compile-gh-aw-bootstrap.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   compile:
@@ -26,9 +26,13 @@ jobs:
         run: |
           /tmp/gh-aw compile github-ops-audit --strict --no-check-update
           test -s .github/workflows/github-ops-audit.lock.yml
-      - name: Upload compiled lock
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-ops-audit-lock
-          path: .github/workflows/github-ops-audit.lock.yml
-          if-no-files-found: error
+      - name: Commit compiled lock to pilot branch
+        run: |
+          if git diff --quiet -- .github/workflows/github-ops-audit.lock.yml && git ls-files --error-unmatch .github/workflows/github-ops-audit.lock.yml >/dev/null 2>&1; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/github-ops-audit.lock.yml
+          git commit -m "build: compile github ops audit lock"
+          git push origin HEAD:feat/352-gh-aw-ops-audit
