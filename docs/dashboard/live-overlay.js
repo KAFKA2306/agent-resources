@@ -1,17 +1,26 @@
-export const LIVE_MAX_AGE_MS = 5 * 60 * 1000;
-
 function parseTime(value) {
   const parsed = Date.parse(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function classifyLive(fetchedAt, nowMs = Date.now()) {
+export function classifyLive(fetchedAt, maxAgeSeconds, nowMs = Date.now()) {
   const fetchedMs = parseTime(fetchedAt);
-  if (fetchedMs === null) return { label: "SNAPSHOT FALLBACK", state: "failed", ageMs: null, isFresh: false };
+  const maxAgeMs = Number.isFinite(maxAgeSeconds) && maxAgeSeconds > 0
+    ? maxAgeSeconds * 1000
+    : null;
+  if (fetchedMs === null || maxAgeMs === null) {
+    return {
+      label: "SNAPSHOT FALLBACK",
+      state: "failed",
+      ageMs: null,
+      isFresh: false,
+      fetched: fetchedMs === null ? null : new Date(fetchedMs),
+    };
+  }
   const ageMs = Math.max(0, nowMs - fetchedMs);
-  return ageMs <= LIVE_MAX_AGE_MS
-    ? { label: "LIVE", state: "fresh", ageMs, isFresh: true }
-    : { label: "STALE", state: "stale", ageMs, isFresh: false };
+  return ageMs <= maxAgeMs
+    ? { label: "LIVE", state: "fresh", ageMs, isFresh: true, fetched: new Date(fetchedMs) }
+    : { label: "STALE", state: "stale", ageMs, isFresh: false, fetched: new Date(fetchedMs) };
 }
 
 export function mergeLiveSnapshot(baseline, live) {
