@@ -102,6 +102,7 @@ def live_payload() -> dict[str, object]:
         "source": "live",
         "scope": "public",
         "fetchedAt": fetched_at,
+        "cache": {"maxAgeSeconds": 600, "staleWhileRevalidateSeconds": 30},
         "repositories": [repository("shared", "poker-raise-quiz")],
         "workItems": [
             {
