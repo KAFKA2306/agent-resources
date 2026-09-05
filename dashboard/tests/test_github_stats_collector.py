@@ -1,10 +1,10 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 from zoneinfo import ZoneInfo
 
 from dashboard.collectors.github_api import GitHubApiError
-from dashboard.collectors.github_stats import _search_total, collect_github_stats
+from dashboard.collectors.github_stats import _search_total, _week_windows, collect_github_stats
 
 
 class GitHubStatsCollectorTest(unittest.TestCase):
@@ -25,6 +25,11 @@ class GitHubStatsCollectorTest(unittest.TestCase):
         self.assertTrue(payload["monthly"][-1]["partial"])
         self.assertEqual(payload["scope"], "public")
         self.assertEqual(payload["timezone"], "Asia/Tokyo")
+        self.assertEqual(len(payload["weekly"]), 12)
+        self.assertEqual(payload["weekly"][0]["weekStart"], "2026-05-25")
+        self.assertEqual(payload["weekly"][-1]["weekStart"], "2026-08-10")
+        self.assertEqual(payload["weekly"][-1]["weekEnd"], "2026-08-13")
+        self.assertTrue(payload["weekly"][-1]["partial"])
 
     def test_closed_months_reuse_previous_dashboard_and_only_current_month_refreshes(self):
         now = datetime(2026, 8, 13, 11, 42, tzinfo=ZoneInfo("Asia/Tokyo"))
@@ -56,13 +61,14 @@ class GitHubStatsCollectorTest(unittest.TestCase):
             sleep_fn=sleeps.append,
             previous_stats=previous_dashboard,
             public_repository_count=127,
+            week_count=1,
         )
         self.assertEqual(payload["publicRepositories"], 127)
         self.assertEqual(payload["monthly"][:7], previous_monthly)
         self.assertEqual(payload["monthly"][-1]["month"], "2026-08")
         self.assertTrue(payload["monthly"][-1]["partial"])
-        self.assertEqual(len(self.queries), 6)
-        self.assertEqual(sleeps, [2.2] * 6)
+        self.assertEqual(len(self.queries), 11)
+        self.assertEqual(sleeps, [2.2] * 11)
         self.assertTrue(self.queries[0].endswith("archived:true"))
         self.assertFalse(any("2026-01-01" in query or "2026-07-01" in query for query in self.queries))
 
@@ -92,8 +98,9 @@ class GitHubStatsCollectorTest(unittest.TestCase):
             request_fn=self.request_fn,
             previous_stats=previous_dashboard,
             public_repository_count=127,
+            week_count=1,
         )
-        self.assertEqual(len(self.queries), 11)
+        self.assertEqual(len(self.queries), 16)
         self.assertTrue(any("committer-date:2026-07-01..2026-07-31" in query for query in self.queries))
 
     def test_all_searches_are_public_only(self):
@@ -110,9 +117,65 @@ class GitHubStatsCollectorTest(unittest.TestCase):
             request_fn=self.request_fn,
             request_interval=2.2,
             sleep_fn=sleeps.append,
+            week_count=1,
         )
-        self.assertEqual(len(self.queries), 7)
-        self.assertEqual(sleeps, [2.2] * 7)
+        self.assertEqual(len(self.queries), 12)
+        self.assertEqual(sleeps, [2.2] * 12)
+
+    def test_week_windows_are_monday_started_and_current_week_is_partial(self):
+        now = datetime(2026, 9, 5, 9, 0, tzinfo=ZoneInfo("Asia/Tokyo"))
+        windows = list(_week_windows(now, 3))
+        self.assertEqual(
+            windows,
+            [
+                ("2026-08-17", "2026-08-23", False),
+                ("2026-08-24", "2026-08-30", False),
+                ("2026-08-31", "2026-09-05", True),
+            ],
+        )
+
+    def test_completed_weeks_reuse_previous_dashboard(self):
+        now = datetime(2026, 9, 5, 9, 0, tzinfo=ZoneInfo("Asia/Tokyo"))
+        previous_weekly = []
+        for start, end, partial in _week_windows(now, 3):
+            if partial:
+                continue
+            previous_weekly.append(
+                {
+                    "weekStart": start,
+                    "weekEnd": end,
+                    "commits": 100,
+                    "prsCreated": 20,
+                    "prsMerged": 18,
+                    "issuesCreated": 15,
+                    "issuesClosed": 12,
+                    "partial": False,
+                }
+            )
+        previous_dashboard = {
+            "stats": {
+                "owner": "KAFKA2306",
+                "scope": "public",
+                "timezone": "Asia/Tokyo",
+                "monthly": [],
+                "weekly": previous_weekly,
+            }
+        }
+        payload = collect_github_stats(
+            start_month="2026-09",
+            now=now,
+            request_fn=self.request_fn,
+            previous_stats=previous_dashboard,
+            public_repository_count=127,
+            week_count=3,
+        )
+        self.assertEqual(payload["weekly"][:2], previous_weekly)
+        self.assertTrue(payload["weekly"][-1]["partial"])
+        weekly_queries = [
+            query for query in self.queries
+            if "2026-08-17" in query or "2026-08-24" in query or "2026-08-31" in query
+        ]
+        self.assertTrue(all("2026-08-31" in query for query in weekly_queries))
 
     def test_rate_limit_uses_retry_after_then_succeeds(self):
         calls = 0
