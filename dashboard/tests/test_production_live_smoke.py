@@ -12,6 +12,7 @@ def make_payload(*, fetched_at=None):
         "scope": "public",
         "fetchedAt": (fetched_at or NOW).isoformat().replace("+00:00", "Z"),
         "summary": {"repositoryCount": 1},
+        "cache": {"maxAgeSeconds": 600, "staleWhileRevalidateSeconds": 30},
         "requestBudget": {"workflowRequestCount": 0},
         "repositories": [
             {
@@ -27,12 +28,18 @@ def make_payload(*, fetched_at=None):
 
 class ProductionLiveSmokeTest(unittest.TestCase):
     def test_accepts_fresh_public_payload(self):
-        age = validate_live_payload(make_payload(fetched_at=NOW - timedelta(seconds=149)), now=NOW)
-        self.assertEqual(age, 149)
+        age = validate_live_payload(make_payload(fetched_at=NOW - timedelta(seconds=599)), now=NOW)
+        self.assertEqual(age, 599)
 
-    def test_rejects_payload_older_than_live_slo(self):
+    def test_rejects_payload_older_than_declared_cache_policy(self):
         with self.assertRaisesRegex(ValueError, "stale"):
-            validate_live_payload(make_payload(fetched_at=NOW - timedelta(seconds=151)), now=NOW)
+            validate_live_payload(make_payload(fetched_at=NOW - timedelta(seconds=601)), now=NOW)
+
+    def test_rejects_missing_cache_policy(self):
+        payload = make_payload()
+        del payload["cache"]
+        with self.assertRaisesRegex(ValueError, "cache policy is missing"):
+            validate_live_payload(payload, now=NOW)
 
     def test_rejects_zero_repositories(self):
         payload = make_payload()

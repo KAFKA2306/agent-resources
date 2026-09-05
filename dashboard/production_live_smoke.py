@@ -6,7 +6,6 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 
-LIVE_MAX_AGE_SECONDS = 150
 LIVE_CLOCK_SKEW_TOLERANCE_SECONDS = 300
 RETRY_ATTEMPTS = 6
 RETRY_DELAY_SECONDS = 5
@@ -54,13 +53,26 @@ def validate_live_payload(payload: object, *, now: datetime | None = None) -> fl
     if request_budget.get("workflowRequestCount") != 0:
         raise ValueError("live payload workflowRequestCount is not zero")
 
+    cache = payload.get("cache")
+    if not isinstance(cache, dict):
+        raise ValueError("live payload cache policy is missing")
+    max_age_seconds = cache.get("maxAgeSeconds")
+    if (
+        not isinstance(max_age_seconds, int)
+        or isinstance(max_age_seconds, bool)
+        or max_age_seconds <= 0
+    ):
+        raise ValueError("live payload cache maxAgeSeconds is invalid")
+
     current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     fetched_at = _parse_timestamp(payload.get("fetchedAt"))
     age_seconds = (current - fetched_at).total_seconds()
     if age_seconds < -LIVE_CLOCK_SKEW_TOLERANCE_SECONDS:
         raise ValueError(f"live payload fetchedAt is too far in the future: {age_seconds:.1f}s")
-    if age_seconds > LIVE_MAX_AGE_SECONDS:
-        raise ValueError(f"live payload is stale: {age_seconds:.1f}s")
+    if age_seconds > max_age_seconds:
+        raise ValueError(
+            f"live payload is stale: {age_seconds:.1f}s > cache maxAgeSeconds {max_age_seconds}s"
+        )
     return age_seconds
 
 

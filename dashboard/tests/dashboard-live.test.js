@@ -105,6 +105,7 @@ test("live collector aggregates repositories, open work, and activity without pe
   assert.equal(live.workItems.length, 2);
   assert.equal(live.workItems.some((item) => item.kind === "workflow_run"), false);
   assert.equal(live.activity.some((item) => item.kind === "workflow_run"), false);
+  assert.equal(live.cache.maxAgeSeconds, LIVE_CACHE_SECONDS);
   assert.equal(live.requestBudget.requestCount, 5);
   assert.equal(live.requestBudget.workflowRequestCount, 0);
   assert.equal(live.requestBudget.theoreticalRequestsPerHourAtMaxAge, Math.ceil(3600 / LIVE_CACHE_SECONDS) * 5);

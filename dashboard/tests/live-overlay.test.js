@@ -1,17 +1,24 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { LIVE_MAX_AGE_MS, classifyLive, mergeLiveSnapshot } from "../../docs/dashboard/live-overlay.js";
+import { classifyLive, mergeLiveSnapshot } from "../../docs/dashboard/live-overlay.js";
 
-test("live freshness is explicit and bounded", () => {
+test("live freshness follows the declared API cache policy", () => {
   const now = Date.parse("2026-08-14T05:30:00Z");
-  const fresh = classifyLive("2026-08-14T05:29:00Z", now);
-  const stale = classifyLive(new Date(now - LIVE_MAX_AGE_MS - 1).toISOString(), now);
-  const failed = classifyLive("not-a-date", now);
+  const maxAgeSeconds = 600;
+  const fresh = classifyLive("2026-08-14T05:20:01Z", maxAgeSeconds, now);
+  const stale = classifyLive("2026-08-14T05:19:59Z", maxAgeSeconds, now);
+  const failedTimestamp = classifyLive("not-a-date", maxAgeSeconds, now);
+  const missingPolicy = classifyLive("2026-08-14T05:29:00Z", undefined, now);
   assert.deepEqual({ label: fresh.label, state: fresh.state }, { label: "LIVE", state: "fresh" });
   assert.deepEqual({ label: stale.label, state: stale.state }, { label: "STALE", state: "stale" });
+  assert.equal(fresh.fetched.toISOString(), "2026-08-14T05:20:01.000Z");
   assert.deepEqual(
-    { label: failed.label, state: failed.state },
+    { label: failedTimestamp.label, state: failedTimestamp.state },
+    { label: "SNAPSHOT FALLBACK", state: "failed" },
+  );
+  assert.deepEqual(
+    { label: missingPolicy.label, state: missingPolicy.state },
     { label: "SNAPSHOT FALLBACK", state: "failed" },
   );
 });
