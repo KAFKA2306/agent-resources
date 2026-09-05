@@ -52,6 +52,46 @@ BASELINE = {
         }
     ],
     "activity": [],
+    "stats": {
+        "owner": "KAFKA2306",
+        "scope": "public",
+        "timezone": "Asia/Tokyo",
+        "publicRepositories": 1,
+        "archivedPublicRepositories": 0,
+        "monthly": [
+            {
+                "month": "2026-08",
+                "commits": 100,
+                "prsCreated": 20,
+                "prsMerged": 18,
+                "issuesCreated": 15,
+                "issuesClosed": 12,
+                "partial": True,
+            }
+        ],
+        "weekly": [
+            {
+                "weekStart": "2026-08-03",
+                "weekEnd": "2026-08-09",
+                "commits": 30,
+                "prsCreated": 6,
+                "prsMerged": 5,
+                "issuesCreated": 4,
+                "issuesClosed": 3,
+                "partial": False,
+            },
+            {
+                "weekStart": "2026-08-10",
+                "weekEnd": "2026-08-13",
+                "commits": 70,
+                "prsCreated": 14,
+                "prsMerged": 12,
+                "issuesCreated": 11,
+                "issuesClosed": 9,
+                "partial": True,
+            },
+        ],
+    },
 }
 
 
@@ -167,28 +207,32 @@ def main() -> None:
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            result = subprocess.run(
-                [
-                    find_chrome(),
-                    "--headless=new",
-                    "--disable-gpu",
-                    "--no-sandbox",
-                    "--no-proxy-server",
-                    "--ignore-certificate-errors",
-                    "--virtual-time-budget=4000",
-                    "--dump-dom",
-                    f"https://localhost:{port}/",
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=45,
-            )
+            def dump_dom(query: str = "") -> str:
+                result = subprocess.run(
+                    [
+                        find_chrome(),
+                        "--headless=new",
+                        "--disable-gpu",
+                        "--no-sandbox",
+                        "--no-proxy-server",
+                        "--ignore-certificate-errors",
+                        "--virtual-time-budget=4000",
+                        "--dump-dom",
+                        f"https://localhost:{port}/{query}",
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=45,
+                )
+                return result.stdout
+
+            dom = dump_dom()
+            weekly_dom = dump_dom("?stats=weekly")
         finally:
             server.shutdown()
             thread.join(timeout=5)
 
-    dom = result.stdout
     checks = {
         "live request occurred": FixtureHandler.live_requests >= 1,
         "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
@@ -201,11 +245,20 @@ def main() -> None:
         "work item terminology rendered": "作業項目 1件" in dom,
         "misleading agent count absent": "1 agents" not in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
+        "monthly stats selected by default": 'data-stats-view="monthly" aria-pressed="true"' in dom
+        and 'id="github-stats-title">月次推移</h2>' in dom,
+        "weekly stats selected by query": 'data-stats-view="weekly" aria-pressed="true"' in weekly_dom
+        and 'id="github-stats-title">週次推移</h2>' in weekly_dom,
+        "weekly stats table rendered": 'data-view="weekly"' in weekly_dom
+        and 'aria-label="GitHub週次活動"' in weekly_dom
+        and weekly_dom.count('class="stats-row"') == 2,
+        "weekly measured-data note rendered": "週次は月曜始まりの直近12週間。" in weekly_dom
+        and "数値が実測値です。" in weekly_dom,
     }
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
         raise SystemExit("dashboard browser E2E failed: " + ", ".join(failures))
-    print("dashboard browser E2E: baseline publicLinks -> live overlay -> primary action PASS")
+    print("dashboard browser E2E: baseline publicLinks -> live overlay -> monthly/weekly stats -> primary action PASS")
 
 
 if __name__ == "__main__":
