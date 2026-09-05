@@ -488,6 +488,8 @@ def main():
     args = parser.parse_args()
     if args.request_interval < 0:
         parser.error("--request-interval must be non-negative")
+    if args.week_count <= 0:
+        parser.error("--week-count must be a positive integer")
 
     previous_stats = _load_json(args.previous_dashboard) if args.previous_dashboard else None
     public_repository_count = _repository_count(args.repositories) if args.repositories else None
