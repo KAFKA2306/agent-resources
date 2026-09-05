@@ -1,0 +1,38 @@
+name: Diagnose gh-aw observed models
+
+on:
+  push:
+    branches:
+      - diag/352-copilot-models
+    paths:
+      - .github/workflows/diagnose-gh-aw-models.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  models:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download pinned gh-aw
+        run: |
+          curl -fsSL https://github.com/github/gh-aw/releases/download/v0.88.2/linux-amd64 -o /tmp/gh-aw
+          echo "f9caa10ab948ac2228ff5dbd0e5109e9a2acf820a16ccff0c4f331edbe373057  /tmp/gh-aw" | sha256sum -c -
+          chmod +x /tmp/gh-aw
+      - name: Read observed model catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          /tmp/gh-aw models --json --repo KAFKA2306/agent-resources --refresh-count 20 > observed-models.json
+          python - <<'PY'
+          import json
+          data=json.load(open("observed-models.json"))
+          print(json.dumps(data, indent=2)[:50000])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: observed-models
+          path: observed-models.json
+          if-no-files-found: error
