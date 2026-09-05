@@ -14,7 +14,9 @@ permissions:
   actions: read
   copilot-requests: write
 
-engine: copilot
+engine:
+  id: copilot
+  model: gpt-5-mini
 
 tools:
   github:

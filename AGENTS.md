@@ -45,6 +45,7 @@ Dashboard変更ではrepository内の既存test/build commandを優先し、該�
 - cross-repository auditでは既存のcanonical Issue / PRを優先し、新規Issueは現在の問題、非重複、明確な価値、実行可能なscope、evidence、completion criteria、verificationが揃う場合だけowner repositoryに作成する。
 - cross-repository auditでIssueを参照する場合は `owner/repo#number` とcanonical GitHub URLを使う。未起票候補へログ内通し番号や擬似Issue番号を付けない。
 - GitHub Agentic Workflowsは `.github/workflows/*.md` をsource、同名 `.lock.yml` を`gh aw compile --strict`の生成物として管理する。lockを手編集せず、source変更時はcurrent pinned compilerで再生成・検証する。
+- Agentic Workflowのmodel auto-selectionがruntimeで利用不能になった場合は、公式にcurrent Copilot CLI対応が確認できる低コストmodelをsourceへ明示し、runtime再実行で検証する。silent fallbackはしない。
 - evidence claimは `VERIFIED` / `OBSERVED` / `INFERRED` / `UNVERIFIED` のいずれかとして、直接観測できた範囲だけに適用する。複数claimを含むhandoff全体へ一括で `VERIFIED` を付けない。
 - 人間向けCloudflare Pages / Workers production surfaceを持つpublic repositoryでは、そのCloudflare production URLがGoogleに実際にインデックスされることをdistribution milestoneとして扱う。公開検索の`site:`件数だけで完了判定せず、owner repositoryのcanonical IssueでSearch Consoleのindex状態、Google-selected canonical、sitemap/canonical/internal-link host一致を直接確認する。Cloudflareが別hostへのmirror canonicalのままならmilestone達成扱いにしない。
 
