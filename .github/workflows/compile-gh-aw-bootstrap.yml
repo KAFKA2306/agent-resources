@@ -1,0 +1,34 @@
+name: Compile gh-aw bootstrap
+
+on:
+  push:
+    branches: [fix/352-copilot-native-auto]
+    paths:
+      - .github/workflows/github-ops-audit.md
+      - .github/workflows/compile-gh-aw-bootstrap.yml
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download pinned gh-aw compiler
+        run: |
+          curl -fsSL https://github.com/github/gh-aw/releases/download/v0.88.2/linux-amd64 -o /tmp/gh-aw
+          echo "f9caa10ab948ac2228ff5dbd0e5109e9a2acf820a16ccff0c4f331edbe373057  /tmp/gh-aw" | sha256sum -c -
+          chmod +x /tmp/gh-aw
+      - name: Compile strict
+        run: |
+          /tmp/gh-aw compile github-ops-audit --strict --no-check-update
+          test -s .github/workflows/github-ops-audit.lock.yml
+      - name: Stage generated lock
+        run: |
+          cp .github/workflows/github-ops-audit.lock.yml github-ops-audit.lock.staging.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add github-ops-audit.lock.staging.txt
+          git commit -m "build: stage compiled github ops audit lock"
+          git push origin HEAD:fix/352-copilot-native-auto
