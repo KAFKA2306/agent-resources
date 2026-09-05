@@ -78,6 +78,7 @@ def main() -> None:
     expected_repository_count = live_payload["summary"]["repositoryCount"]
 
     dom = dump_production_dom(PRODUCTION_URL)
+    weekly_dom = dump_production_dom(f"{PRODUCTION_URL}?stats=weekly")
     repository_count_pattern = re.compile(
         r'id="repository-count"[^>]*>\s*(\d+) repositories\s*</span>'
     )
@@ -118,6 +119,20 @@ def main() -> None:
             selected_dom, selected_lane
         ),
         "selected gate detail rendered": bool(gate_detail),
+        "monthly stats selected by default": re.search(
+            r'data-stats-view="monthly"[^>]*aria-pressed="true"', dom
+        )
+        is not None
+        and 'id="github-stats-title">月次推移</h2>' in dom,
+        "weekly stats selected by query": re.search(
+            r'data-stats-view="weekly"[^>]*aria-pressed="true"', weekly_dom
+        )
+        is not None
+        and 'id="github-stats-title">週次推移</h2>' in weekly_dom,
+        "weekly stats renders 12 measured buckets": weekly_dom.count('class="stats-row"') == 12
+        and 'aria-label="GitHub週次活動"' in weekly_dom
+        and "週次は月曜始まりの直近12週間。" in weekly_dom
+        and "数値が実測値です。" in weekly_dom,
     }
     if actionable_count > 0:
         checks["primary human action rendered"] = bool(primary_action)
@@ -163,6 +178,7 @@ def main() -> None:
         f"operations snapshot rendered without obsolete classification, "
         f"{primary_state}, "
         f"mobile viewport skip/{selected_lane} detail+pressed state verified, "
+        f"monthly/weekly stats verified, "
         f"poker-raise-quiz FRONT {POKER_RAISE_QUIZ_URL} PASS"
     )
 
