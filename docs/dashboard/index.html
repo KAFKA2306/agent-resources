@@ -70,7 +70,16 @@
       </section>
       <p id="workspace-message" class="muted workspace-message" hidden></p>
       <section class="github-stats" aria-labelledby="github-stats-title">
-        <div class="stats-heading"><div><p class="eyebrow">公開GitHub活動</p><h2 id="github-stats-title">月次推移</h2></div><span id="stats-scope" class="stats-scope">public only</span></div>
+        <div class="stats-heading">
+          <div><p class="eyebrow">公開GitHub活動</p><h2 id="github-stats-title">月次推移</h2></div>
+          <div class="stats-heading-actions">
+            <div class="stats-view-toggle" role="group" aria-label="集計単位">
+              <button type="button" data-stats-view="monthly" aria-pressed="true">月次</button>
+              <button type="button" data-stats-view="weekly" aria-pressed="false">週次</button>
+            </div>
+            <span id="stats-scope" class="stats-scope">public only</span>
+          </div>
+        </div>
         <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
         <div id="stats-legend" class="stats-legend" aria-hidden="true" hidden><span data-series="commits">Commit</span><span data-series="prsMerged">Merged PR</span><span data-series="issuesClosed">Closed Issue</span></div>
         <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>

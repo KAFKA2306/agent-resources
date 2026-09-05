@@ -3,7 +3,7 @@ import calendar
 import json
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -26,6 +26,8 @@ MONTHLY_METRIC_KEYS = (
     "issuesCreated",
     "issuesClosed",
 )
+DEFAULT_WEEK_COUNT = 12
+WEEKLY_METRIC_KEYS = MONTHLY_METRIC_KEYS
 
 
 def _header(headers, name):
@@ -161,6 +163,64 @@ def _canonical_previous_months(previous_stats, owner, start_month, now):
         reusable[month] = {
             "month": month,
             **{key: row[key] for key in MONTHLY_METRIC_KEYS},
+            "partial": False,
+        }
+    return reusable
+
+
+def _week_windows(now, week_count=DEFAULT_WEEK_COUNT):
+    if not isinstance(week_count, int) or isinstance(week_count, bool) or week_count <= 0:
+        raise ValueError("week_count must be a positive integer")
+
+    current_monday = now.date() - timedelta(days=now.weekday())
+    first_monday = current_monday - timedelta(weeks=week_count - 1)
+    for offset in range(week_count):
+        start_date = first_monday + timedelta(weeks=offset)
+        scheduled_end = start_date + timedelta(days=6)
+        is_current = start_date == current_monday
+        end_date = min(scheduled_end, now.date()) if is_current else scheduled_end
+        partial = is_current and end_date < scheduled_end
+        yield start_date.isoformat(), end_date.isoformat(), partial
+
+
+def _canonical_previous_weeks(previous_stats, owner, now, week_count):
+    if not isinstance(previous_stats, dict):
+        return {}
+    stats = previous_stats.get("stats", previous_stats)
+    if not isinstance(stats, dict):
+        return {}
+    if (
+        stats.get("owner") != owner
+        or stats.get("scope") != "public"
+        or stats.get("timezone") != DEFAULT_TIMEZONE
+    ):
+        return {}
+
+    expected = {
+        start: end
+        for start, end, partial in _week_windows(now, week_count)
+        if not partial and end < now.date().isoformat()
+    }
+    reusable = {}
+    for row in stats.get("weekly", []):
+        if not isinstance(row, dict):
+            continue
+        start = row.get("weekStart")
+        end = row.get("weekEnd")
+        if start not in expected or end != expected[start] or row.get("partial") is not False:
+            continue
+        try:
+            datetime.strptime(start, "%Y-%m-%d")
+            datetime.strptime(end, "%Y-%m-%d")
+        except (TypeError, ValueError):
+            continue
+        values = [row.get(key) for key in WEEKLY_METRIC_KEYS]
+        if any(not isinstance(value, int) or isinstance(value, bool) or value < 0 for value in values):
+            continue
+        reusable[start] = {
+            "weekStart": start,
+            "weekEnd": end,
+            **{key: row[key] for key in WEEKLY_METRIC_KEYS},
             "partial": False,
         }
     return reusable
@@ -308,6 +368,7 @@ def collect_github_stats(
     sleep_fn=time.sleep,
     previous_stats=None,
     public_repository_count=None,
+    week_count=DEFAULT_WEEK_COUNT,
 ):
     tz = ZoneInfo(DEFAULT_TIMEZONE)
     now = now.astimezone(tz) if now is not None else datetime.now(tz)
@@ -339,6 +400,7 @@ def collect_github_stats(
         "repositories", f"user:{owner} is:public archived:true"
     )
     reusable_months = _canonical_previous_months(previous_stats, owner, start_month, now)
+    reusable_weeks = _canonical_previous_weeks(previous_stats, owner, now, week_count)
 
     monthly = []
     for year, month in _month_range(start_month, now):
@@ -371,6 +433,36 @@ def collect_github_stats(
             }
         )
 
+    weekly = []
+    for start, end, partial in _week_windows(now, week_count):
+        if start in reusable_weeks:
+            weekly.append(reusable_weeks[start])
+            continue
+
+        public = "is:public"
+        weekly.append(
+            {
+                "weekStart": start,
+                "weekEnd": end,
+                "commits": search(
+                    "commits", f"author:{owner} committer-date:{start}..{end} {public}"
+                ),
+                "prsCreated": search(
+                    "issues", f"author:{owner} is:pr created:{start}..{end} {public}"
+                ),
+                "prsMerged": search(
+                    "issues", f"author:{owner} is:pr merged:{start}..{end} {public}"
+                ),
+                "issuesCreated": search(
+                    "issues", f"author:{owner} is:issue created:{start}..{end} {public}"
+                ),
+                "issuesClosed": search(
+                    "issues", f"author:{owner} is:issue closed:{start}..{end} {public}"
+                ),
+                "partial": partial,
+            }
+        )
+
     return {
         "generatedAt": now.isoformat(),
         "owner": owner,
@@ -379,6 +471,7 @@ def collect_github_stats(
         "publicRepositories": public_repositories,
         "archivedPublicRepositories": archived_public_repositories,
         "monthly": monthly,
+        "weekly": weekly,
     }
 
 
@@ -387,6 +480,7 @@ def main():
     parser.add_argument("--owner", default=DEFAULT_OWNER)
     parser.add_argument("--start-month", default=DEFAULT_START_MONTH)
     parser.add_argument("--request-interval", type=float, default=DEFAULT_REQUEST_INTERVAL)
+    parser.add_argument("--week-count", type=int, default=DEFAULT_WEEK_COUNT)
     parser.add_argument("--repositories")
     parser.add_argument("--previous-dashboard")
     parser.add_argument("--output", default="dashboard/generated/github-stats.json")
@@ -394,6 +488,8 @@ def main():
     args = parser.parse_args()
     if args.request_interval < 0:
         parser.error("--request-interval must be non-negative")
+    if args.week_count <= 0:
+        parser.error("--week-count must be a positive integer")
 
     previous_stats = _load_json(args.previous_dashboard) if args.previous_dashboard else None
     public_repository_count = _repository_count(args.repositories) if args.repositories else None
@@ -404,6 +500,7 @@ def main():
         request_interval=args.request_interval,
         previous_stats=previous_stats,
         public_repository_count=public_repository_count,
+        week_count=args.week_count,
     )
     atomic_write_json(args.output, payload)
 

@@ -211,6 +211,8 @@ jobs:
               raise SystemExit('deploy snapshot has zero repositories')
           if not snapshot.get('activity'):
               raise SystemExit('deploy snapshot has zero recent activity')
+          if len(snapshot.get('stats', {}).get('weekly', [])) != 12:
+              raise SystemExit('deploy snapshot must contain exactly 12 weekly stats buckets')
           print(f"deploy repositories: {len(snapshot['repositories'])}")
           print(f"deploy activity: {len(snapshot['activity'])}")
           print(f"deploy repository operations: {len(operations['repositories'])}")
@@ -280,6 +282,8 @@ jobs:
                       raise RuntimeError('deployed dashboard has zero recent activity')
                   if not snapshot.get('stats', {}).get('monthly'):
                       raise RuntimeError('deployed dashboard has no monthly stats')
+                  if len(snapshot.get('stats', {}).get('weekly', [])) != 12:
+                      raise RuntimeError('deployed dashboard does not have 12 weekly stats buckets')
                   if not operations.get("generatedAt") or not operations.get("sourceRevision") or not operations.get("runId"):
                       raise RuntimeError('deployed repository operations snapshot is missing provenance')
                   if not operations.get('repositories'):
@@ -294,6 +298,7 @@ jobs:
                   print(f"deployed repositories: {len(snapshot['repositories'])}")
                   print(f"deployed activity: {len(snapshot['activity'])}")
                   print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
+                  print(f"deployed weekly buckets: {len(snapshot['stats']['weekly'])}")
                   print(f"deployed repository operations: {len(operations['repositories'])}")
                   break
               except Exception:
