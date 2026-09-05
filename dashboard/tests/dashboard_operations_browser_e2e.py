@@ -7,6 +7,7 @@ import tempfile
 import threading
 
 from dashboard_live_browser_e2e import (
+    BASELINE,
     DASHBOARD_DIR,
     FixtureHandler,
     ThreadingServer,
@@ -61,6 +62,9 @@ PROBE = """
 class OperationsHandler(FixtureHandler):
     def do_GET(self):  # noqa: N802 - stdlib handler API
         path = self.path.split("?", 1)[0]
+        if path == "/dashboard.json":
+            self.send_json({**BASELINE, "stats": None})
+            return
         if path == "/operations-test.html":
             html = (DASHBOARD_DIR / "index.html").read_text(encoding="utf-8")
             body = html.replace("</body>", f"{PROBE}</body>").encode()
