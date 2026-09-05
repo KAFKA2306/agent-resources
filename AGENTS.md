@@ -43,6 +43,8 @@ Dashboard変更ではrepository内の既存test/build commandを優先し、該�
 - `skills/` をrepository内skillの正準配置とする。
 - `agr` と `agrx` の共有責務は可能な限り共通実装へ寄せ、挙動を不必要に分岐させない。
 - cross-repository auditでは既存のcanonical Issue / PRを優先し、新規Issueは現在の問題、非重複、明確な価値、実行可能なscope、evidence、completion criteria、verificationが揃う場合だけowner repositoryに作成する。
+- cross-repository auditでIssueを参照する場合は `owner/repo#number` とcanonical GitHub URLを使う。未起票候補へログ内通し番号や擬似Issue番号を付けない。
+- evidence claimは `VERIFIED` / `OBSERVED` / `INFERRED` / `UNVERIFIED` のいずれかとして、直接観測できた範囲だけに適用する。複数claimを含むhandoff全体へ一括で `VERIFIED` を付けない。
 - 人間向けCloudflare Pages / Workers production surfaceを持つpublic repositoryでは、そのCloudflare production URLがGoogleに実際にインデックスされることをdistribution milestoneとして扱う。公開検索の`site:`件数だけで完了判定せず、owner repositoryのcanonical IssueでSearch Consoleのindex状態、Google-selected canonical、sitemap/canonical/internal-link host一致を直接確認する。Cloudflareが別hostへのmirror canonicalのままならmilestone達成扱いにしない。
 
 ## Low-context handoff
