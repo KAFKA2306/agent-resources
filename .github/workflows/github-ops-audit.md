@@ -21,6 +21,7 @@ tools:
     toolsets: [repos, issues, pull_requests, actions]
     allowed-repos:
       - "kafka2306/*"
+    min-integrity: approved
 
 safe-outputs:
   create-issue:
