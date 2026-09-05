@@ -104,6 +104,29 @@ class DashboardBuildTest(unittest.TestCase):
                     "partial": False,
                 },
             ],
+            "weekly": [
+                {
+                    "weekStart": "2026-08-10",
+                    "weekEnd": "2026-08-13",
+                    "commits": 70,
+                    "prsCreated": 14,
+                    "prsMerged": 12,
+                    "issuesCreated": 11,
+                    "issuesClosed": 9,
+                    "partial": True,
+                    "privateRepositoryName": "must-be-stripped",
+                },
+                {
+                    "weekStart": "2026-08-03",
+                    "weekEnd": "2026-08-09",
+                    "commits": 30,
+                    "prsCreated": 6,
+                    "prsMerged": 5,
+                    "issuesCreated": 4,
+                    "issuesClosed": 3,
+                    "partial": False,
+                },
+            ],
         }
 
     def build(self, repositories=None, work_items=None, workflow_runs=None, stats=None):
@@ -138,8 +161,13 @@ class DashboardBuildTest(unittest.TestCase):
         self.assertEqual(snapshot["stats"]["publicRepositories"], 2)
         self.assertEqual(snapshot["stats"]["publicRepositories"], snapshot["summary"]["repositoryCount"])
         self.assertEqual([row["month"] for row in snapshot["stats"]["monthly"]], ["2026-07", "2026-08"])
+        self.assertEqual(
+            [row["weekStart"] for row in snapshot["stats"]["weekly"]],
+            ["2026-08-03", "2026-08-10"],
+        )
         self.assertNotIn("generatedAt", snapshot["stats"])
         self.assertNotIn("privateRepositoryName", snapshot["stats"]["monthly"][1])
+        self.assertNotIn("privateRepositoryName", snapshot["stats"]["weekly"][1])
         validate_snapshot(snapshot, SCHEMA)
 
     def test_non_public_stats_fail_closed(self):
@@ -189,6 +217,7 @@ class DashboardBuildTest(unittest.TestCase):
             lambda snapshot: snapshot["stats"].__setitem__("publicRepositories", 99),
             lambda snapshot: snapshot["repositories"][0].__setitem__("visibility", "private"),
             lambda snapshot: snapshot["stats"].__setitem__("monthly", []),
+            lambda snapshot: snapshot["stats"].__setitem__("weekly", []),
         )
         for index, mutate in enumerate(mutations):
             with self.subTest(index=index):
