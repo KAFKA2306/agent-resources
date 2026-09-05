@@ -49,6 +49,24 @@ def canonical_stats(stats, public_repository_count):
             }
         )
     monthly.sort(key=lambda row: row["month"])
+    weekly = []
+    for row in stats.get("weekly", []):
+        weekly.append(
+            {
+                key: row[key]
+                for key in (
+                    "weekStart",
+                    "weekEnd",
+                    "commits",
+                    "prsCreated",
+                    "prsMerged",
+                    "issuesCreated",
+                    "issuesClosed",
+                    "partial",
+                )
+            }
+        )
+    weekly.sort(key=lambda row: row["weekStart"])
     return {
         "owner": stats["owner"],
         "scope": "public",
@@ -56,6 +74,7 @@ def canonical_stats(stats, public_repository_count):
         "publicRepositories": public_repository_count,
         "archivedPublicRepositories": stats["archivedPublicRepositories"],
         "monthly": monthly,
+        "weekly": weekly,
     }
 
 
