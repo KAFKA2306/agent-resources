@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.DASHBOARD_GITHUB_TOKEN }}
       - name: Download pinned gh-aw compiler
         run: |
           curl -fsSL https://github.com/github/gh-aw/releases/download/v0.88.2/linux-amd64 -o /tmp/gh-aw
