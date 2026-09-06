@@ -26,6 +26,7 @@ jobs:
       OLLAMA_VERSION: "0.32.14"
       LOCAL_MODEL: qwen3:0.6b
       LOCAL_MODEL_ID: "7df6b6e09427"
+      OLLAMA_NO_CLOUD: "1"
       GITHUB_TOKEN: ${{ github.token }}
       REPOSITORY: ${{ github.repository }}
 
@@ -41,7 +42,13 @@ jobs:
           echo "25f64b810b947145095956533e1bdf56eacea2673c55a7e586be4515fc882c9f  /tmp/ollama-install.sh" | sha256sum -c -
           OLLAMA_VERSION="${OLLAMA_VERSION}" sh /tmp/ollama-install.sh
           ollama --version
-          nohup ollama serve >/tmp/ollama.log 2>&1 &
+          sudo systemctl stop ollama || true
+          sleep 1
+          if curl -fsS http://127.0.0.1:11434/api/version >/dev/null 2>&1; then
+            echo "installer-managed Ollama still owns localhost:11434" >&2
+            exit 1
+          fi
+          nohup env OLLAMA_NO_CLOUD="$OLLAMA_NO_CLOUD" OLLAMA_HOST=127.0.0.1:11434 ollama serve >/tmp/ollama.log 2>&1 &
           for _ in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
               break
@@ -52,7 +59,29 @@ jobs:
           ollama pull "$LOCAL_MODEL"
           ACTUAL_MODEL_ID="$(ollama list | awk -v model="$LOCAL_MODEL" '$1 == model {print $2}')"
           test "$ACTUAL_MODEL_ID" = "$LOCAL_MODEL_ID"
-          echo "LOCAL_MODEL_RESOLVED_ID=$ACTUAL_MODEL_ID" >> "$GITHUB_ENV"
+          LOCAL_MODEL_RESOLVED_DIGEST="$(python - <<'PY'
+import json
+import urllib.request
+
+with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30) as response:
+    payload = json.load(response)
+for model in payload.get("models", []):
+    if model.get("name") == "qwen3:0.6b":
+        digest = str(model.get("digest") or "")
+        if not digest:
+            raise SystemExit("qwen3:0.6b digest missing")
+        print(digest)
+        break
+else:
+    raise SystemExit("qwen3:0.6b missing from /api/tags")
+PY
+          )"
+          case "$LOCAL_MODEL_RESOLVED_DIGEST" in
+            "$LOCAL_MODEL_ID"*) ;;
+            sha256:"$LOCAL_MODEL_ID"*) ;;
+            *) echo "Unexpected model digest: $LOCAL_MODEL_RESOLVED_DIGEST" >&2; exit 1 ;;
+          esac
+          echo "LOCAL_MODEL_RESOLVED_DIGEST=$LOCAL_MODEL_RESOLVED_DIGEST" >> "$GITHUB_ENV"
 
       - name: Collect verified primary sources and generate report
         shell: python
@@ -74,7 +103,7 @@ jobs:
           since = today - dt.timedelta(days=7)
           repo = os.environ["REPOSITORY"]
           model = os.environ["LOCAL_MODEL"]
-          model_id = os.environ["LOCAL_MODEL_ID"]
+          model_id = os.environ["LOCAL_MODEL_RESOLVED_DIGEST"]
           github_token = os.environ.get("GITHUB_TOKEN", "")
 
           def read_repo_context():
