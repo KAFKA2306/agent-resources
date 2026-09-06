@@ -1,6 +1,6 @@
 # Agent Resources
 
-このファイルをrepository運用の正準とします。`CLAUDE.md` などtool固有のinstruction fileには、ここにない差分だけを書きます。
+このファイルだけをrepository-wide agent運用の正準とします。`GEMINI.md`、`CLAUDE.md` などtool固有のinstruction fileは原則削除し、tool互換のため必要な場合もこの `AGENTS.md` をimportするだけにします。独立した規則を書きません。
 
 ## Scope
 
