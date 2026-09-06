@@ -1,142 +1,64 @@
 # Agent Resources
 
-このファイルだけをrepository-wide agent運用の正準とします。`GEMINI.md`、`CLAUDE.md` などtool固有のinstruction fileは原則削除し、tool互換のため必要な場合もこの `AGENTS.md` をimportするだけにします。独立した規則を書きません。
+この `AGENTS.md` だけをrepository-wide agent運用の正準とします。tool固有の `GEMINI.md`、`CLAUDE.md` などは原則削除し、互換のため必要な場合もこのファイルをimportするだけにします。独立した規則を書きません。
 
 ## Scope
 
-このrepositoryは主に次を保守します。
+このrepositoryは次だけを担当します。
 
 - public GitHub状態を観測するDashboard / API / snapshot
-- `agr` / `agrx` CLI
-- reusable skills / plugins
+- `agr` / `agrx` と reusable skills / plugins
 - public CLI documentation
-- KAFKA2306 portfolioのagent / platform / Web運用に関するcross-repository auditとIssue routing
+- KAFKA2306 portfolioのagent / platform / Web横断監査とIssue routing
 
-`agent-resources` とDashboardは人間向けoverviewであり、portfolio状態のsource of truthではありません。各owner repository、GitHub、deployment、production、一次情報の直接証拠を優先します。
+他repositoryの実装ownershipは各owner repositoryに残します。public surfaceへprivate repository、secret、private work itemを出しません。
 
-finance、VR/3D、games、researchなどownerが別のrepositoryについては、横断監査と具体的なIssue routingまでを担当し、実装ownershipはowner repositoryに残します。ユーザーから明示的に実装を指示された場合はその指示を優先します。
+## Priority and execution
 
-public Dashboardはprivate repository、secret、private work itemを扱いません。
+1. current user instruction
+2. この `AGENTS.md`
+3. current official upstream documentation
+4. current code / config / tests / CI / runtime evidence
+5. historical prose / conversation / inference
 
-## Commands
+ユーザーの指示から合理的に確定できるread-only・reversibleな作業は追加確認を待たず進めます。実装・修正・実行を求められたら、不可逆な外部操作に追加承認が必要な場合を除き、要求された結果まで続けます。
 
-Python環境は `uv` を使います。Python commandは原則 `uv run` で実行します。
+Skillやinstruction fileが確認要求、停止、未完、意図からの逸脱を生む場合は、原因となったfileと該当ruleを明示します。
 
-```bash
-uv run pytest
-uv run ruff check .
-uv run ruff format .
-uv run ty check
-uv run agr --help
-uv run agrx --help
-```
+`DELETE > MERGE > REPLACE > ADD` を優先します。同じ責務のwrapper、config、workflow、schema、documentation、status authorityを増やしません。既存標準・既存実装を再利用し、独自略語・独自taxonomy・独自maturity levelを作りません。
 
-Dashboard変更ではrepository内の既存test/build commandを優先し、該当するGitHub Actionsも確認します。
+## Evidence and verification
 
-## Change policy
+現在の直接証拠を優先し、未観測状態を推測で埋めません。必要な場合だけ `VERIFIED` / `OBSERVED` / `INFERRED` / `UNVERIFIED` を使います。
 
-- current user instruction > このファイル > current official upstream docs > current GitHub/production state > historical context の順で判断する。
-- 既存の標準機能・既存実装を再利用し、`DELETE > MERGE > REPLACE > ADD` を優先する。
-- 同じ責務のwrapper、config、workflow、schema、documentation、status authorityを増やさない。
-- repository固有の略語、maturity level、named gate、confidence score、独自taxonomyを、外部標準や実要件なしに作らない。
-- Dashboardではlive / snapshot / unavailableを区別し、未観測状態を推測で埋めない。
-- `skills/` をrepository内skillの正準配置とする。
-- `agr` と `agrx` の共有責務は可能な限り共通実装へ寄せ、挙動を不必要に分岐させない。
-- cross-repository auditでは既存のcanonical Issue / PRを優先し、新規Issueは現在の問題、非重複、明確な価値、実行可能なscope、evidence、completion criteria、verificationが揃う場合だけowner repositoryに作成する。
-- cross-repository auditでIssueを参照する場合は `owner/repo#number` とcanonical GitHub URLを使う。未起票候補へログ内通し番号や擬似Issue番号を付けない。
-- GitHub Agentic Workflowsは `.github/workflows/*.md` をsource、同名 `.lock.yml` を`gh aw compile --strict`の生成物として管理する。lockを手編集せず、source変更時はcurrent pinned compilerで再生成・検証する。
-- Agentic Workflowのmodel auto-selectionがruntimeで利用不能になった場合は、公式にcurrent Copilot CLI対応が確認できる低コストmodelをsourceへ明示し、runtime再実行で検証する。silent fallbackはしない。
-- evidence claimは `VERIFIED` / `OBSERVED` / `INFERRED` / `UNVERIFIED` のいずれかとして、直接観測できた範囲だけに適用する。複数claimを含むhandoff全体へ一括で `VERIFIED` を付けない。
-- 人間向けCloudflare Pages / Workers production surfaceを持つpublic repositoryでは、そのCloudflare production URLがGoogleに実際にインデックスされることをdistribution milestoneとして扱う。公開検索の`site:`件数だけで完了判定せず、owner repositoryのcanonical IssueでSearch Consoleのindex状態、Google-selected canonical、sitemap/canonical/internal-link host一致を直接確認する。Cloudflareが別hostへのmirror canonicalのままならmilestone達成扱いにしない。
+CI greenは、そのexact revisionで実行されたcheckの成功だけを証明します。merge、deployment、release、production、device/runtimeは別に直接確認します。
 
-## Low-context handoff
+変更に必要な最小の意味あるtest / validationを実行します。小さくreversibleな変更について実装をそのまま写すtestを追加せず、必要なcheckが通った後は、新しい変更・失敗・未解決riskがない限り検証範囲を広げたり反復したりしません。
 
-Issue / PR は、長い過去会話や大きなcontext windowを前提にしないhandoff単位にします。新しいagentがAGENTS.mdと対象Issue / PRだけを読んで、安全に次の1手を選べる状態を維持します。
+production truthが必要な場所でfixture、dummy、mock、silent fallbackを代用しません。取得不能は成功扱いせず `UNVERIFIED` とします。
 
-- canonical Issueの冒頭には、`目的`、`Current state`、`Next action`、`Completion criteria`、`Verification` を短く置く。現在値と次の1手をhistoryより先に書く。
-- current stateは、必要最小限のcommit SHA、PR、deployment、production evidence、blockerだけを残す。長い調査過程、旧仮説、詳細benchmark、過去command全文は本文へ累積しない。
-- historical evidenceが必要なら既存comment、merged PR、commit、owner repository、一次情報へlinkし、Issue本文へ複製しない。古い情報を残す場合は `historical` と明示する。
-- 1 Issueに複数の独立decision / experiment / ownerを詰め込まない。重複はMERGEし、独立責務だけを分離する。
-- `Next action` は1つのbounded actionとして書く。未観測の前提を補う必要がある場合は、そのread-back自体を次のactionにする。
-- agentはIssue全文や過去commentをすべて理解してからでないと動けない構造を作らない。必要なauthorityを少数のcanonical sourceへ寄せる。
-- context削減のための別status document、summary database、collector、独自schemaは作らない。GitHub Issue / PR、AGENTS.md、既存repository stateを再利用する。
-- Issue本文が肥大化してcurrent stateを見失わせる場合は、正準要件と現在のhandoffだけへ縮約し、詳細は既存evidenceへのlinkに置換する。
+## Workline and GitHub
 
-## Evidence scope
+既存のcanonical Issue / PR / branchがあれば再利用します。1つの成果に重複worklineを作りません。
 
-証拠は、それが実際に観測したclaimと実行layerにだけ適用します。
+write前に対象stateを再取得し、permission確認のためのdummy/no-op mutationを作りません。変更後はread-backし、mergeは可能ならexact head SHAを固定します。
 
-- 実機・editor・device・production環境が手元にないこと自体を、PR merge不可の理由にしません。実機が必要なclaimは `UNVERIFIED` のまま残し、repository-levelに安全に統合できるかを別に判断します。
-- ただし変更対象そのものの安全性を、そのruntimeを実行しないと判断できず、誤りがmainを壊す可能性が高い場合は、その不確実性をPR merge blockerとして扱えます。単なる「環境がない」ではなく、変更surfaceに対する具体的riskを根拠にします。
-- CI greenは、そのexact SHAで実際に走ったtest / build / lint / type check等が成功した証拠だけです。CIが実行していないeditor、device、browser、external API、production、release artifactの成功へ拡張しません。
-- preview、deployment、runtime、production、release artifactの各claimは、該当する直接観測がある場合だけPASSとします。前段の成功から後段を推定しません。
+Issue / PRは、長い履歴を読まなくても現在状態、次の1手、完了条件、検証方法が分かる最小のhandoffに保ちます。古い経緯や重複status documentを正本にしません。
 
-したがって、次の2つを禁止します。
+## Documentation and skills
 
-1. **「実機環境がないからコードをmergeできない」** — 実機未検証は対応するruntime claimを未確認にするだけで、無関係なrepository-level merge判定へ自動的に昇格させません。
-2. **「CIが緑だから製品完成」** — CI successをrelease、production-ready、device-ready、user-readyの証拠として扱いません。
+- `README.md`: 人間向けの短い入口
+- `AGENTS.md`: repository-wide agent rules
+- `skills/`: reusable capability
+- code / config / schema / tests / workflows: executable truth
+- Issues / PRs: temporary work state
 
-## Merge and release conditions
-
-PR mergeとproduct releaseは別の判定です。
-
-### PR merge
-
-PR merge条件は、exact PR headに対して**変更したsurfaceをmainへ統合してよいこと**を示す証拠です。
-
-- scopeと意図したcontractが明確である。
-- 変更surfaceに対応する実行可能なdeterministic test / build / lint / type check / schema/data validationが成功している。
-- exact PR headが検証後に変わっていない。
-- secret、destructive operation、source/data integrity、重大なbackward compatibility defectを導入しない。
-- 実行できなかったruntime / production / device claimは `UNVERIFIED` と明示され、release-readyと誤表示されない。
-
-現在productionの状態、post-deploy smoke、release artifactの公開結果、手元にない実機の存在を、変更surfaceと無関係ならmerge条件にしません。
-
-### Product release
-
-Product release条件は、merge済みまたはtagged revisionから作られた**具体的なrelease対象**について、その製品claimを直接実証することです。
-
-- release対象のexact revision / artifact identityが分かる。
-- target environmentへ実際にdeploy / install / publishされている。
-- releaseで謳うruntime / browser / device / integration / package behaviorを直接確認している。
-- 必要なlicense、provenance、configuration、rollback/recovery boundaryを満たす。
-
-PRがmerge済みでもproduct release完了とは扱いません。deployment成功だけでもproduction verificationが未実行ならrelease完了とは扱いません。production/runtime verificationの失敗はreleaseを未完了にしますが、その失敗が変更surfaceのrepository-level correctnessと無関係なら、過去のPR merge判定へ逆流させません。
-
-## Documentation
-
-Documentationもmaintained surfaceとして扱います。
-
-- `README.md`: 人間向けの短い入口、主要surface、最短の利用・検証経路
-- public Pages / Web siteを持つrepositoryの`README.md`は、冒頭をcanonical production URLの完全な`https://...` URLそのものから始める。URLを見出し・リンク・コードで装飾せず、古いURLや後段の重複導線を残さない。
-- `AGENTS.md`: repository/agent運用契約
-- `docs/content/`: CLI利用者向けの恒久的なguide/reference
-- その他のdocs: 独立した現在有効な役割がある場合だけ残す
-
-obsoleteな文書は削除し、重複文書は統合します。source code、schema、workflow、upstream docsを長文で複製せず、安定した正準sourceへlinkします。削除済みfile、command、workflow、endpointへの参照を残しません。
-
-## GitHub writes
-
-1. write直前に対象branch / PR / Issue / CIを再取得する。
-2. permission / capability確認のためにdummy file、no-op commit、使い捨てmutationを作らない。read-only permission/API確認を優先し、writeは実際のcanonical worklineだけで行う。
-3. 新規branchはcanonical PRを直ちにopenするためにだけ作り、既存のcanonical branch / PRがあれば再利用する。orphan branchの棚卸し・削除そのものはこのagentのworkline、blocker、completion criteriaにしない。
-4. 既存のcanonical branch / PRを再利用し、duplicate worklineを作らない。同じrepository stateへのmutationは1つずつ行い、write後にread-backする。
-5. mergeはexact PR headでPR merge条件を満たすことを確認し、可能ならexpected head SHAを固定する。product release条件をmerge判定へ混ぜない。
-6. CI結果は、そのworkflowがexact SHAで実行したcheckの範囲だけに使う。CI greenを製品完成の代用にしない。
-7. 実機/productionが利用不能なら対応claimを `UNVERIFIED` とし、利用不能そのものを自動merge blockerにしない。
-8. host-side rejectionを認証失敗と決めつけず、stateを再取得して同じcanonical actionを1回だけ再試行する。2回目も拒否されたらそのrunのmutationを止める。
-9. branch lifecycle cleanupは既存のrepository automationまたはwrite-capable operatorへ委譲できる。cleanup未完了だけを理由にIssue / PR / worklineを作らず、このagentの成果未達理由にも使わない。
-10. 未実行・未観測のtest、deployment、runtime layerをPASSと報告しない。
+obsolete・重複documentやSkillは削除・統合します。tool固有のinstruction fileへrepository-wide rulesを複製しません。
 
 ## Security
 
-- credentialをbrowser bundle、public snapshot、fixture、log、docsへ入れない。
-- external skillを実行する前にsource、`SKILL.md`、shell/network/file mutation、secret要求、helper dependencyを確認する。
-- destructive actionや権限拡大は現在stateと明示的な意図を確認する。
+credential、secret、private dataをpublic artifact、fixture、log、docsへ入れません。external Skillはsourceとmutation/secret要求を確認してから使います。destructive actionや権限拡大は現在stateと明示的な意図を確認します。
 
-## Primary references
+## Completion
 
-- Agent Skills: https://agentskills.io/
-- AGENTS.md: https://agents.md/
-
-各tool固有仕様は必要時にそのtoolの現行公式documentationを参照し、このファイルへコピーしません。
+要求された外部状態を、利用可能な最も直接的な方法で確認して完了とします。repository acceptanceとproduct/release/production acceptanceを混同しません。未確認のlayerは `UNVERIFIED` のまま残します。
