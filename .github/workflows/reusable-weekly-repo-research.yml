@@ -59,23 +59,8 @@ jobs:
           ollama pull "$LOCAL_MODEL"
           ACTUAL_MODEL_ID="$(ollama list | awk -v model="$LOCAL_MODEL" '$1 == model {print $2}')"
           test "$ACTUAL_MODEL_ID" = "$LOCAL_MODEL_ID"
-          LOCAL_MODEL_RESOLVED_DIGEST="$(python - <<'PY'
-import json
-import urllib.request
-
-with urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30) as response:
-    payload = json.load(response)
-for model in payload.get("models", []):
-    if model.get("name") == "qwen3:0.6b":
-        digest = str(model.get("digest") or "")
-        if not digest:
-            raise SystemExit("qwen3:0.6b digest missing")
-        print(digest)
-        break
-else:
-    raise SystemExit("qwen3:0.6b missing from /api/tags")
-PY
-          )"
+          LOCAL_MODEL_RESOLVED_DIGEST="$(python -c 'import json,urllib.request; p=json.load(urllib.request.urlopen("http://127.0.0.1:11434/api/tags", timeout=30)); print(next(str(m.get("digest") or "") for m in p.get("models", []) if m.get("name") == "qwen3:0.6b"))')"
+          test -n "$LOCAL_MODEL_RESOLVED_DIGEST"
           case "$LOCAL_MODEL_RESOLVED_DIGEST" in
             "$LOCAL_MODEL_ID"*) ;;
             sha256:"$LOCAL_MODEL_ID"*) ;;
