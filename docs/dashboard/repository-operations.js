@@ -1,7 +1,4 @@
-const REPOSITORY_OPERATIONS_SOURCES = [
-  "./repository-operations.json",
-  "https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json",
-];
+const REPOSITORY_OPERATIONS_SOURCES = ["./repository-operations.json"];
 
 function formatTimestamp(value) {
   const timestamp = Date.parse(value);

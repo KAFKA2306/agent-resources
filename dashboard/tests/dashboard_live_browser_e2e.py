@@ -236,7 +236,10 @@ def main() -> None:
 
     checks = {
         "live request occurred": FixtureHandler.live_requests >= 1,
-        "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
+        "live status rendered": (
+            'id="snapshot-status" data-state="fresh" data-workflow-state="snapshot">'
+            "LIVE · workflow snapshot<"
+        ) in dom,
         "live repository rendered": "poker-raise-quiz" in dom,
         "live work item rendered": "LIVE-ISSUE" in dom,
         "primary action rendered": 'id="primary-action"' in dom and "最優先の対応" in dom,

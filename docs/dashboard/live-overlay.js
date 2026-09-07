@@ -74,6 +74,11 @@ export function mergeLiveSnapshot(baseline, live) {
     liveFetchedAt: live.fetchedAt,
     liveSource: live.source || "github-rest",
     liveRequestBudget: live.requestBudget || null,
+    liveCoverage: {
+      issuePullRequestActivity: "live",
+      workflowRuns: "snapshot",
+      workflowSnapshotGeneratedAt: baseline.generatedAt || null,
+    },
     repositories,
     workItems,
     activity,

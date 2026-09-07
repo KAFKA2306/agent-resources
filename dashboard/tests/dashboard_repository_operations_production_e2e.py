@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
+import urllib.request
 from urllib.parse import urljoin
 
 from dashboard.production_live_smoke import verify_production_live
@@ -16,6 +18,28 @@ PRODUCTION_URL = os.environ.get(
 EXPECTED_SHA = os.environ.get("EXPECTED_SHA", "main")
 POKER_RAISE_QUIZ_URL = "https://kafka2306.github.io/poker-raise-quiz/"
 ACTIONABLE_LANES = ("waiting", "failed", "done")
+
+
+def fetch_operations_snapshot(production_root: str) -> dict:
+    url = urljoin(production_root, "dashboard/repository-operations.json")
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "Cache-Control": "no-cache",
+            "User-Agent": "agent-resources-operations-production-e2e",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        if response.status != 200:
+            raise ValueError(f"operations snapshot returned HTTP {response.status}")
+        payload = json.loads(response.read().decode("utf-8"))
+    if not payload.get("generatedAt") or not payload.get("sourceRevision") or not payload.get("runId"):
+        raise ValueError("operations snapshot provenance is incomplete")
+    repositories = payload.get("repositories")
+    if not isinstance(repositories, list) or not repositories:
+        raise ValueError("operations snapshot has zero repositories")
+    return payload
 
 
 def dump_production_dom(url: str) -> str:
@@ -76,6 +100,7 @@ def main() -> None:
     production_root = urljoin(PRODUCTION_URL, "../")
     _endpoint, live_payload, _age_seconds = verify_production_live(production_root, EXPECTED_SHA)
     expected_repository_count = live_payload["summary"]["repositoryCount"]
+    operations_payload = fetch_operations_snapshot(production_root)
 
     dom = dump_production_dom(PRODUCTION_URL)
     weekly_dom = dump_production_dom(f"{PRODUCTION_URL}?stats=weekly")
@@ -102,7 +127,10 @@ def main() -> None:
     actionable_count = gate_counts.get("waiting", 0) + gate_counts.get("failed", 0)
 
     checks = {
-        "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
+        "live status rendered": (
+            'id="snapshot-status" data-state="fresh" data-workflow-state="snapshot">'
+            "LIVE · workflow snapshot<"
+        ) in dom,
         "live error absent": "LIVE ERROR" not in dom,
         "repository count rendered": repository_count_match is not None,
         "operations timestamp rendered": "Operations snapshot:" in dom
@@ -175,7 +203,7 @@ def main() -> None:
     print(
         "repository operations production browser E2E: "
         f"live {rendered_repository_count} repos at {live_payload['fetchedAt']}, "
-        f"operations snapshot rendered without obsolete classification, "
+        f"operations snapshot {len(operations_payload['repositories'])} repos served same-origin, "
         f"{primary_state}, "
         f"mobile viewport skip/{selected_lane} detail+pressed state verified, "
         f"monthly/weekly stats verified, "
