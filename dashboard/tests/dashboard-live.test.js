@@ -114,6 +114,53 @@ test("live collector aggregates repositories, open work, and activity without pe
   assert.equal(live.rateLimits.search.remaining, 28);
 });
 
+test("live collector bounds recent activity to the canonical 200-item limit", async () => {
+  const fetchImpl = async (url) => {
+    const parsed = new URL(url);
+    if (parsed.pathname === "/users/KAFKA2306/repos") {
+      return response([repository("alpha", "R_alpha")]);
+    }
+    if (parsed.pathname !== "/search/issues") throw new Error(`unexpected URL ${url}`);
+
+    const query = parsed.searchParams.get("q");
+    const page = Number(parsed.searchParams.get("page") || "1");
+    const isPullRequest = query.includes("is:pull-request");
+    if (query.includes("is:open")) {
+      return response({ total_count: 0, items: [] }, { resource: "search", remaining: 29 });
+    }
+
+    if (isPullRequest) {
+      return response({
+        total_count: 1,
+        items: [searchItem("alpha", 1000, {
+          pull_request: { url: "https://api.github.com/pulls/1000" },
+          html_url: "https://github.com/KAFKA2306/alpha/pull/1000",
+          updated_at: "2026-08-14T05:29:59Z",
+        })],
+      }, { resource: "search", remaining: 28 });
+    }
+
+    const start = (page - 1) * 100;
+    const items = Array.from({ length: 100 }, (_, index) => {
+      const number = start + index + 1;
+      return searchItem("alpha", number, {
+        updated_at: new Date(Date.parse("2026-08-14T05:29:58Z") - number * 1000).toISOString(),
+      });
+    });
+    return response({ total_count: 200, items }, { resource: "search", remaining: 28 });
+  };
+
+  const live = await collectLiveState({
+    token: "test-token",
+    fetchImpl,
+    now: new Date("2026-08-14T05:30:00Z"),
+  });
+  assert.equal(live.activity.length, 200);
+  assert.equal(new Set(live.activity.map((item) => item.id)).size, 200);
+  assert.ok(live.activity[0].occurredAt >= live.activity.at(-1).occurredAt);
+  assert.equal(live.summary.activityCount, 200);
+});
+
 test("missing server credential fails closed", async () => {
   await assert.rejects(() => collectLiveState({ fetchImpl: async () => response([]) }), (error) => {
     assert.equal(error instanceof LiveDataError, true);
