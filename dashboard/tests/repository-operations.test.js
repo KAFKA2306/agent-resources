@@ -47,7 +47,7 @@ test("repository operations UI has no repository classification action", () => {
   assert.equal(documentRef.getElementById("operations-zone-action"), null);
 });
 
-test("repository operations falls back to the persisted GitHub Pages snapshot", async () => {
+test("repository operations uses the canonical same-origin snapshot", async () => {
   const requests = [];
   const elements = new Map([
     ["operations-generated-at", { dateTime: "", textContent: "" }],
@@ -64,16 +64,12 @@ test("repository operations falls back to the persisted GitHub Pages snapshot", 
   };
   const fetchImpl = async (url) => {
     requests.push(url);
-    if (requests.length === 1) return { ok: false, status: 404 };
     return { ok: true, status: 200, async json() { return payload; } };
   };
 
   await loadRepositoryOperations({ fetchImpl, documentRef });
 
-  assert.deepEqual(requests, [
-    "./repository-operations.json",
-    "https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json",
-  ]);
+  assert.deepEqual(requests, ["./repository-operations.json"]);
   assert.equal(elements.get("operations-generated-at").dateTime, payload.generatedAt);
   assert.match(elements.get("operations-generated-at").textContent, /Operations snapshot:/);
   assert.equal(elements.get("operations-summary").textContent, "Operations: 2 repos");
