@@ -102,7 +102,10 @@ def main() -> None:
     actionable_count = gate_counts.get("waiting", 0) + gate_counts.get("failed", 0)
 
     checks = {
-        "live status rendered": 'id="snapshot-status" data-state="fresh">LIVE<' in dom,
+        "live status rendered": (
+            'id="snapshot-status" data-state="fresh" data-workflow-state="snapshot">'
+            "LIVE · workflow snapshot<"
+        ) in dom,
         "live error absent": "LIVE ERROR" not in dom,
         "repository count rendered": repository_count_match is not None,
         "operations timestamp rendered": "Operations snapshot:" in dom
