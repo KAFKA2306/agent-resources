@@ -110,21 +110,28 @@ function showGateItems(label, items, repositoriesById) {
   gateDetail.append(list);
 }
 
-function renderGates(workItems, repositoriesById) {
+function renderGates(workItems, repositoriesById, liveCoverage = null) {
   laneGates.replaceChildren();
   for (const gate of GATES) {
     const items = workItems.filter((item) => item.lane === gate.lane);
+    const usesWorkflowSnapshot = (
+      gate.lane === "failed"
+      && liveCoverage?.workflowRuns === "snapshot"
+      && items.some((item) => item.kind === "workflow_run")
+    );
+    const label = usesWorkflowSnapshot ? `${gate.label}（workflow snapshot）` : gate.label;
     const button = document.createElement("button");
     button.className = "lane-gate";
     button.dataset.lane = gate.lane;
     button.type = "button";
     button.setAttribute("aria-pressed", "false");
-    button.innerHTML = `<span>${gate.label}</span><strong>${items.length}</strong>`;
+    if (usesWorkflowSnapshot) button.dataset.freshness = "snapshot";
+    button.innerHTML = `<span>${label}</span><strong>${items.length}</strong>`;
     button.addEventListener("click", () => {
       for (const candidate of laneGates.querySelectorAll("button[data-lane]")) {
         candidate.setAttribute("aria-pressed", String(candidate === button));
       }
-      showGateItems(gate.label, items, repositoriesById);
+      showGateItems(label, items, repositoriesById);
     });
     laneGates.append(button);
   }
@@ -284,10 +291,17 @@ function renderSnapshotMeta(snapshot) {
   }
 }
 
-function renderLiveMeta(fetchedAt, maxAgeSeconds) {
+function renderLiveMeta(fetchedAt, maxAgeSeconds, liveCoverage = null) {
   const freshness = classifyLive(fetchedAt, maxAgeSeconds);
+  const workflowSnapshot = liveCoverage?.workflowRuns === "snapshot";
   snapshotStatus.dataset.state = freshness.state;
-  snapshotStatus.textContent = freshness.label;
+  if (workflowSnapshot) {
+    snapshotStatus.dataset.workflowState = "snapshot";
+    snapshotStatus.textContent = `${freshness.label} · workflow snapshot`;
+  } else {
+    delete snapshotStatus.dataset.workflowState;
+    snapshotStatus.textContent = freshness.label;
+  }
   if (!freshness.fetched) {
     liveFetchedAt.removeAttribute("datetime");
     liveFetchedAt.textContent = "Live: 取得できません";
@@ -312,7 +326,7 @@ function renderDashboard(snapshot) {
   const referenceTime = snapshot.liveFetchedAt || snapshot.generatedAt;
 
   renderWorld(repositories, workItems, activity, referenceTime);
-  renderGates(workItems, repositoriesById);
+  renderGates(workItems, repositoriesById, snapshot.liveCoverage);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
   repositoryCount.textContent = `${repositories.length} repositories`;
@@ -366,7 +380,7 @@ export async function refreshLiveState({ force = false } = {}) {
       lastLiveSuccessAt = Date.now();
       renderDashboard(merged);
       renderSnapshotMeta(baselineSnapshot);
-      renderLiveMeta(live.fetchedAt, live.cache?.maxAgeSeconds);
+      renderLiveMeta(live.fetchedAt, live.cache?.maxAgeSeconds, merged.liveCoverage);
       return merged;
     } catch (error) {
       if (sequence >= latestAppliedSequence) {
