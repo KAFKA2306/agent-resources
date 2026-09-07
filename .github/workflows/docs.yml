@@ -347,10 +347,13 @@ jobs:
           if not work_item_match or int(work_item_match.group(1)) <= 0:
               raise SystemExit('rendered dashboard has zero work items')
 
-          status_match = re.search(r'id="snapshot-status"[^>]*>([^<]+)<', html)
+          status_match = re.search(r'<span[^>]*id="snapshot-status"[^>]*>([^<]+)<', html)
           status = status_match.group(1).strip() if status_match else ''
-          if status != 'LIVE':
-              raise SystemExit(f'rendered dashboard live status is not LIVE: {status or "missing"}')
+          status_markup = status_match.group(0) if status_match else ''
+          if status != 'LIVE · workflow snapshot' or 'data-workflow-state="snapshot"' not in status_markup:
+              raise SystemExit(
+                  f'rendered dashboard live coverage is incorrect: {status or "missing"}'
+              )
 
           if 'class="activity-item"' not in html:
               raise SystemExit('rendered dashboard has no recent activity items')
