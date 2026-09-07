@@ -258,9 +258,10 @@ export async function collectLiveState({ token, fetchImpl = globalThis.fetch, ow
     `user:${owner} updated:>=${isoDateDaysAgo(now, ACTIVITY_WINDOW_DAYS)}`,
     2,
   );
-  const activity = activityRaw
+  const normalizedActivity = activityRaw
     .map((raw) => normalizeSearchActivity(raw, repositoriesByFullName))
     .filter(Boolean);
+  const activity = buildActivity(normalizedActivity, [], now);
 
   const allWorkItems = [...workItems].sort((a, b) =>
     a.repositoryId.localeCompare(b.repositoryId) || a.kind.localeCompare(b.kind) || a.number - b.number,
