@@ -19,11 +19,24 @@
     {
       "source": "/dashboard/dashboard.json",
       "destination": "https://kafka2306.github.io/agent-resources/dashboard/dashboard.json"
+    },
+    {
+      "source": "/dashboard/repository-operations.json",
+      "destination": "https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json"
     }
   ],
   "headers": [
     {
       "source": "/dashboard/dashboard.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard/repository-operations.json",
       "headers": [
         {
           "key": "Cache-Control",
