@@ -80,6 +80,11 @@ test("live overlay keeps workflow evidence from the canonical snapshot while ref
   assert.deepEqual(merged.activity.map((item) => item.id), ["activity:new-issue", "activity:workflow"]);
   assert.equal(merged.summary.workItemCount, 2);
   assert.equal(merged.summary.activityCount, 2);
+  assert.deepEqual(merged.liveCoverage, {
+    issuePullRequestActivity: "live",
+    workflowRuns: "snapshot",
+    workflowSnapshotGeneratedAt: baseline.generatedAt,
+  });
 });
 
 test("live-only repositories remain visible without invented public links", () => {
