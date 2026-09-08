@@ -1,0 +1,36 @@
+{
+  "name": "issue-resolution-collaboration",
+  "version": "0.1.0",
+  "description": "Parallel evidence-driven issue resolution workflows for Codex.",
+  "author": {
+    "name": "KAFKA2306",
+    "url": "https://github.com/KAFKA2306"
+  },
+  "homepage": "https://github.com/KAFKA2306/agent-resources",
+  "repository": "https://github.com/KAFKA2306/agent-resources",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "issues",
+    "multi-agent",
+    "verification",
+    "code-review"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Issue Resolution Collaboration",
+    "shortDescription": "Explore, challenge, and verify issue resolutions in parallel",
+    "longDescription": "Use Codex parallel agents and isolated worktrees for independent exploration, criticism, and verification, then integrate only evidence-backed minimal changes.",
+    "developerName": "KAFKA2306",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use the issue-resolution-router skill to resolve this repository issue with independent evidence lanes."
+    ],
+    "screenshots": []
+  }
+}
