@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue Verifier"
+  short_description: "Verify issue completion with direct evidence"
+  default_prompt: "Use $issue-verifier to independently check each claimed completion condition and return PASS, FAIL, or UNVERIFIED with direct evidence."
