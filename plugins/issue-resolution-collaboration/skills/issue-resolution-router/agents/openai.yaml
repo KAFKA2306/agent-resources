@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue Resolution Router"
+  short_description: "Route issue work across independent evidence lanes"
+  default_prompt: "Use $issue-resolution-router to decide whether this issue should stay inline or split into independent explorer, critic, and verifier lanes, then integrate the smallest evidence-backed resolution."

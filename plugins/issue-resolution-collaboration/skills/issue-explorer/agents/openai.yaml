@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue Explorer"
+  short_description: "Explore competing issue-resolution paths"
+  default_prompt: "Use $issue-explorer to independently inspect this issue and return competing minimal, mechanically verifiable resolution paths."

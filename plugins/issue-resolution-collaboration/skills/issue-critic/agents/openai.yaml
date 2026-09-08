@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issue Critic"
+  short_description: "Attack an issue-resolution hypothesis"
+  default_prompt: "Use $issue-critic to independently try to falsify the proposed issue resolution with current repository evidence."
