@@ -10,8 +10,8 @@ from scripts.research_provider_comparison import ContractError, evaluate
 def metrics(**overrides):
     base = {
         "primary_source_ratio": 1.0,
-        "fresh_source_count": 2,
-        "contradictions_detected": 1,
+        "fresh_source_count": 1,
+        "contradictions_detected": 0,
         "stale_or_duplicate_results": 0,
         "unverifiable_claims": 0,
         "newest_source_age_hours": 4,
@@ -76,7 +76,6 @@ class ResearchProviderComparisonTest(unittest.TestCase):
     def test_reallocate_only_when_candidate_dominates_and_schedule_switch_is_safe(self):
         data = payload()
         data["providers"][1]["metrics"] = metrics(
-            fresh_source_count=3,
             input_context_bytes=800,
             repeated_static_context_bytes=0,
             unnecessary_reads=0,
@@ -101,7 +100,11 @@ class ResearchProviderComparisonTest(unittest.TestCase):
         data = payload()
         for item in data["providers"]:
             item["result"] = "NO_MATERIAL_DELTA"
-            item["metrics"] = metrics(fresh_source_count=0, contradictions_detected=0)
+            item["metrics"] = metrics(
+                primary_source_ratio=0,
+                fresh_source_count=0,
+                contradictions_detected=0,
+            )
             item["sources"] = []
         self.assertEqual(evaluate(data)["decision"], "KEEP_CURRENT")
 
@@ -115,7 +118,7 @@ class ResearchProviderComparisonTest(unittest.TestCase):
 
     def test_reallocate_rejects_duplicate_or_start_first_schedule_contract(self):
         data = payload()
-        data["providers"][1]["metrics"] = metrics(fresh_source_count=3)
+        data["providers"][1]["metrics"] = metrics(input_context_bytes=800)
         data["schedule_transition"] = {
             "stop_schedule_id": "same",
             "start_schedule_id": "same",
@@ -123,6 +126,32 @@ class ResearchProviderComparisonTest(unittest.TestCase):
         }
         with self.assertRaises(ContractError):
             evaluate(data)
+
+    def test_previous_source_revision_cannot_be_recounted_as_current_delta(self):
+        data = payload()
+        source = data["providers"][0]["sources"][0]
+        data["task"]["previous_source_revisions"] = [
+            {"url": source["url"], "revision": source["revision"]}
+        ]
+        with self.assertRaisesRegex(ContractError, "cannot be recounted"):
+            evaluate(data)
+
+    def test_contradiction_evidence_survives_handoff(self):
+        data = payload()
+        source = data["providers"][0]["sources"][0]
+        source["contradiction"] = True
+        data["providers"][0]["metrics"]["contradictions_detected"] = 1
+        result = evaluate(data)
+        self.assertEqual(
+            result["contradictions"],
+            [
+                {
+                    "provider": "chatgpt",
+                    "url": source["url"],
+                    "revision": source["revision"],
+                }
+            ],
+        )
 
 
 if __name__ == "__main__":
