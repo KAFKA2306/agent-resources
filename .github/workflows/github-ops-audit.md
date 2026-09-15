@@ -11,7 +11,7 @@ permissions:
 
 engine:
   id: copilot
-  model: claude-haiku-4.5
+  model: gpt-5-mini
 
 tools:
   github:
