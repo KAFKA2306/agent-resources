@@ -28,6 +28,13 @@ jobs:
       - name: Compile agentic workflows
         run: gh aw compile --strict
 
+      - name: Preserve compiled lock files
+        uses: actions/upload-artifact@v7
+        with:
+          name: gh-aw-compiled-locks
+          path: .github/workflows/*.lock.yml
+          if-no-files-found: error
+
       - name: Commit generated lock files when changed
         shell: bash
         run: |
