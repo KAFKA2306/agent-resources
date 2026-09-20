@@ -16,11 +16,11 @@ jobs:
     steps:
       - name: Create short-lived workflow writer token
         id: app-token
-        if: vars.GH_AW_SYNC_APP_ID != ''
+        if: vars.FACTORY_APP_ID != ''
         uses: actions/create-github-app-token@v3
         with:
-          client-id: ${{ vars.GH_AW_SYNC_APP_ID }}
-          private-key: ${{ secrets.GH_AW_SYNC_APP_PRIVATE_KEY }}
+          client-id: ${{ vars.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: agent-resources
           permission-contents: write
@@ -59,7 +59,7 @@ jobs:
           fi
 
           if [ -z "${{ steps.app-token.outputs.token }}" ]; then
-            echo "::error::Compiled lock files changed, but GH_AW_SYNC_APP_ID / GH_AW_SYNC_APP_PRIVATE_KEY are not configured. Bootstrap the short-lived GitHub App writer described in agent-resources#359."
+            echo "::error::Compiled lock files changed, but FACTORY_APP_ID / FACTORY_APP_PRIVATE_KEY are not configured. Bootstrap the short-lived GitHub App writer described in agent-resources#359."
             exit 1
           fi
 
