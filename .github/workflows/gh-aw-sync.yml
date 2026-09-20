@@ -13,19 +13,34 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Create short-lived workflow writer token
+        id: app-token
+        if: vars.GH_AW_SYNC_APP_ID != ''
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.GH_AW_SYNC_APP_ID }}
+          private-key: ${{ secrets.GH_AW_SYNC_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: agent-resources
+          permission-contents: write
+          permission-workflows: write
+
       - name: Check out PR head
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ steps.app-token.outputs.token || github.token }}
           persist-credentials: true
 
       - name: Install pinned gh-aw compiler
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: gh extension install github/gh-aw --pin v0.88.2
 
       - name: Compile agentic workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: gh aw compile --strict
 
       - name: Preserve compiled lock files
@@ -41,6 +56,11 @@ jobs:
           if git diff --quiet -- '.github/workflows/*.lock.yml'; then
             echo "gh-aw lock files are already synchronized"
             exit 0
+          fi
+
+          if [ -z "${{ steps.app-token.outputs.token }}" ]; then
+            echo "::error::Compiled lock files changed, but GH_AW_SYNC_APP_ID / GH_AW_SYNC_APP_PRIVATE_KEY are not configured. Bootstrap the short-lived GitHub App writer described in agent-resources#359."
+            exit 1
           fi
 
           git config user.name "github-actions[bot]"
