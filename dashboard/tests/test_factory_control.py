@@ -4,8 +4,10 @@ from dashboard.factory_control import (
     RouteCandidate,
     classify_failure,
     decide_remediation,
+    discover_work,
     intervention_is_automation_gap,
     stable_task_id,
+    verify_evidence,
 )
 
 
@@ -23,6 +25,28 @@ class FactoryControlTests(unittest.TestCase):
 
         self.assertEqual(first, repeated)
         self.assertNotEqual(first, changed)
+
+    def test_discovery_deduplicates_same_evidence_and_ignores_success(self):
+        failed = {
+            "owner": "KAFKA2306",
+            "repository": "agent-resources",
+            "source_kind": "workflow_run",
+            "source_id": "34043147234",
+            "fingerprint": "unsupported-model",
+            "kind": "unsupported_model",
+            "conclusion": "failure",
+        }
+        success = {
+            **failed,
+            "source_id": "34043147235",
+            "fingerprint": "healthy",
+            "conclusion": "success",
+        }
+
+        work = discover_work([failed, dict(failed), success])
+
+        self.assertEqual(len(work), 1)
+        self.assertEqual(work[0].failure_class, "unsupported_model")
 
     def test_unknown_state_never_becomes_success(self):
         self.assertEqual(classify_failure({}), "unknown")
@@ -109,6 +133,49 @@ class FactoryControlTests(unittest.TestCase):
         self.assertTrue(decision.terminal)
         self.assertEqual(decision.action, "external_authority")
         self.assertFalse(intervention_is_automation_gap("legal_decision"))
+
+    def test_verifier_requires_all_evidence_from_exact_revision(self):
+        revision = "abc123"
+        complete = [
+            {"kind": "checks", "revision": revision, "conclusion": "success"},
+            {"kind": "production", "revision": revision, "conclusion": "success"},
+        ]
+
+        passed = verify_evidence(
+            expected_revision=revision,
+            evidence=complete,
+            required_kinds={"checks", "production"},
+        )
+        missing = verify_evidence(
+            expected_revision=revision,
+            evidence=complete[:1],
+            required_kinds={"checks", "production"},
+        )
+        stale = verify_evidence(
+            expected_revision=revision,
+            evidence=[
+                {"kind": "checks", "revision": revision, "conclusion": "success"},
+                {"kind": "production", "revision": "old", "conclusion": "success"},
+            ],
+            required_kinds={"checks", "production"},
+        )
+
+        self.assertEqual(passed.status, "PASS")
+        self.assertEqual(missing.status, "UNVERIFIED")
+        self.assertEqual(stale.status, "UNVERIFIED")
+
+    def test_verifier_propagates_failure_instead_of_marking_unverified_as_pass(self):
+        result = verify_evidence(
+            expected_revision="abc123",
+            evidence=[
+                {"kind": "checks", "revision": "abc123", "conclusion": "success"},
+                {"kind": "production", "revision": "abc123", "conclusion": "failure"},
+            ],
+            required_kinds={"checks", "production"},
+        )
+
+        self.assertEqual(result.status, "FAIL")
+        self.assertEqual(result.reason, "failed:production")
 
 
 if __name__ == "__main__":
