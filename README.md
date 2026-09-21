@@ -1,26 +1,26 @@
 https://agent-resources-one.vercel.app/
 
-# agent-resources — 公開Agent運用ハブ
+# agent-resources — Software Factory Control Tower
 
 [![Skill catalog integrity](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml)
 [![Build and Deploy Docs](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml)
 [![Validate Dashboard](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml)
 
-KAFKA2306 の公開GitHub作業を横断して、**何が動いているか、何が失敗したか、何に対応が必要か、その証拠はどこか**を確認する人間向けoverviewです。同時に、`agr` / `agrx` で必要なagent skillだけを導入・実行できます。
+KAFKA2306 の自律ソフトウェア工場を横断して、**どの工程が動いているか、どこで止まったか、人間介入が発生したか、その証拠はどこか**を監査する Control Tower です。同時に、`agr` / `agrx` で必要なagent skillだけを導入・実行できます。
 
-このrepositoryやDashboard自体を状態の正本にはしません。各repository、GitHub、deployment、productionの直接証拠を優先します。
+このrepositoryやControl Tower自体を状態の正本にはしません。各repository、GitHub、deployment、productionの直接証拠を優先します。
 
 ## できること
 
 ### 公開作業を確認する
 
-DashboardはKAFKA2306所有のpublic / non-archived repositoryを対象に、Issue、PR、GitHub Actions、直近activityを横断表示します。
+Control TowerはKAFKA2306所有のpublic / non-archived repositoryを対象に、Issue、PR、GitHub Actions、直近activityを横断表示します。
 
 - Live APIの取得状態を明示する
 - private repository、secret、private work itemを公開面へ出さない
 - 取得不能な状態を推測で補完しない
 
-詳細な状態はDashboardから各GitHub evidenceへ辿れます。
+詳細な状態はControl Towerから各GitHub evidenceへ辿れます。
 
 ### Agent skillを使う
 
@@ -54,7 +54,7 @@ CLIの詳細は [CLI / Skills docs](https://agent-resources-one.vercel.app/site/
 
 KAFKA2306の共有Web UI authorityは [`KAFKA2306/design`](https://github.com/KAFKA2306/design) です。visual token、共通component、user journey、interaction grammarはそこで管理し、このrepositoryに第二のdesign systemを持ちません。
 
-このrepositoryにはDashboard固有のbusiness stateと、Web UIを監査・検証する手順だけを残します。
+このrepositoryにはControl Tower固有のbusiness stateと、Web UIを監査・検証する手順だけを残します.
 
 - [Web UI改善Skill](skills/kafka-evidence-ui/SKILL.md)
 - [Agent plugin](plugins/kafka-evidence-ui/README.md)
