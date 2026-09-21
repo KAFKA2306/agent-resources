@@ -2,6 +2,8 @@ import unittest
 
 from dashboard.factory_runtime import (
     classify_workflow_failure,
+    collect_commit_status_signals,
+    commit_status_to_signal,
     execute_remediation,
     remediate_workflow_run,
     workflow_run_to_signal,
@@ -62,6 +64,97 @@ class FactoryRuntimeTests(unittest.TestCase):
         }
 
         self.assertEqual(classify_workflow_failure(run, []), "runner_unavailable")
+
+
+    def test_vercel_commit_failure_becomes_deployment_failure(self):
+        signal = commit_status_to_signal(
+            owner="example",
+            repository="repo",
+            revision="abc123",
+            status={
+                "id": 44,
+                "context": "Vercel",
+                "state": "failure",
+                "target_url": "https://vercel.example/deployment",
+            },
+        )
+
+        self.assertIsNotNone(signal)
+        self.assertEqual(signal["kind"], "deployment_failure")
+        self.assertEqual(signal["conclusion"], "failure")
+        self.assertEqual(signal["source_kind"], "commit_status")
+
+    def test_pending_commit_status_does_not_create_work(self):
+        signal = commit_status_to_signal(
+            owner="example",
+            repository="repo",
+            revision="abc123",
+            status={"context": "Vercel", "state": "pending"},
+        )
+
+        self.assertIsNone(signal)
+
+    def test_collect_commit_statuses_reads_real_github_status_shape(self):
+        calls = []
+
+        def request_fn(url, token=None):
+            calls.append(url)
+            return {
+                "statuses": [
+                    {
+                        "id": 45,
+                        "context": "Vercel",
+                        "state": "success",
+                        "target_url": "https://vercel.example/deployment",
+                    },
+                    {
+                        "id": 46,
+                        "context": "pages/build",
+                        "state": "failure",
+                        "target_url": "https://github.example/run",
+                    },
+                    {
+                        "id": 47,
+                        "context": "Vercel",
+                        "state": "pending",
+                    },
+                ]
+            }, {}
+
+        signals = collect_commit_status_signals(
+            owner="example",
+            repository="repo",
+            revision="abc123",
+            request_fn=request_fn,
+        )
+
+        self.assertEqual(len(signals), 2)
+        self.assertEqual(signals[0]["conclusion"], "success")
+        self.assertEqual(signals[1]["kind"], "deployment_failure")
+        self.assertTrue(calls[0].endswith("/commits/abc123/status"))
+
+    def test_production_verification_step_is_classified_separately(self):
+        run = {
+            "id": 104,
+            "name": "Verify Dashboard Release",
+            "status": "completed",
+            "conclusion": "failure",
+        }
+        jobs = [
+            {
+                "steps": [
+                    {
+                        "name": "Verify released production dashboard",
+                        "conclusion": "failure",
+                    }
+                ]
+            }
+        ]
+
+        self.assertEqual(
+            classify_workflow_failure(run, jobs),
+            "production_probe_failure",
+        )
 
     def test_executor_only_mutates_allowlisted_workflow_actions(self):
         calls = []
