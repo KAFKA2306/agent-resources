@@ -21,7 +21,7 @@
       const message = document.getElementById("workspace-message");
       if (message) {
         message.hidden = false;
-        message.textContent = "Dashboardの表示に必要なJavaScriptを読み込めませんでした。ページを再読み込みしてください。";
+        message.textContent = "Control Towerの表示に必要なJavaScriptを読み込めませんでした。ページを再読み込みしてください。";
       }
       console.error("Failed to load required dashboard modules", error);
       throw error;
@@ -42,7 +42,7 @@
       <div class="panel-heading">
         <div><p class="eyebrow">判断と対応</p><h2 id="workspace-title">今対応すること</h2></div>
         <div class="snapshot-meta" aria-label="データ更新時刻">
-          <div class="snapshot-source-row" aria-label="GitHub dashboard state">
+          <div class="snapshot-source-row" aria-label="Software Factory Control Tower state">
             <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
             <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
           </div>
