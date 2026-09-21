@@ -1,4 +1,4 @@
-name: GitHub Models Ops Audit
+name: Deterministic Ops Audit
 
 on:
   workflow_dispatch:
@@ -12,10 +12,9 @@ permissions:
   issues: write
   pull-requests: read
   actions: read
-  models: read
 
 concurrency:
-  group: github-models-ops-audit
+  group: deterministic-ops-audit
   cancel-in-progress: false
 
 jobs:
@@ -23,13 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Collect bounded current evidence
-        id: evidence
+      - name: Collect and evaluate current GitHub evidence
+        id: audit
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -54,86 +48,75 @@ jobs:
                   return json.load(response)
 
           issue_numbers = [297, 319, 340, 352, 359, 363, 381, 384]
-          issues = []
+          issues = {}
           for number in issue_numbers:
               item = get(f"/issues/{number}")
-              issues.append(
-                  {
-                      "number": number,
-                      "state": item.get("state"),
-                      "title": item.get("title"),
-                      "updated_at": item.get("updated_at"),
-                  }
-              )
+              issues[number] = {
+                  "state": item.get("state"),
+                  "title": item.get("title"),
+                  "updated_at": item.get("updated_at"),
+              }
 
-          pulls = get("/pulls?state=open&per_page=20")
-          runs = get("/actions/runs?per_page=20").get("workflow_runs", [])
+          pulls = get("/pulls?state=open&per_page=50")
+          runs = get("/actions/runs?per_page=30").get("workflow_runs", [])
+
+          invariants = {
+              "factory_epic_open": issues[381]["state"] == "open",
+              "model_incident_tracked": issues[363]["state"] == "open",
+              "human_input_centralized": issues[359]["state"] == "open",
+              "legacy_ops_epic_not_active": issues[352]["state"] == "closed",
+          }
+
+          failed = [name for name, ok in invariants.items() if not ok]
+          if failed:
+              raise SystemExit("factory invariant failure: " + ",".join(failed))
+
+          stale_model_prs = [
+              pr["number"]
+              for pr in pulls
+              if pr["number"] in {379, 380}
+          ]
+
           evidence = {
               "repository": repo,
               "revision": os.environ["GITHUB_SHA"],
-              "issues": issues,
-              "open_pull_requests": [
+              "invariants": invariants,
+              "stale_model_prs": stale_model_prs,
+              "recent_failures": [
                   {
-                      "number": item.get("number"),
-                      "title": item.get("title"),
-                      "head": item.get("head", {}).get("sha"),
+                      "id": run.get("id"),
+                      "name": run.get("name"),
+                      "conclusion": run.get("conclusion"),
+                      "head_sha": run.get("head_sha"),
                   }
-                  for item in pulls
-              ],
-              "recent_workflow_runs": [
-                  {
-                      "id": item.get("id"),
-                      "name": item.get("name"),
-                      "status": item.get("status"),
-                      "conclusion": item.get("conclusion"),
-                      "head_sha": item.get("head_sha"),
-                  }
-                  for item in runs[:10]
-              ],
+                  for run in runs
+                  if run.get("conclusion") == "failure"
+              ][:10],
           }
-          payload = json.dumps(evidence, ensure_ascii=False, separators=(",", ":"))
+
+          summary = (
+              "deterministic audit PASS; GitHub API evidence collected; "
+              f"stale_model_prs={stale_model_prs}; "
+              "no LLM provider is required for this control loop"
+          )
+
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
-              handle.write("payload<<EOF\n")
-              handle.write(payload)
+              handle.write("summary<<EOF\n")
+              handle.write(summary)
               handle.write("\nEOF\n")
+              handle.write("evidence<<EOF\n")
+              handle.write(json.dumps(evidence, ensure_ascii=False, separators=(",", ":")))
+              handle.write("\nEOF\n")
+          print(summary)
           PY
 
-      - name: Analyze evidence with GitHub Models
-        id: inference
-        uses: actions/ai-inference@a7805884c80886efc241e94a5351df715968a0ad # v2.1.1
-        with:
-          model: openai/gpt-4o
-          system-prompt: |
-            You are a bounded software-factory verifier. Use only the supplied evidence.
-            Do not invent repository state. Return exactly two lines:
-            STATUS: VERIFIED
-            SUMMARY: <one concise sentence describing the most important current operational fact>
-          prompt: |
-            Current GitHub evidence:
-            ${{ steps.evidence.outputs.payload }}
-
-      - name: Validate inference proof
-        env:
-          RESPONSE: ${{ steps.inference.outputs.response }}
-        shell: bash
-        run: |
-          python - <<'PY'
-          import os
-
-          response = os.environ.get("RESPONSE", "").strip()
-          if not response:
-              raise SystemExit("GitHub Models returned an empty response")
-          if "STATUS: VERIFIED" not in response:
-              raise SystemExit(f"unexpected verifier response: {response[:1000]}")
-          print(response)
-          PY
-
-      - name: Publish runtime proof to issue 363
+      - name: Publish PASS proof to issue 363
+        if: success()
         env:
           GH_TOKEN: ${{ github.token }}
-          RESPONSE: ${{ steps.inference.outputs.response }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REVISION: ${{ github.sha }}
+          SUMMARY: ${{ steps.audit.outputs.summary }}
         shell: bash
         run: |
           python - <<'PY'
@@ -143,19 +126,18 @@ jobs:
 
           repo = os.environ["GITHUB_REPOSITORY"]
           token = os.environ["GH_TOKEN"]
-          response = os.environ["RESPONSE"].strip()
           body = (
-              "GitHub Models runtime proof: PASS\n\n"
+              "Deterministic Ops Audit runtime proof: PASS\n\n"
               f"- run: {os.environ['RUN_URL']}\n"
               f"- revision: `{os.environ['REVISION']}`\n"
-              "- provider path: GitHub Models via `models: read` and repository `GITHUB_TOKEN`\n"
-              "- no Copilot subscription route used\n\n"
-              f"{response}"
+              "- provider dependency: none\n"
+              "- authority: current GitHub API + repository state\n"
+              f"- summary: {os.environ['SUMMARY']}\n\n"
+              "This supersedes both the Copilot model route and the retired GitHub Models route for routine ops-audit control."
           )
-          data = json.dumps({"body": body}).encode("utf-8")
           req = urllib.request.Request(
               f"https://api.github.com/repos/{repo}/issues/363/comments",
-              data=data,
+              data=json.dumps({"body": body}).encode("utf-8"),
               method="POST",
               headers={
                   "Accept": "application/vnd.github+json",
@@ -165,12 +147,12 @@ jobs:
                   "User-Agent": "KAFKA2306-autonomous-factory",
               },
           )
-          with urllib.request.urlopen(req, timeout=30) as response_obj:
-              if response_obj.status != 201:
-                  raise SystemExit(f"comment publish failed: HTTP {response_obj.status}")
+          with urllib.request.urlopen(req, timeout=30) as response:
+              if response.status != 201:
+                  raise SystemExit(f"proof comment failed: HTTP {response.status}")
           PY
 
-      - name: Publish failed runtime proof to issue 363
+      - name: Publish FAIL proof to issue 363
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -186,11 +168,11 @@ jobs:
           repo = os.environ["GITHUB_REPOSITORY"]
           token = os.environ["GH_TOKEN"]
           body = (
-              "GitHub Models runtime proof: FAIL\n\n"
+              "Deterministic Ops Audit runtime proof: FAIL\n\n"
               f"- run: {os.environ['RUN_URL']}\n"
               f"- revision: `{os.environ['REVISION']}`\n"
-              "- provider path: GitHub Models via `models: read` and repository `GITHUB_TOKEN`\n"
-              "- inspect the failed Actions step; no success is claimed"
+              "- provider dependency: none\n"
+              "- inspect the failed deterministic evidence/invariant step; no success is claimed"
           )
           req = urllib.request.Request(
               f"https://api.github.com/repos/{repo}/issues/363/comments",
@@ -204,7 +186,7 @@ jobs:
                   "User-Agent": "KAFKA2306-autonomous-factory",
               },
           )
-          with urllib.request.urlopen(req, timeout=30) as response_obj:
-              if response_obj.status != 201:
-                  raise SystemExit(f"failure comment publish failed: HTTP {response_obj.status}")
+          with urllib.request.urlopen(req, timeout=30) as response:
+              if response.status != 201:
+                  raise SystemExit(f"failure proof comment failed: HTTP {response.status}")
           PY
