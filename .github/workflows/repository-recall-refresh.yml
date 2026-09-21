@@ -28,6 +28,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      - name: Create short-lived factory writer token
+        id: app-token
+        if: vars.FACTORY_APP_ID != ''
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: agent-resources
+          permission-contents: write
+          permission-pull-requests: write
+
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
@@ -48,7 +60,7 @@ jobs:
       - name: Open pull request for changed index
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.DASHBOARD_GITHUB_TOKEN }}
           REFRESH_BRANCH: automation/repository-recall-refresh
         run: |
           set -euo pipefail
@@ -57,7 +69,7 @@ jobs:
             exit 0
           fi
           if [ -z "${GH_TOKEN}" ]; then
-            echo 'DASHBOARD_GITHUB_TOKEN is not configured; refusing to write directly to main' >&2
+            echo 'No factory App token or legacy DASHBOARD_GITHUB_TOKEN is configured; refusing to write directly to main' >&2
             exit 1
           fi
 

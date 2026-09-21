@@ -62,3 +62,16 @@ credential、secret、private dataをpublic artifact、fixture、log、docsへ�
 ## Completion
 
 要求された外部状態を、利用可能な最も直接的な方法で確認して完了とします。repository acceptanceとproduct/release/production acceptanceを混同しません。未確認のlayerは `UNVERIFIED` のまま残します。
+
+## Autonomous factory
+
+Routine operationは、人間への通知で終わらせず、利用可能なauthorityの範囲で閉ループ化します。
+
+- routine failure（CI、build、provider/model、runner、permission、merge conflict、artifact、deploy、production probe）はautomation gapとして扱い、診断・bounded retry・safe reroute・repair・re-verificationへ進めます。
+- retryはfailure classごとに上限を持ち、同じfailure fingerprintを同じ方法で無限再実行しません。
+- provider/model/executorの切替は、availableかつapprovedなrouteだけを使い、silent downgradeしません。
+- 実装agent自身の自己申告をPASSにせず、exact revisionのcheck、artifact、deployment、production evidenceで独立検証します。
+- Issue、branch、PR、taskはstable identityで重複を防ぎます。
+- 法的判断、契約、初回外部認証、現実世界の不可逆操作などmachine authorityが存在しない入力だけをhuman-only exceptionとします。
+- routine human interventionが発生した場合、それ自体を自動化不足として再発防止対象にします。
+

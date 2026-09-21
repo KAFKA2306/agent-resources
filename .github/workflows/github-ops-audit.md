@@ -1,5 +1,10 @@
 ---
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/github-ops-audit.md'
+      - '.github/workflows/github-ops-audit.lock.yml'
   workflow_dispatch:
 
 permissions:
@@ -11,7 +16,6 @@ permissions:
 
 engine:
   id: copilot
-  model: claude-haiku-4.5
 
 tools:
   github:
