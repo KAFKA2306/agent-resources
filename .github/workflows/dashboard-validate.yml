@@ -18,6 +18,9 @@ on:
       - '.github/workflows/docs.yml'
       - '.github/workflows/dashboard-validate.yml'
       - '.github/workflows/dashboard-release-verify.yml'
+      - '.github/workflows/gh-aw-sync.yml'
+      - '.github/workflows/github-ops-audit.md'
+      - '.github/workflows/github-ops-audit.lock.yml'
       - '.github/workflows/repository-recall-refresh.yml'
       - '.github/workflows/reusable-weekly-repo-research.yml'
 
