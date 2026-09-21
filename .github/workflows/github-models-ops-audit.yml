@@ -169,3 +169,42 @@ jobs:
               if response_obj.status != 201:
                   raise SystemExit(f"comment publish failed: HTTP {response_obj.status}")
           PY
+
+      - name: Publish failed runtime proof to issue 363
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REVISION: ${{ github.sha }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          body = (
+              "GitHub Models runtime proof: FAIL\n\n"
+              f"- run: {os.environ['RUN_URL']}\n"
+              f"- revision: `{os.environ['REVISION']}`\n"
+              "- provider path: GitHub Models via `models: read` and repository `GITHUB_TOKEN`\n"
+              "- inspect the failed Actions step; no success is claimed"
+          )
+          req = urllib.request.Request(
+              f"https://api.github.com/repos/{repo}/issues/363/comments",
+              data=json.dumps({"body": body}).encode("utf-8"),
+              method="POST",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {token}",
+                  "Content-Type": "application/json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "KAFKA2306-autonomous-factory",
+              },
+          )
+          with urllib.request.urlopen(req, timeout=30) as response_obj:
+              if response_obj.status != 201:
+                  raise SystemExit(f"failure comment publish failed: HTTP {response_obj.status}")
+          PY
