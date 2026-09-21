@@ -12,14 +12,14 @@ on:
 
 permissions:
   contents: read
-  actions: read
+  actions: write
 
 concurrency:
   group: factory-observer-${{ github.event.workflow_run.id }}
   cancel-in-progress: false
 
 jobs:
-  observe:
+  observe-and-remediate:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Adapt workflow evidence into factory work
+      - name: Adapt evidence and execute bounded remediation
         env:
           GITHUB_TOKEN: ${{ github.token }}
           FACTORY_OWNER: ${{ github.repository_owner }}
@@ -43,12 +43,11 @@ jobs:
           python -m dashboard.factory_runtime \
             --owner "$FACTORY_OWNER" \
             --repository "$FACTORY_REPOSITORY" \
-            --run-id "$FACTORY_RUN_ID" \
-            --observe-only | tee factory-observation.json
+            --run-id "$FACTORY_RUN_ID" | tee factory-remediation.json
           {
-            echo '## Factory Evidence Observer'
+            echo '## Factory Evidence + Bounded Remediation'
             echo
             echo '```json'
-            cat factory-observation.json
+            cat factory-remediation.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
