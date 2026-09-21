@@ -86,6 +86,51 @@ def request_json(url, token=None):
     ) from last_transport_error
 
 
+def request_mutation(url, token=None, *, method="POST", payload=None):
+    if method not in {"POST", "PUT", "PATCH", "DELETE"}:
+        raise ValueError("mutation method must be POST, PUT, PATCH, or DELETE")
+
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": API_VERSION,
+        "User-Agent": "KAFKA2306-agent-resources-factory",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    data = None
+    if payload is not None:
+        headers["Content-Type"] = "application/json"
+        data = json.dumps(payload).encode("utf-8")
+
+    request = Request(url, headers=headers, data=data, method=method)
+    try:
+        with urlopen(request, timeout=30) as response:
+            body = response.read()
+            if not body:
+                return {}, dict(response.headers.items())
+            try:
+                return json.loads(body.decode("utf-8")), dict(response.headers.items())
+            except json.JSONDecodeError as exc:
+                raise GitHubApiError(f"GitHub API mutation returned invalid JSON: {url}") from exc
+    except HTTPError as exc:
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except Exception:
+            body = ""
+        response_headers = dict(exc.headers.items()) if exc.headers else {}
+        raise GitHubApiError(
+            f"GitHub API mutation failed with HTTP {exc.code}: {url}",
+            status=exc.code,
+            headers=response_headers,
+            response_body=body,
+        ) from exc
+    except (URLError, TimeoutError, RemoteDisconnected, ConnectionResetError) as exc:
+        # Mutations are deliberately not retried here. A transport error can occur
+        # after GitHub accepted the write, so replaying it would violate bounded,
+        # idempotent factory behavior.
+        raise GitHubApiError(f"GitHub API mutation transport failed: {url}") from exc
+
+
 def next_link(headers):
     link = headers.get("Link") or headers.get("link")
     if not link:
