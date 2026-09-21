@@ -290,6 +290,7 @@ def remediate_workflow_run(
     token: str | None = None,
     request_fn: Callable = request_json,
     mutation_fn: Callable = request_mutation,
+    execute: bool = True,
 ) -> dict[str, object]:
     signal = collect_workflow_run_signal(
         owner=owner,
@@ -313,12 +314,19 @@ def remediate_workflow_run(
         failure_class=item.failure_class,
         attempt=attempt,
     )
-    execution = execute_remediation(
-        decision,
-        item,
-        token=token,
-        mutation_fn=mutation_fn,
-    )
+    if execute:
+        execution = execute_remediation(
+            decision,
+            item,
+            token=token,
+            mutation_fn=mutation_fn,
+        )
+    else:
+        execution = ExecutionResult(
+            status="TERMINAL" if decision.terminal else "PLANNED",
+            action=decision.action,
+            reason=decision.reason,
+        )
     return {
         "status": execution.status,
         "signal": signal,
@@ -333,6 +341,7 @@ def main(argv=None) -> int:
     parser.add_argument("--owner", required=True)
     parser.add_argument("--repository", required=True)
     parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--observe-only", action="store_true")
     args = parser.parse_args(argv)
 
     result = remediate_workflow_run(
@@ -340,10 +349,11 @@ def main(argv=None) -> int:
         repository=args.repository,
         run_id=args.run_id,
         token=os.getenv("GITHUB_TOKEN"),
+        execute=not args.observe_only,
     )
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
-    return 0 if result["status"] in {"NO_WORK", "EXECUTED"} else 2
+    return 0 if result["status"] in {"NO_WORK", "EXECUTED", "PLANNED"} else 2
 
 
 if __name__ == "__main__":
