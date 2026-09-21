@@ -12,7 +12,7 @@ on:
 
 permissions:
   contents: read
-  actions: read
+  actions: write
 
 concurrency:
   group: factory-observer-${{ github.event.workflow_run.id }}
@@ -43,8 +43,7 @@ jobs:
           python -m dashboard.factory_runtime \
             --owner "$FACTORY_OWNER" \
             --repository "$FACTORY_REPOSITORY" \
-            --run-id "$FACTORY_RUN_ID" \
-            --observe-only | tee factory-observation.json
+            --run-id "$FACTORY_RUN_ID" | tee factory-observation.json
           {
             echo '## Factory Evidence Observer'
             echo
