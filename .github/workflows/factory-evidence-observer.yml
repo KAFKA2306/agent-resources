@@ -1,0 +1,54 @@
+name: Factory Evidence Observer
+
+on:
+  workflow_run:
+    workflows:
+      - Validate Dashboard PR
+      - Validate KAFKA Evidence UI
+      - Build and Deploy Docs
+      - Verify Dashboard Release
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: factory-observer-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Adapt workflow evidence into factory work
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FACTORY_OWNER: ${{ github.repository_owner }}
+          FACTORY_REPOSITORY: ${{ github.event.repository.name }}
+          FACTORY_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m dashboard.factory_runtime \
+            --owner "$FACTORY_OWNER" \
+            --repository "$FACTORY_REPOSITORY" \
+            --run-id "$FACTORY_RUN_ID" \
+            --observe-only | tee factory-observation.json
+          {
+            echo '## Factory Evidence Observer'
+            echo
+            echo '```json'
+            cat factory-observation.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
