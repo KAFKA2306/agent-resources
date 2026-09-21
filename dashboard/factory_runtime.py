@@ -59,6 +59,14 @@ def classify_workflow_failure(
     failed_steps = [name.lower() for name in _failed_step_names(jobs)]
     if any("flaky" in name for name in failed_steps):
         return "flaky_test"
+    if any("production" in name and ("verify" in name or "probe" in name) for name in failed_steps):
+        return "production_probe_failure"
+    if any("deploy" in name for name in failed_steps):
+        return "deployment_failure"
+    if any("artifact" in name for name in failed_steps):
+        return "artifact_failure"
+    if any("permission" in name or "authorization" in name for name in failed_steps):
+        return "permission_mismatch"
     if any("build" in name for name in failed_steps):
         return "build_failure"
     if any("test" in name or "lint" in name or "type" in name for name in failed_steps):
@@ -116,6 +124,95 @@ def workflow_run_to_signal(
         "url": run.get("html_url"),
         "failed_steps": failed_steps,
     }
+
+
+def commit_status_to_signal(
+    *,
+    owner: str,
+    repository: str,
+    revision: str,
+    status: Mapping[str, object],
+) -> dict[str, object] | None:
+    state = status.get("state")
+    if state == "pending":
+        return None
+    if state not in {"success", "failure", "error"}:
+        raise ValueError("commit status state is invalid")
+
+    context = status.get("context")
+    if not isinstance(context, str) or not context.strip():
+        raise ValueError("commit status context is missing")
+    context = context.strip()
+
+    status_id = status.get("id")
+    source_id = str(status_id) if isinstance(status_id, int) else f"{revision}:{context}"
+    conclusion = "success" if state == "success" else "failure"
+    normalized_context = context.lower()
+    failure_class = (
+        "deployment_failure"
+        if any(marker in normalized_context for marker in ("vercel", "deploy", "pages"))
+        else "unknown"
+    )
+    fingerprint_payload = {
+        "context": context,
+        "state": state,
+        "revision": revision,
+        "targetUrl": status.get("target_url"),
+    }
+    canonical = json.dumps(
+        fingerprint_payload,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return {
+        "owner": owner,
+        "repository": repository,
+        "source_kind": "commit_status",
+        "source_id": source_id,
+        "fingerprint": hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24],
+        "kind": failure_class,
+        "conclusion": conclusion,
+        "status": "completed",
+        "context": context,
+        "head_sha": revision,
+        "url": status.get("target_url"),
+    }
+
+
+def collect_commit_status_signals(
+    *,
+    owner: str,
+    repository: str,
+    revision: str,
+    token: str | None = None,
+    request_fn: Callable = request_json,
+) -> list[dict[str, object]]:
+    encoded_owner = quote(owner, safe="")
+    encoded_repository = quote(repository, safe="")
+    encoded_revision = quote(revision, safe="")
+    url = (
+        f"https://api.github.com/repos/{encoded_owner}/{encoded_repository}"
+        f"/commits/{encoded_revision}/status"
+    )
+    payload, _ = request_fn(url, token)
+    raw_statuses = payload.get("statuses") if isinstance(payload, dict) else None
+    if not isinstance(raw_statuses, list):
+        raise ValueError("commit status response shape is invalid")
+
+    signals = []
+    for raw in raw_statuses:
+        if not isinstance(raw, Mapping):
+            raise ValueError("commit status item is invalid")
+        signal = commit_status_to_signal(
+            owner=owner,
+            repository=repository,
+            revision=revision,
+            status=raw,
+        )
+        if signal is not None:
+            signals.append(signal)
+    return signals
 
 
 def collect_workflow_run_signal(
