@@ -62,7 +62,7 @@ jobs:
 
           invariants = {
               "factory_epic_open": issues[381]["state"] == "open",
-              "model_incident_tracked": issues[363]["state"] == "open",
+              "legacy_model_failure_closed": issues[384]["state"] == "closed",
               "human_input_centralized": issues[359]["state"] == "open",
               "legacy_ops_epic_not_active": issues[352]["state"] == "closed",
           }
