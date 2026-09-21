@@ -4,7 +4,7 @@ https://agent-resources-one.vercel.app/
 
 [![Skill catalog integrity](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/skill-catalog.yml)
 [![Build and Deploy Docs](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/docs.yml)
-[![Validate Dashboard](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml)
+[![Validate Control Tower](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml/badge.svg)](https://github.com/KAFKA2306/agent-resources/actions/workflows/dashboard-validate.yml)
 
 KAFKA2306 のソフトウェア運用を、**人がタスクを回す仕組み**から、**自律的に発見・修復・検証・配布するソフトウェア工場**へ移すための観測・制御基盤です。
 
