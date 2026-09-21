@@ -73,4 +73,4 @@ Audit the current public GitHub state under KAFKA2306 and route at most one acti
 
 ## Push-trigger proof rule
 
-When the event is a push caused by installing or updating this workflow, this is a proof run. Do not create any issue. Verify that #297, #319, #340 and #352 are not duplicated. If this workflow installation is a material state change for #352, add exactly one concise comment to `KAFKA2306/agent-resources#352` with the run URL and directly observed evidence. Otherwise write nothing.
+When the event is a push caused by installing or updating this workflow, this is a proof run. Do not create any issue. Verify that #297, #319, #340 and #352 are not duplicated. After the audit reasoning completes, always add exactly one concise comment to `KAFKA2306/agent-resources#363` containing the current run URL and directly observed proof that the agent reached this rule. If the installation is also a material state change for #352, include that fact in the same #363 comment instead of creating a second write. This proof comment is the machine-readable runtime-success evidence for #363.
