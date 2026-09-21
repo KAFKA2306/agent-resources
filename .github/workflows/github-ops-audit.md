@@ -1,5 +1,10 @@
 ---
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/github-ops-audit.md'
+      - '.github/workflows/github-ops-audit.lock.yml'
   workflow_dispatch:
 
 permissions:
