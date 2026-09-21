@@ -1,6 +1,6 @@
-site_name: Agent Resources
+site_name: Software Factory Control Tower
 site_url: https://agent-resources-one.vercel.app/site/
-site_description: 公開Agent運用ハブと、AI agent skillsを導入・共有・実行するAGR CLIのドキュメント。
+site_description: 自律ソフトウェア工場のControl Towerと、AI agent skillsを導入・共有・実行するAGR CLIのドキュメント。
 site_author: KAFKA2306
 repo_url: https://github.com/KAFKA2306/agent-resources
 repo_name: KAFKA2306/agent-resources
@@ -30,7 +30,7 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/KAFKA2306/agent-resources
-      name: Agent Resources on GitHub
+      name: Software Factory Control Tower on GitHub
   generator: false
 
 plugins:
@@ -50,5 +50,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Control Tower: control-tower.md
+  - AGR CLI: cli.md
   - Creating Skills: creating.md
-  - Reference: reference.md
+  - CLI Reference: reference.md

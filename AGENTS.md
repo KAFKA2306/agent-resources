@@ -6,9 +6,9 @@
 
 このrepositoryは次だけを担当します。
 
-- public GitHub状態を観測するDashboard / API / snapshot
+- public GitHub状態と自律工場の工程を観測するSoftware Factory Control Tower / API / snapshot
 - `agr` / `agrx` と reusable skills / plugins
-- public CLI documentation
+- public Control Tower / CLI documentation
 - KAFKA2306 portfolioのagent / platform / Web横断監査とIssue routing
 
 他repositoryの実装ownershipは各owner repositoryに残します。public surfaceへprivate repository、secret、private work itemを出しません。

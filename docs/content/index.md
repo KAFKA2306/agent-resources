@@ -2,120 +2,65 @@
 title: Home
 ---
 
-# AGR CLI — Skills for AI Agents
+# Software Factory Control Tower
 
-AGR は、この公開Agent運用ハブでAI agent skillsを導入・共有・実行するためのCLIです。repository全体の運用状況は https://agent-resources-one.vercel.app/ で確認できます。
+KAFKA2306 のソフトウェア運用を、自律的に work を発見し、修復し、検証し、production まで流す **software factory** として管理するための公開ドキュメントです。
 
-## Install
+公開UIは [Software Factory Control Tower](https://agent-resources-one.vercel.app/) です。
 
-```bash
+## 何を変えるのか
+
+従来の運用は、人が Issue を選び、ログを読み、rerunし、mergeし、deployする流れでした。Software Factory は、その routine operation を閉ループ化します。
+
+~~~text
+observe
+→ discover work
+→ classify / prioritize / route
+→ execute
+→ verify
+→ repair / re-verify
+→ merge
+→ release / deploy
+→ production probe
+→ rollback or fix-forward
+→ close
+→ learn
+~~~
+
+成功条件は「agentが何体動いたか」ではありません。中心指標は **routine human intervention = 0** です。
+
+## 2つの公開面
+
+### Control Tower
+
+工場全体の状態を監査する画面です。Issue、PR、Actions、deployment、production evidence を横断し、どこが動いていて、どこが止まり、どの証拠に基づくかを確認します。
+
+[Control Tower の設計を読む](control-tower.md)
+
+### AGR CLI / Skills
+
+`agr` / `agrx` は AI agent skills を導入・共有・一時実行するためのCLIです。
+
+~~~bash
 uv tool install git+https://github.com/KAFKA2306/agent-resources.git
-```
-
-## Choose Your Path
-
-### Install a Skill (persist it)
-
-```bash
 agr add anthropics/skills/frontend-design
-```
+agrx anthropics/skills/pdf
+~~~
 
-This installs the skill into your tool's skills folder. Use `--source <name>` to
-pick a non-default source from `agr.toml`.
+[AGR CLI を使う](cli.md)
 
-### Run a Skill Once (no install)
+## 原則
 
-```bash
-agrx anthropics/skills/pdf                  # Run once, then clean up
-agrx anthropics/skills/pdf -p "Extract tables from report.pdf"
-agrx anthropics/skills/pdf -i               # Interactive: run skill, then continue chatting
-```
+- Control Tower 自体を第二の正本にしない
+- canonical evidenceへ戻れることを優先する
+- missing / unknown evidenceを成功扱いしない
+- routine failureを人間待ちにせず修復ループへ戻す
+- retryはboundedにし、同じ失敗を無限再実行しない
+- private stateやsecretを公開面へ出さない
 
-The `-i` flag runs the skill first, then starts an interactive session so you can
-continue the conversation.
+## 次に読む
 
-### Share with Your Team
-
-Dependencies are tracked in `agr.toml`:
-
-```toml
-dependencies = [
-    {handle = "anthropics/skills/frontend-design", type = "skill"},
-    {handle = "anthropics/skills/skill-creator", type = "skill"},
-]
-```
-
-Teammates install everything with:
-
-```bash
-agr sync
-```
-
-### Create a Skill
-
-```bash
-agr init my-skill
-```
-
-Then edit `my-skill/SKILL.md`. If you want it in this repo, place it under
-`./skills/`.
-
-## Commands (Quick Reference)
-
-| Command | What it does |
-|---------|-------------|
-| `agr add <handle>` | Install a skill |
-| `agr remove <handle>` | Uninstall a skill |
-| `agr sync` | Install all dependencies from `agr.toml` |
-| `agr list` | Show skills and installation status |
-| `agr init` | Create `agr.toml` (auto-detects tools) |
-| `agr init <name>` | Create a skill scaffold |
-| `agr onboard` | Interactive guided setup |
-| `agrx <handle>` | Run a skill temporarily |
-
-## Handle Format
-
-```bash
-agr add user/skill              # From user's "skills" repo
-agr add user/repo/skill         # From a different repo
-agr add ./path/to/skill         # Local path
-```
-
-## How Skill Discovery Works
-
-When you run `agr add user/repo/skill`, agr searches that repo for a skill named
-`skill`. It will be found if it exists in:
-
-- `resources/skills/{skill}/SKILL.md`
-- `skills/{skill}/SKILL.md`
-- `{skill}/SKILL.md`
-
-If two skills have the same name, you'll get an error.
-
-## Project Setup
-
-```bash
-agr init       # Create agr.toml (auto-detects tools)
-agr onboard    # Interactive guided setup
-```
-
-`agr init` creates `agr.toml` and detects which tools you use from repo signals
-(`.claude/`, `CLAUDE.md`, `.cursor/`, `.cursorrules`, etc.).
-
-`agr onboard` walks you through tool selection, skill discovery, migration from
-tool folders into `./skills/`, and configuration.
-
-## Example Skills
-
-```bash
-agr add anthropics/skills/frontend-design    # Build production-grade UIs
-agr add anthropics/skills/skill-creator      # Create new skills
-agr add anthropics/skills/pdf                # Work with PDF documents
-```
-
-Browse more at [github.com/anthropics/skills](https://github.com/anthropics/skills).
-
-## Next Steps
-
-- [Create your own skill](creating.md)
-- [CLI reference](reference.md)
+- [Software Factory Control Tower](control-tower.md)
+- [AGR CLI](cli.md)
+- [Creating Skills](creating.md)
+- [CLI Reference](reference.md)

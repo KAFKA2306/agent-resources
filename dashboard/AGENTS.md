@@ -1,6 +1,6 @@
-# Dashboard agent contract
+# Software Factory Control Tower agent contract
 
-Dashboard変更では、長い過去会話を前提にしません。このファイルと変更対象だけを読み、現在のrepository / CI / production stateを直接確認してください。root `AGENTS.md` の一般規則も適用します。
+Control Tower変更では、長い過去会話を前提にしません。このファイルと変更対象だけを読み、現在のrepository / CI / production stateを直接確認してください。root `AGENTS.md` の一般規則も適用します。
 
 ## 最初に見るもの
 
@@ -46,7 +46,7 @@ uvx pre-commit run --all-files --hook-stage pre-push
 
 ## 完了条件
 
-- exact PR headでDashboard CIが成功
+- exact PR headでControl Tower CIが成功
 - 検証後にPR headが変わっていない状態でmerge
 - merge SHAのVercel production deploymentがREADY
 - `Verify Dashboard Release` のproduction分類runが同じmerge SHAをcheckoutし、production live payloadとreleased production dashboardを実際に検証して成功
