@@ -300,6 +300,48 @@ class FactoryRuntimeTests(unittest.TestCase):
         self.assertEqual(result["decision"]["reason"], "retry_budget_exhausted")
         self.assertEqual(calls, [])
 
+
+    def test_observe_only_plans_without_mutation(self):
+        run = {
+            "id": 128,
+            "name": "Factory Self-Heal Pilot",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_attempt": 1,
+            "head_sha": "sha4",
+        }
+        jobs = {
+            "jobs": [
+                {
+                    "steps": [
+                        {
+                            "name": "flaky-self-heal-probe",
+                            "conclusion": "failure",
+                        }
+                    ]
+                }
+            ]
+        }
+        calls = []
+
+        def request_fn(url, token=None):
+            if url.endswith("/actions/runs/128"):
+                return run, {}
+            return jobs, {}
+
+        result = remediate_workflow_run(
+            owner="example",
+            repository="repo",
+            run_id=128,
+            request_fn=request_fn,
+            mutation_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
+            execute=False,
+        )
+
+        self.assertEqual(result["status"], "PLANNED")
+        self.assertEqual(result["decision"]["action"], "rerun_once")
+        self.assertEqual(calls, [])
+
     def test_successful_rerun_produces_no_work(self):
         run = {
             "id": 127,
