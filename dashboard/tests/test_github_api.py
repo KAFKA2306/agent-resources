@@ -5,7 +5,7 @@ from http.client import RemoteDisconnected
 from unittest.mock import call, patch
 from urllib.error import HTTPError
 
-from dashboard.collectors.github_api import GitHubApiError, fetch_paginated, request_json
+from dashboard.collectors.github_api import GitHubApiError, fetch_paginated, request_json, request_mutation
 
 
 class FakeResponse:
@@ -124,6 +124,36 @@ class GitHubApiTransportRetryTest(unittest.TestCase):
 
         self.assertEqual(payload, fresh)
         mock_urlopen.assert_called_once()
+
+
+    @patch("dashboard.collectors.github_api.urlopen")
+    def test_mutation_uses_requested_method_without_transport_replay(self, mock_urlopen):
+        mock_urlopen.return_value = FakeResponse(b"")
+
+        payload, headers = request_mutation(
+            "https://api.github.com/repos/example/repo/actions/runs/1/rerun-failed-jobs",
+            token="token",
+            method="POST",
+        )
+
+        self.assertEqual(payload, {})
+        self.assertEqual(headers, {})
+        request = mock_urlopen.call_args.args[0]
+        self.assertEqual(request.get_method(), "POST")
+        self.assertEqual(request.get_header("Authorization"), "Bearer token")
+        self.assertEqual(mock_urlopen.call_count, 1)
+
+    @patch("dashboard.collectors.github_api.urlopen")
+    def test_mutation_transport_failure_is_not_retried(self, mock_urlopen):
+        mock_urlopen.side_effect = RemoteDisconnected("accepted-or-not-unknown")
+
+        with self.assertRaisesRegex(GitHubApiError, "mutation transport failed"):
+            request_mutation(
+                "https://api.github.com/repos/example/repo/actions/runs/1/rerun-failed-jobs",
+                method="POST",
+            )
+
+        self.assertEqual(mock_urlopen.call_count, 1)
 
 
 if __name__ == "__main__":
