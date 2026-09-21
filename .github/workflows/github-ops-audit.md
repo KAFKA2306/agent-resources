@@ -1,10 +1,5 @@
 ---
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/github-ops-audit.md'
-      - '.github/workflows/github-ops-audit.lock.yml'
   workflow_dispatch:
 
 permissions:
@@ -40,6 +35,8 @@ max-turns: 8
 ---
 
 # KAFKA2306 public GitHub operations audit
+
+> **Status:** Superseded for routine operation by `.github/workflows/github-models-ops-audit.yml`, which is now a deterministic GitHub API audit with no LLM/provider dependency. Keep this gh-aw workflow manual-only for historical/debug use.
 
 Audit the current public GitHub state under KAFKA2306 and route at most one actionable gap.
 
