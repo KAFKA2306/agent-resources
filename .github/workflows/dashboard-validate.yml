@@ -43,14 +43,27 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: python -m pip install -e '.[dev]'
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
 
-      - name: Validate repository recall index
-        run: python -m dashboard.repository_recall validate
+      - name: Install dashboard validation dependencies
+        run: pip install pre-commit==4.6.2 mkdocs-material -r dashboard/requirements.txt
 
-      - name: Run dashboard tests
-        run: python -m pytest -q dashboard/tests
+      - name: Validate pre-commit configuration
+        run: pre-commit validate-config
 
-      - name: Validate dashboard contract
-        run: python scripts/validate_dashboard_contract.py
+      - name: Run commit-time validation
+        run: pre-commit run --all-files --hook-stage pre-commit
+
+      - name: Build public docs
+        working-directory: docs
+        run: mkdocs build --strict
+
+      - name: Verify baseline to live overlay in headless Chrome
+        run: python dashboard/tests/dashboard_live_browser_e2e.py
+
+      - name: Verify operations navigation in headless Chrome
+        run: python dashboard/tests/dashboard_operations_browser_e2e.py
