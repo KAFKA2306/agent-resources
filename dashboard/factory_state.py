@@ -7,6 +7,15 @@ from typing import Iterable, Mapping
 
 TERMINAL_STATES = frozenset({"VERIFIED"})
 FAILURE_STATES = frozenset({"SELF_HEALING", "HUMAN_AUTHORITY"})
+HUMAN_AUTHORITY_FAILURES = frozenset(
+    {
+        "legal_decision",
+        "commercial_contract",
+        "initial_external_auth",
+        "irreversible_physical_action",
+        "human_playtest",
+    }
+)
 
 
 def derive_workline_state(signal: Mapping[str, object]) -> dict[str, object]:
@@ -18,7 +27,7 @@ def derive_workline_state(signal: Mapping[str, object]) -> dict[str, object]:
     deployed = signal.get("deployed")
     probed = signal.get("probed")
 
-    if failure_class in {"legal_decision", "commercial_contract", "initial_external_auth", "irreversible_physical_action", "human_playtest"}:
+    if failure_class in HUMAN_AUTHORITY_FAILURES:
         state = "HUMAN_AUTHORITY"
     elif conclusion == "failure":
         state = "SELF_HEALING"
@@ -52,19 +61,52 @@ def derive_workline_state(signal: Mapping[str, object]) -> dict[str, object]:
 def _seconds(start: object, end: object) -> float | None:
     if not isinstance(start, str) or not isinstance(end, str):
         return None
-    return max(0.0, (datetime.fromisoformat(end.replace("Z", "+00:00")) - datetime.fromisoformat(start.replace("Z", "+00:00"))).total_seconds())
+    return max(
+        0.0,
+        (
+            datetime.fromisoformat(end.replace("Z", "+00:00"))
+            - datetime.fromisoformat(start.replace("Z", "+00:00"))
+        ).total_seconds(),
+    )
 
 
-def build_factory_state(signals: Iterable[Mapping[str, object]], *, main_sha: str, generated_at: str) -> dict[str, object]:
-    worklines = [derive_workline_state(signal) for signal in signals]
-    completed = [w for w in worklines if w["state"] == "VERIFIED"]
-    first_pass = [w for w in completed if not next(s for s in signals if str(s["id"]) == w["id"]).get("retried")]
-    healable = [s for s in signals if s.get("failure_class") and not s.get("human_authority")]
-    healed = [s for s in healable if s.get("self_healed") is True]
-    interventions = [s for s in signals if s.get("human_intervention") is True]
-    failures = Counter(str(s.get("failure_class")) for s in signals if s.get("failure_class"))
-    lead = [_seconds(w.get("startedAt"), w.get("updatedAt")) for w in completed]
-    lead = [x for x in lead if x is not None]
+def build_factory_state(
+    signals: Iterable[Mapping[str, object]], *, main_sha: str, generated_at: str
+) -> dict[str, object]:
+    """Build metrics from one immutable evidence snapshot.
+
+    Collectors may provide generators. Materialize once so deriving worklines and
+    metrics observes the same evidence instead of consuming the iterator twice.
+    """
+    evidence = list(signals)
+    worklines = [derive_workline_state(signal) for signal in evidence]
+    signal_by_id = {str(signal["id"]): signal for signal in evidence}
+    completed = [workline for workline in worklines if workline["state"] == "VERIFIED"]
+    first_pass = [
+        workline
+        for workline in completed
+        if not signal_by_id[workline["id"]].get("retried")
+    ]
+    healable = [
+        signal
+        for signal in evidence
+        if signal.get("failure_class")
+        and str(signal.get("failure_class")).lower() not in HUMAN_AUTHORITY_FAILURES
+    ]
+    healed = [signal for signal in healable if signal.get("self_healed") is True]
+    interventions = [
+        signal for signal in evidence if signal.get("human_intervention") is True
+    ]
+    failures = Counter(
+        str(signal.get("failure_class"))
+        for signal in evidence
+        if signal.get("failure_class")
+    )
+    lead = [
+        _seconds(workline.get("startedAt"), workline.get("updatedAt"))
+        for workline in completed
+    ]
+    lead = [seconds for seconds in lead if seconds is not None]
     total = len(worklines)
 
     return {
@@ -78,6 +120,9 @@ def build_factory_state(signals: Iterable[Mapping[str, object]], *, main_sha: st
             "humanInterventionRate": len(interventions) / total if total else None,
             "meanLeadTimeSeconds": sum(lead) / len(lead) if lead else None,
         },
-        "failurePareto": [{"failureClass": k, "count": v} for k, v in failures.most_common()],
+        "failurePareto": [
+            {"failureClass": failure_class, "count": count}
+            for failure_class, count in failures.most_common()
+        ],
         "worklines": worklines,
     }
