@@ -1,0 +1,28 @@
+name: Factory Self-Heal Pilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/factory-self-heal-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flaky-self-heal-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: flaky-self-heal-probe
+        env:
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$RUN_ATTEMPT" -eq 1 ]; then
+            echo "Intentional first-attempt failure for bounded self-heal runtime proof."
+            exit 1
+          fi
+          echo "PASS: bounded rerun reached attempt $RUN_ATTEMPT."
