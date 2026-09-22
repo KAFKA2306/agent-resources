@@ -7,7 +7,6 @@ on:
       - 'README.md'
       - 'api/dashboard-live.js'
       - 'dashboard/**'
-      - '!dashboard/data/repository-index.json'
       - 'docs/**'
       - 'package.json'
       - 'pyproject.toml'
