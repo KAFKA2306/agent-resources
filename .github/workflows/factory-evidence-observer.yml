@@ -8,6 +8,7 @@ on:
       - Validate KAFKA Evidence UI
       - Build and Deploy Docs
       - Verify Dashboard Release
+      - Refresh Repository Recall Index
     types:
       - completed
 
