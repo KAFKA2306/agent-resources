@@ -55,6 +55,26 @@ class FactoryRuntimeTests(unittest.TestCase):
 
         self.assertEqual(classify_workflow_failure(run, jobs), "unknown")
 
+    def test_generated_workflow_write_failure_is_permission_mismatch(self):
+        run = {
+            "id": 35801023552,
+            "name": "Sync gh-aw lock files",
+            "status": "completed",
+            "conclusion": "failure",
+        }
+        jobs = [
+            {
+                "steps": [
+                    {
+                        "name": "Commit generated lock files when changed",
+                        "conclusion": "failure",
+                    }
+                ]
+            }
+        ]
+
+        self.assertEqual(classify_workflow_failure(run, jobs), "permission_mismatch")
+
     def test_timed_out_run_is_runner_unavailable(self):
         run = {
             "id": 103,
@@ -64,7 +84,6 @@ class FactoryRuntimeTests(unittest.TestCase):
         }
 
         self.assertEqual(classify_workflow_failure(run, []), "runner_unavailable")
-
 
     def test_vercel_commit_failure_becomes_deployment_failure(self):
         signal = commit_status_to_signal(
@@ -299,7 +318,6 @@ class FactoryRuntimeTests(unittest.TestCase):
         self.assertEqual(result["status"], "TERMINAL")
         self.assertEqual(result["decision"]["reason"], "retry_budget_exhausted")
         self.assertEqual(calls, [])
-
 
     def test_observe_only_plans_without_mutation(self):
         run = {
