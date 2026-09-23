@@ -1,34 +1,33 @@
-# Agent Resources
+# Software Factory Control Tower
 
-> Public operations hub and CLI for reusable Agent Skills.
+> Public observability surface for KAFKA2306's autonomous software factory, plus the AGR CLI for reusable Agent Skills.
 
 ## Canonical public surfaces
 
-- Dashboard: https://agent-resources-one.vercel.app/
-- CLI / Skills docs: https://agent-resources-one.vercel.app/site/
+- Control Tower: https://agent-resources-one.vercel.app/
+- Documentation: https://agent-resources-one.vercel.app/site/
+- Control Tower architecture: https://agent-resources-one.vercel.app/site/control-tower/
+- AGR CLI: https://agent-resources-one.vercel.app/site/cli/
 - Source: https://github.com/KAFKA2306/agent-resources
 
-## Install
+## Factory objective
 
-```bash
+Routine human intervention should trend to zero. Routine CI, provider/model, runner, merge, artifact, deployment, and production-probe failures are repair-loop inputs rather than terminal notifications.
+
+Canonical state remains in owner repositories, GitHub, deployment providers, artifacts, and production evidence. The Control Tower is a cross-repository read model, not a second source of truth.
+
+## AGR install
+
+~~~bash
 uv tool install git+https://github.com/KAFKA2306/agent-resources.git
-```
-
-## Common commands
-
-```bash
 agr add anthropics/skills/frontend-design
 agrx anthropics/skills/pdf
 agr sync
-agr list
-```
+~~~
 
 ## Documentation
 
+- Control Tower: https://agent-resources-one.vercel.app/site/control-tower/
+- AGR CLI: https://agent-resources-one.vercel.app/site/cli/
 - Creating skills: https://agent-resources-one.vercel.app/site/creating/
 - CLI reference: https://agent-resources-one.vercel.app/site/reference/
-- Agent Skills specification: https://agentskills.io/
-
-## Scope
-
-The repository provides `agr` / `agrx`, reusable skills and plugins, public CLI documentation, and a public Dashboard for KAFKA2306 GitHub operations. Repository, GitHub, deployment, production, and primary sources remain the canonical evidence for underlying state.

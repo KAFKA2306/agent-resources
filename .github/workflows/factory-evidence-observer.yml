@@ -1,0 +1,69 @@
+name: Factory Evidence Observer
+
+on:
+  workflow_run:
+    workflows:
+      - Validate Dashboard PR
+      - Factory Self-Heal Pilot
+      - Validate KAFKA Evidence UI
+      - Build and Deploy Docs
+      - Verify Dashboard Release
+      - Refresh Repository Recall Index
+      - Sync gh-aw lock files
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: factory-observer-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  observe-and-remediate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Adapt evidence and execute bounded remediation
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FACTORY_OWNER: ${{ github.repository_owner }}
+          FACTORY_REPOSITORY: ${{ github.event.repository.name }}
+          FACTORY_RUN_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          python -m dashboard.factory_runtime \
+            --owner "$FACTORY_OWNER" \
+            --repository "$FACTORY_REPOSITORY" \
+            --run-id "$FACTORY_RUN_ID" | tee factory-remediation.json
+          runtime_status=${PIPESTATUS[0]}
+          set -e
+          {
+            echo '## Factory Evidence + Bounded Remediation'
+            echo
+            echo '```json'
+            cat factory-remediation.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Exit 2 is the runtime's explicit TERMINAL/UNVERIFIED outcome. The
+          # observer successfully recorded that evidence, so do not turn the
+          # observer itself into a second factory failure. Unexpected runtime
+          # errors still fail closed.
+          if [[ "$runtime_status" -eq 2 ]]; then
+            echo 'Factory remediation reached a bounded terminal state; evidence recorded.'
+            exit 0
+          fi
+          exit "$runtime_status"

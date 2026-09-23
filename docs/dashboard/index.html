@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Resources Dashboard</title>
-  <meta name="description" content="GitHub上の公開作業を一画面で確認するAgent Resources dashboard">
+  <title>Software Factory Control Tower</title>
+  <meta name="description" content="KAFKA2306の自律ソフトウェア工場を監査するSoftware Factory Control Tower">
   <link rel="stylesheet" href="./dashboard.css">
   <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
@@ -21,7 +21,7 @@
       const message = document.getElementById("workspace-message");
       if (message) {
         message.hidden = false;
-        message.textContent = "Dashboardの表示に必要なJavaScriptを読み込めませんでした。ページを再読み込みしてください。";
+        message.textContent = "Control Towerの表示に必要なJavaScriptを読み込めませんでした。ページを再読み込みしてください。";
       }
       console.error("Failed to load required dashboard modules", error);
       throw error;
@@ -31,7 +31,7 @@
 <body>
   <a class="skip-link" href="#main">本文へスキップ</a>
   <header class="topbar">
-    <div><p class="eyebrow">AGENT RESOURCES</p><h1>公開作業ダッシュボード</h1></div>
+    <div><p class="eyebrow">KAFKA2306 SOFTWARE FACTORY</p><h1>Software Factory Control Tower</h1></div>
     <nav class="public-links" aria-label="公開リンク">
       <a href="https://github.com/KAFKA2306/agent-resources">GitHub</a>
       <a href="https://agent-resources-one.vercel.app/site/">CLI / Skills</a>
@@ -42,7 +42,7 @@
       <div class="panel-heading">
         <div><p class="eyebrow">判断と対応</p><h2 id="workspace-title">今対応すること</h2></div>
         <div class="snapshot-meta" aria-label="データ更新時刻">
-          <div class="snapshot-source-row" aria-label="GitHub dashboard state">
+          <div class="snapshot-source-row" aria-label="Software Factory Control Tower state">
             <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
             <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
           </div>
