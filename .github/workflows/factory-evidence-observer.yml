@@ -42,11 +42,14 @@ jobs:
           FACTORY_RUN_ID: ${{ github.event.workflow_run.id }}
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          set +e
           python -m dashboard.factory_runtime \
             --owner "$FACTORY_OWNER" \
             --repository "$FACTORY_REPOSITORY" \
             --run-id "$FACTORY_RUN_ID" | tee factory-remediation.json
+          runtime_status=${PIPESTATUS[0]}
+          set -e
           {
             echo '## Factory Evidence + Bounded Remediation'
             echo
@@ -54,3 +57,13 @@ jobs:
             cat factory-remediation.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+          # Exit 2 is the runtime's explicit TERMINAL/UNVERIFIED outcome. The
+          # observer successfully recorded that evidence, so do not turn the
+          # observer itself into a second factory failure. Unexpected runtime
+          # errors still fail closed.
+          if [[ "$runtime_status" -eq 2 ]]; then
+            echo 'Factory remediation reached a bounded terminal state; evidence recorded.'
+            exit 0
+          fi
+          exit "$runtime_status"
