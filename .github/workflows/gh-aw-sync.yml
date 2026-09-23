@@ -43,11 +43,28 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh aw compile --strict
 
+      - name: Record compiled lock handoff manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="gh-aw-compiled-locks.sha256"
+          sha256sum .github/workflows/*.lock.yml > "$manifest"
+          {
+            echo '## gh-aw compiled lock handoff'
+            echo
+            echo "source_head=${{ github.event.pull_request.head.sha }}"
+            echo '```text'
+            cat "$manifest"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Preserve compiled lock files
         uses: actions/upload-artifact@v7
         with:
           name: gh-aw-compiled-locks
-          path: .github/workflows/*.lock.yml
+          path: |
+            .github/workflows/*.lock.yml
+            gh-aw-compiled-locks.sha256
           if-no-files-found: error
 
       - name: Commit generated lock files when changed
