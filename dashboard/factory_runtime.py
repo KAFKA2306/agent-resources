@@ -65,7 +65,13 @@ def classify_workflow_failure(
         return "deployment_failure"
     if any("artifact" in name for name in failed_steps):
         return "artifact_failure"
-    if any("permission" in name or "authorization" in name for name in failed_steps):
+    if any(
+        "permission" in name
+        or "authorization" in name
+        or "commit generated lock" in name
+        or "commit generated workflow" in name
+        for name in failed_steps
+    ):
         return "permission_mismatch"
     if any("build" in name for name in failed_steps):
         return "build_failure"

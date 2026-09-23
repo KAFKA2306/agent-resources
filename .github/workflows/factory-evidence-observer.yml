@@ -9,6 +9,7 @@ on:
       - Build and Deploy Docs
       - Verify Dashboard Release
       - Refresh Repository Recall Index
+      - Sync gh-aw lock files
     types:
       - completed
 
