@@ -43,6 +43,27 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh aw compile --strict
 
+      - name: Verify retired ops audit stays manual-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          path = Path('.github/workflows/github-ops-audit.lock.yml')
+          data = yaml.safe_load(path.read_text())
+          triggers = data.get(True, data.get('on', {}))
+          if not isinstance(triggers, dict):
+              raise SystemExit(f'unexpected trigger structure: {triggers!r}')
+          forbidden = sorted(set(triggers) - {'workflow_dispatch'})
+          if forbidden:
+              raise SystemExit(f'retired ops audit is not manual-only; forbidden triggers: {forbidden}')
+          if 'workflow_dispatch' not in triggers:
+              raise SystemExit('retired ops audit lost workflow_dispatch trigger')
+          print('github-ops-audit.lock.yml is manual-only')
+          PY
+
       - name: Record compiled lock handoff manifest
         shell: bash
         run: |
