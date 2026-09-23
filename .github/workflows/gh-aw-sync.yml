@@ -14,11 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Create short-lived workflow writer token
+        id: app-token
+        if: vars.FACTORY_APP_ID != ''
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: agent-resources
+          permission-contents: write
+          permission-workflows: write
+
       - name: Check out PR head
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          token: ${{ github.token }}
+          token: ${{ steps.app-token.outputs.token || github.token }}
           persist-credentials: true
 
       - name: Install pinned gh-aw compiler
@@ -44,6 +56,11 @@ jobs:
           if git diff --quiet -- '.github/workflows/*.lock.yml'; then
             echo "gh-aw lock files are already synchronized"
             exit 0
+          fi
+
+          if [ -z "${{ steps.app-token.outputs.token }}" ]; then
+            echo "::error::Compiled lock files changed, but FACTORY_APP_ID / FACTORY_APP_PRIVATE_KEY are not configured. Bootstrap the short-lived GitHub App writer described in agent-resources#359."
+            exit 1
           fi
 
           git config user.name "github-actions[bot]"
