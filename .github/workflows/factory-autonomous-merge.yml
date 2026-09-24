@@ -1,0 +1,100 @@
+name: Factory Autonomous Merge
+
+on:
+  workflow_run:
+    workflows:
+      - Validate Dashboard PR
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: factory-automerge-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resolve exact-head pull request and fail closed
+        id: gate
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const headSha = context.payload.workflow_run.head_sha;
+            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: headSha,
+            });
+            const candidates = pulls.filter(pr =>
+              pr.state === 'open' &&
+              pr.base.ref === context.payload.repository.default_branch &&
+              pr.head.sha === headSha &&
+              !pr.draft
+            );
+            if (candidates.length !== 1) {
+              core.setFailed(`expected exactly one open non-draft PR for exact head ${headSha}; found ${candidates.length}`);
+              return;
+            }
+            const pr = candidates[0];
+            const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: headSha,
+            });
+            const blockers = combined.statuses.filter(status =>
+              status.state !== 'success' &&
+              status.context !== 'Vercel'
+            );
+            const vercel = combined.statuses.find(status => status.context === 'Vercel');
+            if (!vercel || vercel.state !== 'success') {
+              core.setFailed(`exact-head Vercel status is ${vercel?.state || 'missing'}`);
+              return;
+            }
+            if (blockers.length) {
+              core.setFailed(`exact-head commit statuses are not green: ${blockers.map(x => x.context + ':' + x.state).join(',')}`);
+              return;
+            }
+            core.setOutput('number', String(pr.number));
+            core.setOutput('head_sha', headSha);
+
+      - name: Merge verified exact head
+        uses: actions/github-script@v8
+        env:
+          PR_NUMBER: ${{ steps.gate.outputs.number }}
+          HEAD_SHA: ${{ steps.gate.outputs.head_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const pull_number = Number(process.env.PR_NUMBER);
+            const expected = process.env.HEAD_SHA;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number,
+            });
+            if (pr.state !== 'open' || pr.draft || pr.head.sha !== expected) {
+              core.setFailed('PR changed after verification; refusing autonomous merge');
+              return;
+            }
+            const result = await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number,
+              sha: expected,
+              merge_method: 'squash',
+            });
+            if (!result.data.merged) {
+              core.setFailed(`merge refused: ${result.data.message}`);
+              return;
+            }
+            core.notice(`autonomously merged PR #${pull_number} at exact head ${expected}`);
