@@ -31,6 +31,7 @@ class AutonomousMergeWorkflowTests(unittest.TestCase):
         self.assertIn("acceptedConclusions", self.text)
         self.assertIn("exact-head checks failed", self.text)
         self.assertIn("exact-head checks did not settle", self.text)
+        self.assertIn("attempt < 30", self.text)
 
 
 if __name__ == "__main__":
