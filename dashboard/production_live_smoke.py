@@ -7,8 +7,8 @@ import urllib.request
 from datetime import datetime, timezone
 
 LIVE_CLOCK_SKEW_TOLERANCE_SECONDS = 300
-RETRY_ATTEMPTS = 6
-RETRY_DELAY_SECONDS = 5
+RETRY_ATTEMPTS = 30
+RETRY_DELAY_SECONDS = 10
 
 
 def _parse_timestamp(value: object) -> datetime:
@@ -76,6 +76,35 @@ def validate_live_payload(payload: object, *, now: datetime | None = None) -> fl
     return age_seconds
 
 
+
+def validate_factory_state(payload: object, *, expected_sha: str) -> None:
+    if not isinstance(payload, dict):
+        raise ValueError("factory state must be an object")
+    source_revision = payload.get("sourceRevision")
+    authority = payload.get("authority")
+    if source_revision != expected_sha:
+        raise ValueError(
+            f"factory state revision mismatch: {source_revision!r} != {expected_sha!r}"
+        )
+    if not isinstance(authority, dict) or authority.get("mainSha") != expected_sha:
+        raise ValueError("factory state authority does not match expected main")
+    pages = payload.get("pages")
+    if not isinstance(pages, dict) or pages.get("sourceRevision") != expected_sha:
+        raise ValueError("factory state Pages provenance does not match expected main")
+    issue = payload.get("canonicalIssue")
+    if not isinstance(issue, dict) or issue.get("number") != 381:
+        raise ValueError("factory state canonical issue is missing")
+    capabilities = payload.get("capabilities")
+    if not isinstance(capabilities, list) or not capabilities:
+        raise ValueError("factory state capabilities are missing")
+
+
+def verify_production_factory_state(page_url: str, expected_sha: str) -> dict:
+    base = page_url.rstrip("/")
+    payload = _fetch_json(f"{base}/dashboard/factory-state.json?v={expected_sha}")
+    validate_factory_state(payload, expected_sha=expected_sha)
+    return payload
+
 def _fetch_json(url: str) -> dict:
     request = urllib.request.Request(
         url,
@@ -104,11 +133,13 @@ def main() -> None:
     for attempt in range(RETRY_ATTEMPTS):
         try:
             endpoint, payload, age_seconds = verify_production_live(page_url, expected_sha)
+            factory = verify_production_factory_state(page_url, expected_sha)
             print(f"live endpoint: {endpoint}")
             print(f"live repositories: {len(payload['repositories'])}")
             print(f"live workflow requests: {payload['requestBudget']['workflowRequestCount']}")
             print(f"live fetchedAt: {payload['fetchedAt']}")
             print(f"live age seconds: {age_seconds:.1f}")
+            print(f"factory state revision: {factory['sourceRevision']}")
             return
         except Exception as error:
             last_error = error
