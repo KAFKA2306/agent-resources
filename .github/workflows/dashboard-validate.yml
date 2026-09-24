@@ -64,6 +64,22 @@ jobs:
       - name: Validate pre-commit configuration
         run: pre-commit validate-config
 
+      - name: Validate README resource links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          readme = Path("README.md").read_text(encoding="utf-8")
+          required = [
+              "https://agent-resources-one.vercel.app/",
+              "https://github.com/KAFKA2306/design",
+              "(skills/kafka-evidence-ui/SKILL.md)",
+              "(plugins/kafka-evidence-ui/README.md)",
+          ]
+          missing = [item for item in required if item not in readme]
+          if missing:
+              raise SystemExit(f"missing required README resource links: {missing}")
+          PY
+
       - name: Run commit-time validation
         run: pre-commit run --all-files --hook-stage pre-commit
 
