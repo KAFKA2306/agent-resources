@@ -25,6 +25,13 @@ class AutonomousMergeWorkflowTests(unittest.TestCase):
         self.assertIn("!pr.draft", self.text)
         self.assertIn("pr.head.sha !== expected", self.text)
 
+    def test_requires_exact_head_check_runs_to_finish_green(self):
+        self.assertIn("checks: read", self.text)
+        self.assertIn("github.rest.checks.listForRef", self.text)
+        self.assertIn("acceptedConclusions", self.text)
+        self.assertIn("exact-head checks failed", self.text)
+        self.assertIn("exact-head checks did not settle", self.text)
+
 
 if __name__ == "__main__":
     unittest.main()
