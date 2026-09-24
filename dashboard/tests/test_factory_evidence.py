@@ -66,6 +66,18 @@ class FactoryEvidenceCollectorTests(unittest.TestCase):
                     }
                 ]
             }, {}
+        if "dashboard-release-verify.yml/runs" in url:
+            return {
+                "workflow_runs": [
+                    {
+                        "id": 100,
+                        "head_sha": "abc123",
+                        "status": "completed",
+                        "conclusion": "success",
+                        "html_url": "https://github.com/KAFKA2306/agent-resources/actions/runs/100",
+                    }
+                ]
+            }, {}
         raise AssertionError(f"unexpected URL: {url}")
 
     def test_current_main_is_bound_to_machine_readable_state(self):
@@ -83,6 +95,8 @@ class FactoryEvidenceCollectorTests(unittest.TestCase):
         self.assertEqual(payload["pages"]["workflowRunId"], "1234")
         self.assertEqual(payload["observer"]["state"], "VERIFIED")
         self.assertEqual(payload["observer"]["headSha"], "abc123")
+        self.assertEqual(payload["productionVerification"]["state"], "VERIFIED")
+        self.assertEqual(payload["productionVerification"]["runId"], 100)
         self.assertEqual(payload["canonicalIssue"]["number"], 381)
         self.assertEqual(payload["activePullRequests"][0]["headSha"], "head7")
 
@@ -90,6 +104,7 @@ class FactoryEvidenceCollectorTests(unittest.TestCase):
         self.assertEqual(states["pages-current-evidence"], "EXISTING")
         self.assertEqual(states["pages-freshness-gate"], "EXISTING")
         self.assertEqual(states["deterministic-repair"], "EXISTING")
+        self.assertEqual(states["deploy-production-probe"], "VERIFIED")
         self.assertEqual(states["provider-runner-recovery"], "DISCONNECTED")
         self.assertEqual(states["general-diagnosis-patch"], "MISSING")
 
