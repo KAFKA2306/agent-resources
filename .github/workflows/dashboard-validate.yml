@@ -18,6 +18,7 @@ on:
       - '.github/workflows/dashboard-validate.yml'
       - '.github/workflows/dashboard-release-verify.yml'
       - '.github/workflows/factory-evidence-observer.yml'
+      - '.github/workflows/factory-production-recovery.yml'
       - '.github/workflows/factory-autonomous-merge.yml'
       - '.github/workflows/gh-aw-sync.yml'
       - '.github/workflows/github-ops-audit.md'

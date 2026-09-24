@@ -1,0 +1,81 @@
+name: Factory Production Recovery
+
+on:
+  workflow_run:
+    workflows:
+      - Verify Dashboard Release
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: factory-production-recovery
+  cancel-in-progress: false
+
+jobs:
+  fix-forward-revert:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Resolve failed production revision and fail closed
+        id: gate
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const failedRun = context.payload.workflow_run;
+            const failedSha = failedRun.head_sha;
+            const { data: repo } = await github.rest.repos.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const { data: main } = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: repo.default_branch,
+            });
+            if (main.sha !== failedSha) {
+              core.setFailed(`production failure revision ${failedSha} is no longer current main ${main.sha}; refusing stale recovery`);
+              return;
+            }
+            if ((main.parents || []).length !== 1) {
+              core.setFailed('current main is not a single-parent commit; refusing automatic revert');
+              return;
+            }
+            if ((main.commit?.message || '').startsWith('factory: revert production failure')) {
+              core.setFailed('bounded production recovery already attempted; refusing revert oscillation');
+              return;
+            }
+            core.setOutput('failed_sha', failedSha);
+            core.setOutput('parent_sha', main.parents[0].sha);
+            core.setOutput('run_id', String(failedRun.id));
+
+      - name: Create isolated fix-forward revert
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILED_SHA: ${{ steps.gate.outputs.failed_sha }}
+          FAILED_RUN_ID: ${{ steps.gate.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="factory/recover-${FAILED_SHA:0:12}"
+          git config user.name "factory-recovery[bot]"
+          git config user.email "factory-recovery@users.noreply.github.com"
+          git switch -c "$branch"
+          git revert --no-edit "$FAILED_SHA"
+          git commit --amend -m "factory: revert production failure ${FAILED_SHA:0:12}"
+          git push origin "$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "factory: recover production from ${FAILED_SHA:0:12}" \
+            --body "Automatic fix-forward generated from failed production verification run ${FAILED_RUN_ID}. Reverts exact current-main revision \`${FAILED_SHA}\`. This PR must pass the normal exact-head validation + Vercel gate and is then merged by Factory Autonomous Merge."
