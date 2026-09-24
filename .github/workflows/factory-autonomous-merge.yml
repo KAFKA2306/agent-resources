@@ -78,6 +78,7 @@ jobs:
             core.setOutput('head_sha', headSha);
 
       - name: Merge verified exact head
+        id: merge
         uses: actions/github-script@v8
         env:
           PR_NUMBER: ${{ steps.gate.outputs.number }}
@@ -108,3 +109,30 @@ jobs:
               return;
             }
             core.notice(`autonomously merged PR #${pull_number} at exact head ${expected}`);
+            core.setOutput('merge_sha', result.data.sha);
+            core.setOutput('pr_number', String(pull_number));
+
+      - name: Dispatch Pages current-evidence refresh
+        uses: actions/github-script@v8
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.merge_sha }}
+          PR_NUMBER: ${{ steps.merge.outputs.pr_number }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const mainSha = process.env.MERGE_SHA;
+            if (!mainSha) {
+              core.setFailed('merge SHA is missing; refusing Pages refresh dispatch');
+              return;
+            }
+            await github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event_type: 'factory.pages.refresh',
+              client_payload: {
+                main_sha: mainSha,
+                pr_number: process.env.PR_NUMBER || '',
+                source: 'factory-autonomous-merge',
+              },
+            });
+            core.notice(`dispatched Pages refresh for merged main ${mainSha}`);
