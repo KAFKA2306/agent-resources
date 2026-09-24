@@ -35,7 +35,7 @@ on:
       - '.github/workflows/reusable-weekly-repo-research.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -92,3 +92,17 @@ jobs:
 
       - name: Verify operations navigation in headless Chrome
         run: python dashboard/tests/dashboard_operations_browser_e2e.py
+
+      - name: Signal verified dispatched head
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ inputs.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/dispatches" \
+            --method POST \
+            -f event_type='factory.validation.success' \
+            -F "client_payload[head_sha]=$VERIFIED_SHA"
+
