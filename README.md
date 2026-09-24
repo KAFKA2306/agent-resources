@@ -110,3 +110,7 @@ repository運用契約、security boundary、autonomous factory invariant は [A
 ## License
 
 [MIT License](LICENSE)
+
+## Required resource links
+
+- https://github.com/KAFKA2306/design
