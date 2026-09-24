@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: dashboard-release-verification
+  group: dashboard-release-verification-${{ github.event.client_payload.environment || 'manual' }}
   cancel-in-progress: true
 
 jobs:
