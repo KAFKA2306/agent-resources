@@ -78,7 +78,7 @@ CLI docs: https://agent-resources-one.vercel.app/site/cli/
 
 ## Web UI / Evidence UI
 
-KAFKA2306 の共有Web UI authorityは `KAFKA2306/design` です。Control Tower側に第二のdesign systemを作らず、ここでは工場stateとevidenceの見せ方だけを持ちます。
+KAFKA2306 の共有Web UI authorityは [`KAFKA2306/design`](https://github.com/KAFKA2306/design) です。Control Tower側に第二のdesign systemを作らず、ここでは工場stateとevidenceの見せ方だけを持ちます。
 
 - [Web UI改善Skill](skills/kafka-evidence-ui/SKILL.md)
 - [Agent plugin](plugins/kafka-evidence-ui/README.md)
@@ -111,6 +111,3 @@ repository運用契約、security boundary、autonomous factory invariant は [A
 
 [MIT License](LICENSE)
 
-## Required resource links
-
-- https://github.com/KAFKA2306/design
