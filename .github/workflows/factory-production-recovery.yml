@@ -8,6 +8,7 @@ on:
       - completed
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -79,3 +80,5 @@ jobs:
             --head "$branch" \
             --title "factory: recover production from ${FAILED_SHA:0:12}" \
             --body "Automatic fix-forward generated from failed production verification run ${FAILED_RUN_ID}. Reverts exact current-main revision \`${FAILED_SHA}\`. This PR must pass the normal exact-head validation + Vercel gate and is then merged by Factory Autonomous Merge."
+          recovery_sha="$(git rev-parse HEAD)"
+          gh workflow run dashboard-validate.yml --ref "$branch" -f head_sha="$recovery_sha"
