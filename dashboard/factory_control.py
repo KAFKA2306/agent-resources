@@ -16,11 +16,12 @@ HUMAN_ONLY_REASONS = frozenset(
     }
 )
 
-ROUTABLE_FAILURES = frozenset({"unsupported_model", "provider_unavailable", "runner_unavailable"})
+ROUTABLE_FAILURES = frozenset({"unsupported_model", "provider_unavailable"})
 
 _POLICY = {
     "transient_network": ("retry_with_backoff", 2),
     "flaky_test": ("rerun_once", 1),
+    "runner_unavailable": ("rerun_once", 1),
     "deterministic_test_failure": ("repair_agent", 1),
     "build_failure": ("repair_agent", 1),
     "merge_conflict": ("conflict_repair", 1),
