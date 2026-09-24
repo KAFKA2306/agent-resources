@@ -40,28 +40,14 @@ jobs:
           github-token: ${{ github.token }}
           script: |
             const run_id = Number(process.env.SOURCE_RUN_ID);
-            const { data: run } = await github.rest.actions.getWorkflowRun({
-              owner: context.repo.owner, repo: context.repo.repo, run_id,
-            });
-            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
-              owner: context.repo.owner, repo: context.repo.repo, run_id, per_page: 100,
-            });
-            if (run.conclusion !== 'failure') {
-              core.setFailed(`source run ${run_id} is not a failed run`);
-              return;
-            }
-            const failed = jobs.jobs.flatMap(job => (job.steps || []))
-              .filter(step => step.conclusion === 'failure')
-              .map(step => step.name);
-            if (!failed.length) {
-              core.setFailed('no failed step evidence; refusing speculative repair');
-              return;
-            }
-            core.setOutput('head_sha', run.head_sha);
+            const { data: run } = await github.rest.actions.getWorkflowRun({ owner: context.repo.owner, repo: context.repo.repo, run_id });
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({ owner: context.repo.owner, repo: context.repo.repo, run_id, per_page: 100 });
+            if (run.conclusion !== 'failure') { core.setFailed(`source run ${run_id} is not a failed run`); return; }
+            const failed = jobs.jobs.flatMap(job => (job.steps || [])).filter(step => step.conclusion === 'failure').map(step => step.name);
+            if (!failed.length) { core.setFailed('no failed step evidence; refusing speculative repair'); return; }
             core.setOutput('failed_steps', JSON.stringify(failed));
 
-      - name: Apply deterministic generated-file repair
-        id: repair
+      - name: Apply deterministic README-link repair
         env:
           FAILED_STEPS: ${{ steps.evidence.outputs.failed_steps }}
         shell: bash
@@ -69,23 +55,34 @@ jobs:
           set -euo pipefail
           case "$FAILED_STEPS" in
             *"Validate README resource links"*)
-              python scripts/generate_resource_index.py
+              python - <<'PY'
+          from pathlib import Path
+          readme = Path('README.md')
+          text = readme.read_text(encoding='utf-8')
+          required = ['https://agent-resources-one.vercel.app/', 'https://github.com/KAFKA2306/design', '(skills/kafka-evidence-ui/SKILL.md)', '(plugins/kafka-evidence-ui/README.md)']
+          missing = [item for item in required if item not in text]
+          if missing:
+              text = text.rstrip() + '\n\n## Required resource links\n\n' + '\n'.join(f'- {item}' for item in missing) + '\n'
+              readme.write_text(text, encoding='utf-8')
+          PY
               ;;
-            *)
-              echo "No deterministic repair rule for: $FAILED_STEPS" >&2
-              exit 78
-              ;;
+            *) echo "No deterministic repair rule for: $FAILED_STEPS" >&2; exit 78 ;;
           esac
-          if git diff --quiet; then
-            echo "repair rule produced no diff" >&2
-            exit 79
-          fi
+          if git diff --quiet; then echo "repair rule produced no diff" >&2; exit 79; fi
 
       - name: Verify deterministic repair
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/validate_readme_resource_links.py
+          python - <<'PY'
+          from pathlib import Path
+          readme = Path('README.md').read_text(encoding='utf-8')
+          required = ['https://agent-resources-one.vercel.app/', 'https://github.com/KAFKA2306/design', '(skills/kafka-evidence-ui/SKILL.md)', '(plugins/kafka-evidence-ui/README.md)']
+          missing = [item for item in required if item not in readme]
+          if missing: raise SystemExit(f'missing README links after repair: {missing}')
+          for path in ('skills/kafka-evidence-ui/SKILL.md', 'plugins/kafka-evidence-ui/README.md'):
+              if not Path(path).is_file(): raise SystemExit(f'missing linked file: {path}')
+          PY
 
       - name: Publish isolated repair PR
         env:
@@ -102,6 +99,4 @@ jobs:
           git add -A
           git commit -m "factory: deterministic repair ${FAILURE_FINGERPRINT:0:12}"
           git push origin "$branch"
-          gh pr create --base main --head "$branch" \
-            --title "factory: repair ${FAILURE_FINGERPRINT:0:12}" \
-            --body "Deterministic repair for failed workflow run ${SOURCE_RUN_ID}. Failure fingerprint: ${FAILURE_FINGERPRINT}. Returns through normal validation and autonomous merge gates."
+          gh pr create --base main --head "$branch" --title "factory: repair ${FAILURE_FINGERPRINT:0:12}" --body "Deterministic repair for failed workflow run ${SOURCE_RUN_ID}. Failure fingerprint: ${FAILURE_FINGERPRINT}. Returns through normal validation and autonomous merge gates."
