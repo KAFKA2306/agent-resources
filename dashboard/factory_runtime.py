@@ -75,7 +75,7 @@ def classify_workflow_failure(
         return "permission_mismatch"
     if any("build" in name for name in failed_steps):
         return "build_failure"
-    if any("test" in name or "lint" in name or "type" in name for name in failed_steps):
+    if any("test" in name or "lint" in name or "type" in name or "validate" in name for name in failed_steps):
         return "deterministic_test_failure"
     return "unknown"
 
@@ -266,25 +266,50 @@ def execute_remediation(
             reason="unsupported_source_kind",
         )
 
-    if decision.action not in {"rerun_once", "rebuild_artifact"}:
-        return ExecutionResult(
-            status="DEFERRED",
-            action=decision.action,
-            reason="no_bounded_executor_for_action",
-        )
-
     owner = quote(work_item.owner, safe="")
     repository = quote(work_item.repository, safe="")
-    target = (
-        f"https://api.github.com/repos/{owner}/{repository}"
-        f"/actions/runs/{quote(work_item.source_id, safe='')}/rerun-failed-jobs"
-    )
-    mutation_fn(target, token, method="POST")
+
+    if decision.action in {"rerun_once", "rebuild_artifact"}:
+        target = (
+            f"https://api.github.com/repos/{owner}/{repository}"
+            f"/actions/runs/{quote(work_item.source_id, safe='')}/rerun-failed-jobs"
+        )
+        mutation_fn(target, token, method="POST")
+        return ExecutionResult(
+            status="EXECUTED",
+            action=decision.action,
+            reason=decision.reason,
+            target=target,
+        )
+
+    if decision.action == "repair_agent":
+        target = (
+            f"https://api.github.com/repos/{owner}/{repository}"
+            "/actions/workflows/factory-repair-agent.yml/dispatches"
+        )
+        mutation_fn(
+            target,
+            token,
+            method="POST",
+            payload={
+                "ref": "main",
+                "inputs": {
+                    "source_run_id": work_item.source_id,
+                    "failure_fingerprint": work_item.fingerprint,
+                },
+            },
+        )
+        return ExecutionResult(
+            status="EXECUTED",
+            action=decision.action,
+            reason=decision.reason,
+            target=target,
+        )
+
     return ExecutionResult(
-        status="EXECUTED",
+        status="DEFERRED",
         action=decision.action,
-        reason=decision.reason,
-        target=target,
+        reason="no_bounded_executor_for_action",
     )
 
 
