@@ -79,3 +79,22 @@ jobs:
           AGENT_RESOURCES_DASHBOARD_URL: ${{ steps.deployment.outputs.target_url }}/dashboard/
           PYTHONPATH: ${{ github.workspace }}
         run: python dashboard/tests/dashboard_repository_operations_production_e2e.py
+
+      - name: Record exact-revision release provenance
+        if: steps.deployment.outputs.is_production == 'true'
+        run: |
+          python dashboard/release_provenance.py \
+            --revision "$EXPECTED_SHA" \
+            --deployment-url "${{ steps.deployment.outputs.target_url }}" \
+            --environment "$DEPLOYMENT_ENVIRONMENT" \
+            --run-id "$GITHUB_RUN_ID" \
+            --output release-evidence/provenance.json
+
+      - name: Preserve release provenance
+        if: steps.deployment.outputs.is_production == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-provenance-${{ env.EXPECTED_SHA }}
+          path: release-evidence/provenance.json
+          if-no-files-found: error
+          retention-days: 30
