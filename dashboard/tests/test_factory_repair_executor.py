@@ -55,5 +55,15 @@ class FactoryRepairExecutorTests(unittest.TestCase):
         self.assertEqual(calls, [])
 
 
+    def test_repair_workflow_dispatches_exact_head_validation(self):
+        from pathlib import Path
+
+        workflow = Path(".github/workflows/factory-repair-agent.yml").read_text(encoding="utf-8")
+        self.assertIn("actions: write", workflow)
+        self.assertIn("gh workflow run dashboard-validate.yml", workflow)
+        self.assertIn('-f head_sha="$repair_sha"', workflow)
+
+
+
 if __name__ == "__main__":
     unittest.main()
