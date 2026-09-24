@@ -73,6 +73,15 @@ class FactoryRepairExecutorTests(unittest.TestCase):
         self.assertIn("group: factory-repair-${{ inputs.failure_fingerprint }}", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
 
+    def test_repair_workflow_handles_commit_time_validation_deterministically(self):
+        from pathlib import Path
+
+        workflow = Path(".github/workflows/factory-repair-agent.yml").read_text(encoding="utf-8")
+        self.assertIn('*"Run commit-time validation"*)', workflow)
+        self.assertIn("pre-commit run --all-files --hook-stage pre-commit || true", workflow)
+        self.assertIn("pre-commit run --all-files --hook-stage pre-commit", workflow)
+        self.assertIn('if git diff --quiet; then echo "repair rule produced no diff"', workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
