@@ -8,13 +8,6 @@ on:
     types: [opened, edited, closed, reopened]
   pull_request_target:
     types: [opened, closed, reopened, synchronize, ready_for_review, converted_to_draft]
-  workflow_run:
-    workflows:
-      - Factory Evidence Observer
-      - Factory Autonomous Merge
-      - Verify Dashboard Release
-    types: [completed]
-  status:
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
