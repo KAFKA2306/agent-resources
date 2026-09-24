@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Resolve exact-head pull request and fail closed
         id: gate
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           github-token: ${{ github.token }}
           script: |
@@ -79,7 +79,7 @@ jobs:
 
       - name: Merge verified exact head
         id: merge
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           PR_NUMBER: ${{ steps.gate.outputs.number }}
           HEAD_SHA: ${{ steps.gate.outputs.head_sha }}
@@ -113,7 +113,7 @@ jobs:
             core.setOutput('pr_number', String(pull_number));
 
       - name: Dispatch Pages current-evidence refresh
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           MERGE_SHA: ${{ steps.merge.outputs.merge_sha }}
           PR_NUMBER: ${{ steps.merge.outputs.pr_number }}
