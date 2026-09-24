@@ -101,11 +101,14 @@ def workflow_run_to_signal(
         raise ValueError("workflow run name is missing")
 
     failed_steps = _failed_step_names(jobs)
+    # Keep the failure fingerprint stable across commits and workflow attempts.
+    # Exact head SHA remains separate evidence for safe repair claiming, but it
+    # must not turn one recurring logical failure into a new repair identity on
+    # every revision.
     fingerprint_payload = {
         "workflow": workflow_name,
         "conclusion": conclusion,
         "failedSteps": failed_steps,
-        "headSha": run.get("head_sha"),
     }
     canonical = json.dumps(
         fingerprint_payload,
@@ -162,7 +165,6 @@ def commit_status_to_signal(
     fingerprint_payload = {
         "context": context,
         "state": state,
-        "revision": revision,
         "targetUrl": status.get("target_url"),
     }
     canonical = json.dumps(
