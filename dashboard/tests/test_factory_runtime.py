@@ -209,6 +209,42 @@ class FactoryRuntimeTests(unittest.TestCase):
         self.assertTrue(calls[0][0].endswith("/actions/runs/123/rerun-failed-jobs"))
         self.assertEqual(calls[0][2]["method"], "POST")
 
+    def test_bounded_retry_actions_reuse_failed_job_rerun_executor(self):
+        actions = (
+            "retry_with_backoff",
+            "repair_or_retry_deploy",
+            "cleanup_and_restart",
+            "recreate_workspace",
+        )
+        for action in actions:
+            calls = []
+            work_item = WorkItem(
+                task_id=f"factory:{action}",
+                owner="example",
+                repository="repo",
+                source_kind="workflow_run",
+                source_id="321",
+                fingerprint="fp",
+                failure_class="test",
+            )
+            decision = RemediationDecision(
+                action=action,
+                terminal=False,
+                reason="bounded_policy",
+            )
+
+            result = execute_remediation(
+                decision,
+                work_item,
+                mutation_fn=lambda url, token=None, **kwargs: calls.append((url, kwargs))
+                or ({}, {}),
+            )
+
+            self.assertEqual(result.status, "EXECUTED")
+            self.assertEqual(len(calls), 1)
+            self.assertTrue(calls[0][0].endswith("/actions/runs/321/rerun-failed-jobs"))
+            self.assertEqual(calls[0][1]["method"], "POST")
+
     def test_unknown_diagnosis_is_deferred_without_mutation(self):
         calls = []
         work_item = WorkItem(
