@@ -54,7 +54,6 @@ class FactoryRepairExecutorTests(unittest.TestCase):
         self.assertEqual(result.status, "DEFERRED")
         self.assertEqual(calls, [])
 
-
     def test_repair_workflow_dispatches_exact_head_validation(self):
         from pathlib import Path
 
@@ -63,6 +62,16 @@ class FactoryRepairExecutorTests(unittest.TestCase):
         self.assertIn("gh workflow run dashboard-validate.yml", workflow)
         self.assertIn('-f head_sha="$repair_sha"', workflow)
 
+    def test_repair_workflow_coalesces_workers_after_first_head_move(self):
+        from pathlib import Path
+
+        workflow = Path(".github/workflows/factory-repair-agent.yml").read_text(encoding="utf-8")
+        self.assertIn("github.rest.pulls.get", workflow)
+        self.assertIn("currentPr.head.sha !== sourcePr.head.sha", workflow)
+        self.assertIn("NO_WORK:", workflow)
+        self.assertEqual(workflow.count("if: steps.evidence.outputs.claimed == 'true'"), 4)
+        self.assertIn("group: factory-repair-${{ inputs.failure_fingerprint }}", workflow)
+        self.assertIn("cancel-in-progress: false", workflow)
 
 
 if __name__ == "__main__":
