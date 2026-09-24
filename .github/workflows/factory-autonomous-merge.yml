@@ -1,6 +1,9 @@
 name: Factory Autonomous Merge
 
 on:
+  repository_dispatch:
+    types:
+      - factory.validation.success
   workflow_run:
     workflows:
       - Validate Dashboard PR
@@ -18,8 +21,9 @@ concurrency:
 jobs:
   merge:
     if: >-
-      (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'workflow_dispatch') &&
-      github.event.workflow_run.conclusion == 'success'
+      github.event_name == 'repository_dispatch' ||
+      (github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -29,7 +33,13 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
-            const headSha = context.payload.workflow_run.head_sha;
+            const headSha = context.eventName === 'repository_dispatch'
+              ? context.payload.client_payload?.head_sha
+              : context.payload.workflow_run.head_sha;
+            if (!headSha) {
+              core.setFailed('verified head SHA is missing');
+              return;
+            }
             const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
