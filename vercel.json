@@ -23,6 +23,10 @@
     {
       "source": "/dashboard/repository-operations.json",
       "destination": "https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json"
+    },
+    {
+      "source": "/dashboard/factory-state.json",
+      "destination": "https://kafka2306.github.io/agent-resources/dashboard/factory-state.json"
     }
   ],
   "headers": [
@@ -37,6 +41,15 @@
     },
     {
       "source": "/dashboard/repository-operations.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard/factory-state.json",
       "headers": [
         {
           "key": "Cache-Control",

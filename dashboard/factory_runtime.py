@@ -271,7 +271,14 @@ def execute_remediation(
     owner = quote(work_item.owner, safe="")
     repository = quote(work_item.repository, safe="")
 
-    if decision.action in {"rerun_once", "rebuild_artifact"}:
+    if decision.action in {
+        "rerun_once",
+        "rebuild_artifact",
+        "retry_with_backoff",
+        "repair_or_retry_deploy",
+        "cleanup_and_restart",
+        "recreate_workspace",
+    }:
         target = (
             f"https://api.github.com/repos/{owner}/{repository}"
             f"/actions/runs/{quote(work_item.source_id, safe='')}/rerun-failed-jobs"

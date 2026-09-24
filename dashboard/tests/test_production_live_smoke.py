@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime, timedelta, timezone
 
-from dashboard.production_live_smoke import validate_live_payload
+from dashboard.production_live_smoke import validate_factory_state, validate_live_payload
 
 
 NOW = datetime(2026, 8, 15, 8, 15, tzinfo=timezone.utc)
@@ -23,6 +23,16 @@ def make_payload(*, fetched_at=None):
         ],
         "workItems": [{"repositoryId": "R_1"}],
         "activity": [{"repositoryId": "R_1"}],
+    }
+
+
+def make_factory_state(*, revision="abc123"):
+    return {
+        "sourceRevision": revision,
+        "authority": {"mainSha": revision},
+        "pages": {"sourceRevision": revision},
+        "canonicalIssue": {"number": 381},
+        "capabilities": [{"id": "observe-classify", "state": "VERIFIED"}],
     }
 
 
@@ -79,6 +89,19 @@ class ProductionLiveSmokeTest(unittest.TestCase):
         payload["requestBudget"]["workflowRequestCount"] = 1
         with self.assertRaisesRegex(ValueError, "workflowRequestCount is not zero"):
             validate_live_payload(payload, now=NOW)
+
+    def test_accepts_factory_state_bound_to_expected_revision(self):
+        validate_factory_state(make_factory_state(), expected_sha="abc123")
+
+    def test_rejects_stale_factory_state_revision(self):
+        with self.assertRaisesRegex(ValueError, "revision mismatch"):
+            validate_factory_state(make_factory_state(revision="old"), expected_sha="abc123")
+
+    def test_rejects_factory_state_with_wrong_authority(self):
+        payload = make_factory_state()
+        payload["authority"]["mainSha"] = "other"
+        with self.assertRaisesRegex(ValueError, "authority"):
+            validate_factory_state(payload, expected_sha="abc123")
 
 
 if __name__ == "__main__":
