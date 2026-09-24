@@ -13,7 +13,7 @@ on:
         type: string
 
 permissions:
-  actions: read
+  actions: write
   contents: write
   pull-requests: write
 
@@ -100,3 +100,5 @@ jobs:
           git commit -m "factory: deterministic repair ${FAILURE_FINGERPRINT:0:12}"
           git push origin "$branch"
           gh pr create --base main --head "$branch" --title "factory: repair ${FAILURE_FINGERPRINT:0:12}" --body "Deterministic repair for failed workflow run ${SOURCE_RUN_ID}. Failure fingerprint: ${FAILURE_FINGERPRINT}. Returns through normal validation and autonomous merge gates."
+          repair_sha="$(git rev-parse HEAD)"
+          gh workflow run dashboard-validate.yml --ref "$branch" -f head_sha="$repair_sha"
