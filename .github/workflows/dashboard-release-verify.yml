@@ -32,12 +32,12 @@ jobs:
       DEPLOYMENT_ENVIRONMENT: ${{ github.event.client_payload.environment || 'production' }}
       EXPECTED_SHA: ${{ github.event.client_payload.git.sha || github.sha }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: ${{ github.event.client_payload.git.sha || github.sha }}
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
 
@@ -92,7 +92,7 @@ jobs:
 
       - name: Preserve release provenance
         if: steps.deployment.outputs.is_production == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-provenance-${{ env.EXPECTED_SHA }}
           path: release-evidence/provenance.json
