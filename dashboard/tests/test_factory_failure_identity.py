@@ -27,6 +27,7 @@ def test_workflow_failure_fingerprint_is_stable_across_revisions():
         jobs=_failed_jobs("Run commit-time validation"),
     )
 
+    # Logical repair identity is revision-independent; claim evidence is not.
     assert first["fingerprint"] == second["fingerprint"]
     assert first["head_sha"] != second["head_sha"]
     assert first["source_id"] != second["source_id"]
