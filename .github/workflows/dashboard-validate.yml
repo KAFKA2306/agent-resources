@@ -1,6 +1,12 @@
 name: Validate Dashboard PR
 
 on:
+  workflow_dispatch:
+    inputs:
+      head_sha:
+        description: 'Exact PR head SHA to validate when dispatched by the factory'
+        required: true
+        type: string
   pull_request:
     paths:
       - 'AGENTS.md'
@@ -19,8 +25,8 @@ on:
       - '.github/workflows/dashboard-release-verify.yml'
       - '.github/workflows/factory-evidence-observer.yml'
       - '.github/workflows/factory-production-recovery.yml'
-      - '.github/workflows/factory-autonomous-merge.yml'
       - '.github/workflows/factory-repair-agent.yml'
+      - '.github/workflows/factory-autonomous-merge.yml'
       - '.github/workflows/gh-aw-sync.yml'
       - '.github/workflows/github-ops-audit.md'
       - '.github/workflows/github-ops-audit.lock.yml'
@@ -38,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Set up Python
