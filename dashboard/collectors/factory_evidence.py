@@ -81,18 +81,24 @@ def _normalize_pull_requests(raw: object) -> list[dict[str, object]]:
     return items
 
 
-def _observer_snapshot(raw: object, *, main_sha: str, workflow_exists: bool) -> dict[str, object]:
+def _workflow_snapshot(
+    raw: object,
+    *,
+    exact_sha: str,
+    workflow_exists: bool,
+    response_name: str,
+) -> dict[str, object]:
     runs = raw.get("workflow_runs") if isinstance(raw, dict) else None
     if not isinstance(runs, list):
-        raise ValueError("observer workflow response is invalid")
+        raise ValueError(f"{response_name} workflow response is invalid")
 
-    exact = [run for run in runs if isinstance(run, dict) and run.get("head_sha") == main_sha]
+    exact = [run for run in runs if isinstance(run, dict) and run.get("head_sha") == exact_sha]
     run = exact[0] if exact else None
     if run is None:
         return {
             "state": "EXISTING" if workflow_exists else "MISSING",
             "runId": None,
-            "headSha": main_sha,
+            "headSha": exact_sha,
             "status": None,
             "conclusion": None,
             "url": None,
@@ -111,7 +117,20 @@ def _observer_snapshot(raw: object, *, main_sha: str, workflow_exists: bool) -> 
     }
 
 
-def _capabilities(root: Path, observer_state: str) -> list[dict[str, str]]:
+def _observer_snapshot(raw: object, *, main_sha: str, workflow_exists: bool) -> dict[str, object]:
+    return _workflow_snapshot(
+        raw,
+        exact_sha=main_sha,
+        workflow_exists=workflow_exists,
+        response_name="observer",
+    )
+
+
+def _capabilities(
+    root: Path,
+    observer_state: str,
+    production_verification_state: str,
+) -> list[dict[str, str]]:
     control = _read_text(root, "dashboard/factory_control.py")
     runtime = _read_text(root, "dashboard/factory_runtime.py")
     docs_workflow = _read_text(root, ".github/workflows/docs.yml")
@@ -167,7 +186,7 @@ def _capabilities(root: Path, observer_state: str) -> list[dict[str, str]]:
         {
             "id": "deploy-production-probe",
             "label": "Deploy / production probe",
-            "state": "EXISTING" if release_probe_exists else "MISSING",
+            "state": production_verification_state if release_probe_exists else "MISSING",
         },
         {
             "id": "production-fix-forward",
@@ -238,12 +257,23 @@ def collect_factory_evidence(
         "?branch=main&per_page=20",
         token,
     )
+    release_runs, _ = request_fn(
+        f"{base}/actions/workflows/dashboard-release-verify.yml/runs"
+        "?branch=main&per_page=20",
+        token,
+    )
 
     root = Path(repo_root)
     observer = _observer_snapshot(
         observer_runs,
         main_sha=main_sha,
         workflow_exists=_file_exists(root, ".github/workflows/factory-evidence-observer.yml"),
+    )
+    production_verification = _workflow_snapshot(
+        release_runs,
+        exact_sha=main_sha,
+        workflow_exists=_file_exists(root, ".github/workflows/dashboard-release-verify.yml"),
+        response_name="production verification",
     )
     canonical = _normalize_issue(issue)
     if canonical["number"] != canonical_issue:
@@ -266,9 +296,14 @@ def collect_factory_evidence(
             "state": "UNVERIFIED",
         },
         "observer": observer,
+        "productionVerification": production_verification,
         "canonicalIssue": canonical,
         "activePullRequests": _normalize_pull_requests(pulls),
-        "capabilities": _capabilities(root, observer["state"]),
+        "capabilities": _capabilities(
+            root,
+            str(observer["state"]),
+            str(production_verification["state"]),
+        ),
     }
 
 
