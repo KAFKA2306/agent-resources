@@ -11,8 +11,10 @@ on:
       - completed
 
 permissions:
+  checks: read
   contents: write
   pull-requests: write
+  statuses: read
 
 concurrency:
   group: factory-automerge-${{ github.event.workflow_run.head_sha }}
@@ -72,6 +74,49 @@ jobs:
             }
             if (blockers.length) {
               core.setFailed(`exact-head commit statuses are not green: ${blockers.map(x => x.context + ':' + x.state).join(',')}`);
+              return;
+            }
+
+            const acceptedConclusions = new Set(['success', 'neutral', 'skipped']);
+            let checksReady = false;
+            for (let attempt = 0; attempt < 30; attempt += 1) {
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: headSha,
+                filter: 'latest',
+                per_page: 100,
+              });
+              const runs = checks.check_runs || [];
+              if (!runs.length) {
+                core.setFailed(`no exact-head check runs found for ${headSha}`);
+                return;
+              }
+              const failed = runs.filter(run =>
+                run.status === 'completed' && !acceptedConclusions.has(run.conclusion)
+              );
+              if (failed.length) {
+                core.setFailed(
+                  `exact-head checks failed: ${failed.map(run => run.name + ':' + run.conclusion).join(',')}`
+                );
+                return;
+              }
+              const pending = runs.filter(run => run.status !== 'completed');
+              if (!pending.length) {
+                checksReady = true;
+                core.notice(`all ${runs.length} exact-head check runs are green`);
+                break;
+              }
+              if (attempt === 29) {
+                core.setFailed(
+                  `exact-head checks did not settle: ${pending.map(run => run.name + ':' + run.status).join(',')}`
+                );
+                return;
+              }
+              await new Promise(resolve => setTimeout(resolve, 10000));
+            }
+            if (!checksReady) {
+              core.setFailed('exact-head check verification did not complete');
               return;
             }
             core.setOutput('number', String(pr.number));
