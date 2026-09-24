@@ -76,7 +76,6 @@ def validate_live_payload(payload: object, *, now: datetime | None = None) -> fl
     return age_seconds
 
 
-
 def validate_factory_state(payload: object, *, expected_sha: str) -> None:
     if not isinstance(payload, dict):
         raise ValueError("factory state must be an object")
