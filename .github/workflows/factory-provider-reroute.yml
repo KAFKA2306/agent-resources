@@ -1,0 +1,91 @@
+name: Factory Provider Reroute
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Failed workflow run to reroute
+        required: true
+        type: string
+      failure_class:
+        description: provider_unavailable or unsupported_model
+        required: true
+        type: choice
+        options:
+          - provider_unavailable
+          - unsupported_model
+      failed_route:
+        description: Route that failed
+        required: true
+        type: string
+      alternate_workflow:
+        description: Approved alternate workflow file to dispatch
+        required: true
+        type: string
+      head_sha:
+        description: Exact revision to preserve across reroute
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  reroute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate current failure evidence and dispatch alternate route
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          FAILURE_CLASS: ${{ inputs.failure_class }}
+          FAILED_ROUTE: ${{ inputs.failed_route }}
+          ALTERNATE_WORKFLOW: ${{ inputs.alternate_workflow }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const runId = Number(process.env.SOURCE_RUN_ID);
+            const failureClass = process.env.FAILURE_CLASS;
+            const failedRoute = process.env.FAILED_ROUTE;
+            const alternate = process.env.ALTERNATE_WORKFLOW;
+            const expectedSha = process.env.HEAD_SHA;
+            if (!['provider_unavailable', 'unsupported_model'].includes(failureClass)) {
+              core.setFailed(`unsupported reroute failure class: ${failureClass}`); return;
+            }
+            if (!runId || !failedRoute || !alternate || !expectedSha) {
+              core.setFailed('reroute evidence is incomplete'); return;
+            }
+            const { data: run } = await github.rest.actions.getWorkflowRun({ owner: context.repo.owner, repo: context.repo.repo, run_id: runId });
+            if (!['failure', 'timed_out'].includes(run.conclusion)) {
+              core.setFailed(`source run ${runId} is not failed/timed_out: ${run.conclusion}`); return;
+            }
+            if (run.head_sha !== expectedSha) {
+              core.setFailed(`stale reroute: source ${run.head_sha} != expected ${expectedSha}`); return;
+            }
+            if (alternate === failedRoute) {
+              core.setFailed('alternate route must differ from failed route'); return;
+            }
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({ owner: context.repo.owner, repo: context.repo.repo, per_page: 100 });
+            const target = workflows.workflows.find(w => w.path === `.github/workflows/${alternate}` || w.name === alternate);
+            if (!target || target.state !== 'active') {
+              core.setFailed(`approved alternate workflow is unavailable: ${alternate}`); return;
+            }
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: target.id,
+              ref: expectedSha,
+              inputs: {
+                source_run_id: String(runId),
+                failure_class: failureClass,
+                failed_route: failedRoute,
+                head_sha: expectedSha,
+              },
+            });
+            await core.summary
+              .addHeading('Factory Provider Reroute')
+              .addRaw(`Dispatched ${target.path} for ${failureClass} from run ${runId} at exact revision ${expectedSha}.`)
+              .write();
