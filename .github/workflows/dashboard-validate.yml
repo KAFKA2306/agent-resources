@@ -26,6 +26,7 @@ on:
       - '.github/workflows/factory-evidence-observer.yml'
       - '.github/workflows/factory-production-recovery.yml'
       - '.github/workflows/factory-repair-agent.yml'
+      - '.github/workflows/factory-provider-reroute.yml'
       - '.github/workflows/factory-autonomous-merge.yml'
       - '.github/workflows/gh-aw-sync.yml'
       - '.github/workflows/github-ops-audit.md'
@@ -105,4 +106,3 @@ jobs:
             --method POST \
             -f event_type='factory.validation.success' \
             -F "client_payload[head_sha]=$VERIFIED_SHA"
-
