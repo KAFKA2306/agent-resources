@@ -26,11 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: main
-          fetch-depth: 0
-
       - name: Read failed-run evidence
         id: evidence
         uses: actions/github-script@v8
@@ -45,7 +40,17 @@ jobs:
             if (run.conclusion !== 'failure') { core.setFailed(`source run ${run_id} is not a failed run`); return; }
             const failed = jobs.jobs.flatMap(job => (job.steps || [])).filter(step => step.conclusion === 'failure').map(step => step.name);
             if (!failed.length) { core.setFailed('no failed step evidence; refusing speculative repair'); return; }
+            if (!run.pull_requests || run.pull_requests.length !== 1) { core.setFailed('expected exactly one source PR for repair'); return; }
+            const sourcePr = run.pull_requests[0];
+            if (!sourcePr.head?.sha || !sourcePr.head?.ref) { core.setFailed('source PR head evidence is incomplete'); return; }
             core.setOutput('failed_steps', JSON.stringify(failed));
+            core.setOutput('head_sha', sourcePr.head.sha);
+            core.setOutput('head_branch', sourcePr.head.ref);
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.evidence.outputs.head_sha }}
+          fetch-depth: 0
 
       - name: Apply deterministic README-link repair
         env:
@@ -84,21 +89,18 @@ jobs:
               if not Path(path).is_file(): raise SystemExit(f'missing linked file: {path}')
           PY
 
-      - name: Publish isolated repair PR
+      - name: Publish repair back to source PR
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
           FAILURE_FINGERPRINT: ${{ inputs.failure_fingerprint }}
+          HEAD_BRANCH: ${{ steps.evidence.outputs.head_branch }}
         shell: bash
         run: |
           set -euo pipefail
-          branch="factory/repair-${FAILURE_FINGERPRINT:0:12}"
           git config user.name "factory-repair[bot]"
           git config user.email "factory-repair@users.noreply.github.com"
-          git switch -c "$branch"
           git add -A
           git commit -m "factory: deterministic repair ${FAILURE_FINGERPRINT:0:12}"
-          git push origin "$branch"
-          gh pr create --base main --head "$branch" --title "factory: repair ${FAILURE_FINGERPRINT:0:12}" --body "Deterministic repair for failed workflow run ${SOURCE_RUN_ID}. Failure fingerprint: ${FAILURE_FINGERPRINT}. Returns through normal validation and autonomous merge gates."
+          git push origin "HEAD:$HEAD_BRANCH"
           repair_sha="$(git rev-parse HEAD)"
-          gh workflow run dashboard-validate.yml --ref "$branch" -f head_sha="$repair_sha"
+          gh workflow run dashboard-validate.yml --ref "$HEAD_BRANCH" -f head_sha="$repair_sha"
