@@ -7,7 +7,7 @@
       "name": "skill-collections",
       "path": "api/v1/skill-collections.json",
       "media_type": "application/json",
-      "record_count": 12,
+      "record_count": 999,
       "sha256": "0fca93b92bcdd6a5f8228be1fcbc4f14f83741c604428b31aced4f774e947af5",
       "schema": "kafka.agent-resources.skill-collections.v1"
     }
