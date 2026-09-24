@@ -67,12 +67,6 @@ jobs:
         if: steps.deployment.outputs.is_production != 'true'
         run: echo 'Preview deployment succeeded; product release verification is not applicable.'
 
-      - name: Verify production recovery canary
-        if: steps.deployment.outputs.is_production == 'true'
-        run: |
-          echo 'Intentional bounded canary: prove production failure creates an autonomous fix-forward revert.'
-          exit 1
-
       - name: Verify production live payload
         if: steps.deployment.outputs.is_production == 'true'
         env:
