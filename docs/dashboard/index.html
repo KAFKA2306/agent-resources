@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="./activity-timeline.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["dashboard.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js"];
+    const modules = ["dashboard.js", "factory-evidence.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js"];
     Promise.all(modules.map((name) => import(`./${name}?v=${assetVersion}`))).catch((error) => {
       const status = document.getElementById("snapshot-status");
       if (status) {
@@ -60,6 +60,24 @@
         <section id="lane-gates" class="lane-gates" aria-label="対応が必要な状態"></section>
       </section>
       <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
+      <section class="agent-world" aria-labelledby="factory-evidence-title">
+        <div class="world-heading">
+          <div><p class="eyebrow">Software Factory</p><h2 id="factory-evidence-title">Current evidence</h2></div>
+          <span id="factory-freshness" class="status-chip" data-state="unknown" role="status" aria-live="polite">CHECKING</span>
+        </div>
+        <p class="world-note muted">current main、Pages build、Factory Evidence Observer、canonical Issue、active PRを同じrevision evidenceとして表示します。production上のSHAがcurrent mainと違えばFAILです。</p>
+        <div class="world-stations" aria-label="Factory evidence summary">
+          <div class="world-station"><strong>Current main</strong><span id="factory-main-sha" class="muted">loading</span></div>
+          <div class="world-station"><strong>Pages deployment</strong><div id="factory-pages-run" class="muted">loading</div></div>
+          <div class="world-station"><strong>Factory Evidence Observer</strong><div id="factory-observer" class="muted">loading</div></div>
+          <div class="world-station"><strong>Canonical control plane</strong><div id="factory-canonical-issue" class="muted">loading</div></div>
+          <div class="world-station"><strong>Active PR</strong><div id="factory-active-prs" class="muted">loading</div></div>
+        </div>
+        <details class="world-work-details" open>
+          <summary>Capability classification</summary>
+          <div id="factory-capabilities" class="world-stations" aria-live="polite"></div>
+        </details>
+      </section>
       <section class="agent-world" aria-labelledby="agent-world-title">
         <div class="world-heading">
           <div><p class="eyebrow">公開リポジトリ</p><h2 id="agent-world-title">作業の状態と次の手掛かり</h2></div>

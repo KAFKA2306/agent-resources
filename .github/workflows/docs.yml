@@ -4,28 +4,38 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'docs/**'
-      - 'dashboard/**'
-      - 'package.json'
-      - '.github/workflows/docs.yml'
+  issues:
+    types: [opened, edited, closed, reopened]
+  pull_request:
+    types: [opened, closed, reopened, synchronize, ready_for_review, converted_to_draft]
+  workflow_run:
+    workflows:
+      - Factory Evidence Observer
+      - Factory Autonomous Merge
+      - Verify Dashboard Release
+    types: [completed]
+  status:
   schedule:
-    - cron: '17 0 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
   actions: read
+  issues: read
+  pull-requests: read
   pages: write
   id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      source_sha: ${{ steps.revision.outputs.sha }}
     env:
       GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -35,6 +45,12 @@ jobs:
       REPOSITORY_OPERATIONS_PUBLIC_SNAPSHOT_URL: https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Resolve current main revision
+        id: revision
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -151,6 +167,14 @@ jobs:
               --run-id "${GITHUB_RUN_ID}"
           fi
 
+      - name: Collect current factory evidence
+        run: |
+          set -euo pipefail
+          python -m dashboard.collectors.factory_evidence \
+            --expected-revision "${{ steps.revision.outputs.sha }}" \
+            --run-id "${GITHUB_RUN_ID}" \
+            --output docs/dashboard/factory-state.json
+
       - name: Build and validate canonical dashboard snapshot
         run: |
           set -euo pipefail
@@ -238,14 +262,17 @@ jobs:
 
   smoke:
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: [build, deploy]
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.build.outputs.source_sha }}
 
       - name: Verify deployed dashboard
         env:
           PAGE_URL: ${{ needs.deploy.outputs.page_url }}
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ needs.build.outputs.source_sha }}
+          GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
         run: |
           python - <<'PY'
           import json
@@ -270,6 +297,7 @@ jobs:
                   stats_js = fetch('stats.js')
                   snapshot = json.loads(fetch('dashboard.json'))
                   operations = json.loads(fetch('repository-operations.json'))
+                  factory = json.loads(fetch('factory-state.json'))
                   if 'PUBLIC PRESENCE' in html or 'project-groups' in html:
                       raise RuntimeError('retired view is still deployed')
                   if 'groupsRoot' in dashboard_js or 'public-links' in stats_js:
@@ -288,6 +316,33 @@ jobs:
                       raise RuntimeError('deployed repository operations snapshot is missing provenance')
                   if not operations.get('repositories'):
                       raise RuntimeError('deployed repository operations snapshot has zero repositories')
+                  if factory.get('sourceRevision') != nonce:
+                      raise RuntimeError(
+                          f"deployed factory state is stale: {factory.get('sourceRevision')} != {nonce}"
+                      )
+                  if factory.get('authority', {}).get('mainSha') != nonce:
+                      raise RuntimeError('deployed factory authority does not match expected main')
+                  if factory.get('pages', {}).get('workflowRunId') != os.environ.get('GITHUB_RUN_ID'):
+                      raise RuntimeError('deployed factory state points at a different Pages workflow run')
+
+                  headers = {
+                      'Accept': 'application/vnd.github+json',
+                      'Cache-Control': 'no-cache',
+                      'User-Agent': 'agent-resources-pages-freshness-gate',
+                  }
+                  token = os.environ.get('GITHUB_TOKEN')
+                  if token:
+                      headers['Authorization'] = f'Bearer {token}'
+                  current_main_request = urllib.request.Request(
+                      'https://api.github.com/repos/KAFKA2306/agent-resources/commits/main',
+                      headers=headers,
+                  )
+                  with urllib.request.urlopen(current_main_request, timeout=20) as response:
+                      current_main = json.loads(response.read().decode('utf-8')).get('sha')
+                  if current_main != nonce:
+                      raise RuntimeError(
+                          f'Pages freshness gate failed: deployed={nonce} current-main={current_main}'
+                      )
                   try:
                       fetch('public-links.js')
                   except urllib.error.HTTPError as exc:
@@ -300,6 +355,8 @@ jobs:
                   print(f"deployed monthly buckets: {len(snapshot['stats']['monthly'])}")
                   print(f"deployed weekly buckets: {len(snapshot['stats']['weekly'])}")
                   print(f"deployed repository operations: {len(operations['repositories'])}")
+                  print(f"deployed factory main: {factory['sourceRevision']}")
+                  print(f"current GitHub main: {current_main}")
                   break
               except Exception:
                   if attempt == 5:
