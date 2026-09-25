@@ -8,9 +8,10 @@ from dataclasses import asdict, dataclass
 from typing import Callable, Mapping, Sequence
 from urllib.parse import quote
 
-from dashboard.collectors.github_api import request_json, request_mutation
+from dashboard.collectors.github_api import request_json, request_mutation, request_text
 from dashboard.factory_control import (
     RemediationDecision,
+    RouteCandidate,
     WorkItem,
     decide_remediation,
     discover_work,
@@ -45,6 +46,7 @@ def _failed_step_names(jobs: Sequence[Mapping[str, object]]) -> list[str]:
 def classify_workflow_failure(
     run: Mapping[str, object],
     jobs: Sequence[Mapping[str, object]] = (),
+    logs: Sequence[str] = (),
 ) -> str:
     conclusion = run.get("conclusion")
     if conclusion == "timed_out":
@@ -55,6 +57,20 @@ def classify_workflow_failure(
         return "stale_workspace"
     if conclusion != "failure":
         return "unknown"
+
+    log_text = "\n".join(logs).lower()
+    if (
+        "failureclass=model_not_supported" in log_text
+        or "requested model is not supported" in log_text
+        or "invalid or unsupported model" in log_text
+    ):
+        return "unsupported_model"
+    if (
+        "failureclass=provider_unavailable" in log_text
+        or "no provider available" in log_text
+        or "provider unavailable" in log_text
+    ):
+        return "provider_unavailable"
 
     failed_steps = [name.lower() for name in _failed_step_names(jobs)]
     if any("flaky" in name for name in failed_steps):
@@ -86,6 +102,7 @@ def workflow_run_to_signal(
     repository: str,
     run: Mapping[str, object],
     jobs: Sequence[Mapping[str, object]] = (),
+    logs: Sequence[str] = (),
 ) -> dict[str, object]:
     run_id = run.get("id")
     if not isinstance(run_id, int) or run_id < 1:
@@ -124,10 +141,12 @@ def workflow_run_to_signal(
         "source_kind": "workflow_run",
         "source_id": str(run_id),
         "fingerprint": fingerprint,
-        "kind": classify_workflow_failure(run, jobs),
+        "kind": classify_workflow_failure(run, jobs, logs),
         "conclusion": conclusion,
         "status": status,
         "workflow_name": workflow_name,
+        "workflow_path": run.get("path"),
+        "head_branch": run.get("head_branch"),
         "run_attempt": run.get("run_attempt", 1),
         "head_sha": run.get("head_sha"),
         "url": run.get("html_url"),
@@ -230,6 +249,7 @@ def collect_workflow_run_signal(
     run_id: int,
     token: str | None = None,
     request_fn: Callable = request_json,
+    request_text_fn: Callable = request_text,
 ) -> dict[str, object]:
     encoded_owner = quote(owner, safe="")
     encoded_repository = quote(repository, safe="")
@@ -239,18 +259,65 @@ def collect_workflow_run_signal(
     jobs = jobs_payload.get("jobs") if isinstance(jobs_payload, dict) else None
     if not isinstance(run, dict) or not isinstance(jobs, list):
         raise ValueError("workflow evidence response shape is invalid")
+
+    logs: list[str] = []
+    for job in jobs:
+        if not isinstance(job, Mapping) or job.get("conclusion") != "failure":
+            continue
+        job_id = job.get("id")
+        if not isinstance(job_id, int) or job_id < 1:
+            continue
+        try:
+            content, _ = request_text_fn(f"{base}/actions/jobs/{job_id}/logs", token)
+        except Exception:
+            # Log evidence enriches classification but is not allowed to turn a
+            # readable workflow failure into a second observer failure.
+            continue
+        if isinstance(content, str):
+            logs.append(content[-200_000:])
+
     return workflow_run_to_signal(
         owner=owner,
         repository=repository,
         run=run,
         jobs=jobs,
+        logs=logs,
     )
+
+
+def approved_provider_routes(
+    signal: Mapping[str, object],
+) -> tuple[list[RouteCandidate], frozenset[str], str | None]:
+    """Return narrowly approved alternates for provider/model failures."""
+    workflow_path = signal.get("workflow_path")
+    workflow_name = signal.get("workflow_name")
+    failed_route = (
+        workflow_path.strip()
+        if isinstance(workflow_path, str) and workflow_path.strip()
+        else workflow_name.strip()
+        if isinstance(workflow_name, str) and workflow_name.strip()
+        else None
+    )
+    if failed_route not in {
+        ".github/workflows/github-ops-audit.lock.yml",
+        "KAFKA2306 public GitHub operations audit",
+    }:
+        return [], frozenset(), failed_route
+    return [
+        RouteCandidate(
+            name="github-models-ops-audit.yml",
+            capabilities=frozenset({"github_ops_audit"}),
+            priority=10,
+        )
+    ], frozenset({"github_ops_audit"}), failed_route
 
 
 def execute_remediation(
     decision: RemediationDecision,
     work_item: WorkItem,
     *,
+    signal: Mapping[str, object] | None = None,
+    failed_route: str | None = None,
     token: str | None = None,
     mutation_fn: Callable = request_mutation,
 ) -> ExecutionResult:
@@ -284,6 +351,45 @@ def execute_remediation(
             f"/actions/runs/{quote(work_item.source_id, safe='')}/rerun-failed-jobs"
         )
         mutation_fn(target, token, method="POST")
+        return ExecutionResult(
+            status="EXECUTED",
+            action=decision.action,
+            reason=decision.reason,
+            target=target,
+        )
+
+    if decision.action == "reroute":
+        head_sha = signal.get("head_sha") if isinstance(signal, Mapping) else None
+        if (
+            not decision.route
+            or not failed_route
+            or not isinstance(head_sha, str)
+            or not head_sha.strip()
+        ):
+            return ExecutionResult(
+                status="DEFERRED",
+                action=decision.action,
+                reason="reroute_evidence_incomplete",
+            )
+        target = (
+            f"https://api.github.com/repos/{owner}/{repository}"
+            "/actions/workflows/factory-provider-reroute.yml/dispatches"
+        )
+        mutation_fn(
+            target,
+            token,
+            method="POST",
+            payload={
+                "ref": "main",
+                "inputs": {
+                    "source_run_id": work_item.source_id,
+                    "failure_class": work_item.failure_class,
+                    "failed_route": failed_route,
+                    "alternate_workflow": decision.route,
+                    "head_sha": head_sha,
+                },
+            },
+        )
         return ExecutionResult(
             status="EXECUTED",
             action=decision.action,
@@ -329,6 +435,7 @@ def remediate_workflow_run(
     run_id: int,
     token: str | None = None,
     request_fn: Callable = request_json,
+    request_text_fn: Callable = request_text,
     mutation_fn: Callable = request_mutation,
     execute: bool = True,
 ) -> dict[str, object]:
@@ -338,6 +445,7 @@ def remediate_workflow_run(
         run_id=run_id,
         token=token,
         request_fn=request_fn,
+        request_text_fn=request_text_fn,
     )
 
     if signal.get("conclusion") in {"success", "neutral", "skipped"}:
@@ -350,14 +458,20 @@ def remediate_workflow_run(
     item = work[0]
     run_attempt = signal.get("run_attempt", 1)
     attempt = max((run_attempt if isinstance(run_attempt, int) else 1) - 1, 0)
+    routes, required_capabilities, failed_route = approved_provider_routes(signal)
     decision = decide_remediation(
         failure_class=item.failure_class,
         attempt=attempt,
+        routes=routes,
+        required_capabilities=required_capabilities,
+        failed_route=failed_route,
     )
     if execute:
         execution = execute_remediation(
             decision,
             item,
+            signal=signal,
+            failed_route=failed_route,
             token=token,
             mutation_fn=mutation_fn,
         )
