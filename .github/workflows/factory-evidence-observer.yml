@@ -10,6 +10,11 @@ on:
       - Verify Dashboard Release
       - Refresh Repository Recall Index
       - Sync gh-aw lock files
+      - Factory Repair Agent
+      - Factory Provider Reroute
+      - Factory Capability Readback
+      - Factory Autonomous Merge
+      - Factory Production Recovery
     types:
       - completed
 
