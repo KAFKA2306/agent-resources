@@ -17,6 +17,7 @@ on:
       - '.github/workflows/repository-recall-refresh.yml'
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -78,6 +79,7 @@ jobs:
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git fetch origin "${REFRESH_BRANCH}" || true
           git push --force-with-lease origin "HEAD:refs/heads/${REFRESH_BRANCH}"
+          head_sha="$(git rev-parse HEAD)"
 
           gh pr create \
             --repo "${GITHUB_REPOSITORY}" \
@@ -85,3 +87,11 @@ jobs:
             --head "${REFRESH_BRANCH}" \
             --title 'chore: refresh repository recall index' \
             --body $'公開repositoryの現在状態から repository recall index を更新します。\n\n- source refresh: GitHub current state\n- validation: `python -m dashboard.repository_recall validate`\n- main への直接pushは行いません。\n\nこのPRのexact head CIを確認してからmergeします。'
+
+          # PRs created with GITHUB_TOKEN may not get a runnable pull_request validation.
+          # Dispatch the existing exact-head validator explicitly so bot-created work
+          # enters the same verification and autonomous-merge control plane.
+          gh workflow run dashboard-validate.yml \
+            --repo "${GITHUB_REPOSITORY}" \
+            --ref main \
+            -f "head_sha=${head_sha}"
