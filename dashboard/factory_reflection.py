@@ -397,38 +397,21 @@ def _factory_route(candidate: ReflectionCandidate) -> tuple[str, str, str]:
 
 
 def _issue_body(candidate: ReflectionCandidate, grounding: GroundingResult) -> str:
-    evidence = "
-".join(f"- {url}" for url in candidate.evidence_urls)
+    evidence = "\n".join(f"- {url}" for url in candidate.evidence_urls)
     return (
-        f"{_marker(candidate.candidate_id)}
-"
-        "## Factory Reflection evidence
-
-"
-        f"- candidate: `{candidate.candidate_id}`
-"
-        f"- gap: `{candidate.gap_class}`
-"
-        f"- subject: `{candidate.subject_kind}:{candidate.subject_id}`
-"
-        f"- occurrences: `{candidate.occurrences}`
-"
-        f"- current grounding: `VERIFIED_GAP` / `{grounding.reason}`
-"
-        f"- acceptance check: `{candidate.suggested_check}`
-
-"
-        "## Current public evidence
-
-"
-        f"{evidence}
-
-"
+        f"{_marker(candidate.candidate_id)}\n"
+        "## Factory Reflection evidence\n\n"
+        f"- candidate: `{candidate.candidate_id}`\n"
+        f"- gap: `{candidate.gap_class}`\n"
+        f"- subject: `{candidate.subject_kind}:{candidate.subject_id}`\n"
+        f"- occurrences: `{candidate.occurrences}`\n"
+        f"- current grounding: `VERIFIED_GAP` / `{grounding.reason}`\n"
+        f"- acceptance check: `{candidate.suggested_check}`\n\n"
+        "## Current public evidence\n\n"
+        f"{evidence}\n\n"
         "This work item was created from sanitized temporal memory, then re-grounded "
-        "against current public evidence. Private memory content is not included.
-"
+        "against current public evidence. Private memory content is not included.\n"
     )
-
 
 def process_candidate(
     payload: Mapping[str, object],
