@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "9553a9d8399f6f5258dbc259f079b0c4ee552bed"
+          "fingerprint": "847db20917e3b32a866da862910ef8d0f87e5e57"
         }
       ],
-      "sourceFingerprint": "d31e8063d434808ec18b0cb76a38baf4b80640369fe4b9912366f6778477bf15",
+      "sourceFingerprint": "f8c59f18260e06d06021f73bd1649d3cafd42a336a878323ac25d8cc61140e1c",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
