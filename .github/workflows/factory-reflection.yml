@@ -1,0 +1,67 @@
+name: Factory Reflection
+
+on:
+  repository_dispatch:
+    types:
+      - factory.reflection.candidate
+  workflow_dispatch:
+    inputs:
+      candidate_json:
+        description: Sanitized Graphiti reflection candidate JSON
+        required: false
+        type: string
+      observe_only:
+        description: Ground and route without creating a work item
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+concurrency:
+  group: factory-reflection
+  cancel-in-progress: false
+
+jobs:
+  reflect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+
+      - name: Process Graphiti reflection candidate
+        if: github.event_name == 'repository_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FACTORY_REFLECTION_CANDIDATE_JSON: ${{ toJson(github.event.client_payload.candidate) }}
+        run: python -m dashboard.factory_reflection
+
+      - name: Process manually supplied reflection candidate
+        if: github.event_name == 'workflow_dispatch' && inputs.candidate_json != ''
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FACTORY_REFLECTION_CANDIDATE_JSON: ${{ inputs.candidate_json }}
+        run: |
+          args=()
+          if [[ '${{ inputs.observe_only }}' == 'true' ]]; then args+=(--observe-only); fi
+          python -m dashboard.factory_reflection "${args[@]}"
+
+      - name: Discover recurrent public workflow failures
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.candidate_json == '')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          args=(--scheduled --repository "${GITHUB_REPOSITORY}")
+          if [[ '${{ inputs.observe_only }}' == 'true' ]]; then args+=(--observe-only); fi
+          python -m dashboard.factory_reflection "${args[@]}"
