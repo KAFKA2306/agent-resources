@@ -2,6 +2,23 @@ name: Deterministic Ops Audit
 
 on:
   workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Source failed run when invoked by provider reroute
+        required: false
+        type: string
+      failure_class:
+        description: provider_unavailable or unsupported_model
+        required: false
+        type: string
+      failed_route:
+        description: Failed provider-dependent workflow route
+        required: false
+        type: string
+      head_sha:
+        description: Exact source revision claimed by the reroute
+        required: false
+        type: string
   push:
     branches: [main]
     paths:
@@ -22,6 +39,29 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Validate provider reroute claim
+        if: inputs.source_run_id != ''
+        env:
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          FAILURE_CLASS: ${{ inputs.failure_class }}
+          FAILED_ROUTE: ${{ inputs.failed_route }}
+          EXPECTED_SHA: ${{ inputs.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SOURCE_RUN_ID"
+          case "$FAILURE_CLASS" in
+            provider_unavailable|unsupported_model) ;;
+            *) echo "unsupported reroute failure class: $FAILURE_CLASS" >&2; exit 1 ;;
+          esac
+          test -n "$FAILED_ROUTE"
+          test -n "$EXPECTED_SHA"
+          if [ "$GITHUB_SHA" != "$EXPECTED_SHA" ]; then
+            echo "stale reroute target: github.sha=$GITHUB_SHA expected=$EXPECTED_SHA" >&2
+            exit 1
+          fi
+          echo "provider reroute claim accepted: run=$SOURCE_RUN_ID failure=$FAILURE_CLASS route=$FAILED_ROUTE sha=$EXPECTED_SHA"
+
       - name: Collect and evaluate current GitHub evidence
         id: audit
         env:

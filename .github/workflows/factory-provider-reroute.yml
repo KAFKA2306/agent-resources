@@ -65,6 +65,22 @@ jobs:
             if (run.head_sha !== expectedSha) {
               core.setFailed(`stale reroute: source ${run.head_sha} != expected ${expectedSha}`); return;
             }
+            const observedRoute = run.path || run.name;
+            if (failedRoute !== observedRoute && failedRoute !== run.name) {
+              core.setFailed(`failed route evidence mismatch: ${failedRoute} != ${observedRoute}`); return;
+            }
+            const rerouteRef = run.head_branch;
+            if (!rerouteRef) {
+              core.setFailed('source run has no branch ref for safe reroute'); return;
+            }
+            const { data: refHead } = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: rerouteRef,
+            });
+            if (refHead.sha !== expectedSha) {
+              core.setFailed(`source ref moved: ${rerouteRef}=${refHead.sha} != ${expectedSha}`); return;
+            }
             if (alternate === failedRoute) {
               core.setFailed('alternate route must differ from failed route'); return;
             }
@@ -77,7 +93,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: target.id,
-              ref: expectedSha,
+              ref: rerouteRef,
               inputs: {
                 source_run_id: String(runId),
                 failure_class: failureClass,

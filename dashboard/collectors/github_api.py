@@ -5,7 +5,7 @@ import time
 from http.client import RemoteDisconnected
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 API_VERSION = "2026-03-10"
 TRANSIENT_ATTEMPTS = 3
@@ -83,6 +83,73 @@ def request_json(url, token=None):
             time.sleep(TRANSIENT_RETRY_DELAYS[attempt])
     raise GitHubApiError(
         f"GitHub API request failed after {TRANSIENT_ATTEMPTS} transport attempts: {url}"
+    ) from last_transport_error
+
+
+
+class _NoRedirectHandler(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def request_text(url, token=None):
+    """Fetch GitHub text evidence without forwarding auth to signed redirects."""
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": API_VERSION,
+        "User-Agent": "KAFKA2306-agent-resources-factory",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = Request(url, headers=headers)
+    opener = build_opener(_NoRedirectHandler())
+    last_transport_error = None
+    for attempt in range(TRANSIENT_ATTEMPTS):
+        try:
+            with opener.open(request, timeout=30) as response:
+                return response.read().decode("utf-8", errors="replace"), dict(response.headers.items())
+        except HTTPError as exc:
+            if exc.code in {301, 302, 303, 307, 308}:
+                location = exc.headers.get("Location") if exc.headers else None
+                if not isinstance(location, str) or not location.startswith("https://"):
+                    raise GitHubApiError(
+                        f"GitHub text redirect is invalid: {url}",
+                        status=exc.code,
+                    ) from exc
+                redirected = Request(
+                    location,
+                    headers={"User-Agent": "KAFKA2306-agent-resources-factory"},
+                )
+                try:
+                    with urlopen(redirected, timeout=30) as response:
+                        return (
+                            response.read().decode("utf-8", errors="replace"),
+                            dict(response.headers.items()),
+                        )
+                except (URLError, TimeoutError, RemoteDisconnected, ConnectionResetError) as redirect_exc:
+                    last_transport_error = redirect_exc
+                    if attempt + 1 >= TRANSIENT_ATTEMPTS:
+                        break
+                    time.sleep(TRANSIENT_RETRY_DELAYS[attempt])
+                    continue
+            try:
+                body = exc.read().decode("utf-8", errors="replace")
+            except Exception:
+                body = ""
+            response_headers = dict(exc.headers.items()) if exc.headers else {}
+            raise GitHubApiError(
+                f"GitHub text request failed with HTTP {exc.code}: {url}",
+                status=exc.code,
+                headers=response_headers,
+                response_body=body,
+            ) from exc
+        except (URLError, TimeoutError, RemoteDisconnected, ConnectionResetError) as exc:
+            last_transport_error = exc
+            if attempt + 1 >= TRANSIENT_ATTEMPTS:
+                break
+            time.sleep(TRANSIENT_RETRY_DELAYS[attempt])
+    raise GitHubApiError(
+        f"GitHub text request failed after {TRANSIENT_ATTEMPTS} transport attempts: {url}"
     ) from last_transport_error
 
 

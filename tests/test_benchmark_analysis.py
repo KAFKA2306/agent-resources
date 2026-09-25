@@ -117,6 +117,32 @@ def test_missing_capability_becomes_actionable_candidate(tmp_path: Path):
     assert candidate["benchmark_revision"] == "1234567890abcdef"
 
 
+def test_quota_aware_auto_fallback_maps_to_provider_reroute():
+    capability, hits = infer_capability(
+        "Quota-aware auto-fallback rotates away from exhausted providers."
+    )
+
+    assert capability == "provider_reroute"
+    assert "auto-fallback" in hits
+
+
+def test_provider_reroute_is_disconnected_until_runtime_dispatch_is_wired(tmp_path: Path):
+    workflow = tmp_path / ".github/workflows/factory-provider-reroute.yml"
+    workflow.parent.mkdir(parents=True)
+    workflow.write_text("createWorkflowDispatch", encoding="utf-8")
+
+    control = tmp_path / "dashboard/factory_control.py"
+    control.parent.mkdir()
+    control.write_text("provider_unavailable", encoding="utf-8")
+
+    assert classify_local_status(tmp_path, "provider_reroute") == "DISCONNECTED"
+
+    runtime = tmp_path / "dashboard/factory_runtime.py"
+    runtime.write_text("factory-provider-reroute.yml/dispatches", encoding="utf-8")
+
+    assert classify_local_status(tmp_path, "provider_reroute") == "EXISTING"
+
+
 def test_unrelated_revision_is_marked_evaluated_and_not_reproposed(tmp_path: Path):
     rows = [
         {

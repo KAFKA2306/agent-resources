@@ -39,7 +39,7 @@ class LocalCapabilityRule:
 
 CAPABILITY_TERMS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("self_heal", ("self-heal", "self healing", "autofix", "auto-fix", "repair agent", "failure repair")),
-    ("provider_reroute", ("model router", "provider router", "llm router", "model fallback", "provider fallback")),
+    ("provider_reroute", ("model router", "provider router", "llm router", "model fallback", "provider fallback", "auto-fallback", "quota-aware")),
     ("release_recovery", ("automatic rollback", "deployment rollback", "production recovery", "release automation", "progressive delivery")),
     ("review_automation", ("code review agent", "pull request review", "automated review", "review bot")),
     ("agent_orchestration", ("multi-agent", "agent orchestration", "coding agent", "software factory", "agent workflow")),
@@ -54,7 +54,10 @@ LOCAL_CAPABILITY_RULES: dict[str, LocalCapabilityRule] = {
     ),
     "provider_reroute": LocalCapabilityRule(
         implementation=(LocalEvidence(".github/workflows/factory-provider-reroute.yml", "createWorkflowDispatch"),),
-        wiring=(LocalEvidence("dashboard/factory_control.py", "provider_unavailable"),),
+        wiring=(
+            LocalEvidence("dashboard/factory_control.py", "provider_unavailable"),
+            LocalEvidence("dashboard/factory_runtime.py", "factory-provider-reroute.yml/dispatches"),
+        ),
     ),
     "release_recovery": LocalCapabilityRule(
         implementation=(LocalEvidence(".github/workflows/factory-production-recovery.yml", "Create isolated fix-forward revert"),),

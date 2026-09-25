@@ -396,6 +396,143 @@ class FactoryRuntimeTests(unittest.TestCase):
         self.assertEqual(result["decision"]["action"], "rerun_once")
         self.assertEqual(calls, [])
 
+    def test_model_not_supported_log_is_classified_for_reroute(self):
+        run = {
+            "id": 35561961456,
+            "name": "KAFKA2306 public GitHub operations audit",
+            "path": ".github/workflows/github-ops-audit.lock.yml",
+            "head_branch": "main",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "abc123",
+        }
+        jobs = [
+            {
+                "id": 106216530428,
+                "conclusion": "failure",
+                "steps": [
+                    {
+                        "name": "Execute GitHub Copilot CLI",
+                        "conclusion": "failure",
+                    }
+                ],
+            }
+        ]
+
+        signal = workflow_run_to_signal(
+            owner="KAFKA2306",
+            repository="agent-resources",
+            run=run,
+            jobs=jobs,
+            logs=["failureClass=model_not_supported 400 The requested model is not supported."],
+        )
+
+        self.assertEqual(signal["kind"], "unsupported_model")
+        self.assertEqual(signal["workflow_path"], ".github/workflows/github-ops-audit.lock.yml")
+
+    def test_provider_model_failure_dispatches_approved_alternate(self):
+        run = {
+            "id": 35561961456,
+            "name": "KAFKA2306 public GitHub operations audit",
+            "path": ".github/workflows/github-ops-audit.lock.yml",
+            "head_branch": "main",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_attempt": 1,
+            "head_sha": "abc123",
+            "html_url": "https://github.com/example/repo/actions/runs/35561961456",
+        }
+        jobs = {
+            "jobs": [
+                {
+                    "id": 106216530428,
+                    "conclusion": "failure",
+                    "steps": [
+                        {
+                            "name": "Execute GitHub Copilot CLI",
+                            "conclusion": "failure",
+                        }
+                    ],
+                }
+            ]
+        }
+        calls = []
+
+        def request_fn(url, token=None):
+            if url.endswith("/actions/runs/35561961456"):
+                return run, {}
+            if url.endswith("/actions/runs/35561961456/jobs?per_page=100"):
+                return jobs, {}
+            raise AssertionError(url)
+
+        def request_text_fn(url, token=None):
+            self.assertTrue(url.endswith("/actions/jobs/106216530428/logs"))
+            return (
+                "failureClass=model_not_supported "
+                "400 The requested model is not supported.",
+                {},
+            )
+
+        result = remediate_workflow_run(
+            owner="KAFKA2306",
+            repository="agent-resources",
+            run_id=35561961456,
+            request_fn=request_fn,
+            request_text_fn=request_text_fn,
+            mutation_fn=lambda url, token=None, **kwargs: calls.append((url, kwargs)) or ({}, {}),
+        )
+
+        self.assertEqual(result["status"], "EXECUTED")
+        self.assertEqual(result["decision"]["action"], "reroute")
+        self.assertEqual(result["decision"]["route"], "github-models-ops-audit.yml")
+        self.assertEqual(len(calls), 1)
+        self.assertTrue(calls[0][0].endswith("/factory-provider-reroute.yml/dispatches"))
+        self.assertEqual(calls[0][1]["payload"]["inputs"]["head_sha"], "abc123")
+        self.assertEqual(
+            calls[0][1]["payload"]["inputs"]["failed_route"],
+            ".github/workflows/github-ops-audit.lock.yml",
+        )
+
+    def test_unapproved_provider_failure_fails_closed(self):
+        run = {
+            "id": 900,
+            "name": "Unknown Provider Workflow",
+            "path": ".github/workflows/unknown-provider.yml",
+            "head_branch": "main",
+            "status": "completed",
+            "conclusion": "failure",
+            "run_attempt": 1,
+            "head_sha": "abc123",
+        }
+        jobs = {
+            "jobs": [
+                {
+                    "id": 901,
+                    "conclusion": "failure",
+                    "steps": [{"name": "Provider call", "conclusion": "failure"}],
+                }
+            ]
+        }
+        calls = []
+
+        def request_fn(url, token=None):
+            if url.endswith("/actions/runs/900"):
+                return run, {}
+            return jobs, {}
+
+        result = remediate_workflow_run(
+            owner="example",
+            repository="repo",
+            run_id=900,
+            request_fn=request_fn,
+            request_text_fn=lambda *args, **kwargs: ("provider unavailable", {}),
+            mutation_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
+        )
+
+        self.assertEqual(result["status"], "TERMINAL")
+        self.assertEqual(result["decision"]["reason"], "no_approved_available_route")
+        self.assertEqual(calls, [])
+
     def test_successful_rerun_produces_no_work(self):
         run = {
             "id": 127,
