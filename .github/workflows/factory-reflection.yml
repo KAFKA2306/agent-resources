@@ -15,6 +15,14 @@ on:
         required: false
         default: false
         type: boolean
+  workflow_run:
+    workflows:
+      - Factory Repair Agent
+      - Factory Autonomous Merge
+      - Factory Production Recovery
+      - Refresh Repository Recall Index
+    types:
+      - completed
   schedule:
     - cron: '17 */6 * * *'
 
@@ -58,7 +66,7 @@ jobs:
           python -m dashboard.factory_reflection "${args[@]}"
 
       - name: Discover recurrent public workflow failures
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.candidate_json == '')
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.candidate_json == '')
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
