@@ -1,0 +1,96 @@
+name: Factory Conflict Repair
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Open pull request to repair
+        required: true
+        type: string
+      expected_head_sha:
+        description: Exact PR head SHA claimed by the observer
+        required: true
+        type: string
+      expected_base_sha:
+        description: Exact base SHA claimed by the observer
+        required: true
+        type: string
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: factory-conflict-repair-${{ inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Claim exact open PR revision
+        id: claim
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          EXPECTED_BASE_SHA: ${{ inputs.expected_base_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const pull_number = Number(process.env.PR_NUMBER);
+            if (!Number.isInteger(pull_number) || pull_number < 1) {
+              core.setFailed('invalid PR number'); return;
+            }
+            const { data: pr } = await github.rest.pulls.get({ owner: context.repo.owner, repo: context.repo.repo, pull_number });
+            if (pr.state !== 'open') { core.notice('NO_WORK: PR is no longer open'); core.setOutput('claimed', 'false'); return; }
+            if (pr.head.repo?.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.setFailed('fork PR is outside bounded write authority'); return;
+            }
+            if (pr.head.sha !== process.env.EXPECTED_HEAD_SHA || pr.base.sha !== process.env.EXPECTED_BASE_SHA) {
+              core.notice(`NO_WORK: stale claim head=${process.env.EXPECTED_HEAD_SHA} base=${process.env.EXPECTED_BASE_SHA}`);
+              core.setOutput('claimed', 'false'); return;
+            }
+            if (pr.mergeable !== false) {
+              core.notice(`NO_WORK: current mergeable=${pr.mergeable}; conflict repair not required`);
+              core.setOutput('claimed', 'false'); return;
+            }
+            core.setOutput('claimed', 'true');
+            core.setOutput('head_ref', pr.head.ref);
+            core.setOutput('base_ref', pr.base.ref);
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        if: steps.claim.outputs.claimed == 'true'
+        with:
+          ref: ${{ inputs.expected_head_sha }}
+          fetch-depth: 0
+
+      - name: Merge exact base without semantic conflict guessing
+        if: steps.claim.outputs.claimed == 'true'
+        env:
+          EXPECTED_BASE_SHA: ${{ inputs.expected_base_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$EXPECTED_BASE_SHA"
+          git config user.name "factory-conflict-repair[bot]"
+          git config user.email "factory-conflict-repair@users.noreply.github.com"
+          if ! git merge --no-edit "$EXPECTED_BASE_SHA"; then
+            git merge --abort || true
+            echo 'Semantic conflict remains; refusing speculative resolution.' >&2
+            exit 78
+          fi
+
+      - name: Publish repaired head and reverify exact revision
+        if: steps.claim.outputs.claimed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ steps.claim.outputs.head_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repaired_sha="$(git rev-parse HEAD)"
+          git push origin "HEAD:$HEAD_REF"
+          gh workflow run dashboard-validate.yml --ref "$HEAD_REF" -f head_sha="$repaired_sha"
