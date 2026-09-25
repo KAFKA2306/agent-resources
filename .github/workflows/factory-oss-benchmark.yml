@@ -22,6 +22,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Collect GitHub Trending daily/monthly authority
+        id: collect
+        continue-on-error: true
         run: python -m dashboard.oss_benchmark --windows daily monthly
       - name: Verify collector contracts
         run: python -m pytest -q tests/test_oss_benchmark.py
@@ -36,3 +38,8 @@ jobs:
           git add dashboard/oss-benchmark-ledger.json
           git commit -m 'chore(factory): refresh OSS benchmark ledger'
           git push
+      - name: Record fail-soft collection state
+        if: steps.collect.outcome != 'success'
+        run: |
+          echo '::warning::OSS benchmark collection is UNVERIFIED; factory repair/production work must continue.'
+          echo 'OSS_BENCHMARK_STATUS=UNVERIFIED' >> "$GITHUB_ENV"
