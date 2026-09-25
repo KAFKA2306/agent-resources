@@ -27,6 +27,7 @@ on:
       - '.github/workflows/factory-production-recovery.yml'
       - '.github/workflows/factory-repair-agent.yml'
       - '.github/workflows/factory-provider-reroute.yml'
+      - '.github/workflows/factory-capability-readback.yml'
       - '.github/workflows/factory-autonomous-merge.yml'
       - '.github/workflows/gh-aw-sync.yml'
       - '.github/workflows/github-ops-audit.md'
