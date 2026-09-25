@@ -17,6 +17,8 @@ on:
       - 'package.json'
       - 'pyproject.toml'
       - 'scripts/validate_dashboard_contract.py'
+      - 'scripts/research_provider_comparison.py'
+      - 'tests/test_research_provider_comparison.py'
       - 'vercel.json'
       - '.pre-commit-config.yaml'
       - '.github/workflows/branch-hygiene.yml'
@@ -84,6 +86,9 @@ jobs:
 
       - name: Run commit-time validation
         run: pre-commit run --all-files --hook-stage pre-commit
+
+      - name: Validate recurring research provider comparison
+        run: python -m unittest tests.test_research_provider_comparison -v
 
       - name: Build public docs
         working-directory: docs
