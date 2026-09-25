@@ -31,6 +31,7 @@ on:
       - '.github/workflows/factory-provider-reroute.yml'
       - '.github/workflows/factory-capability-readback.yml'
       - '.github/workflows/factory-autonomous-merge.yml'
+      - '.github/workflows/factory-conflict-repair.yml'
       - '.github/workflows/gh-aw-sync.yml'
       - '.github/workflows/github-ops-audit.md'
       - '.github/workflows/github-ops-audit.lock.yml'
