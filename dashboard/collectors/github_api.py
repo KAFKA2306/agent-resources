@@ -86,6 +86,43 @@ def request_json(url, token=None):
     ) from last_transport_error
 
 
+
+def request_text(url, token=None):
+    """Fetch trusted GitHub text evidence with bounded transport retries."""
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": API_VERSION,
+        "User-Agent": "KAFKA2306-agent-resources-factory",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = Request(url, headers=headers)
+    last_transport_error = None
+    for attempt in range(TRANSIENT_ATTEMPTS):
+        try:
+            with urlopen(request, timeout=30) as response:
+                return response.read().decode("utf-8", errors="replace"), dict(response.headers.items())
+        except HTTPError as exc:
+            try:
+                body = exc.read().decode("utf-8", errors="replace")
+            except Exception:
+                body = ""
+            response_headers = dict(exc.headers.items()) if exc.headers else {}
+            raise GitHubApiError(
+                f"GitHub text request failed with HTTP {exc.code}: {url}",
+                status=exc.code,
+                headers=response_headers,
+                response_body=body,
+            ) from exc
+        except (URLError, TimeoutError, RemoteDisconnected, ConnectionResetError) as exc:
+            last_transport_error = exc
+            if attempt + 1 >= TRANSIENT_ATTEMPTS:
+                break
+            time.sleep(TRANSIENT_RETRY_DELAYS[attempt])
+    raise GitHubApiError(
+        f"GitHub text request failed after {TRANSIENT_ATTEMPTS} transport attempts: {url}"
+    ) from last_transport_error
+
 def request_mutation(url, token=None, *, method="POST", payload=None):
     if method not in {"POST", "PUT", "PATCH", "DELETE"}:
         raise ValueError("mutation method must be POST, PUT, PATCH, or DELETE")
