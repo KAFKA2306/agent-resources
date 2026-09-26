@@ -2,6 +2,15 @@ name: Factory OSS Benchmark
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/factory-oss-benchmark.yml'
+      - 'dashboard/oss_benchmark.py'
+      - 'dashboard/benchmark_analysis.py'
+      - 'tests/test_oss_benchmark.py'
+      - 'tests/test_benchmark_selection.py'
+      - 'tests/test_benchmark_analysis.py'
   schedule:
     - cron: '23 1 * * *'
 
