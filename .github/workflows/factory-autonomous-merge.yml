@@ -53,8 +53,13 @@ jobs:
               pr.head.sha === headSha &&
               !pr.draft
             );
+            if (candidates.length === 0) {
+              core.notice(`no eligible open non-draft PR for exact head ${headSha}; autonomous merge is a no-op`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
             if (candidates.length !== 1) {
-              core.setFailed(`expected exactly one open non-draft PR for exact head ${headSha}; found ${candidates.length}`);
+              core.setFailed(`expected at most one open non-draft PR for exact head ${headSha}; found ${candidates.length}`);
               return;
             }
             const pr = candidates[0];
@@ -119,10 +124,12 @@ jobs:
               core.setFailed('exact-head check verification did not complete');
               return;
             }
+            core.setOutput('eligible', 'true');
             core.setOutput('number', String(pr.number));
             core.setOutput('head_sha', headSha);
 
       - name: Merge verified exact head
+        if: steps.gate.outputs.eligible == 'true'
         id: merge
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
@@ -158,6 +165,7 @@ jobs:
             core.setOutput('pr_number', String(pull_number));
 
       - name: Dispatch Pages current-evidence refresh
+        if: steps.gate.outputs.eligible == 'true' && steps.merge.conclusion == 'success'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           MERGE_SHA: ${{ steps.merge.outputs.merge_sha }}
