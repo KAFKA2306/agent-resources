@@ -47,6 +47,7 @@ jobs:
             tests/test_benchmark_selection.py \
             tests/test_benchmark_analysis.py
       - name: Persist benchmark state when changed
+        id: persist
         run: |
           if git diff --quiet -- dashboard/oss-benchmark-ledger.json dashboard/oss-benchmark-candidates.json; then
             echo 'No benchmark state change.'
@@ -57,6 +58,30 @@ jobs:
           git add dashboard/oss-benchmark-ledger.json dashboard/oss-benchmark-candidates.json
           git commit -m 'chore(factory): refresh OSS benchmark analysis'
           git push
+          echo "changed_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Dispatch Pages current-evidence refresh for benchmark commit
+        if: steps.persist.outputs.changed_sha != ''
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          MAIN_SHA: ${{ steps.persist.outputs.changed_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const mainSha = process.env.MAIN_SHA;
+            if (!mainSha) {
+              core.setFailed('benchmark commit SHA is missing; refusing Pages refresh dispatch');
+              return;
+            }
+            await github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event_type: 'factory.pages.refresh',
+              client_payload: {
+                main_sha: mainSha,
+                source: 'factory-oss-benchmark',
+              },
+            });
+            core.notice(`dispatched Pages refresh for benchmark main ${mainSha}`);
       - name: Record fail-soft external benchmark state
         if: steps.collect.outcome != 'success' || steps.analyze.outcome != 'success'
         run: |
