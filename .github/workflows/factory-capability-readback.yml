@@ -8,6 +8,7 @@ on:
       - Factory Provider Reroute
       - Factory Autonomous Merge
       - Factory Production Recovery
+      - Sync gh-aw lock files
     types: [completed]
 
 permissions:
@@ -16,7 +17,7 @@ permissions:
 
 jobs:
   readback:
-    if: github.event.workflow_run.conclusion == 'action_required'
+    if: github.event.workflow_run.conclusion == 'action_required' || github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -40,12 +41,35 @@ jobs:
               repo: context.repo.repo,
               run_id: runId,
             });
-            if (run.conclusion !== 'action_required') {
-              core.setFailed(`source run ${runId} is not action_required: ${run.conclusion}`); return;
+            if (!['action_required', 'failure'].includes(run.conclusion)) {
+              core.setFailed(`source run ${runId} is not a permission-capable failure: ${run.conclusion}`); return;
             }
             if (run.head_sha !== expectedSha) {
               core.setFailed(`stale permission readback: ${run.head_sha} != ${expectedSha}`); return;
             }
+
+            let permissionFingerprint = run.conclusion === 'action_required';
+            let failedSteps = [];
+            if (run.conclusion === 'failure') {
+              const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: runId,
+                per_page: 100,
+              });
+              failedSteps = jobs.jobs
+                .flatMap(job => job.steps || [])
+                .filter(step => step.conclusion === 'failure')
+                .map(step => step.name || '');
+              permissionFingerprint = failedSteps.some(name =>
+                /permission|authorization|commit generated lock|commit generated workflow/i.test(name)
+              );
+            }
+            if (!permissionFingerprint) {
+              core.notice(`NO_WORK: source run ${runId} has no permission-mismatch fingerprint`);
+              return;
+            }
+
             const normalizedPath = workflowPath.replace(/^\.github\/workflows\//, '');
             const { data: file } = await github.rest.repos.getContent({
               owner: context.repo.owner,
@@ -64,6 +88,8 @@ jobs:
               source_workflow: workflowPath,
               source_event: run.event,
               source_conclusion: run.conclusion,
+              failed_steps: failedSteps,
+              permission_fingerprint: permissionFingerprint,
               workflow_permissions_declared: hasPermissions,
             };
             await core.summary
