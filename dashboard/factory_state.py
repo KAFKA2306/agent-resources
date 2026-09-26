@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import datetime
+from math import ceil
 from typing import Iterable, Mapping
 
 
@@ -70,6 +71,15 @@ def _seconds(start: object, end: object) -> float | None:
     )
 
 
+def _percentile(values: list[float], percentile: float) -> float | None:
+    """Return a deterministic nearest-rank percentile, or None without evidence."""
+    if not values:
+        return None
+    ordered = sorted(values)
+    rank = max(1, ceil(percentile * len(ordered)))
+    return ordered[rank - 1]
+
+
 def build_factory_state(
     signals: Iterable[Mapping[str, object]], *, main_sha: str, generated_at: str
 ) -> dict[str, object]:
@@ -119,6 +129,8 @@ def build_factory_state(
             "selfHealRate": len(healed) / len(healable) if healable else None,
             "humanInterventionRate": len(interventions) / total if total else None,
             "meanLeadTimeSeconds": sum(lead) / len(lead) if lead else None,
+            "leadTimeP50Seconds": _percentile(lead, 0.50),
+            "leadTimeP95Seconds": _percentile(lead, 0.95),
         },
         "failurePareto": [
             {"failureClass": failure_class, "count": count}
