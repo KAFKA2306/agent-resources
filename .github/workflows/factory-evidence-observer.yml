@@ -65,6 +65,27 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+          remediation_status=$(python -c "import json; print(json.load(open('factory-remediation.json')).get('status', ''))")
+          remediation_action=$(python -c "import json; print(json.load(open('factory-remediation.json')).get('decision', {}).get('action', ''))")
+          if [[ "$remediation_status" == "DEFERRED" && "$remediation_action" == "capability_readback" ]]; then
+            source_head_sha=$(python -c "import json; print(json.load(open('factory-remediation.json')).get('signal', {}).get('head_sha', ''))")
+            if [[ -z "$source_head_sha" ]]; then
+              echo 'Capability readback dispatch refused: exact source head SHA is missing.' >&2
+              exit 1
+            fi
+            payload=$(python -c 'import json, os; print(json.dumps({"ref":"main","inputs":{"source_run_id":os.environ["FACTORY_RUN_ID"],"source_head_sha":os.environ["SOURCE_HEAD_SHA"]}}))' \
+              SOURCE_HEAD_SHA="$source_head_sha")
+            curl --fail-with-body --silent --show-error \
+              -X POST \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$FACTORY_OWNER/$FACTORY_REPOSITORY/actions/workflows/factory-capability-readback.yml/dispatches" \
+              -d "$payload"
+            echo "Dispatched exact-revision capability readback for source run $FACTORY_RUN_ID at $source_head_sha."
+            exit 0
+          fi
+
           # Exit 2 is the runtime's explicit TERMINAL/UNVERIFIED outcome. The
           # observer successfully recorded that evidence, so do not turn the
           # observer itself into a second factory failure. Unexpected runtime
