@@ -11,6 +11,7 @@ on:
       - completed
 
 permissions:
+  actions: write
   checks: read
   contents: write
   pull-requests: write
@@ -62,7 +63,36 @@ jobs:
               core.setFailed(`expected at most one open non-draft PR for exact head ${headSha}; found ${candidates.length}`);
               return;
             }
-            const pr = candidates[0];
+            const candidate = candidates[0];
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: candidate.number,
+            });
+            if (pr.head.sha !== headSha || pr.state !== 'open' || pr.draft) {
+              core.setFailed('PR changed while claiming mergeability; refusing stale repair or merge');
+              return;
+            }
+            if (pr.mergeable === false) {
+              await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'factory-conflict-repair.yml',
+                ref: context.payload.repository.default_branch,
+                inputs: {
+                  pr_number: String(pr.number),
+                  expected_head_sha: headSha,
+                  expected_base_sha: pr.base.sha,
+                },
+              });
+              core.notice(`dispatched bounded conflict repair for PR #${pr.number} head=${headSha} base=${pr.base.sha}`);
+              core.setOutput('eligible', 'false');
+              return;
+            }
+            if (pr.mergeable == null) {
+              core.setFailed('PR mergeability is still unknown; refusing optimistic merge');
+              return;
+            }
             const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
