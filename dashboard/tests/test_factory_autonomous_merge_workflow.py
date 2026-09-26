@@ -32,6 +32,16 @@ class AutonomousMergeWorkflowTests(unittest.TestCase):
         self.assertIn("exact-head checks failed", self.text)
         self.assertIn("exact-head checks did not settle", self.text)
 
+    def test_routes_exact_merge_conflict_to_bounded_repair(self):
+        self.assertIn("actions: write", self.text)
+        self.assertIn("pr.mergeable === false", self.text)
+        self.assertIn("github.rest.actions.createWorkflowDispatch", self.text)
+        self.assertIn("workflow_id: 'factory-conflict-repair.yml'", self.text)
+        self.assertIn("expected_head_sha: headSha", self.text)
+        self.assertIn("expected_base_sha: pr.base.sha", self.text)
+        self.assertIn("pr.mergeable == null", self.text)
+        self.assertIn("refusing optimistic merge", self.text)
+
 
 if __name__ == "__main__":
     unittest.main()
