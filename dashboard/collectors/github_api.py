@@ -10,6 +10,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 API_VERSION = "2026-03-10"
 TRANSIENT_ATTEMPTS = 3
 TRANSIENT_RETRY_DELAYS = (0.5, 1.5)
+TRANSIENT_HTTP_STATUSES = frozenset({502})
 _REPOSITORY_DETAIL_FIELDS = {
     "private",
     "visibility",
@@ -57,6 +58,7 @@ def request_json(url, token=None):
         headers["Authorization"] = f"Bearer {token}"
     request = Request(url, headers=headers)
     last_transport_error = None
+    last_http_error = None
     for attempt in range(TRANSIENT_ATTEMPTS):
         try:
             with urlopen(request, timeout=30) as response:
@@ -68,6 +70,17 @@ def request_json(url, token=None):
             except Exception:
                 body = ""
             response_headers = dict(exc.headers.items()) if exc.headers else {}
+            if exc.code in TRANSIENT_HTTP_STATUSES:
+                last_http_error = GitHubApiError(
+                    f"GitHub API request failed with HTTP {exc.code}: {url}",
+                    status=exc.code,
+                    headers=response_headers,
+                    response_body=body,
+                )
+                if attempt + 1 >= TRANSIENT_ATTEMPTS:
+                    raise last_http_error from exc
+                time.sleep(TRANSIENT_RETRY_DELAYS[attempt])
+                continue
             raise GitHubApiError(
                 f"GitHub API request failed with HTTP {exc.code}: {url}",
                 status=exc.code,
@@ -84,7 +97,6 @@ def request_json(url, token=None):
     raise GitHubApiError(
         f"GitHub API request failed after {TRANSIENT_ATTEMPTS} transport attempts: {url}"
     ) from last_transport_error
-
 
 
 class _NoRedirectHandler(HTTPRedirectHandler):
