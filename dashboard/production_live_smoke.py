@@ -7,7 +7,11 @@ import urllib.request
 from datetime import datetime, timezone
 
 LIVE_CLOCK_SKEW_TOLERANCE_SECONDS = 300
-RETRY_ATTEMPTS = 30
+# Production deployment can become Ready before the GitHub Pages evidence refresh
+# for the same main revision finishes. Keep recovery bounded, but give the
+# exact-revision Pages authority enough time to converge before declaring a
+# production failure and triggering a rollback.
+RETRY_ATTEMPTS = 60
 RETRY_DELAY_SECONDS = 10
 
 
@@ -97,6 +101,7 @@ def validate_factory_state(payload: object, *, expected_sha: str) -> None:
     capabilities = payload.get("capabilities")
     if not isinstance(capabilities, list) or not capabilities:
         raise ValueError("factory state capabilities are missing")
+
 
 
 def verify_production_factory_state(page_url: str, expected_sha: str) -> dict:
