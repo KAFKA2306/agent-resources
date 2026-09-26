@@ -52,6 +52,26 @@ class GitHubApiTransportRetryTest(unittest.TestCase):
 
     @patch("dashboard.collectors.github_api.time.sleep")
     @patch("dashboard.collectors.github_api.urlopen")
+    def test_github_502_retries_then_succeeds(self, mock_urlopen, mock_sleep):
+        mock_urlopen.side_effect = [
+            HTTPError(
+                "https://api.github.com/test",
+                502,
+                "Bad Gateway",
+                {},
+                io.BytesIO(b'{"message":"bad gateway"}'),
+            ),
+            FakeResponse(json.dumps({"ok": True}).encode("utf-8")),
+        ]
+
+        payload, _ = request_json("https://api.github.com/test")
+
+        self.assertEqual(payload, {"ok": True})
+        self.assertEqual(mock_urlopen.call_count, 2)
+        mock_sleep.assert_called_once_with(0.5)
+
+    @patch("dashboard.collectors.github_api.time.sleep")
+    @patch("dashboard.collectors.github_api.urlopen")
     def test_http_error_is_not_transport_retried(self, mock_urlopen, mock_sleep):
         mock_urlopen.side_effect = HTTPError(
             "https://api.github.com/test",
@@ -124,7 +144,6 @@ class GitHubApiTransportRetryTest(unittest.TestCase):
 
         self.assertEqual(payload, fresh)
         mock_urlopen.assert_called_once()
-
 
     @patch("dashboard.collectors.github_api.urlopen")
     def test_mutation_uses_requested_method_without_transport_replay(self, mock_urlopen):
