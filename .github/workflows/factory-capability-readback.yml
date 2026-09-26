@@ -10,6 +10,16 @@ on:
       - Factory Production Recovery
       - Sync gh-aw lock files
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Failed workflow run to read back
+        required: true
+        type: string
+      source_head_sha:
+        description: Exact failed revision expected for the source run
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -17,23 +27,21 @@ permissions:
 
 jobs:
   readback:
-    if: github.event.workflow_run.conclusion == 'action_required' || github.event.workflow_run.conclusion == 'failure'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'action_required' || github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Read back exact workflow capability evidence
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
-          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
-          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-          SOURCE_WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
+          SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
+          SOURCE_HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.source_head_sha || github.event.workflow_run.head_sha }}
         with:
           github-token: ${{ github.token }}
           script: |
             const runId = Number(process.env.SOURCE_RUN_ID);
             const expectedSha = process.env.SOURCE_HEAD_SHA;
-            const workflowPath = process.env.SOURCE_WORKFLOW_PATH;
-            if (!runId || !expectedSha || !workflowPath) {
+            if (!runId || !expectedSha) {
               core.setFailed('permission readback evidence is incomplete'); return;
             }
             const { data: run } = await github.rest.actions.getWorkflowRun({
@@ -46,6 +54,10 @@ jobs:
             }
             if (run.head_sha !== expectedSha) {
               core.setFailed(`stale permission readback: ${run.head_sha} != ${expectedSha}`); return;
+            }
+            const workflowPath = run.path;
+            if (!workflowPath) {
+              core.setFailed('source workflow path is unavailable'); return;
             }
 
             let permissionFingerprint = run.conclusion === 'action_required';
