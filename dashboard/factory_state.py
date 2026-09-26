@@ -80,6 +80,15 @@ def _percentile(values: list[float], percentile: float) -> float | None:
     return ordered[rank - 1]
 
 
+def _mean_observed_duration(
+    evidence: list[Mapping[str, object]], start_key: str, end_key: str
+) -> float | None:
+    """Average only durations backed by both explicit evidence timestamps."""
+    durations = [_seconds(signal.get(start_key), signal.get(end_key)) for signal in evidence]
+    observed = [seconds for seconds in durations if seconds is not None]
+    return sum(observed) / len(observed) if observed else None
+
+
 def build_factory_state(
     signals: Iterable[Mapping[str, object]], *, main_sha: str, generated_at: str
 ) -> dict[str, object]:
@@ -131,6 +140,15 @@ def build_factory_state(
             "meanLeadTimeSeconds": sum(lead) / len(lead) if lead else None,
             "leadTimeP50Seconds": _percentile(lead, 0.50),
             "leadTimeP95Seconds": _percentile(lead, 0.95),
+            "meanQueueTimeSeconds": _mean_observed_duration(
+                evidence, "queued_at", "started_at"
+            ),
+            "meanRepairTimeSeconds": _mean_observed_duration(
+                evidence, "repair_started_at", "repair_completed_at"
+            ),
+            "meanDeployProbeTimeSeconds": _mean_observed_duration(
+                evidence, "deploy_started_at", "probe_completed_at"
+            ),
         },
         "failurePareto": [
             {"failureClass": failure_class, "count": count}
