@@ -2,6 +2,14 @@ name: Factory Runtime Metrics
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/factory-runtime-metrics.yml"
+      - ".github/workflows/factory-*.yml"
+      - "dashboard/factory_*.py"
+      - "dashboard/collectors/factory_evidence.py"
   pull_request:
     paths:
       - ".github/workflows/factory-runtime-metrics.yml"
