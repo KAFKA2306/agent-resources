@@ -15,6 +15,7 @@ on:
       - Factory Capability Readback
       - Factory Autonomous Merge
       - Factory Production Recovery
+      - Factory Runtime Metrics
       - KAFKA2306 public GitHub operations audit
       - Deterministic Ops Audit
     types:
