@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Collect queue, lead, and repair timing from GitHub Actions
+      - name: Collect queue, lead, repair, and deploy-to-probe timing from GitHub Actions
         id: metrics
         env:
           GH_TOKEN: ${{ github.token }}
@@ -65,6 +65,7 @@ jobs:
           queue_seconds = []
           lead_seconds = []
           repair_seconds = []
+          deploy_probe_seconds = []
           for run in runs:
               created = run.get("created_at")
               started = run.get("run_started_at")
@@ -77,6 +78,26 @@ jobs:
                   if run.get("name") == "Factory Repair Agent":
                       repair_seconds.append(duration)
 
+              # Production release verification is dispatched only after Vercel
+              # reports deployment success. Measuring from the exact deployed
+              # commit timestamp through verification completion captures the
+              # observed commit -> deploy -> production-probe path without
+              # treating preview deployments as production evidence.
+              name = run.get("name") or ""
+              head_commit = run.get("head_commit") or {}
+              commit_timestamp = head_commit.get("timestamp")
+              if (
+                  run.get("event") == "repository_dispatch"
+                  and name.startswith("Dashboard release · production · ")
+                  and run.get("status") == "completed"
+                  and run.get("conclusion") == "success"
+                  and commit_timestamp
+                  and updated
+              ):
+                  deploy_probe_seconds.append(
+                      max(0.0, (parse(updated) - parse(commit_timestamp)).total_seconds())
+                  )
+
           if not queue_seconds:
               raise SystemExit("no observed queue timing evidence")
           if not lead_seconds:
@@ -88,7 +109,7 @@ jobs:
               return ordered[index]
 
           metrics = {
-              "schemaVersion": "1.2.0",
+              "schemaVersion": "1.3.0",
               "sampleCount": len(queue_seconds),
               "meanQueueTimeSeconds": statistics.fmean(queue_seconds),
               "queueTimeP50Seconds": nearest_rank(queue_seconds, 0.50),
@@ -102,6 +123,11 @@ jobs:
               "repairTimeP50Seconds": nearest_rank(repair_seconds, 0.50) if repair_seconds else None,
               "repairTimeP95Seconds": nearest_rank(repair_seconds, 0.95) if repair_seconds else None,
               "repairTimeState": "VERIFIED" if repair_seconds else "UNVERIFIED",
+              "deployProbeTimeSampleCount": len(deploy_probe_seconds),
+              "meanDeployProbeTimeSeconds": statistics.fmean(deploy_probe_seconds) if deploy_probe_seconds else None,
+              "deployProbeTimeP50Seconds": nearest_rank(deploy_probe_seconds, 0.50) if deploy_probe_seconds else None,
+              "deployProbeTimeP95Seconds": nearest_rank(deploy_probe_seconds, 0.95) if deploy_probe_seconds else None,
+              "deployProbeTimeState": "VERIFIED" if deploy_probe_seconds else "UNVERIFIED",
               "source": "github-actions-runs",
               "branch": "main",
               "sourceRevision": os.environ["SOURCE_REVISION"],
