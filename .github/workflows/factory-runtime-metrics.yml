@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Collect queue timing from GitHub Actions
+      - name: Collect queue and lead timing from GitHub Actions
         id: metrics
         env:
           GH_TOKEN: ${{ github.token }}
@@ -62,27 +62,36 @@ jobs:
               return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
           queue_seconds = []
+          lead_seconds = []
           for run in runs:
               created = run.get("created_at")
               started = run.get("run_started_at")
-              if not created or not started:
-                  continue
-              queue_seconds.append(max(0.0, (parse(started) - parse(created)).total_seconds()))
+              updated = run.get("updated_at")
+              if created and started:
+                  queue_seconds.append(max(0.0, (parse(started) - parse(created)).total_seconds()))
+              if created and updated and run.get("status") == "completed":
+                  lead_seconds.append(max(0.0, (parse(updated) - parse(created)).total_seconds()))
 
           if not queue_seconds:
               raise SystemExit("no observed queue timing evidence")
+          if not lead_seconds:
+              raise SystemExit("no observed completed workflow lead timing evidence")
 
-          ordered = sorted(queue_seconds)
-          def nearest_rank(p):
+          def nearest_rank(values, p):
+              ordered = sorted(values)
               index = max(0, min(len(ordered) - 1, int((p * len(ordered) + 0.999999)) - 1))
               return ordered[index]
 
           metrics = {
-              "schemaVersion": "1.0.0",
-              "sampleCount": len(ordered),
-              "meanQueueTimeSeconds": statistics.fmean(ordered),
-              "queueTimeP50Seconds": nearest_rank(0.50),
-              "queueTimeP95Seconds": nearest_rank(0.95),
+              "schemaVersion": "1.1.0",
+              "sampleCount": len(queue_seconds),
+              "meanQueueTimeSeconds": statistics.fmean(queue_seconds),
+              "queueTimeP50Seconds": nearest_rank(queue_seconds, 0.50),
+              "queueTimeP95Seconds": nearest_rank(queue_seconds, 0.95),
+              "leadTimeSampleCount": len(lead_seconds),
+              "meanLeadTimeSeconds": statistics.fmean(lead_seconds),
+              "leadTimeP50Seconds": nearest_rank(lead_seconds, 0.50),
+              "leadTimeP95Seconds": nearest_rank(lead_seconds, 0.95),
               "source": "github-actions-runs",
               "branch": "main",
               "sourceRevision": os.environ.get("GITHUB_SHA"),
@@ -92,7 +101,7 @@ jobs:
               output.write("\n")
           print(json.dumps(metrics, sort_keys=True))
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
-              summary.write("## Factory runtime queue metrics\n\n```json\n")
+              summary.write("## Factory runtime metrics\n\n```json\n")
               summary.write(json.dumps(metrics, indent=2, sort_keys=True))
               summary.write("\n```\n")
           PY
