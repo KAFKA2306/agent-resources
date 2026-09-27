@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Collect queue, lead, repair, and deploy-to-probe timing from GitHub Actions
+      - name: Collect queue, lead, repair, deploy-to-probe, and failure Pareto timing from GitHub Actions
         id: metrics
         env:
           GH_TOKEN: ${{ github.token }}
@@ -41,6 +41,7 @@ jobs:
           import os
           import statistics
           import urllib.request
+          from collections import Counter
           from datetime import datetime
 
           repo = os.environ["GH_REPOSITORY"]
@@ -66,6 +67,8 @@ jobs:
           lead_seconds = []
           repair_seconds = []
           deploy_probe_seconds = []
+          failure_counts = Counter()
+          completed_count = 0
           for run in runs:
               created = run.get("created_at")
               started = run.get("run_started_at")
@@ -73,10 +76,15 @@ jobs:
               if created and started:
                   queue_seconds.append(max(0.0, (parse(started) - parse(created)).total_seconds()))
               if created and updated and run.get("status") == "completed":
+                  completed_count += 1
                   duration = max(0.0, (parse(updated) - parse(created)).total_seconds())
                   lead_seconds.append(duration)
                   if run.get("name") == "Factory Repair Agent":
                       repair_seconds.append(duration)
+                  conclusion = run.get("conclusion")
+                  if conclusion not in {"success", "neutral", "skipped"}:
+                      workflow_name = run.get("name") or "UNKNOWN_WORKFLOW"
+                      failure_counts[(workflow_name, conclusion or "UNKNOWN")] += 1
 
               # Production release verification is dispatched only after Vercel
               # reports deployment success. Measuring from the exact deployed
@@ -108,8 +116,16 @@ jobs:
               index = max(0, min(len(ordered) - 1, int((p * len(ordered) + 0.999999)) - 1))
               return ordered[index]
 
+          failure_pareto = [
+              {"workflow": workflow, "conclusion": conclusion, "count": count}
+              for (workflow, conclusion), count in sorted(
+                  failure_counts.items(), key=lambda item: (-item[1], item[0][0], item[0][1])
+              )
+          ]
+          failed_count = sum(failure_counts.values())
+
           metrics = {
-              "schemaVersion": "1.3.0",
+              "schemaVersion": "1.4.0",
               "sampleCount": len(queue_seconds),
               "meanQueueTimeSeconds": statistics.fmean(queue_seconds),
               "queueTimeP50Seconds": nearest_rank(queue_seconds, 0.50),
@@ -128,6 +144,11 @@ jobs:
               "deployProbeTimeP50Seconds": nearest_rank(deploy_probe_seconds, 0.50) if deploy_probe_seconds else None,
               "deployProbeTimeP95Seconds": nearest_rank(deploy_probe_seconds, 0.95) if deploy_probe_seconds else None,
               "deployProbeTimeState": "VERIFIED" if deploy_probe_seconds else "UNVERIFIED",
+              "completedWorkflowSampleCount": completed_count,
+              "failedWorkflowSampleCount": failed_count,
+              "firstPassYield": (completed_count - failed_count) / completed_count if completed_count else None,
+              "failurePareto": failure_pareto,
+              "failureParetoState": "VERIFIED" if completed_count else "UNVERIFIED",
               "source": "github-actions-runs",
               "branch": "main",
               "sourceRevision": os.environ["SOURCE_REVISION"],
