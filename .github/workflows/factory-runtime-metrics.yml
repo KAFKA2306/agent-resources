@@ -29,11 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Collect queue and lead timing from GitHub Actions
+      - name: Collect queue, lead, and repair timing from GitHub Actions
         id: metrics
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPOSITORY: ${{ github.repository }}
+          SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           python - <<'PY'
           import json
@@ -63,6 +64,7 @@ jobs:
 
           queue_seconds = []
           lead_seconds = []
+          repair_seconds = []
           for run in runs:
               created = run.get("created_at")
               started = run.get("run_started_at")
@@ -70,7 +72,10 @@ jobs:
               if created and started:
                   queue_seconds.append(max(0.0, (parse(started) - parse(created)).total_seconds()))
               if created and updated and run.get("status") == "completed":
-                  lead_seconds.append(max(0.0, (parse(updated) - parse(created)).total_seconds()))
+                  duration = max(0.0, (parse(updated) - parse(created)).total_seconds())
+                  lead_seconds.append(duration)
+                  if run.get("name") == "Factory Repair Agent":
+                      repair_seconds.append(duration)
 
           if not queue_seconds:
               raise SystemExit("no observed queue timing evidence")
@@ -83,7 +88,7 @@ jobs:
               return ordered[index]
 
           metrics = {
-              "schemaVersion": "1.1.0",
+              "schemaVersion": "1.2.0",
               "sampleCount": len(queue_seconds),
               "meanQueueTimeSeconds": statistics.fmean(queue_seconds),
               "queueTimeP50Seconds": nearest_rank(queue_seconds, 0.50),
@@ -92,9 +97,14 @@ jobs:
               "meanLeadTimeSeconds": statistics.fmean(lead_seconds),
               "leadTimeP50Seconds": nearest_rank(lead_seconds, 0.50),
               "leadTimeP95Seconds": nearest_rank(lead_seconds, 0.95),
+              "repairTimeSampleCount": len(repair_seconds),
+              "meanRepairTimeSeconds": statistics.fmean(repair_seconds) if repair_seconds else None,
+              "repairTimeP50Seconds": nearest_rank(repair_seconds, 0.50) if repair_seconds else None,
+              "repairTimeP95Seconds": nearest_rank(repair_seconds, 0.95) if repair_seconds else None,
+              "repairTimeState": "VERIFIED" if repair_seconds else "UNVERIFIED",
               "source": "github-actions-runs",
               "branch": "main",
-              "sourceRevision": os.environ.get("GITHUB_SHA"),
+              "sourceRevision": os.environ["SOURCE_REVISION"],
           }
           with open("factory-runtime-metrics.json", "w", encoding="utf-8") as output:
               json.dump(metrics, output, indent=2, sort_keys=True)
