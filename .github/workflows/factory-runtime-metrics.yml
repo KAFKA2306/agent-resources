@@ -2,6 +2,9 @@ name: Factory Runtime Metrics
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/factory-runtime-metrics.yml"
   schedule:
     - cron: "17 * * * *"
 
@@ -10,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: factory-runtime-metrics
+  group: factory-runtime-metrics-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -67,16 +70,29 @@ jobs:
               return ordered[index]
 
           metrics = {
+              "schemaVersion": "1.0.0",
               "sampleCount": len(ordered),
               "meanQueueTimeSeconds": statistics.fmean(ordered),
               "queueTimeP50Seconds": nearest_rank(0.50),
               "queueTimeP95Seconds": nearest_rank(0.95),
               "source": "github-actions-runs",
               "branch": "main",
+              "sourceRevision": os.environ.get("GITHUB_SHA"),
           }
+          with open("factory-runtime-metrics.json", "w", encoding="utf-8") as output:
+              json.dump(metrics, output, indent=2, sort_keys=True)
+              output.write("\n")
           print(json.dumps(metrics, sort_keys=True))
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
               summary.write("## Factory runtime queue metrics\n\n```json\n")
               summary.write(json.dumps(metrics, indent=2, sort_keys=True))
               summary.write("\n```\n")
           PY
+
+      - name: Upload runtime metrics evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: factory-runtime-metrics-${{ github.run_id }}
+          path: factory-runtime-metrics.json
+          if-no-files-found: error
+          retention-days: 14
