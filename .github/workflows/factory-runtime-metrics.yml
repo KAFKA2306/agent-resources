@@ -1,0 +1,82 @@
+name: Factory Runtime Metrics
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: factory-runtime-metrics
+  cancel-in-progress: true
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Collect queue timing from GitHub Actions
+        id: metrics
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import statistics
+          import urllib.request
+          from datetime import datetime
+
+          repo = os.environ["GH_REPOSITORY"]
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{repo}/actions/runs?branch=main&per_page=100",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.urlopen(request, timeout=20) as response:
+              payload = json.load(response)
+
+          runs = payload.get("workflow_runs")
+          if not isinstance(runs, list):
+              raise SystemExit("workflow_runs evidence is missing")
+
+          def parse(value):
+              return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+          queue_seconds = []
+          for run in runs:
+              created = run.get("created_at")
+              started = run.get("run_started_at")
+              if not created or not started:
+                  continue
+              queue_seconds.append(max(0.0, (parse(started) - parse(created)).total_seconds()))
+
+          if not queue_seconds:
+              raise SystemExit("no observed queue timing evidence")
+
+          ordered = sorted(queue_seconds)
+          def nearest_rank(p):
+              index = max(0, min(len(ordered) - 1, int((p * len(ordered) + 0.999999)) - 1))
+              return ordered[index]
+
+          metrics = {
+              "sampleCount": len(ordered),
+              "meanQueueTimeSeconds": statistics.fmean(ordered),
+              "queueTimeP50Seconds": nearest_rank(0.50),
+              "queueTimeP95Seconds": nearest_rank(0.95),
+              "source": "github-actions-runs",
+              "branch": "main",
+          }
+          print(json.dumps(metrics, sort_keys=True))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## Factory runtime queue metrics\n\n```json\n")
+              summary.write(json.dumps(metrics, indent=2, sort_keys=True))
+              summary.write("\n```\n")
+          PY
