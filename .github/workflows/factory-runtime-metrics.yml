@@ -69,7 +69,9 @@ jobs:
           repair_seconds = []
           deploy_probe_seconds = []
           failure_counts = Counter()
+          cancellation_counts = Counter()
           completed_count = 0
+          first_pass_eligible_count = 0
           first_pass_success_count = 0
           for run in runs:
               created = run.get("created_at")
@@ -84,9 +86,6 @@ jobs:
                   if run.get("name") == "Factory Repair Agent":
                       repair_seconds.append(duration)
 
-                  # GitHub's runs collection exposes the latest attempt. For a
-                  # rerun, read attempt 1 explicitly so first-pass yield and the
-                  # failure Pareto do not erase a failure after successful repair.
                   first_attempt = run
                   if (run.get("run_attempt") or 1) > 1:
                       run_id = run.get("id")
@@ -99,17 +98,16 @@ jobs:
                           raise SystemExit(f"first attempt evidence is incomplete for run {run_id}")
 
                   conclusion = first_attempt.get("conclusion")
-                  if conclusion in {"success", "neutral", "skipped"}:
-                      first_pass_success_count += 1
+                  workflow_name = run.get("name") or "UNKNOWN_WORKFLOW"
+                  if conclusion == "cancelled":
+                      cancellation_counts[workflow_name] += 1
                   else:
-                      workflow_name = run.get("name") or "UNKNOWN_WORKFLOW"
-                      failure_counts[(workflow_name, conclusion or "UNKNOWN")] += 1
+                      first_pass_eligible_count += 1
+                      if conclusion in {"success", "neutral", "skipped"}:
+                          first_pass_success_count += 1
+                      else:
+                          failure_counts[(workflow_name, conclusion or "UNKNOWN")] += 1
 
-              # Production release verification is dispatched only after Vercel
-              # reports deployment success. Measuring from the exact deployed
-              # commit timestamp through verification completion captures the
-              # observed commit -> deploy -> production-probe path without
-              # treating preview deployments as production evidence.
               name = run.get("name") or ""
               head_commit = run.get("head_commit") or {}
               commit_timestamp = head_commit.get("timestamp")
@@ -141,10 +139,17 @@ jobs:
                   failure_counts.items(), key=lambda item: (-item[1], item[0][0], item[0][1])
               )
           ]
+          cancellation_pareto = [
+              {"workflow": workflow, "count": count}
+              for workflow, count in sorted(
+                  cancellation_counts.items(), key=lambda item: (-item[1], item[0])
+              )
+          ]
           failed_count = sum(failure_counts.values())
+          cancelled_count = sum(cancellation_counts.values())
 
           metrics = {
-              "schemaVersion": "1.4.0",
+              "schemaVersion": "1.5.0",
               "sampleCount": len(queue_seconds),
               "meanQueueTimeSeconds": statistics.fmean(queue_seconds),
               "queueTimeP50Seconds": nearest_rank(queue_seconds, 0.50),
@@ -164,11 +169,15 @@ jobs:
               "deployProbeTimeP95Seconds": nearest_rank(deploy_probe_seconds, 0.95) if deploy_probe_seconds else None,
               "deployProbeTimeState": "VERIFIED" if deploy_probe_seconds else "UNVERIFIED",
               "completedWorkflowSampleCount": completed_count,
+              "firstPassEligibleSampleCount": first_pass_eligible_count,
               "firstPassSuccessSampleCount": first_pass_success_count,
               "failedWorkflowSampleCount": failed_count,
-              "firstPassYield": first_pass_success_count / completed_count if completed_count else None,
+              "cancelledWorkflowSampleCount": cancelled_count,
+              "firstPassYield": first_pass_success_count / first_pass_eligible_count if first_pass_eligible_count else None,
               "failurePareto": failure_pareto,
-              "failureParetoState": "VERIFIED" if completed_count else "UNVERIFIED",
+              "cancellationPareto": cancellation_pareto,
+              "failureParetoState": "VERIFIED" if first_pass_eligible_count else "UNVERIFIED",
+              "cancellationParetoState": "VERIFIED" if completed_count else "UNVERIFIED",
               "source": "github-actions-runs",
               "branch": "main",
               "sourceRevision": os.environ["SOURCE_REVISION"],
