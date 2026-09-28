@@ -70,6 +70,7 @@ jobs:
           deploy_probe_seconds = []
           failure_counts = Counter()
           cancellation_counts = Counter()
+          skipped_counts = Counter()
           completed_count = 0
           first_pass_eligible_count = 0
           first_pass_success_count = 0
@@ -101,9 +102,11 @@ jobs:
                   workflow_name = run.get("name") or "UNKNOWN_WORKFLOW"
                   if conclusion == "cancelled":
                       cancellation_counts[workflow_name] += 1
+                  elif conclusion == "skipped":
+                      skipped_counts[workflow_name] += 1
                   else:
                       first_pass_eligible_count += 1
-                      if conclusion in {"success", "neutral", "skipped"}:
+                      if conclusion in {"success", "neutral"}:
                           first_pass_success_count += 1
                       else:
                           failure_counts[(workflow_name, conclusion or "UNKNOWN")] += 1
@@ -145,11 +148,18 @@ jobs:
                   cancellation_counts.items(), key=lambda item: (-item[1], item[0])
               )
           ]
+          skipped_pareto = [
+              {"workflow": workflow, "count": count}
+              for workflow, count in sorted(
+                  skipped_counts.items(), key=lambda item: (-item[1], item[0])
+              )
+          ]
           failed_count = sum(failure_counts.values())
           cancelled_count = sum(cancellation_counts.values())
+          skipped_count = sum(skipped_counts.values())
 
           metrics = {
-              "schemaVersion": "1.5.0",
+              "schemaVersion": "1.6.0",
               "sampleCount": len(queue_seconds),
               "meanQueueTimeSeconds": statistics.fmean(queue_seconds),
               "queueTimeP50Seconds": nearest_rank(queue_seconds, 0.50),
@@ -173,11 +183,14 @@ jobs:
               "firstPassSuccessSampleCount": first_pass_success_count,
               "failedWorkflowSampleCount": failed_count,
               "cancelledWorkflowSampleCount": cancelled_count,
+              "skippedWorkflowSampleCount": skipped_count,
               "firstPassYield": first_pass_success_count / first_pass_eligible_count if first_pass_eligible_count else None,
               "failurePareto": failure_pareto,
               "cancellationPareto": cancellation_pareto,
+              "skippedPareto": skipped_pareto,
               "failureParetoState": "VERIFIED" if first_pass_eligible_count else "UNVERIFIED",
               "cancellationParetoState": "VERIFIED" if completed_count else "UNVERIFIED",
+              "skippedParetoState": "VERIFIED" if completed_count else "UNVERIFIED",
               "source": "github-actions-runs",
               "branch": "main",
               "sourceRevision": os.environ["SOURCE_REVISION"],
