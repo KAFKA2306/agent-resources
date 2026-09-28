@@ -69,7 +69,7 @@ class FactoryRepairExecutorTests(unittest.TestCase):
         self.assertIn("github.rest.pulls.get", workflow)
         self.assertIn("currentPr.head.sha !== sourcePr.head.sha", workflow)
         self.assertIn("NO_WORK:", workflow)
-        self.assertEqual(workflow.count("if: steps.evidence.outputs.claimed == 'true'"), 4)
+        self.assertEqual(workflow.count("if: steps.evidence.outputs.claimed == 'true'"), 5)
         self.assertIn("group: factory-repair-${{ inputs.failure_fingerprint }}", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
 
