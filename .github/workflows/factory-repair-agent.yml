@@ -116,6 +116,7 @@ jobs:
           esac
 
       - name: Publish repair back to source PR
+        id: publish
         if: steps.evidence.outputs.claimed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -130,4 +131,46 @@ jobs:
           git commit -m "factory: deterministic repair ${FAILURE_FINGERPRINT:0:12}"
           git push origin "HEAD:$HEAD_BRANCH"
           repair_sha="$(git rev-parse HEAD)"
+          echo "repair_sha=$repair_sha" >> "$GITHUB_OUTPUT"
           gh workflow run dashboard-validate.yml --ref "$HEAD_BRANCH" -f head_sha="$repair_sha"
+
+      - name: Read back exact repaired-head validation
+        if: steps.evidence.outputs.claimed == 'true'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          REPAIR_SHA: ${{ steps.publish.outputs.repair_sha }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const expectedSha = process.env.REPAIR_SHA;
+            if (!expectedSha) { core.setFailed('repair SHA missing'); return; }
+            let matched;
+            for (let attempt = 0; attempt < 24; attempt += 1) {
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'dashboard-validate.yml',
+                head_sha: expectedSha,
+                per_page: 20,
+              });
+              matched = data.workflow_runs.find(run => run.head_sha === expectedSha);
+              if (matched) break;
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+            if (!matched) { core.setFailed(`no validation run found for repaired head ${expectedSha}`); return; }
+            for (let attempt = 0; attempt < 60 && matched.status !== 'completed'; attempt += 1) {
+              await new Promise(resolve => setTimeout(resolve, 5000));
+              const { data } = await github.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: matched.id,
+              });
+              matched = data;
+            }
+            if (matched.status !== 'completed') { core.setFailed(`validation run ${matched.id} did not complete within bounded wait`); return; }
+            if (matched.head_sha !== expectedSha) { core.setFailed(`stale validation head ${matched.head_sha} != ${expectedSha}`); return; }
+            if (matched.conclusion !== 'success') { core.setFailed(`repaired-head validation ${matched.id} concluded ${matched.conclusion}`); return; }
+            await core.summary
+              .addHeading('Factory Repair Reverification')
+              .addRaw(`PASS: validation run ${matched.id} succeeded for exact repaired head ${expectedSha}.`)
+              .write();
