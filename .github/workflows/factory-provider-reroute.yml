@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Validate current failure evidence and dispatch alternate route
+      - name: Validate current failure evidence, dispatch alternate route, and require exact-revision PASS
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
           SOURCE_RUN_ID: ${{ inputs.source_run_id }}
@@ -73,11 +73,7 @@ jobs:
             if (!rerouteRef) {
               core.setFailed('source run has no branch ref for safe reroute'); return;
             }
-            const { data: refHead } = await github.rest.repos.getCommit({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: rerouteRef,
-            });
+            const { data: refHead } = await github.rest.repos.getCommit({ owner: context.repo.owner, repo: context.repo.repo, ref: rerouteRef });
             if (refHead.sha !== expectedSha) {
               core.setFailed(`source ref moved: ${rerouteRef}=${refHead.sha} != ${expectedSha}`); return;
             }
@@ -89,6 +85,7 @@ jobs:
             if (!target || target.state !== 'active') {
               core.setFailed(`approved alternate workflow is unavailable: ${alternate}`); return;
             }
+            const dispatchedAt = new Date();
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -101,7 +98,47 @@ jobs:
                 head_sha: expectedSha,
               },
             });
+
+            let alternateRun = null;
+            for (let attempt = 0; attempt < 24; attempt++) {
+              const { data: listed } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: target.id,
+                branch: rerouteRef,
+                event: 'workflow_dispatch',
+                per_page: 20,
+              });
+              alternateRun = listed.workflow_runs.find(candidate =>
+                candidate.head_sha === expectedSha &&
+                new Date(candidate.created_at) >= dispatchedAt
+              ) || null;
+              if (alternateRun) break;
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+            if (!alternateRun) {
+              core.setFailed(`alternate run not observed for exact revision ${expectedSha}`); return;
+            }
+
+            for (let attempt = 0; attempt < 36 && alternateRun.status !== 'completed'; attempt++) {
+              await new Promise(resolve => setTimeout(resolve, 5000));
+              const { data: refreshed } = await github.rest.actions.getWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: alternateRun.id,
+              });
+              alternateRun = refreshed;
+            }
+            if (alternateRun.status !== 'completed') {
+              core.setFailed(`alternate run ${alternateRun.id} did not complete within bounded wait`); return;
+            }
+            if (alternateRun.head_sha !== expectedSha) {
+              core.setFailed(`alternate run ${alternateRun.id} revision drifted: ${alternateRun.head_sha} != ${expectedSha}`); return;
+            }
+            if (alternateRun.conclusion !== 'success') {
+              core.setFailed(`alternate run ${alternateRun.id} did not PASS: ${alternateRun.conclusion}`); return;
+            }
             await core.summary
               .addHeading('Factory Provider Reroute')
-              .addRaw(`Dispatched ${target.path} for ${failureClass} from run ${runId} at exact revision ${expectedSha}.`)
+              .addRaw(`Verified ${target.path} run ${alternateRun.id} PASS for ${failureClass} from run ${runId} at exact revision ${expectedSha}.`)
               .write();
