@@ -34,7 +34,7 @@ permissions:
 jobs:
   reroute:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Validate current failure evidence, dispatch alternate route, and require exact-revision PASS
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
