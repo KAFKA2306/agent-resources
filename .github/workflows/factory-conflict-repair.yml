@@ -83,7 +83,8 @@ jobs:
             exit 78
           fi
 
-      - name: Publish repaired head and reverify exact revision
+      - name: Publish repaired head and dispatch exact-revision verification
+        id: publish
         if: steps.claim.outputs.claimed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -93,4 +94,34 @@ jobs:
           set -euo pipefail
           repaired_sha="$(git rev-parse HEAD)"
           git push origin "HEAD:$HEAD_REF"
+          echo "repaired_sha=$repaired_sha" >> "$GITHUB_OUTPUT"
           gh workflow run dashboard-validate.yml --ref "$HEAD_REF" -f head_sha="$repaired_sha"
+
+      - name: Require repaired revision verification PASS
+        if: steps.claim.outputs.claimed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ steps.claim.outputs.head_ref }}
+          REPAIRED_SHA: ${{ steps.publish.outputs.repaired_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id=""
+          for attempt in $(seq 1 12); do
+            run_id="$(gh run list --workflow dashboard-validate.yml --branch "$HEAD_REF" --event workflow_dispatch --limit 20 --json databaseId,headSha --jq ".[] | select(.headSha == \"$REPAIRED_SHA\") | .databaseId" | head -n1)"
+            if [ -n "$run_id" ]; then
+              break
+            fi
+            sleep 5
+          done
+          if [ -z "$run_id" ]; then
+            echo "No dashboard validation run observed for repaired SHA $REPAIRED_SHA" >&2
+            exit 1
+          fi
+          echo "Waiting for exact repaired revision validation run $run_id"
+          gh run watch "$run_id" --exit-status
+          verified_sha="$(gh run view "$run_id" --json headSha --jq .headSha)"
+          if [ "$verified_sha" != "$REPAIRED_SHA" ]; then
+            echo "Verification run head $verified_sha does not match repaired SHA $REPAIRED_SHA" >&2
+            exit 1
+          fi
