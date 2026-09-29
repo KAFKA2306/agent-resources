@@ -13,6 +13,11 @@ on:
   pull_request:
     paths:
       - ".github/workflows/factory-runtime-metrics.yml"
+  workflow_run:
+    workflows:
+      - "Factory Self-Heal Pilot"
+    types:
+      - completed
   schedule:
     - cron: "17 * * * *"
 
@@ -26,6 +31,7 @@ concurrency:
 
 jobs:
   collect:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -34,7 +40,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPOSITORY: ${{ github.repository }}
-          SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+          SOURCE_REVISION: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
         run: |
           python - <<'PY'
           import json
