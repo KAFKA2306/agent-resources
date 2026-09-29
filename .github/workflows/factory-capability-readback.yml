@@ -8,6 +8,9 @@ on:
       - Factory Provider Reroute
       - Factory Autonomous Merge
       - Factory Production Recovery
+      - Factory Evidence Observer
+      - Factory Runtime Metrics
+      - Factory Reflection
       - Sync gh-aw lock files
     types: [completed]
   workflow_dispatch:
