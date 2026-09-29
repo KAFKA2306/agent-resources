@@ -1,7 +1,7 @@
 name: Verify Dashboard Release
 run-name: >-
   Dashboard release ·
-  ${{ github.event.client_payload.environment || 'manual' }} ·
+  ${{ github.event.client_payload.environment || (github.event_name == 'schedule' && 'production-scheduled') || 'manual' }} ·
   ${{ github.event.client_payload.git.sha || github.sha }}
 
 on:
@@ -15,12 +15,14 @@ on:
         required: false
         default: 'https://agent-resources-one.vercel.app'
         type: string
+  schedule:
+    - cron: '37 * * * *'
 
 permissions:
   contents: read
 
 concurrency:
-  group: dashboard-release-verification-${{ github.event.client_payload.environment || 'manual' }}
+  group: dashboard-release-verification-${{ github.event.client_payload.environment || (github.event_name == 'schedule' && 'production-scheduled') || 'manual' }}
   cancel-in-progress: true
 
 jobs:
@@ -50,6 +52,12 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
             echo "is_production=true" >> "$GITHUB_OUTPUT"
             echo "target_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            echo "is_production=true" >> "$GITHUB_OUTPUT"
+            echo "target_url=https://agent-resources-one.vercel.app" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
