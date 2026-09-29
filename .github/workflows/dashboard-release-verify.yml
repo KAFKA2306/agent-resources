@@ -49,7 +49,13 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] || [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "is_production=true" >> "$GITHUB_OUTPUT"
+            echo "target_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             echo "is_production=true" >> "$GITHUB_OUTPUT"
             echo "target_url=https://agent-resources-one.vercel.app" >> "$GITHUB_OUTPUT"
             exit 0
