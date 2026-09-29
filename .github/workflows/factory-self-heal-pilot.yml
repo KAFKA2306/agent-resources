@@ -8,6 +8,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/factory-self-heal-pilot.yml'
+      - '.github/workflows/factory-runtime-metrics.yml'
   workflow_dispatch:
 
 permissions:
