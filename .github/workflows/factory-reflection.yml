@@ -73,3 +73,12 @@ jobs:
           args=(--scheduled --repository "${GITHUB_REPOSITORY}")
           if [[ '${{ inputs.observe_only }}' == 'true' ]]; then args+=(--observe-only); fi
           python -m dashboard.factory_reflection "${args[@]}"
+
+      - name: Reconcile stale reflection work items
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && inputs.candidate_json == '')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          args=(--repository "${GITHUB_REPOSITORY}")
+          if [[ '${{ inputs.observe_only }}' == 'true' ]]; then args+=(--observe-only); fi
+          python -m dashboard.reflection_reconcile "${args[@]}"
