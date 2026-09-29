@@ -118,6 +118,10 @@ export default async function handler(request, response) {
       theoreticalPrimaryRateChargedRequestsPerHourAtObserved304Rate:
         Math.ceil(3600 / LIVE_CACHE_SECONDS) * primaryRateChargedRequestCount,
     };
+    // This value is injected by Vercel for the deployment serving this function.
+    // It lets production verification bind the canonical URL to the actual
+    // deployed Git revision instead of assuming that current main is live.
+    payload.deploymentRevision = process.env.VERCEL_GIT_COMMIT_SHA || null;
     memoryCache = { createdAt: now, payload };
     response.setHeader("X-Agent-Resources-Live-Cache", "origin-refresh");
     return send(response, 200, payload);
