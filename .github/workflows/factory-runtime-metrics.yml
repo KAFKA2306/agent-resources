@@ -76,6 +76,7 @@ jobs:
           first_pass_success_count = 0
           self_heal_attempt_count = 0
           self_heal_success_count = 0
+          self_heal_unknown_count = 0
           for run in runs:
               created = run.get("created_at")
               started = run.get("run_started_at")
@@ -114,9 +115,12 @@ jobs:
                       else:
                           failure_counts[(workflow_name, conclusion or "UNKNOWN")] += 1
                           if is_rerun:
-                              self_heal_attempt_count += 1
-                              if run.get("conclusion") in {"success", "neutral"}:
-                                  self_heal_success_count += 1
+                              if conclusion is None:
+                                  self_heal_unknown_count += 1
+                              else:
+                                  self_heal_attempt_count += 1
+                                  if run.get("conclusion") in {"success", "neutral"}:
+                                      self_heal_success_count += 1
 
               name = run.get("name") or ""
               head_commit = run.get("head_commit") or {}
@@ -194,8 +198,9 @@ jobs:
               "firstPassYield": first_pass_success_count / first_pass_eligible_count if first_pass_eligible_count else None,
               "selfHealAttemptSampleCount": self_heal_attempt_count,
               "selfHealSuccessSampleCount": self_heal_success_count,
+              "selfHealUnknownSampleCount": self_heal_unknown_count,
               "selfHealRate": self_heal_success_count / self_heal_attempt_count if self_heal_attempt_count else None,
-              "selfHealRateState": "VERIFIED" if self_heal_attempt_count else "UNVERIFIED",
+              "selfHealRateState": "UNVERIFIED" if self_heal_unknown_count else ("VERIFIED" if self_heal_attempt_count else "UNVERIFIED"),
               "failurePareto": failure_pareto,
               "cancellationPareto": cancellation_pareto,
               "skippedPareto": skipped_pareto,
