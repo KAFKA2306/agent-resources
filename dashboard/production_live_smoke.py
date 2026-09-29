@@ -80,7 +80,6 @@ def validate_live_payload(payload: object, *, now: datetime | None = None) -> fl
     return age_seconds
 
 
-
 def validate_factory_state(payload: object, *, expected_sha: str) -> None:
     if not isinstance(payload, dict):
         raise ValueError("factory state must be an object")
@@ -103,12 +102,12 @@ def validate_factory_state(payload: object, *, expected_sha: str) -> None:
         raise ValueError("factory state capabilities are missing")
 
 
-
 def verify_production_factory_state(page_url: str, expected_sha: str) -> dict:
     base = page_url.rstrip("/")
     payload = _fetch_json(f"{base}/dashboard/factory-state.json?v={expected_sha}")
     validate_factory_state(payload, expected_sha=expected_sha)
     return payload
+
 
 def _fetch_json(url: str) -> dict:
     request = urllib.request.Request(
@@ -128,6 +127,11 @@ def verify_production_live(page_url: str, expected_sha: str) -> tuple[str, dict,
         raise ValueError("deployed live-config.json has no HTTPS endpoint")
     payload = _fetch_json(endpoint)
     age_seconds = validate_live_payload(payload)
+    deployment_revision = payload.get("deploymentRevision")
+    if deployment_revision != expected_sha:
+        raise ValueError(
+            f"Vercel deployment revision mismatch: {deployment_revision!r} != {expected_sha!r}"
+        )
     return endpoint, payload, age_seconds
 
 
@@ -144,6 +148,7 @@ def main() -> None:
             print(f"live workflow requests: {payload['requestBudget']['workflowRequestCount']}")
             print(f"live fetchedAt: {payload['fetchedAt']}")
             print(f"live age seconds: {age_seconds:.1f}")
+            print(f"Vercel deployment revision: {payload['deploymentRevision']}")
             print(f"factory state revision: {factory['sourceRevision']}")
             return
         except Exception as error:
