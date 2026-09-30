@@ -52,13 +52,72 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
-      - name: Install dashboard test dependencies
-        run: python -m pip install 'pytest>=8.0' 'PyYAML>=6.0'
-      - name: Validate dashboard contract
-        run: python scripts/validate_dashboard_contract.py
-      - name: Run dashboard tests
-        run: python -m pytest -q tests/test_dashboard.py tests/test_factory_control.py tests/test_factory_runtime.py tests/test_factory_evidence.py tests/test_factory_reflection.py tests/test_oss_benchmark.py tests/test_benchmark_selection.py tests/test_benchmark_analysis.py
+
+      - name: Set up Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Install dashboard validation dependencies
+        run: pip install pre-commit==4.6.2 mkdocs-material -r dashboard/requirements.txt
+
+      - name: Validate pre-commit configuration
+        run: pre-commit validate-config
+
+      - name: Validate README resource links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          readme = Path("README.md").read_text(encoding="utf-8")
+          required = [
+              "https://agent-resources-one.vercel.app/",
+              "https://github.com/KAFKA2306/design",
+              "(skills/kafka-evidence-ui/SKILL.md)",
+              "(plugins/kafka-evidence-ui/README.md)",
+          ]
+          missing = [item for item in required if item not in readme]
+          if missing:
+              raise SystemExit(f"missing required README resource links: {missing}")
+          PY
+
+      - name: Run commit-time validation
+        run: pre-commit run --all-files --hook-stage pre-commit
+
+      - name: Verify Factory Reflection live grounding
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m dashboard.factory_reflection --probe-issue 381 --repository "$GITHUB_REPOSITORY"
+
+      - name: Validate recurring research provider comparison
+        run: python -m unittest tests.test_research_provider_comparison -v
+
+      - name: Build public docs
+        working-directory: docs
+        run: mkdocs build --strict
+
+      - name: Verify baseline to live overlay in headless Chrome
+        run: python dashboard/tests/dashboard_live_browser_e2e.py
+
+      - name: Verify operations navigation in headless Chrome
+        run: python dashboard/tests/dashboard_operations_browser_e2e.py
+
+      - name: Signal verified dispatched head
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ inputs.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/dispatches" \
+            --method POST \
+            -f event_type='factory.validation.success' \
+            -F "client_payload[head_sha]=$VERIFIED_SHA"
