@@ -48,7 +48,11 @@ def branch_is_fully_merged(
     try:
         comparison, _ = request_fn(f"{api_url}/compare/{base}...{head}", token)
     except GitHubApiError as exc:
-        if exc.status == 404:
+        # A stale branch can be valid while GitHub cannot compare it with the
+        # default branch (for example, unrelated histories).  It is not safe
+        # to call such a branch merged, but one branch must not abort the
+        # repository-wide operations snapshot.
+        if exc.status in (404, 422):
             return False
         raise
     behind_by = comparison.get("behind_by")
