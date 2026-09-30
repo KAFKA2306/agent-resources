@@ -16,6 +16,7 @@ on:
   workflow_run:
     workflows:
       - "Factory Self-Heal Pilot"
+      - "Verify Dashboard Release"
     types:
       - completed
   schedule:
