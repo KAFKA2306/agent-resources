@@ -12,6 +12,7 @@ on:
       - Factory Evidence Observer
       - Factory Runtime Metrics
       - Factory Reflection
+      - Factory OSS Benchmark
       - Sync gh-aw lock files
     types: [completed]
   workflow_dispatch:
