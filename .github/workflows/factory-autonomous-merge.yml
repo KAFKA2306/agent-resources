@@ -64,14 +64,23 @@ jobs:
               return;
             }
             const candidate = candidates[0];
-            const { data: pr } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: candidate.number,
-            });
-            if (pr.head.sha !== headSha || pr.state !== 'open' || pr.draft) {
-              core.setFailed('PR changed while claiming mergeability; refusing stale repair or merge');
-              return;
+            let pr = null;
+            for (let attempt = 0; attempt < 6; attempt += 1) {
+              const response = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: candidate.number,
+              });
+              pr = response.data;
+              if (pr.head.sha !== headSha || pr.state !== 'open' || pr.draft) {
+                core.setFailed('PR changed while claiming mergeability; refusing stale repair or merge');
+                return;
+              }
+              if (pr.mergeable !== null) break;
+              if (attempt < 5) {
+                core.notice(`PR #${pr.number} mergeability is pending; bounded read-back ${attempt + 1}/6`);
+                await new Promise(resolve => setTimeout(resolve, 3000));
+              }
             }
             if (pr.mergeable === false) {
               await github.rest.actions.createWorkflowDispatch({
@@ -90,7 +99,7 @@ jobs:
               return;
             }
             if (pr.mergeable == null) {
-              core.setFailed('PR mergeability is still unknown; refusing optimistic merge');
+              core.setFailed('PR mergeability remained unknown after bounded read-back; refusing optimistic merge');
               return;
             }
             const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
