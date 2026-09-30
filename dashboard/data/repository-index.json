@@ -2533,12 +2533,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "522c35ba301ba08dd9bedb62ae4fc8226f713929"
+          "fingerprint": "9f85c0edc8158544e5f5d079d39c15de22488e21"
         }
       ],
-      "sourceFingerprint": "034b345f4ccc116089594b41bbd2eeba72bc8bec59949a84e566e3fed5c5ed35",
+      "sourceFingerprint": "5fc466a0268ec7dd9e80899150b1242afe229648d725b46424db7c39fa778a7a",
       "checkedAt": "2026-08-18T01:58:06Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "space_launches",
