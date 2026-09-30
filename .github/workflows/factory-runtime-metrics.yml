@@ -139,9 +139,12 @@ jobs:
               name = run.get("name") or ""
               head_commit = run.get("head_commit") or {}
               commit_timestamp = head_commit.get("timestamp")
+              is_production_verifier = (
+                  name.startswith("Dashboard release · production")
+                  or name.startswith("Dashboard release · manual ·")
+              )
               if (
-                  run.get("event") == "repository_dispatch"
-                  and name.startswith("Dashboard release · production · ")
+                  is_production_verifier
                   and run.get("status") == "completed"
                   and run.get("conclusion") == "success"
                   and commit_timestamp
