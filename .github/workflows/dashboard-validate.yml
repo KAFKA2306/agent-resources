@@ -34,6 +34,7 @@ on:
       - '.github/workflows/factory-conflict-repair.yml'
       - '.github/workflows/factory-reflection.yml'
       - '.github/workflows/factory-oss-benchmark.yml'
+      - '.github/workflows/factory-runtime-metrics.yml'
       - '.github/workflows/gh-aw-sync.yml'
       - '.github/workflows/github-ops-audit.md'
       - '.github/workflows/github-ops-audit.lock.yml'
