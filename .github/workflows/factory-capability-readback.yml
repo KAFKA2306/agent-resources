@@ -37,11 +37,14 @@ jobs:
     steps:
       - name: Read back exact workflow capability evidence
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
+          SOURCE_HEAD_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.source_head_sha || github.event.workflow_run.head_sha }}
         with:
           github-token: ${{ github.token }}
           script: |
-            const runId = Number('${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}');
-            const expectedSha = '${{ github.event_name == 'workflow_dispatch' && inputs.source_head_sha || github.event.workflow_run.head_sha }}';
+            const runId = Number(process.env.SOURCE_RUN_ID);
+            const expectedSha = process.env.SOURCE_HEAD_SHA;
             if (!runId || !expectedSha) {
               core.setFailed('permission readback evidence is incomplete'); return;
             }
