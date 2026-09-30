@@ -121,6 +121,54 @@ jobs:
               return;
             }
 
+            // Workflow-level failures can exist without a check_run (for example a
+            // workflow startup/configuration failure). Do not let a successful
+            // dispatched validator race past a failing pull_request validator for
+            // the same exact head.
+            let validationRunsReady = false;
+            for (let attempt = 0; attempt < 30; attempt += 1) {
+              const { data: workflowRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head_sha: headSha,
+                per_page: 100,
+              });
+              const validations = (workflowRuns.workflow_runs || []).filter(run =>
+                run.name === 'Validate Dashboard PR' &&
+                (run.event === 'pull_request' || run.event === 'workflow_dispatch')
+              );
+              if (!validations.length) {
+                core.setFailed(`no Validate Dashboard PR workflow runs found for exact head ${headSha}`);
+                return;
+              }
+              const failed = validations.filter(run =>
+                run.status === 'completed' && run.conclusion !== 'success'
+              );
+              if (failed.length) {
+                core.setFailed(
+                  `exact-head validation workflow failed: ${failed.map(run => run.id + ':' + run.event + ':' + run.conclusion).join(',')}`
+                );
+                return;
+              }
+              const pending = validations.filter(run => run.status !== 'completed');
+              if (!pending.length) {
+                validationRunsReady = true;
+                core.notice(`all ${validations.length} exact-head validation workflow runs are successful`);
+                break;
+              }
+              if (attempt === 29) {
+                core.setFailed(
+                  `exact-head validation workflow runs did not settle: ${pending.map(run => run.id + ':' + run.status).join(',')}`
+                );
+                return;
+              }
+              await new Promise(resolve => setTimeout(resolve, 10000));
+            }
+            if (!validationRunsReady) {
+              core.setFailed('exact-head validation workflow verification did not complete');
+              return;
+            }
+
             const acceptedConclusions = new Set(['success', 'neutral', 'skipped']);
             let checksReady = false;
             for (let attempt = 0; attempt < 30; attempt += 1) {
