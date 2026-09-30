@@ -1,0 +1,70 @@
+name: Factory Post-Merge Release Verify
+
+on:
+  workflow_run:
+    workflows:
+      - Factory Autonomous Merge
+    types:
+      - completed
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+jobs:
+  dispatch:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Resolve merged revision and dispatch exact production verifier
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const headSha = context.payload.workflow_run.head_sha;
+            if (!headSha) {
+              core.setFailed('autonomous-merge head SHA is missing');
+              return;
+            }
+            const { data: pulls } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: headSha,
+            });
+            const merged = pulls.filter(pr =>
+              pr.merged_at &&
+              pr.base.ref === context.payload.repository.default_branch &&
+              pr.head.sha === headSha
+            );
+            if (merged.length === 0) {
+              core.notice(`autonomous merge completed without merging exact head ${headSha}; release verification is a no-op`);
+              return;
+            }
+            if (merged.length !== 1) {
+              core.setFailed(`expected one merged PR for exact head ${headSha}; found ${merged.length}`);
+              return;
+            }
+            const pr = merged[0];
+            const { data: detail } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+            const mergeSha = detail.merge_commit_sha;
+            if (!mergeSha) {
+              core.setFailed(`merged PR #${pr.number} has no merge_commit_sha`);
+              return;
+            }
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'dashboard-release-verify.yml',
+              ref: context.payload.repository.default_branch,
+              inputs: {
+                deployment_url: 'https://agent-resources-one.vercel.app',
+                expected_sha: mergeSha,
+              },
+            });
+            core.notice(`dispatched exact-revision production verification for merged main ${mergeSha}`);

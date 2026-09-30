@@ -2,7 +2,7 @@ name: Verify Dashboard Release
 run-name: >-
   Dashboard release ·
   ${{ github.event.client_payload.environment || (github.event_name == 'schedule' && 'production-scheduled') || (github.event_name == 'push' && 'production-push') || 'manual' }} ·
-  ${{ github.event.client_payload.git.sha || github.sha }}
+  ${{ github.event.client_payload.git.sha || inputs.expected_sha || github.sha }}
 
 on:
   push:
@@ -17,6 +17,11 @@ on:
         description: 'Vercel deployment or production URL to verify'
         required: false
         default: 'https://agent-resources-one.vercel.app'
+        type: string
+      expected_sha:
+        description: 'Exact main revision expected in production'
+        required: false
+        default: ''
         type: string
   schedule:
     - cron: '37 * * * *'
@@ -35,11 +40,11 @@ jobs:
     env:
       RELEASE_URL: ${{ github.event.client_payload.url || inputs.deployment_url || 'https://agent-resources-one.vercel.app' }}
       DEPLOYMENT_ENVIRONMENT: ${{ github.event.client_payload.environment || 'production' }}
-      EXPECTED_SHA: ${{ github.event.client_payload.git.sha || github.sha }}
+      EXPECTED_SHA: ${{ github.event.client_payload.git.sha || inputs.expected_sha || github.sha }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ github.event.client_payload.git.sha || github.sha }}
+          ref: ${{ github.event.client_payload.git.sha || inputs.expected_sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
