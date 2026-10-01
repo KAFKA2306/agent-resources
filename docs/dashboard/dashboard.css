@@ -449,3 +449,18 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .pulse-counter{position:static;display:flex;align-items:baseline;justify-content:flex-end;gap:6px;margin-top:-8px}
   .reactor-links{display:none}
 }
+
+.output-waveform{display:block;width:100%;height:auto;min-height:280px}
+.wave-guide{stroke:rgba(20,142,191,.08);stroke-width:1}
+.wave-label{fill:#627f90;font-size:11px;font-weight:950;letter-spacing:.12em}
+.wave-value{fill:#173e53;font-size:18px;font-weight:950}
+.wave-line{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(0,177,220,.10))}
+.wave-line.is-commits,.wave-point.is-commits{stroke:#13b9dd;fill:#13b9dd}
+.wave-line.is-prsMerged,.wave-point.is-prsMerged{stroke:#786cff;fill:#786cff}
+.wave-line.is-issuesClosed,.wave-point.is-issuesClosed{stroke:#42c994;fill:#42c994}
+.wave-point{stroke-width:0;transition:r .15s ease;cursor:crosshair}
+.wave-point:hover{r:5.5px}
+.wave-period{fill:#8399a5;font-size:10px;font-weight:800}
+.stat-card>small:empty{display:none}
+.telemetry-deck .stats-note{display:none}
+.telemetry-deck .stats-legend{display:none}
