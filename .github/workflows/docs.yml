@@ -32,10 +32,6 @@ jobs:
     outputs:
       source_sha: ${{ steps.revision.outputs.sha }}
     env:
-      GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       DASHBOARD_PUBLIC_SNAPSHOT_URL: https://kafka2306.github.io/agent-resources/dashboard/dashboard.json
       REPOSITORY_OPERATIONS_PUBLIC_SNAPSHOT_URL: https://kafka2306.github.io/agent-resources/dashboard/repository-operations.json
     steps:
@@ -63,7 +59,7 @@ jobs:
           package-manager-cache: false
 
       - name: Install dependencies
-        run: pip install mkdocs-material -r dashboard/requirements.txt
+        run: pip install "mkdocs-material==9.7.7" -r dashboard/requirements.txt
 
       - name: Run dashboard QA
         if: github.event_name != 'schedule'
@@ -73,6 +69,11 @@ jobs:
           npm run test:dashboard
 
       - name: Collect public GitHub dashboard data
+        env:
+          GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -euo pipefail
           mkdir -p dashboard/generated docs/dashboard
@@ -163,6 +164,8 @@ jobs:
           fi
 
       - name: Collect current factory evidence
+        env:
+          GITHUB_TOKEN: ${{ secrets.DASHBOARD_GITHUB_TOKEN || github.token }}
         run: |
           set -euo pipefail
           python -m dashboard.collectors.factory_evidence \
