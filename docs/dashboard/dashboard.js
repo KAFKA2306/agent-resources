@@ -215,54 +215,135 @@ function renderActivity(activity, repositoriesById) {
   const items = activity
     .filter((item) => ACTIVITY_LABELS[item.kind])
     .slice()
-    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
+    .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
+
   if (items.length === 0) {
     const empty = document.createElement("p");
     empty.className = "muted activity-empty";
-    empty.textContent = "直近7日の活動は0件です。";
+    empty.textContent = "NO SIGNAL";
     activityFeed.append(empty);
     return;
   }
 
-  for (const [dayKey, day] of groupActivity(items)) {
-    const daySection = document.createElement("section");
-    daySection.className = "activity-day";
-    const dayHeading = document.createElement("div");
-    dayHeading.className = "activity-day-heading";
-    const dayName = document.createElement("strong");
-    dayName.textContent = formatActivityDay(dayKey);
-    const daySummary = document.createElement("span");
-    daySummary.textContent = `${day.repositories.size} repos · ${formatActivityCounts(day.items)}`;
-    dayHeading.append(dayName, daySummary);
-    daySection.append(dayHeading);
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.classList.add("activity-pulse-plot");
+  svg.setAttribute("viewBox", "0 0 1000 290");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `${items.length} GitHub activity events over the last seven days`);
 
-    for (const [repositoryId, repositoryItems] of day.repositories) {
-      const card = document.createElement("article");
-      card.className = "activity-repository-card";
-      const repositoryHeading = document.createElement("div");
-      repositoryHeading.className = "activity-repository-heading";
-      const repositoryName = document.createElement("strong");
-      repositoryName.textContent = repositoryLabel(repositoriesById.get(repositoryId));
-      const repositorySummary = document.createElement("span");
-      repositorySummary.textContent = `${repositoryItems.length}件 · ${formatActivityCounts(repositoryItems)}`;
-      repositoryHeading.append(repositoryName, repositorySummary);
-      card.append(repositoryHeading, createActivityItem(repositoryItems[0]));
+  const days = [...new Set(items.map((item) => localDayKey(item.occurredAt)))].sort();
+  const dayIndex = new Map(days.map((day, index) => [day, index]));
+  const xForDay = (day) => {
+    const index = dayIndex.get(day) ?? 0;
+    if (days.length <= 1) return 520;
+    return 100 + (index / (days.length - 1)) * 840;
+  };
+  const rows = {
+    workflow_run: { y: 78, label: "RUN" },
+    pull_request: { y: 155, label: "PR" },
+    issue: { y: 232, label: "ISSUE" },
+  };
 
-      if (repositoryItems.length > 1) {
-        const details = document.createElement("details");
-        details.className = "activity-more";
-        const summary = document.createElement("summary");
-        summary.textContent = `残り${repositoryItems.length - 1}件を見る`;
-        const list = document.createElement("div");
-        list.className = "activity-more-list";
-        for (const item of repositoryItems.slice(1)) list.append(createActivityItem(item));
-        details.append(summary, list);
-        card.append(details);
-      }
-      daySection.append(card);
-    }
-    activityFeed.append(daySection);
+  for (const { y, label } of Object.values(rows)) {
+    const guide = document.createElementNS(SVG_NS, "line");
+    guide.setAttribute("x1", "92");
+    guide.setAttribute("x2", "954");
+    guide.setAttribute("y1", String(y));
+    guide.setAttribute("y2", String(y));
+    guide.classList.add("pulse-guide");
+    svg.append(guide);
+
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", "20");
+    text.setAttribute("y", String(y + 4));
+    text.classList.add("pulse-axis-label");
+    text.textContent = label;
+    svg.append(text);
   }
+
+  const dailyCounts = days.map((day) => items.filter((item) => localDayKey(item.occurredAt) === day).length);
+  const maxDaily = Math.max(1, ...dailyCounts);
+  const envelope = document.createElementNS(SVG_NS, "polyline");
+  envelope.classList.add("pulse-envelope");
+  envelope.setAttribute(
+    "points",
+    days.map((day, index) => {
+      const x = xForDay(day);
+      const y = 40 - (dailyCounts[index] / maxDaily) * 22;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" "),
+  );
+  svg.append(envelope);
+
+  for (const day of days) {
+    const x = xForDay(day);
+    const tick = document.createElementNS(SVG_NS, "line");
+    tick.setAttribute("x1", String(x));
+    tick.setAttribute("x2", String(x));
+    tick.setAttribute("y1", "50");
+    tick.setAttribute("y2", "252");
+    tick.classList.add("pulse-day-guide");
+    svg.append(tick);
+
+    const label = document.createElementNS(SVG_NS, "text");
+    label.setAttribute("x", String(x));
+    label.setAttribute("y", "278");
+    label.setAttribute("text-anchor", "middle");
+    label.classList.add("pulse-day-label");
+    label.textContent = formatActivityDay(day).replace("今日", "TODAY").replace("昨日", "YDAY");
+    svg.append(label);
+  }
+
+  const stackByCell = new Map();
+  for (const item of items) {
+    const row = rows[item.kind];
+    if (!row) continue;
+    const day = localDayKey(item.occurredAt);
+    const baseX = xForDay(day);
+    const cellKey = `${day}:${item.kind}`;
+    const offsetIndex = stackByCell.get(cellKey) || 0;
+    stackByCell.set(cellKey, offsetIndex + 1);
+    const columns = 9;
+    const dx = ((offsetIndex % columns) - (columns - 1) / 2) * 9;
+    const dy = Math.floor(offsetIndex / columns) * -10;
+    const x = baseX + dx;
+    const y = row.y + dy;
+    const repo = repositoriesById.get(item.repositoryId);
+
+    const anchor = document.createElementNS(SVG_NS, "a");
+    anchor.setAttribute("href", item.url);
+    anchor.setAttribute("target", "_blank");
+    anchor.setAttribute("rel", "noopener noreferrer");
+    anchor.classList.add("activity-pulse-point", `is-${item.kind}`);
+    anchor.setAttribute(
+      "aria-label",
+      `${ACTIVITY_LABELS[item.kind]}: ${repositoryLabel(repo)}. ${item.summary || ""}. ${formatActivityTime(item.occurredAt)}`,
+    );
+
+    const halo = document.createElementNS(SVG_NS, "circle");
+    halo.setAttribute("cx", x.toFixed(1));
+    halo.setAttribute("cy", y.toFixed(1));
+    halo.setAttribute("r", "8");
+    halo.classList.add("pulse-point-halo");
+
+    const dot = document.createElementNS(SVG_NS, "circle");
+    dot.setAttribute("cx", x.toFixed(1));
+    dot.setAttribute("cy", y.toFixed(1));
+    dot.setAttribute("r", "4.2");
+    dot.classList.add("pulse-point-dot");
+
+    const title = document.createElementNS(SVG_NS, "title");
+    title.textContent = `${repositoryLabel(repo)} · ${ACTIVITY_LABELS[item.kind]} · ${formatActivityTime(item.occurredAt)}\n${item.summary || ""}`;
+    anchor.append(title, halo, dot);
+    svg.append(anchor);
+  }
+
+  const counter = document.createElement("div");
+  counter.className = "pulse-counter";
+  counter.innerHTML = `<strong>${items.length}</strong><span>SIGNALS / 7D</span>`;
+
+  activityFeed.append(svg, counter);
 }
 
 function formatSnapshotTime(date) {
