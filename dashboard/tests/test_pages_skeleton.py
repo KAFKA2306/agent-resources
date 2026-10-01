@@ -20,7 +20,7 @@ PUBLIC_LINK_ASSETS = [
 class DashboardSkeletonTest(unittest.TestCase):
     def test_dashboard_uses_autonomy_reactor_bridge_information_architecture(self):
         html = HTML.read_text(encoding="utf-8")
-        css = CSS.read_text(encoding="utf-8").replace(" ", "")
+        css = "".join(CSS.read_text(encoding="utf-8").split())
         self.assertIn('<main id="main" class="bridge-shell"', html)
         self.assertIn('class="bridge-stage"', html)
         self.assertIn('class="reactor-stage"', html)
@@ -76,12 +76,12 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertLess(world, stats)
 
     def test_mobile_collapses_reactor_to_readable_modules(self):
-        css = CSS.read_text(encoding="utf-8").replace(" ", "")
+        css = "".join(CSS.read_text(encoding="utf-8").split())
         self.assertIn("@media(max-width:700px)", css)
         self.assertIn(".bridge-mast{position:relative;align-items:flex-start;flex-direction:column;padding:13px15px}", css)
         self.assertIn(".bridge-shell{padding:10px10px30px}", css)
         self.assertIn(".bridge-stage{border-radius:20px}", css)
-        self.assertIn(".reactor-field{height:auto;min-height:0;margin:12px0 0;padding:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;background:none;border-radius:0}", css)
+        self.assertIn(".reactor-field{height:auto;min-height:0;margin:12px00;padding:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;background:none;border-radius:0}", css)
         self.assertIn(".reactor-node{position:relative;left:auto;top:auto;width:auto;min-height:80px;transform:none;animation:none}", css)
         self.assertIn(".lane-gates{grid-template-columns:minmax(0,1fr);gap:8px}", css)
         self.assertIn(".evidence-chain{grid-template-columns:minmax(0,1fr)}", css)
@@ -143,7 +143,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         html = HTML.read_text(encoding="utf-8")
         js = JS.read_text(encoding="utf-8")
         self.assertIn('id="activity-feed"', html)
-        self.assertIn("7 DAY SIGNAL", html)
+        self.assertIn("LIVE SIGNAL STREAM", html)
         self.assertIn("snapshot.activity", js)
         self.assertNotIn("ACTIVITY_LIMIT", js)
         self.assertIn("b.occurredAt.localeCompare(a.occurredAt)", js)
