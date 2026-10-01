@@ -105,7 +105,8 @@ def main() -> None:
     dom = dump_production_dom(PRODUCTION_URL)
     weekly_dom = dump_production_dom(f"{PRODUCTION_URL}?stats=weekly")
     repository_count_pattern = re.compile(
-        r'id="repository-count"[^>]*>\s*(\d+) repositories\s*</span>'
+        r'<(?P<tag>span|strong)[^>]*id="repository-count"[^>]*>'
+        r'\s*(\d+) repositories\s*</(?P=tag)>'
     )
     repository_count_match = repository_count_pattern.search(dom)
     poker_surface_pattern = re.compile(
@@ -140,7 +141,10 @@ def main() -> None:
         "poker-raise-quiz production surface rendered": poker_surface_pattern.search(dom)
         is not None,
         "skip link targets main": 'class="skip-link" href="#main"' in dom
-        and re.search(r'<main class="main-panel"[^>]*id="main"[^>]*tabindex="-1"', dom)
+        and re.search(
+            r'<main(?=[^>]*id="main")(?=[^>]*tabindex="-1")[^>]*>',
+            dom,
+        )
         is not None,
         "three actionable gates rendered": set(gate_counts) == set(ACTIONABLE_LANES),
         "query-selected gate exposes pressed state": selected_gate_is_pressed(
@@ -190,7 +194,7 @@ def main() -> None:
             "repository operations production browser E2E failed: " + ", ".join(failures)
         )
 
-    rendered_repository_count = int(repository_count_match.group(1))
+    rendered_repository_count = int(repository_count_match.group(2))
     if rendered_repository_count <= 0:
         raise SystemExit("repository operations production browser E2E failed: rendered repository count is zero")
     if rendered_repository_count != expected_repository_count:
