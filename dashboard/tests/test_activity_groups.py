@@ -3,40 +3,42 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DASHBOARD_JS = ROOT / "docs" / "dashboard" / "dashboard.js"
-TIMELINE_CSS = ROOT / "docs" / "dashboard" / "activity-timeline.css"
+DASHBOARD_CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 
 
 class ActivityGroupsTest(unittest.TestCase):
-    def test_activity_is_grouped_by_day_then_repository(self):
+    def test_activity_is_plotted_by_day_and_event_kind(self):
         js = DASHBOARD_JS.read_text(encoding="utf-8")
-        self.assertIn("function groupActivity(items)", js)
-        self.assertIn("const dayKey = localDayKey(item.occurredAt);", js)
-        self.assertIn("day.repositories.has(item.repositoryId)", js)
-        self.assertIn('daySection.className = "activity-day"', js)
-        self.assertIn('card.className = "activity-repository-card"', js)
-        self.assertIn("`${day.repositories.size} repos · ${formatActivityCounts(day.items)}`", js)
+        self.assertIn("const days = [...new Set(items.map((item) => localDayKey(item.occurredAt)))].sort();", js)
+        self.assertIn("const xForDay = (day) =>", js)
+        self.assertIn('workflow_run: { y: 78, label: "RUN" }', js)
+        self.assertIn('pull_request: { y: 155, label: "PR" }', js)
+        self.assertIn('issue: { y: 232, label: "ISSUE" }', js)
+        self.assertIn('svg.classList.add("activity-pulse-plot")', js)
+        self.assertIn('envelope.classList.add("pulse-envelope")', js)
 
-    def test_only_latest_repository_activity_is_open_by_default(self):
+    def test_every_activity_event_remains_a_clickable_signal(self):
         js = DASHBOARD_JS.read_text(encoding="utf-8")
-        self.assertIn("card.append(repositoryHeading, createActivityItem(repositoryItems[0]));", js)
-        self.assertIn("if (repositoryItems.length > 1)", js)
-        self.assertIn('details.className = "activity-more"', js)
-        self.assertIn("`残り${repositoryItems.length - 1}件を見る`", js)
-        self.assertNotIn("details.open = true", js)
+        self.assertIn('anchor.setAttribute("href", item.url);', js)
+        self.assertIn('anchor.classList.add("activity-pulse-point"', js)
+        self.assertIn('anchor.setAttribute(', js)
+        self.assertIn('"aria-label"', js)
+        self.assertIn('const title = document.createElementNS(SVG_NS, "title");', js)
 
-    def test_summary_keeps_standard_activity_counts_visible(self):
+    def test_pulse_keeps_compact_counts_and_time_axis(self):
         js = DASHBOARD_JS.read_text(encoding="utf-8")
-        self.assertIn('const ACTIVITY_COUNT_LABELS = { issue: "Issue", pull_request: "PR", workflow_run: "Run" };', js)
-        self.assertIn("formatActivityCounts(repositoryItems)", js)
-        self.assertIn('if (dayKey === localDayKey(today)) return "今日";', js)
-        self.assertIn('if (dayKey === localDayKey(yesterday)) return "昨日";', js)
+        self.assertIn('counter.className = "pulse-counter"', js)
+        self.assertIn('SIGNALS / 7D', js)
+        self.assertIn('formatActivityDay(day)', js)
+        self.assertIn('replace("今日", "TODAY")', js)
+        self.assertIn('replace("昨日", "YDAY")', js)
 
-    def test_grouped_activity_remains_compact_on_mobile(self):
-        css = TIMELINE_CSS.read_text(encoding="utf-8").replace(" ", "")
-        self.assertIn(".activity-day{display:grid;gap:8px}", css)
-        self.assertIn(".activity-repository-card{display:grid;gap:5px", css)
-        self.assertIn(".activity-more>summary{cursor:pointer", css)
-        self.assertIn("@media(max-width:760px)", css)
+    def test_pulse_plot_remains_compact_on_mobile(self):
+        css = "".join(DASHBOARD_CSS.read_text(encoding="utf-8").split())
+        self.assertIn(".activity-pulse-plot{display:block;width:100%;height:auto;min-height:210px}", css)
+        self.assertIn("@media(max-width:700px)", css)
+        self.assertIn(".activity-pulse-plot{min-height:190px}", css)
+        self.assertIn(".pulse-counter{position:static;", css)
 
 
 if __name__ == "__main__":
