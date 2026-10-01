@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#02050c">
   <title>Software Factory Control Tower</title>
   <meta name="description" content="KAFKA2306の自律ソフトウェア工場を監査するSoftware Factory Control Tower">
-  <link rel="stylesheet" href="./dashboard.css">
   <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
   <link rel="stylesheet" href="./activity-timeline.css">
+  <link rel="stylesheet" href="./dashboard.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["dashboard.js", "factory-evidence.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js"];
+    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js"];
     Promise.all(modules.map((name) => import(`./${name}?v=${assetVersion}`))).catch((error) => {
       const status = document.getElementById("snapshot-status");
       if (status) {
@@ -31,11 +32,22 @@
 <body>
   <a class="skip-link" href="#main">本文へスキップ</a>
   <header class="topbar">
-    <div><p class="eyebrow">KAFKA2306 SOFTWARE FACTORY</p><h1>Software Factory Control Tower</h1></div>
-    <nav class="public-links" aria-label="公開リンク">
-      <a href="https://github.com/KAFKA2306/agent-resources">GitHub</a>
-      <a href="https://agent-resources-one.vercel.app/site/">CLI / Skills</a>
-    </nav>
+    <div class="brand-lockup">
+      <p class="eyebrow">KAFKA2306 SOFTWARE FACTORY</p>
+      <h1>Software Factory Control Tower</h1>
+      <p class="system-subtitle">AUTONOMOUS DELIVERY / LIVE EVIDENCE / HUMAN OVERSIGHT</p>
+    </div>
+    <div class="topbar-actions">
+      <div class="system-orbit" aria-hidden="true">
+        <span class="orbit-core"></span>
+        <span class="orbit-ring orbit-ring-a"></span>
+        <span class="orbit-ring orbit-ring-b"></span>
+      </div>
+      <nav class="public-links" aria-label="公開リンク">
+        <a href="https://github.com/KAFKA2306/agent-resources">GitHub</a>
+        <a href="https://agent-resources-one.vercel.app/site/">CLI / Skills</a>
+      </nav>
+    </div>
   </header>
   <div class="dashboard-shell">
     <main class="main-panel" id="main" aria-labelledby="workspace-title" tabindex="-1">
