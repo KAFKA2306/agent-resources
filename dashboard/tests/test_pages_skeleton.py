@@ -44,7 +44,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertNotIn("game.css", html)
         self.assertNotIn('class="world-decor"', html)
         self.assertIn('<p class="eyebrow">MISSION VECTOR</p>', html)
-        self.assertIn('id="action-title">今、どこに介入するか</h2>', html)
+        self.assertIn('id="action-title">INTERVENTION</h2>', html)
         self.assertIn('class="hub"', html)
         self.assertIn('id="repository-count"', html)
         self.assertIn('id="snapshot-status"', html)
@@ -85,7 +85,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn(".reactor-node{position:relative;left:auto;top:auto;width:auto;min-height:80px;transform:none;animation:none}", css)
         self.assertIn(".lane-gates{grid-template-columns:minmax(0,1fr);gap:8px}", css)
         self.assertIn(".evidence-chain{grid-template-columns:minmax(0,1fr)}", css)
-        self.assertIn(".world-stations{grid-template-columns:minmax(0,1fr)}", css)
+        self.assertIn(".constellation-node-label{display:none}", css)
 
     def test_root_redirects_to_dashboard_and_dashboard_links_to_products(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
@@ -137,7 +137,7 @@ class DashboardSkeletonTest(unittest.TestCase):
     def test_zero_repositories_has_explicit_empty_state(self):
         js = JS.read_text(encoding="utf-8")
         self.assertIn("repositories.length === 0", js)
-        self.assertIn("公開対象のrepositoryは0件です。", js)
+        self.assertIn("NO SIGNAL", js)
 
     def test_activity_feed_uses_full_seven_day_snapshot_activity(self):
         html = HTML.read_text(encoding="utf-8")
@@ -146,12 +146,14 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("LIVE SIGNAL STREAM", html)
         self.assertIn("snapshot.activity", js)
         self.assertNotIn("ACTIVITY_LIMIT", js)
-        self.assertIn("b.occurredAt.localeCompare(a.occurredAt)", js)
+        self.assertIn("a.occurredAt.localeCompare(b.occurredAt)", js)
         self.assertIn("item.repositoryId", js)
         self.assertIn("item.occurredAt", js)
         self.assertIn("item.url", js)
         self.assertIn("ACTIVITY_LABELS[item.kind]", js)
-        self.assertIn("直近7日の活動は0件です。", js)
+        self.assertIn("NO SIGNAL", js)
+        self.assertIn("activity-pulse-plot", js)
+        self.assertIn("pulse-envelope", js)
         self.assertNotIn("api.github.com", js)
 
     def test_live_smoke_executes_browser_runtime(self):
@@ -162,6 +164,8 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("rendered dashboard has zero repositories", workflow)
         self.assertIn("rendered dashboard has zero work items", workflow)
         self.assertIn("rendered dashboard has no recent activity items", workflow)
+        self.assertIn("activity-pulse-point", workflow)
+        self.assertIn("output-waveform", workflow)
         self.assertIn("rendered dashboard monthly statistics did not render", workflow)
         self.assertIn("PUBLIC PRESENCE", workflow)
         self.assertIn("Repository details", workflow)
