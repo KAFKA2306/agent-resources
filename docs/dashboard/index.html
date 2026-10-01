@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4fbff">
+  <meta name="theme-color" content="#02050c">
   <title>Software Factory Control Tower</title>
   <meta name="description" content="KAFKA2306の自律ソフトウェア工場を監査するSoftware Factory Control Tower">
   <link rel="stylesheet" href="./world.css">
@@ -31,179 +31,95 @@
 </head>
 <body>
   <a class="skip-link" href="#main">本文へスキップ</a>
-
-  <header class="mission-mast">
-    <a class="identity" href="./" aria-label="Software Factory Control Tower">
-      <span class="identity-mark" aria-hidden="true">
-        <span class="identity-core"></span>
-        <span class="identity-ring identity-ring-a"></span>
-        <span class="identity-ring identity-ring-b"></span>
-      </span>
-      <span class="identity-copy">
-        <span class="identity-kicker">KAFKA2306 / AUTONOMOUS SOFTWARE FACTORY</span>
-        <strong>CONTROL TOWER</strong>
-      </span>
-    </a>
-
-    <nav class="public-links" aria-label="公開リンク">
-      <a href="https://github.com/KAFKA2306/agent-resources"><span>01</span> GitHub</a>
-      <a href="https://agent-resources-one.vercel.app/site/"><span>02</span> CLI / Skills</a>
-    </nav>
+  <header class="topbar">
+    <div class="brand-lockup">
+      <p class="eyebrow">KAFKA2306 SOFTWARE FACTORY</p>
+      <h1>Software Factory Control Tower</h1>
+      <p class="system-subtitle">AUTONOMOUS DELIVERY / LIVE EVIDENCE / HUMAN OVERSIGHT</p>
+    </div>
+    <div class="topbar-actions">
+      <div class="system-orbit" aria-hidden="true">
+        <span class="orbit-core"></span>
+        <span class="orbit-ring orbit-ring-a"></span>
+        <span class="orbit-ring orbit-ring-b"></span>
+      </div>
+      <nav class="public-links" aria-label="公開リンク">
+        <a href="https://github.com/KAFKA2306/agent-resources">GitHub</a>
+        <a href="https://agent-resources-one.vercel.app/site/">CLI / Skills</a>
+      </nav>
+    </div>
   </header>
-
-  <main id="main" class="mission-deck" aria-labelledby="workspace-title" tabindex="-1">
-    <section class="command-hero">
-      <div class="command-hero-copy">
-        <p class="eyebrow">LIVE SOFTWARE OPERATIONS</p>
-        <h1>Software Factory<br><span>Control Tower</span></h1>
-        <h2 id="workspace-title">今、工場で何が起きているかを一画面で判断する</h2>
-        <p class="hero-note">公開repository、Issue、PR、Actions、deployment、production evidenceを横断し、次に人間が見るべき箇所だけを前面に出します。</p>
+  <div class="dashboard-shell">
+    <main class="main-panel" id="main" aria-labelledby="workspace-title" tabindex="-1">
+      <div class="panel-heading">
+        <div><p class="eyebrow">判断と対応</p><h2 id="workspace-title">今対応すること</h2></div>
+        <div class="snapshot-meta" aria-label="データ更新時刻">
+          <div class="snapshot-source-row" aria-label="Software Factory Control Tower state">
+            <time id="live-fetched-at" class="snapshot-time">Live: 読込中</time>
+            <time id="snapshot-generated-at" class="snapshot-time">Snapshot: 読込中</time>
+          </div>
+          <div class="snapshot-source-row" aria-label="Repository operations state">
+            <time id="operations-generated-at" class="snapshot-time">Operations snapshot: 読込中</time>
+            <span id="operations-summary" class="snapshot-time">Operations: 読込中</span>
+          </div>
+        </div>
       </div>
-
-      <div class="command-orb" aria-hidden="true">
-        <span class="command-orb-grid"></span>
-        <span class="command-orb-core"></span>
-        <span class="command-orb-ring ring-one"></span>
-        <span class="command-orb-ring ring-two"></span>
-        <span class="command-orb-ring ring-three"></span>
-      </div>
-
-      <div class="telemetry-ribbon">
+      <section class="operations-summary" aria-label="対応判断">
         <section class="hub" aria-label="データ鮮度">
-          <p>PUBLIC REPOSITORIES</p>
-          <strong id="repository-count">0 repositories</strong>
+          <div class="hub-copy"><strong>GitHub Public Hub</strong><span id="repository-count">0 repositories</span></div>
           <span class="status-chip" role="status" aria-live="polite" id="snapshot-status" data-state="loading">読込中</span>
         </section>
-
-        <section class="telemetry-clock" aria-label="データ更新時刻">
-          <div>
-            <span>LIVE</span>
-            <time id="live-fetched-at" class="snapshot-time">読込中</time>
-          </div>
-          <div>
-            <span>SNAPSHOT</span>
-            <time id="snapshot-generated-at" class="snapshot-time">読込中</time>
-          </div>
-          <div>
-            <span>OPERATIONS</span>
-            <time id="operations-generated-at" class="snapshot-time">読込中</time>
-          </div>
-          <div>
-            <span>STATE</span>
-            <span id="operations-summary" class="snapshot-time">読込中</span>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <section class="operations-summary command-console" aria-labelledby="action-title">
-      <header class="section-intro">
-        <div>
-          <p class="eyebrow">PRIORITY ROUTER</p>
-          <h2 id="action-title">今対応すること</h2>
-        </div>
-        <p>待ち、失敗、完了を同じ面で比較し、必要なevidenceへ直接移動します。</p>
-      </header>
-      <div id="lane-gates" class="lane-gates" aria-label="対応が必要な状態"></div>
-    </section>
-
-    <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
-
-    <section class="situation-grid">
-      <article class="evidence-deck" aria-labelledby="factory-evidence-title">
-        <header class="section-intro">
-          <div>
-            <p class="eyebrow">REVISION EVIDENCE</p>
-            <h2 id="factory-evidence-title">Factory Evidence</h2>
-          </div>
+        <section id="lane-gates" class="lane-gates" aria-label="対応が必要な状態"></section>
+      </section>
+      <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
+      <section class="agent-world" aria-labelledby="factory-evidence-title">
+        <div class="world-heading">
+          <div><p class="eyebrow">Software Factory</p><h2 id="factory-evidence-title">Current evidence</h2></div>
           <span id="factory-freshness" class="status-chip" data-state="unknown" role="status" aria-live="polite">CHECKING</span>
-        </header>
-
-        <p class="world-note muted">current main、Pages build、Factory Evidence Observer、canonical Issue、active PRを同じrevision evidenceとして表示します。production上のSHAがcurrent mainと違えばFAILです。</p>
-
-        <div class="evidence-orbit" aria-label="Factory evidence summary">
-          <section class="evidence-node evidence-node-primary">
-            <span>MAIN</span>
-            <strong>Current main</strong>
-            <div id="factory-main-sha" class="muted">loading</div>
-          </section>
-          <section class="evidence-node">
-            <span>PAGES</span>
-            <strong>Pages deployment</strong>
-            <div id="factory-pages-run" class="muted">loading</div>
-          </section>
-          <section class="evidence-node">
-            <span>OBSERVER</span>
-            <strong>Factory Evidence Observer</strong>
-            <div id="factory-observer" class="muted">loading</div>
-          </section>
-          <section class="evidence-node">
-            <span>CONTROL</span>
-            <strong>Canonical control plane</strong>
-            <div id="factory-canonical-issue" class="muted">loading</div>
-          </section>
-          <section class="evidence-node">
-            <span>CHANGE</span>
-            <strong>Active PR</strong>
-            <div id="factory-active-prs" class="muted">loading</div>
-          </section>
         </div>
-
-        <details class="world-work-details capability-drawer" open>
+        <p class="world-note muted">current main、Pages build、Factory Evidence Observer、canonical Issue、active PRを同じrevision evidenceとして表示します。production上のSHAがcurrent mainと違えばFAILです。</p>
+        <div class="world-stations" aria-label="Factory evidence summary">
+          <div class="world-station"><strong>Current main</strong><span id="factory-main-sha" class="muted">loading</span></div>
+          <div class="world-station"><strong>Pages deployment</strong><div id="factory-pages-run" class="muted">loading</div></div>
+          <div class="world-station"><strong>Factory Evidence Observer</strong><div id="factory-observer" class="muted">loading</div></div>
+          <div class="world-station"><strong>Canonical control plane</strong><div id="factory-canonical-issue" class="muted">loading</div></div>
+          <div class="world-station"><strong>Active PR</strong><div id="factory-active-prs" class="muted">loading</div></div>
+        </div>
+        <details class="world-work-details" open>
           <summary>Capability classification</summary>
           <div id="factory-capabilities" class="world-stations" aria-live="polite"></div>
         </details>
-      </article>
-
-      <aside class="activity-bay" aria-labelledby="activity-title">
-        <header class="section-intro">
-          <div>
-            <p class="eyebrow">7 DAY SIGNAL</p>
-            <h2 id="activity-title">最近の活動</h2>
+      </section>
+      <section class="agent-world" aria-labelledby="agent-world-title">
+        <div class="world-heading">
+          <div><p class="eyebrow">公開リポジトリ</p><h2 id="agent-world-title">作業の状態と次の手掛かり</h2></div>
+          <span id="agent-world-summary" class="world-summary">作業項目 0件</span>
+        </div>
+        <p class="world-note muted">公開repositoryとIssue / PR / workflowを、現在の作業状況が分かる順に表示します。ownerとGitHub evidenceへそのまま辿れます。</p>
+        <div id="agent-world-zones" aria-live="polite"></div>
+      </section>
+      <p id="workspace-message" class="muted workspace-message" hidden></p>
+      <section class="github-stats" aria-labelledby="github-stats-title">
+        <div class="stats-heading">
+          <div><p class="eyebrow">公開GitHub活動</p><h2 id="github-stats-title">月次推移</h2></div>
+          <div class="stats-heading-actions">
+            <div class="stats-view-toggle" role="group" aria-label="集計単位">
+              <button type="button" data-stats-view="monthly" aria-pressed="true">月次</button>
+              <button type="button" data-stats-view="weekly" aria-pressed="false">週次</button>
+            </div>
+            <span id="stats-scope" class="stats-scope">public only</span>
           </div>
-          <span class="signal-dot" aria-hidden="true"></span>
-        </header>
-        <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
-      </aside>
-    </section>
-
-    <section class="repository-deck" aria-labelledby="agent-world-title">
-      <header class="section-intro repository-heading">
-        <div>
-          <p class="eyebrow">REPOSITORY CONSTELLATION</p>
-          <h2 id="agent-world-title">作業の状態と次の手掛かり</h2>
         </div>
-        <span id="agent-world-summary" class="world-summary">作業項目 0件</span>
-      </header>
-      <p class="world-note muted">公開repositoryとIssue / PR / workflowを、現在の作業状況が分かる順に表示します。ownerとGitHub evidenceへそのまま辿れます。</p>
-      <div id="agent-world-zones" aria-live="polite"></div>
-    </section>
-
-    <p id="workspace-message" class="muted workspace-message" hidden></p>
-
-    <section class="metrics-deck github-stats" aria-labelledby="github-stats-title">
-      <header class="stats-heading">
-        <div>
-          <p class="eyebrow">PUBLIC GITHUB TELEMETRY</p>
-          <h2 id="github-stats-title">月次推移</h2>
-        </div>
-        <div class="stats-heading-actions">
-          <div class="stats-view-toggle" role="group" aria-label="集計単位">
-            <button type="button" data-stats-view="monthly" aria-pressed="true">月次</button>
-            <button type="button" data-stats-view="weekly" aria-pressed="false">週次</button>
-          </div>
-          <span id="stats-scope" class="stats-scope">public only</span>
-        </div>
-      </header>
-      <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
-      <div id="stats-legend" class="stats-legend" aria-hidden="true" hidden>
-        <span data-series="commits">Commit</span>
-        <span data-series="prsMerged">Merged PR</span>
-        <span data-series="issuesClosed">Closed Issue</span>
-      </div>
-      <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>
-      <p id="stats-note" class="stats-note muted"></p>
-    </section>
-  </main>
+        <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
+        <div id="stats-legend" class="stats-legend" aria-hidden="true" hidden><span data-series="commits">Commit</span><span data-series="prsMerged">Merged PR</span><span data-series="issuesClosed">Closed Issue</span></div>
+        <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>
+        <p id="stats-note" class="stats-note muted"></p>
+      </section>
+    </main>
+    <aside class="activity-sidebar" aria-labelledby="activity-title">
+      <div class="section-heading"><div><p class="eyebrow">直近7日</p><h2 id="activity-title">最近の活動</h2></div></div>
+      <div id="activity-feed" class="activity-feed" aria-live="polite"></div>
+    </aside>
+  </div>
 </body>
 </html>
