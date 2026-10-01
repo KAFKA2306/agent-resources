@@ -398,8 +398,11 @@ jobs:
           if not repo_match or int(repo_match.group(1)) <= 0:
               raise SystemExit('rendered dashboard has zero repositories')
 
-          work_item_match = re.search(r'id="agent-world-summary"[^>]*>\s*作業項目\s+(\d+)件', html)
-          if not work_item_match or int(work_item_match.group(1)) <= 0:
+          world_match = re.search(
+              r'id="agent-world-summary"[^>]*>\s*(\d+)\s+NODES\s+·\s+(\d+)\s+ACTIVE',
+              html,
+          )
+          if not world_match or int(world_match.group(1)) <= 0 or int(world_match.group(2)) <= 0:
               raise SystemExit('rendered dashboard has zero work items')
 
           status_match = re.search(r'<span[^>]*id="snapshot-status"[^>]*>([^<]+)<', html)
@@ -410,13 +413,13 @@ jobs:
                   f'rendered dashboard live coverage is incorrect: {status or "missing"}'
               )
 
-          if 'class="activity-item"' not in html:
+          if 'class="activity-pulse-point' not in html:
               raise SystemExit('rendered dashboard has no recent activity items')
-          if 'Public repositories' not in html:
+          if 'class="output-waveform"' not in html:
               raise SystemExit('rendered dashboard monthly statistics did not render')
 
           print(f"browser repositories: {repo_match.group(1)}")
-          print(f"browser work items: {work_item_match.group(1)}")
+          print(f"browser active nodes: {world_match.group(2)}")
           print(f"browser snapshot status: {status}")
           PY
               then
