@@ -419,6 +419,31 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
     }
 
     nodeLayer.append(anchor);
+
+    const safeSurfaceLinks = (Array.isArray(repository.publicLinks) ? repository.publicLinks : [])
+      .filter((link) => link && (link.kind === "front" || link.kind === "pages") && typeof link.url === "string" && link.url.startsWith("https://"))
+      .slice(0, 2);
+    safeSurfaceLinks.forEach((link, surfaceIndex) => {
+      const theta = surfaceIndex === 0 ? -0.62 : 0.62;
+      const sx = x + Math.cos(theta) * (nodeRadius + 12);
+      const sy = y + Math.sin(theta) * (nodeRadius + 12);
+      const satellite = createSvg("a", {
+        href: link.url,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        tabindex: "0",
+      });
+      satellite.classList.add("constellation-surface", `is-${link.kind}`);
+      const title = createSvg("title");
+      title.textContent = `${repository.name} · ${link.kind.toUpperCase()}`;
+      const dot = createSvg("circle", {
+        cx: sx.toFixed(1),
+        cy: sy.toFixed(1),
+        r: "2.8",
+      });
+      satellite.append(title, dot);
+      nodeLayer.append(satellite);
+    });
   }
   svg.append(nodeLayer);
 
