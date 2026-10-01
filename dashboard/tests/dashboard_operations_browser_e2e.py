@@ -28,14 +28,14 @@ PROBE = """
       clearInterval(timer);
       const waiting = buttons.find((button) => button.dataset.lane === 'waiting');
       const summary = document.querySelector('.operations-summary');
-      const commandHero = document.querySelector('.command-hero');
+      const bridgeStage = document.querySelector('.bridge-stage');
       const summaryIndicators = document.querySelectorAll('#snapshot-status, #lane-gates .lane-gate');
       document.body.dataset.restoredBeforeKeyboard = String(initialHeading.textContent.includes('判断待ち'));
       document.body.dataset.gatesNamed = String(buttons.every((button) => button.type === 'button' && button.textContent.trim().length > 0));
       document.body.dataset.summaryIndicators = String(
         summaryIndicators.length === 4
-        && commandHero?.querySelector('#snapshot-status') !== null
-        && commandHero?.querySelector('#repository-count') !== null
+        && bridgeStage?.querySelector('#snapshot-status') !== null
+        && bridgeStage?.querySelector('#repository-count') !== null
         && summary?.querySelectorAll('#lane-gates .lane-gate').length === 3
       );
       document.body.dataset.waitingPressed = waiting.getAttribute('aria-pressed') || '';
