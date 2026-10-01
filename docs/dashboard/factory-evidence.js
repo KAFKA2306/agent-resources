@@ -100,66 +100,66 @@ function renderCapabilities(items) {
   capabilities.replaceChildren();
   const list = Array.isArray(items) ? items : [];
   const onlineCount = list.filter((item) => ["VERIFIED", "EXISTING"].includes(item?.state)).length;
-  const onlinePercent = list.length ? Math.round((onlineCount / list.length) * 100) : 0;
 
-  const core = document.createElement("section");
-  core.className = "reactor-core";
-  core.style.setProperty("--online-percent", `${onlinePercent}%`);
+  const summary = document.createElement("div");
+  summary.className = "autonomy-summary";
+  const summaryCopy = document.createElement("div");
+  summaryCopy.className = "autonomy-summary-copy";
+  const summaryKicker = document.createElement("span");
+  summaryKicker.textContent = "AUTONOMOUS SYSTEMS ONLINE";
+  const summaryValue = document.createElement("strong");
+  summaryValue.textContent = `${onlineCount} / ${list.length}`;
+  summaryCopy.append(summaryKicker, summaryValue);
 
-  const coreKicker = document.createElement("span");
-  coreKicker.textContent = "AUTONOMY";
-  const coreValue = document.createElement("strong");
-  coreValue.textContent = `${onlineCount}/${list.length}`;
-  const coreLabel = document.createElement("small");
-  coreLabel.textContent = "SYSTEMS ONLINE";
-  const corePulse = document.createElement("span");
-  corePulse.className = "reactor-core-pulse";
-  corePulse.setAttribute("aria-hidden", "true");
-  core.append(coreKicker, coreValue, coreLabel, corePulse);
-  capabilities.append(core);
+  const rail = document.createElement("div");
+  rail.className = "autonomy-rail";
+  const fill = document.createElement("span");
+  fill.style.width = list.length ? `${Math.round((onlineCount / list.length) * 100)}%` : "0%";
+  rail.append(fill);
+  summary.append(summaryCopy, rail);
+  capabilities.append(summary);
 
-  list.forEach((item, index) => {
+  for (const item of list) {
     const presentation = CAPABILITY_PRESENTATION[item.id] || {
       code: "SYS",
       name: item.label || item.id || "Capability",
       description: "Factory capability.",
     };
     const statePresentation = CAPABILITY_STATE[item.state] || CAPABILITY_STATE.UNVERIFIED;
-    const angle = -90 + (360 / Math.max(list.length, 1)) * index;
-    const radians = angle * Math.PI / 180;
-    const x = 50 + Math.cos(radians) * 42;
-    const y = 50 + Math.sin(radians) * 38;
 
-    const node = document.createElement("article");
-    node.className = "reactor-node";
-    node.tabIndex = 0;
-    node.dataset.capabilityState = item.state || "UNVERIFIED";
-    node.dataset.capabilityTone = statePresentation.tone;
-    node.style.setProperty("--node-x", `${x.toFixed(2)}%`);
-    node.style.setProperty("--node-y", `${y.toFixed(2)}%`);
-    node.style.setProperty("--node-delay", `${(index * 0.16).toFixed(2)}s`);
-    node.setAttribute(
-      "aria-label",
-      `${presentation.name}: ${statePresentation.label}. ${presentation.description}`,
-    );
+    const card = document.createElement("article");
+    card.className = "capability-module";
+    card.dataset.capabilityState = item.state || "UNVERIFIED";
+    card.dataset.capabilityTone = statePresentation.tone;
 
-    const marker = document.createElement("span");
-    marker.className = "reactor-node-marker";
-    marker.textContent = presentation.code;
+    const header = document.createElement("header");
+    header.className = "capability-module-header";
 
-    const copy = document.createElement("span");
-    copy.className = "reactor-node-copy";
-    const heading = document.createElement("strong");
-    heading.textContent = presentation.name;
-    const state = document.createElement("small");
+    const code = document.createElement("span");
+    code.className = "capability-code";
+    code.textContent = presentation.code;
+
+    const state = document.createElement("span");
+    state.className = "capability-state";
     state.textContent = statePresentation.label;
-    const description = document.createElement("em");
-    description.textContent = presentation.description;
-    copy.append(heading, state, description);
 
-    node.append(marker, copy);
-    capabilities.append(node);
-  });
+    header.append(code, state);
+
+    const heading = document.createElement("strong");
+    heading.className = "capability-name";
+    heading.textContent = presentation.name;
+
+    const description = document.createElement("p");
+    description.className = "capability-description";
+    description.textContent = presentation.description;
+
+    const pulse = document.createElement("span");
+    pulse.className = "capability-pulse";
+    pulse.setAttribute("aria-hidden", "true");
+
+    card.append(header, heading, description, pulse);
+    capabilities.append(card);
+  }
 }
 
 function renderPullRequests(items) {

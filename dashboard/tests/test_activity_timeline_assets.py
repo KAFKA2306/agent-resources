@@ -15,7 +15,7 @@ class ActivityTimelineAssetsTest(unittest.TestCase):
         self.assertIn("./activity-timeline.css", html)
         self.assertIn('"activity-timeline.js"', html)
         self.assertIn('id="activity-feed"', html)
-        self.assertIn('id="activity-title">Factory Pulse / 7 days</h2>', html)
+        self.assertIn('id="activity-title">最近の活動</h2>', html)
 
     def test_timeline_keeps_visible_activity_labels(self):
         script = (DASHBOARD / "activity-timeline.js").read_text(encoding="utf-8")
