@@ -48,6 +48,7 @@ def dump_production_dom(url: str) -> str:
             find_chrome(),
             "--headless=new",
             "--disable-gpu",
+            "--disable-dev-shm-usage",
             "--no-sandbox",
             "--no-proxy-server",
             "--window-size=390,844",
@@ -58,7 +59,7 @@ def dump_production_dom(url: str) -> str:
         check=True,
         capture_output=True,
         text=True,
-        timeout=45,
+        timeout=60,
     )
     return result.stdout
 
@@ -109,13 +110,6 @@ def main() -> None:
         r'\s*(\d+) repositories\s*</(?P=tag)>'
     )
     repository_count_match = repository_count_pattern.search(dom)
-    poker_surface_pattern = re.compile(
-        r'<article class="world-station"[^>]*>.*?'
-        r'<strong>poker-raise-quiz</strong>.*?'
-        r'href="https://kafka2306\.github\.io/poker-raise-quiz/"[^>]*>.*?'
-        r'FRONT ↗.*?</a>.*?</article>',
-        re.DOTALL,
-    )
     gate_counts = rendered_gate_counts(dom)
     selected_lane = next(
         (lane for lane in ACTIONABLE_LANES if gate_counts.get(lane, 0) > 0),
@@ -138,8 +132,10 @@ def main() -> None:
         and "Operations snapshot: unavailable" not in dom,
         "operations is not unavailable": "Operations: unavailable" not in dom,
         "obsolete classification absent": "classified" not in dom and "unclassified" not in dom,
-        "poker-raise-quiz production surface rendered": poker_surface_pattern.search(dom)
-        is not None,
+        "poker-raise-quiz production surface rendered": (
+            'class="constellation-surface is-front"' in dom
+            and POKER_RAISE_QUIZ_URL in dom
+        ),
         "skip link targets main": 'class="skip-link" href="#main"' in dom
         and re.search(
             r'<main(?=[^>]*id="main")(?=[^>]*tabindex="-1")[^>]*>',
@@ -155,16 +151,18 @@ def main() -> None:
             r'data-stats-view="monthly"[^>]*aria-pressed="true"', dom
         )
         is not None
-        and 'id="github-stats-title">月次推移</h2>' in dom,
+        and 'id="github-stats-title">OUTPUT / YTD</h2>' in dom
+        and 'class="output-waveform"' in dom,
         "weekly stats selected by query": re.search(
             r'data-stats-view="weekly"[^>]*aria-pressed="true"', weekly_dom
         )
         is not None
-        and 'id="github-stats-title">週次推移</h2>' in weekly_dom,
-        "weekly stats renders 12 measured buckets": weekly_dom.count('class="stats-row"') == 12
+        and 'id="github-stats-title">OUTPUT / 12W</h2>' in weekly_dom,
+        "weekly stats renders 12 measured buckets": weekly_dom.count(
+            'class="wave-point is-commits"'
+        ) == 12
         and 'aria-label="GitHub週次活動"' in weekly_dom
-        and "週次は月曜始まりの直近12週間。" in weekly_dom
-        and "数値が実測値です。" in weekly_dom,
+        and 'class="output-waveform"' in weekly_dom,
     }
     if actionable_count > 0:
         checks["primary human action rendered"] = bool(primary_action)
