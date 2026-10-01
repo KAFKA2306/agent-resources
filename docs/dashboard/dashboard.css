@@ -464,3 +464,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 .stat-card>small:empty{display:none}
 .telemetry-deck .stats-note{display:none}
 .telemetry-deck .stats-legend{display:none}
+
+.constellation-surface circle{fill:#fff;stroke:#7668ff;stroke-width:1.2;transition:r .15s ease,filter .15s ease}
+.constellation-surface.is-front circle{stroke:#00a8d9}
+.constellation-surface:hover circle,.constellation-surface:focus-visible circle{r:5px;filter:drop-shadow(0 0 8px rgba(118,104,255,.42))}
