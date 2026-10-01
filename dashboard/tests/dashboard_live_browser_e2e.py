@@ -4,6 +4,7 @@ import datetime as dt
 import http.server
 import json
 import pathlib
+import re
 import shutil
 import socketserver
 import ssl
@@ -245,19 +246,25 @@ def main() -> None:
         "primary action rendered": 'id="primary-action"' in dom and "最優先の対応" in dom,
         "primary action has one-click evidence": "次の行動: 対応先を開く" in dom,
         "baseline public link survived live overlay": PUBLIC_SURFACE_URL in dom,
-        "public surface action rendered": "FRONT ↗" in dom,
-        "work item terminology rendered": "作業項目 1件" in dom,
+        "public surface action rendered": 'class="constellation-surface is-front"' in dom,
+        "work item terminology rendered": re.search(
+            r'id="agent-world-summary"[^>]*>\s*1 NODES · 1 ACTIVE\s*<',
+            dom,
+        )
+        is not None,
         "misleading agent count absent": "1 agents" not in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
         "monthly stats selected by default": 'data-stats-view="monthly" aria-pressed="true"' in dom
-        and 'id="github-stats-title">月次推移</h2>' in dom,
+        and 'id="github-stats-title">OUTPUT / YTD</h2>' in dom
+        and 'class="output-waveform"' in dom,
         "weekly stats selected by query": 'data-stats-view="weekly" aria-pressed="true"' in weekly_dom
-        and 'id="github-stats-title">週次推移</h2>' in weekly_dom,
-        "weekly stats table rendered": 'data-view="weekly"' in weekly_dom
+        and 'id="github-stats-title">OUTPUT / 12W</h2>' in weekly_dom,
+        "weekly stats waveform rendered": 'data-view="weekly"' in weekly_dom
         and 'aria-label="GitHub週次活動"' in weekly_dom
-        and weekly_dom.count('class="stats-row"') == 2,
-        "weekly measured-data note rendered": "週次は月曜始まりの直近12週間。" in weekly_dom
-        and "数値が実測値です。" in weekly_dom,
+        and weekly_dom.count('class="wave-point is-commits"') == 2,
+        "weekly waveform keeps measured points": 'class="output-waveform"' in weekly_dom
+        and 'class="wave-point is-prsMerged"' in weekly_dom
+        and 'class="wave-point is-issuesClosed"' in weekly_dom,
     }
     failures = [name for name, passed in checks.items() if not passed]
     if failures:

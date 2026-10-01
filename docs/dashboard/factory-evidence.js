@@ -101,43 +101,89 @@ function renderCapabilities(items) {
   const list = Array.isArray(items) ? items : [];
   const onlineCount = list.filter((item) => ["VERIFIED", "EXISTING"].includes(item?.state)).length;
   const onlinePercent = list.length ? Math.round((onlineCount / list.length) * 100) : 0;
+  const SVG_NS = "http://www.w3.org/2000/svg";
+
+  const graph = document.createElementNS(SVG_NS, "svg");
+  graph.classList.add("reactor-links");
+  graph.setAttribute("viewBox", "0 0 1000 760");
+  graph.setAttribute("aria-hidden", "true");
+
+  const orbit = document.createElementNS(SVG_NS, "ellipse");
+  orbit.setAttribute("cx", "500");
+  orbit.setAttribute("cy", "380");
+  orbit.setAttribute("rx", "390");
+  orbit.setAttribute("ry", "285");
+  orbit.classList.add("reactor-orbit");
+  graph.append(orbit);
+
+  const positions = list.map((item, index) => {
+    const angle = -90 + (360 / Math.max(list.length, 1)) * index;
+    const radians = angle * Math.PI / 180;
+    return {
+      item,
+      index,
+      x: 500 + Math.cos(radians) * 390,
+      y: 380 + Math.sin(radians) * 285,
+    };
+  });
+
+  for (const point of positions) {
+    const link = document.createElementNS(SVG_NS, "line");
+    link.setAttribute("x1", "500");
+    link.setAttribute("y1", "380");
+    link.setAttribute("x2", point.x.toFixed(1));
+    link.setAttribute("y2", point.y.toFixed(1));
+    link.classList.add("reactor-link");
+    link.style.setProperty("--link-delay", `${(point.index * 0.18).toFixed(2)}s`);
+    graph.append(link);
+  }
+
+  for (let index = 0; index < positions.length; index += 1) {
+    const from = positions[index];
+    const to = positions[(index + 1) % positions.length];
+    if (!to) break;
+    const arc = document.createElementNS(SVG_NS, "line");
+    arc.setAttribute("x1", from.x.toFixed(1));
+    arc.setAttribute("y1", from.y.toFixed(1));
+    arc.setAttribute("x2", to.x.toFixed(1));
+    arc.setAttribute("y2", to.y.toFixed(1));
+    arc.classList.add("reactor-ring-link");
+    graph.append(arc);
+  }
+  capabilities.append(graph);
 
   const core = document.createElement("section");
   core.className = "reactor-core";
   core.style.setProperty("--online-percent", `${onlinePercent}%`);
+  core.setAttribute("aria-label", `${onlineCount} of ${list.length} autonomous systems online`);
 
-  const coreKicker = document.createElement("span");
-  coreKicker.textContent = "AUTONOMY";
   const coreValue = document.createElement("strong");
   coreValue.textContent = `${onlineCount}/${list.length}`;
   const coreLabel = document.createElement("small");
-  coreLabel.textContent = "SYSTEMS ONLINE";
+  coreLabel.textContent = "ONLINE";
   const corePulse = document.createElement("span");
   corePulse.className = "reactor-core-pulse";
   corePulse.setAttribute("aria-hidden", "true");
-  core.append(coreKicker, coreValue, coreLabel, corePulse);
+  core.append(coreValue, coreLabel, corePulse);
   capabilities.append(core);
 
-  list.forEach((item, index) => {
+  positions.forEach(({ item, index, x, y }) => {
     const presentation = CAPABILITY_PRESENTATION[item.id] || {
       code: "SYS",
       name: item.label || item.id || "Capability",
       description: "Factory capability.",
     };
     const statePresentation = CAPABILITY_STATE[item.state] || CAPABILITY_STATE.UNVERIFIED;
-    const angle = -90 + (360 / Math.max(list.length, 1)) * index;
-    const radians = angle * Math.PI / 180;
-    const x = 50 + Math.cos(radians) * 42;
-    const y = 50 + Math.sin(radians) * 38;
 
     const node = document.createElement("article");
     node.className = "reactor-node";
     node.tabIndex = 0;
     node.dataset.capabilityState = item.state || "UNVERIFIED";
     node.dataset.capabilityTone = statePresentation.tone;
-    node.style.setProperty("--node-x", `${x.toFixed(2)}%`);
-    node.style.setProperty("--node-y", `${y.toFixed(2)}%`);
+    node.style.setProperty("--node-x", `${(x / 10).toFixed(2)}%`);
+    node.style.setProperty("--node-y", `${(y / 7.6).toFixed(2)}%`);
     node.style.setProperty("--node-delay", `${(index * 0.16).toFixed(2)}s`);
+    node.title = `${presentation.name} · ${statePresentation.label}\n${presentation.description}`;
     node.setAttribute(
       "aria-label",
       `${presentation.name}: ${statePresentation.label}. ${presentation.description}`,
@@ -153,9 +199,7 @@ function renderCapabilities(items) {
     heading.textContent = presentation.name;
     const state = document.createElement("small");
     state.textContent = statePresentation.label;
-    const description = document.createElement("em");
-    description.textContent = presentation.description;
-    copy.append(heading, state, description);
+    copy.append(heading, state);
 
     node.append(marker, copy);
     capabilities.append(node);

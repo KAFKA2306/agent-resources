@@ -243,18 +243,43 @@ function createStation(repository, workItems, heat) {
   return station;
 }
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+function repositoryLane(items) {
+  if (items.some((item) => item.lane === "failed")) return "failed";
+  if (items.some((item) => item.lane === "waiting")) return "waiting";
+  if (items.some((item) => item.lane === "working")) return "working";
+  if (items.some((item) => item.lane === "done")) return "done";
+  return "idle";
+}
+
+function repositorySeed(value) {
+  let hash = 2166136261;
+  for (const char of String(value || "")) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash >>> 0);
+}
+
+function createSvg(tag, attributes = {}) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, String(value));
+  return node;
+}
+
 export function renderWorld(repositories, workItems, activity = [], generatedAt = null) {
   const root = document.querySelector("#agent-world-zones");
   const summary = document.querySelector("#agent-world-summary");
   if (!root || !summary) return;
 
   root.replaceChildren();
-  summary.textContent = `作業項目 ${workItems.length}件 · ${repositories.length} repositories`;
 
   if (repositories.length === 0) {
+    summary.textContent = "0 NODES";
     const empty = document.createElement("p");
     empty.className = "world-empty muted";
-    empty.textContent = "表示できるrepositoryは0件です。";
+    empty.textContent = "NO SIGNAL";
     root.append(empty);
     return;
   }
@@ -265,11 +290,177 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
     workByRepository.get(item.repositoryId).push(item);
   }
 
-  const stations = document.createElement("div");
-  stations.className = "world-stations";
-  for (const repository of rankRepositories(repositories, workItems, activity, generatedAt)) {
-    const heat = repositoryHeat(repository, workItems, activity, generatedAt);
-    stations.append(createStation(repository, workByRepository.get(repository.id) || [], heat));
+  const ranked = rankRepositories(repositories, workItems, activity, generatedAt);
+  const heatById = new Map(
+    ranked.map((repository) => [
+      repository.id,
+      repositoryHeat(repository, workItems, activity, generatedAt),
+    ]),
+  );
+  const maxHeat = Math.max(1, ...heatById.values());
+  const activeCount = ranked.filter((repository) => (workByRepository.get(repository.id) || []).length > 0).length;
+  summary.textContent = `${repositories.length} NODES · ${activeCount} ACTIVE`;
+
+  const shell = document.createElement("div");
+  shell.className = "repository-constellation-shell";
+
+  const svg = createSvg("svg", {
+    viewBox: "0 0 1000 610",
+    role: "img",
+    "aria-label": `${repositories.length} public repositories plotted as a factory constellation`,
+    preserveAspectRatio: "xMidYMid meet",
+  });
+  svg.classList.add("repository-constellation");
+
+  const background = createSvg("g");
+  background.classList.add("constellation-grid");
+  for (const radius of [92, 170, 250, 330, 410]) {
+    background.append(createSvg("circle", { cx: 500, cy: 300, r: radius }));
   }
-  root.append(stations);
+  background.append(
+    createSvg("line", { x1: 55, y1: 300, x2: 945, y2: 300 }),
+    createSvg("line", { x1: 500, y1: 40, x2: 500, y2: 560 }),
+  );
+  svg.append(background);
+
+  const center = createSvg("g");
+  center.classList.add("constellation-core");
+  center.append(
+    createSvg("circle", { cx: 500, cy: 300, r: 34 }),
+    createSvg("circle", { cx: 500, cy: 300, r: 54 }),
+  );
+  const coreText = createSvg("text", { x: 500, y: 305, "text-anchor": "middle" });
+  coreText.textContent = "CORE";
+  center.append(coreText);
+  svg.append(center);
+
+  const points = [];
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  ranked.forEach((repository, index) => {
+    const items = workByRepository.get(repository.id) || [];
+    const heat = heatById.get(repository.id) || 0;
+    const heatRatio = Math.min(1, heat / maxHeat);
+    const seed = repositorySeed(repository.id || repository.name);
+    const jitter = ((seed % 997) / 997 - 0.5) * 0.38;
+    const progress = ranked.length <= 1 ? 0 : index / (ranked.length - 1);
+    const radius = 100 + Math.sqrt(progress) * 335 - heatRatio * 58;
+    const angle = index * goldenAngle + jitter;
+    const x = 500 + Math.cos(angle) * radius * 1.08;
+    const y = 300 + Math.sin(angle) * radius * 0.67;
+    points.push({
+      repository,
+      items,
+      heat,
+      heatRatio,
+      lane: repositoryLane(items),
+      x,
+      y,
+      index,
+    });
+  });
+
+  const edgeLayer = createSvg("g");
+  edgeLayer.classList.add("constellation-edges");
+  for (const point of points.filter((point) => point.items.length > 0)) {
+    const edge = createSvg("line", {
+      x1: 500,
+      y1: 300,
+      x2: point.x.toFixed(1),
+      y2: point.y.toFixed(1),
+    });
+    edge.classList.add("constellation-edge", `is-${point.lane}`);
+    edge.style.setProperty("--edge-delay", `${(point.index * 0.07).toFixed(2)}s`);
+    edgeLayer.append(edge);
+  }
+  svg.append(edgeLayer);
+
+  const nodeLayer = createSvg("g");
+  nodeLayer.classList.add("constellation-nodes");
+  for (const point of points) {
+    const { repository, items, heat, heatRatio, lane, x, y, index } = point;
+    const anchor = createSvg("a", {
+      href: repository.url,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      tabindex: "0",
+    });
+    anchor.classList.add("constellation-node", `is-${lane}`);
+    if (Array.isArray(repository.publicLinks) && repository.publicLinks.length) {
+      anchor.classList.add("has-surface");
+    }
+
+    const nodeRadius = Math.min(11, 3.2 + heatRatio * 5.2 + Math.sqrt(items.length) * 0.85);
+    const halo = createSvg("circle", {
+      cx: x.toFixed(1),
+      cy: y.toFixed(1),
+      r: (nodeRadius + (items.length ? 5 : 2)).toFixed(1),
+    });
+    halo.classList.add("constellation-node-halo");
+    const dot = createSvg("circle", {
+      cx: x.toFixed(1),
+      cy: y.toFixed(1),
+      r: nodeRadius.toFixed(1),
+    });
+    dot.classList.add("constellation-node-dot");
+
+    const title = createSvg("title");
+    title.textContent = `${repository.name} · ${items.length} work · heat ${Math.round(heat)}`;
+    anchor.append(title, halo, dot);
+
+    if (index < 16 || items.length > 0 && index < 28) {
+      const label = createSvg("text", {
+        x: (x + (x >= 500 ? nodeRadius + 6 : -nodeRadius - 6)).toFixed(1),
+        y: (y + 3).toFixed(1),
+        "text-anchor": x >= 500 ? "start" : "end",
+      });
+      label.classList.add("constellation-node-label");
+      label.textContent = repository.name;
+      anchor.append(label);
+    }
+
+    nodeLayer.append(anchor);
+
+    const safeSurfaceLinks = (Array.isArray(repository.publicLinks) ? repository.publicLinks : [])
+      .filter((link) => link && (link.kind === "front" || link.kind === "pages") && typeof link.url === "string" && link.url.startsWith("https://"))
+      .slice(0, 2);
+    safeSurfaceLinks.forEach((link, surfaceIndex) => {
+      const theta = surfaceIndex === 0 ? -0.62 : 0.62;
+      const sx = x + Math.cos(theta) * (nodeRadius + 12);
+      const sy = y + Math.sin(theta) * (nodeRadius + 12);
+      const satellite = createSvg("a", {
+        href: link.url,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        tabindex: "0",
+      });
+      satellite.classList.add("constellation-surface", `is-${link.kind}`);
+      const title = createSvg("title");
+      title.textContent = `${repository.name} · ${link.kind.toUpperCase()}`;
+      const dot = createSvg("circle", {
+        cx: sx.toFixed(1),
+        cy: sy.toFixed(1),
+        r: "2.8",
+      });
+      satellite.append(title, dot);
+      nodeLayer.append(satellite);
+    });
+  }
+  svg.append(nodeLayer);
+
+  const legend = document.createElement("div");
+  legend.className = "constellation-legend";
+  for (const [lane, label] of [
+    ["working", "LIVE"],
+    ["waiting", "WAIT"],
+    ["failed", "FAIL"],
+    ["idle", "IDLE"],
+  ]) {
+    const item = document.createElement("span");
+    item.dataset.lane = lane;
+    item.textContent = label;
+    legend.append(item);
+  }
+
+  shell.append(svg, legend);
+  root.append(shell);
 }

@@ -66,10 +66,13 @@ class AgentWorldTest(unittest.TestCase):
 
     def test_repositories_are_ranked_by_current_work(self):
         js = WORLD_JS.read_text(encoding="utf-8")
-        self.assertIn('stations.className = "world-stations"', js)
+        self.assertIn('shell.className = "repository-constellation-shell"', js)
+        self.assertIn('svg.classList.add("repository-constellation")', js)
         self.assertIn("rankRepositories(repositories, workItems, activity, generatedAt)", js)
         self.assertIn("repositoryHeat(repository, workItems, activity, generatedAt)", js)
-        self.assertIn("${repositories.length} repositories", js)
+        self.assertIn("${repositories.length} NODES · ${activeCount} ACTIVE", js)
+        self.assertIn('anchor.classList.add("constellation-node"', js)
+        self.assertIn('edge.classList.add("constellation-edge"', js)
         self.assertNotIn("unclassified", js)
         self.assertNotIn("agent-zone-", js)
 
