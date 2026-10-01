@@ -4,6 +4,7 @@ import datetime as dt
 import http.server
 import json
 import pathlib
+import re
 import shutil
 import socketserver
 import ssl
@@ -246,7 +247,11 @@ def main() -> None:
         "primary action has one-click evidence": "次の行動: 対応先を開く" in dom,
         "baseline public link survived live overlay": PUBLIC_SURFACE_URL in dom,
         "public surface action rendered": 'class="constellation-surface is-front"' in dom,
-        "work item terminology rendered": 'id="agent-world-summary">1 NODES · 1 ACTIVE<' in dom,
+        "work item terminology rendered": re.search(
+            r'id="agent-world-summary"[^>]*>\s*1 NODES · 1 ACTIVE\s*<',
+            dom,
+        )
+        is not None,
         "misleading agent count absent": "1 agents" not in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
         "monthly stats selected by default": 'data-stats-view="monthly" aria-pressed="true"' in dom
