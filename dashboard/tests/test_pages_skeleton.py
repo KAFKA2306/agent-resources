@@ -18,60 +18,66 @@ PUBLIC_LINK_ASSETS = [
 
 
 class DashboardSkeletonTest(unittest.TestCase):
-    def test_dashboard_keeps_only_recent_activity_in_right_sidebar(self):
+    def test_dashboard_uses_mission_deck_information_architecture(self):
         html = HTML.read_text(encoding="utf-8")
         css = CSS.read_text(encoding="utf-8").replace(" ", "")
-        self.assertIn('<main class="main-panel"', html)
-        self.assertIn('<aside class="activity-sidebar"', html)
-        self.assertIn("grid-template-columns:minmax(0,1fr)minmax(260px,340px)", css)
-        self.assertIn('id="activity-feed"', html)
-        main_start = html.index('<main class="main-panel"')
-        main_end = html.index("</main>", main_start)
-        sidebar = html.index('<aside class="activity-sidebar"')
-        self.assertGreater(sidebar, main_end)
-        self.assertNotIn('id="activity-feed"', html[main_start:main_end])
-        for marker in ('id="agent-world-zones"', 'id="lane-gates"', 'id="github-stats-title"'):
-            self.assertIn(marker, html[main_start:main_end])
+        self.assertIn('<main id="main" class="mission-deck"', html)
+        self.assertIn('class="command-hero"', html)
+        self.assertIn('class="situation-grid"', html)
+        self.assertIn('class="evidence-deck"', html)
+        self.assertIn('class="activity-bay"', html)
+        self.assertIn('class="repository-deck"', html)
+        self.assertIn('class="metrics-deck github-stats"', html)
+        self.assertIn("grid-template-columns:minmax(0,1.65fr)minmax(300px,.72fr)", css)
+        for marker in ('id="activity-feed"', 'id="agent-world-zones"', 'id="lane-gates"', 'id="github-stats-title"'):
+            self.assertIn(marker, html)
+        self.assertNotIn('class="main-panel"', html)
+        self.assertNotIn('class="activity-sidebar"', html)
         self.assertNotIn('id="project-groups"', html)
-        self.assertIn('直近7日', html)
         self.assertIn('name="viewport"', html)
 
-    def test_hub_hierarchy_is_preserved_with_compact_public_links(self):
+    def test_command_hierarchy_preserves_canonical_status_and_public_links(self):
         html = HTML.read_text(encoding="utf-8")
-        self.assertNotIn('game.css', html)
+        self.assertNotIn("game.css", html)
         self.assertNotIn('class="world-decor"', html)
-        self.assertIn('<p class="eyebrow">判断と対応</p>', html)
-        self.assertIn('>今対応すること</h2>', html)
-        self.assertIn('GitHub Public Hub', html)
+        self.assertIn('<p class="eyebrow">PRIORITY ROUTER</p>', html)
+        self.assertIn('id="action-title">今対応すること</h2>', html)
         self.assertIn('class="hub"', html)
         self.assertIn('id="repository-count"', html)
         self.assertIn('id="snapshot-status"', html)
-        self.assertNotIn('class="top-actions"', html)
+        self.assertIn('id="live-fetched-at"', html)
+        self.assertIn('id="snapshot-generated-at"', html)
+        self.assertIn('id="operations-generated-at"', html)
+        self.assertIn('id="operations-summary"', html)
         self.assertIn('class="public-links"', html)
-        self.assertIn('https://github.com/KAFKA2306/agent-resources', html)
-        self.assertIn('https://agent-resources-one.vercel.app/site/', html)
-        self.assertNotIn('https://pypi.org/project/agent-resources/', html)
+        self.assertIn("https://github.com/KAFKA2306/agent-resources", html)
+        self.assertIn("https://agent-resources-one.vercel.app/site/", html)
+        self.assertNotIn("https://pypi.org/project/agent-resources/", html)
 
-    def test_main_information_order_stays_stable(self):
+    def test_main_information_order_matches_mission_flow(self):
         html = HTML.read_text(encoding="utf-8")
         hub = html.index('class="hub"')
         gates = html.index('id="lane-gates"')
+        evidence = html.index('id="factory-evidence-title"')
+        activity = html.index('id="activity-feed"')
         world = html.index('id="agent-world-zones"')
         stats = html.index('id="github-stats-title"')
-        activity = html.index('id="activity-feed"')
         self.assertLess(hub, gates)
-        self.assertLess(gates, world)
+        self.assertLess(gates, evidence)
+        self.assertLess(evidence, activity)
+        self.assertLess(activity, world)
         self.assertLess(world, stats)
-        self.assertLess(stats, activity)
 
-    def test_mobile_stacks_activity_after_main(self):
+    def test_mobile_collapses_mission_deck_without_losing_activity(self):
         css = CSS.read_text(encoding="utf-8").replace(" ", "")
         self.assertIn("@media(max-width:760px)", css)
-        self.assertIn(".dashboard-shell{grid-template-columns:minmax(0,1fr);padding:12px}", css)
-        self.assertIn(".activity-sidebar{position:static;max-height:none;overflow:visible}", css)
-        self.assertIn(".panel-heading,.section-heading{align-items:flex-start;flex-direction:column}", css)
-        self.assertIn(".hub{align-items:flex-start;flex-direction:column}", css)
-        self.assertIn(".topbar{align-items:flex-start;flex-direction:column;padding:18px}", css)
+        self.assertIn(".mission-mast{position:relative;align-items:flex-start;flex-direction:column;padding:14px16px}", css)
+        self.assertIn(".mission-deck{padding:12px12px32px}", css)
+        self.assertIn(".command-hero{grid-template-columns:minmax(0,1fr);min-height:auto;padding:22px18px;border-radius:20px}", css)
+        self.assertIn(".lane-gates{grid-template-columns:minmax(0,1fr)}", css)
+        self.assertIn(".evidence-orbit{grid-template-columns:minmax(0,1fr)}", css)
+        self.assertIn(".world-stations{grid-template-columns:minmax(0,1fr)}", css)
+        self.assertIn(".activity-bay{position:static;max-height:none}", css)
 
     def test_root_redirects_to_dashboard_and_dashboard_links_to_products(self):
         root_html = ROOT_HTML.read_text(encoding="utf-8")
@@ -80,9 +86,9 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('window.location.replace("./dashboard/")', root_html)
         self.assertNotIn('href="./site/"', root_html)
         self.assertNotIn('href="../site/"', dashboard_html)
-        self.assertIn('https://github.com/KAFKA2306/agent-resources', dashboard_html)
-        self.assertIn('https://agent-resources-one.vercel.app/site/', dashboard_html)
-        self.assertNotIn('https://pypi.org/project/agent-resources/', dashboard_html)
+        self.assertIn("https://github.com/KAFKA2306/agent-resources", dashboard_html)
+        self.assertIn("https://agent-resources-one.vercel.app/site/", dashboard_html)
+        self.assertNotIn("https://pypi.org/project/agent-resources/", dashboard_html)
 
     def test_agent_world_is_canonical_repository_view(self):
         html = HTML.read_text(encoding="utf-8")
@@ -107,6 +113,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('import(`./world.js?v=${assetVersion}`)', js)
         self.assertIn('new URL(import.meta.url).searchParams.get("v")', world_js)
         self.assertIn('import(`./ranking.js?v=${assetVersion}`)', world_js)
+        self.assertIn('"neural-field.js"', html)
 
     def test_public_presence_keeps_no_duplicate_dashboard_feature_layer(self):
         html = HTML.read_text(encoding="utf-8")
@@ -128,7 +135,7 @@ class DashboardSkeletonTest(unittest.TestCase):
         html = HTML.read_text(encoding="utf-8")
         js = JS.read_text(encoding="utf-8")
         self.assertIn('id="activity-feed"', html)
-        self.assertIn("直近7日", html)
+        self.assertIn("7 DAY SIGNAL", html)
         self.assertIn("snapshot.activity", js)
         self.assertNotIn("ACTIVITY_LIMIT", js)
         self.assertIn("b.occurredAt.localeCompare(a.occurredAt)", js)
