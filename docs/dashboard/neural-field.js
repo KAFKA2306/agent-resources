@@ -49,16 +49,16 @@ if (!gl) {
     return 1.0 - smoothstep(0.0, width, abs(value));
   }
 
-  float starLayer(vec2 uv, float scale, float speed) {
+  float sparkleLayer(vec2 uv, float scale, float speed) {
     vec2 p = uv * scale;
     vec2 id = floor(p);
     vec2 cell = fract(p) - 0.5;
     float rnd = hash21(id);
     vec2 offset = vec2(hash21(id + 7.1), hash21(id + 19.7)) - 0.5;
-    float dist = length(cell - offset * 0.62);
-    float sparkle = smoothstep(0.06, 0.0, dist);
-    float gate = step(0.82, rnd);
-    float pulse = 0.45 + 0.55 * sin(u_time * speed + rnd * 24.0);
+    float dist = length(cell - offset * 0.58);
+    float sparkle = smoothstep(0.055, 0.0, dist);
+    float gate = step(0.84, rnd);
+    float pulse = 0.35 + 0.65 * sin(u_time * speed + rnd * 24.0) * 0.5 + 0.5;
     return sparkle * gate * pulse;
   }
 
@@ -68,39 +68,45 @@ if (!gl) {
     vec2 pointer = (u_pointer * 2.0 - 1.0);
     pointer.x *= u_resolution.x / max(u_resolution.y, 1.0);
 
-    vec3 col = vec3(0.006, 0.014, 0.035);
+    vec3 col = vec3(0.965, 0.988, 1.0);
 
-    float vignette = smoothstep(1.7, 0.1, length(uv * vec2(0.72, 0.9)));
-    col += vec3(0.005, 0.035, 0.075) * vignette;
+    float atmosphere = smoothstep(1.7, 0.08, length(uv * vec2(0.72, 0.9)));
+    col += vec3(0.018, 0.055, 0.065) * atmosphere;
 
-    float stars = starLayer(uv + vec2(u_time * 0.006, 0.0), 18.0, 1.7)
-                + starLayer(uv * 1.21 - vec2(0.0, u_time * 0.004), 28.0, 2.3) * 0.55;
-    col += stars * vec3(0.12, 0.62, 1.0);
+    float cyanCloud = exp(-1.8 * length(uv - vec2(-0.72, 0.72)));
+    float violetCloud = exp(-2.2 * length(uv - vec2(0.86, 0.38)));
+    col += cyanCloud * vec3(0.02, 0.095, 0.12);
+    col += violetCloud * vec3(0.045, 0.035, 0.085);
+
+    float sparks = sparkleLayer(uv + vec2(u_time * 0.005, 0.0), 18.0, 1.5)
+                 + sparkleLayer(uv * 1.18 - vec2(0.0, u_time * 0.003), 29.0, 2.1) * 0.55;
+    col -= sparks * vec3(0.03, 0.085, 0.09);
+    col += sparks * vec3(0.0, 0.055, 0.075);
 
     vec2 gridUv = uv;
-    gridUv.y += 0.22;
-    float depth = max(0.16, gridUv.y + 1.32);
-    vec2 projected = vec2(gridUv.x / depth, 1.0 / depth + u_time * 0.035);
-    float gridX = line(fract(projected.x * 7.0) - 0.5, 0.035);
-    float gridY = line(fract(projected.y * 2.2) - 0.5, 0.025);
-    float horizon = smoothstep(-0.72, 0.62, gridUv.y) * (1.0 - smoothstep(0.45, 1.3, gridUv.y));
-    col += (gridX + gridY) * horizon * vec3(0.0, 0.19, 0.34);
+    gridUv.y += 0.18;
+    float depth = max(0.18, gridUv.y + 1.35);
+    vec2 projected = vec2(gridUv.x / depth, 1.0 / depth + u_time * 0.028);
+    float gridX = line(fract(projected.x * 7.0) - 0.5, 0.03);
+    float gridY = line(fract(projected.y * 2.1) - 0.5, 0.021);
+    float horizon = smoothstep(-0.76, 0.58, gridUv.y) * (1.0 - smoothstep(0.48, 1.28, gridUv.y));
+    col -= (gridX + gridY) * horizon * vec3(0.025, 0.075, 0.09);
 
-    float beam = line(uv.y - 0.18 * sin(uv.x * 2.2 + u_time * 0.45), 0.012);
+    float beam = line(uv.y - 0.17 * sin(uv.x * 2.2 + u_time * 0.42), 0.010);
     beam *= smoothstep(1.55, 0.0, abs(uv.x));
-    col += beam * vec3(0.04, 0.46, 0.72) * 0.22;
+    col -= beam * vec3(0.018, 0.075, 0.09);
 
-    float pointerGlow = exp(-3.2 * length(uv - pointer));
-    col += pointerGlow * vec3(0.05, 0.24, 0.42);
+    float pointerGlow = exp(-3.3 * length(uv - pointer));
+    col += pointerGlow * vec3(0.018, 0.065, 0.075);
 
-    float ringDistance = abs(length(uv - pointer * 0.18) - (0.38 + 0.03 * sin(u_time * 0.7)));
-    float ring = smoothstep(0.018, 0.0, ringDistance);
-    col += ring * vec3(0.12, 0.42, 0.68) * 0.2;
+    float ringDistance = abs(length(uv - pointer * 0.16) - (0.38 + 0.026 * sin(u_time * 0.68)));
+    float ring = smoothstep(0.016, 0.0, ringDistance);
+    col -= ring * vec3(0.018, 0.072, 0.085);
 
-    float scan = 0.018 * sin(frag.y * 0.95 + u_time * 3.0);
-    col += scan * vec3(0.02, 0.08, 0.11);
+    float scan = 0.004 * sin(frag.y * 0.82 + u_time * 2.6);
+    col -= scan * vec3(0.25, 0.48, 0.55);
 
-    col *= 0.92 + 0.08 * vignette;
+    col = clamp(col, 0.0, 1.0);
     fragColor = vec4(col, 1.0);
   }`;
 
@@ -163,8 +169,8 @@ if (!gl) {
 
     if (!reducedMotion) {
       window.addEventListener("pointermove", (event) => {
-        pointer.x += (event.clientX / Math.max(window.innerWidth, 1) - pointer.x) * 0.16;
-        pointer.y += (1.0 - event.clientY / Math.max(window.innerHeight, 1) - pointer.y) * 0.16;
+        pointer.x += (event.clientX / Math.max(window.innerWidth, 1) - pointer.x) * 0.14;
+        pointer.y += (1.0 - event.clientY / Math.max(window.innerHeight, 1) - pointer.y) * 0.14;
       }, { passive: true });
     }
 
