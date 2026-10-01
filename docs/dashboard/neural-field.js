@@ -4,6 +4,8 @@ canvas.setAttribute("aria-hidden", "true");
 document.body.prepend(canvas);
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const automatedBrowser = navigator.webdriver || /HeadlessChrome/i.test(navigator.userAgent);
+const staticRendering = reducedMotion || automatedBrowser;
 const compactMode = window.matchMedia("(max-width: 760px)").matches;
 const gl = canvas.getContext("webgl2", {
   alpha: true,
@@ -140,7 +142,9 @@ if (!gl) {
     let visible = !document.hidden;
 
     function resize() {
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, compactMode ? 1.2 : 1.55);
+      const pixelRatio = automatedBrowser
+        ? 0.75
+        : Math.min(window.devicePixelRatio || 1, compactMode ? 1.2 : 1.55);
       const width = Math.max(1, Math.floor(window.innerWidth * pixelRatio));
       const height = Math.max(1, Math.floor(window.innerHeight * pixelRatio));
       if (canvas.width !== width || canvas.height !== height) {
@@ -157,9 +161,9 @@ if (!gl) {
       gl.useProgram(program);
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.uniform2f(pointerLocation, pointer.x, pointer.y);
-      gl.uniform1f(timeLocation, reducedMotion ? 12.0 : now * 0.001);
+      gl.uniform1f(timeLocation, staticRendering ? 12.0 : now * 0.001);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      if (!reducedMotion && visible) animationFrame = requestAnimationFrame(render);
+      if (!staticRendering && visible) animationFrame = requestAnimationFrame(render);
     }
 
     function restart() {
@@ -167,7 +171,7 @@ if (!gl) {
       if (visible) render(performance.now());
     }
 
-    if (!reducedMotion) {
+    if (!staticRendering) {
       window.addEventListener("pointermove", (event) => {
         pointer.x += (event.clientX / Math.max(window.innerWidth, 1) - pointer.x) * 0.14;
         pointer.y += (1.0 - event.clientY / Math.max(window.innerHeight, 1) - pointer.y) * 0.14;
