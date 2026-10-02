@@ -73,6 +73,9 @@ class AgentWorldTest(unittest.TestCase):
         self.assertIn("${repositories.length} NODES · ${activeCount} ACTIVE", js)
         self.assertIn('anchor.classList.add("constellation-node"', js)
         self.assertIn('edge.classList.add("constellation-edge"', js)
+        self.assertIn('tooltip.className = "constellation-tooltip"', js)
+        self.assertIn('const importantNode = index < 10 || lane === "failed" || lane === "waiting" || heatRatio > 0.72;', js)
+        self.assertIn('if (heatRatio >= 0.58) anchor.classList.add("is-hot")', js)
         self.assertNotIn("unclassified", js)
         self.assertNotIn("agent-zone-", js)
 
