@@ -165,18 +165,16 @@ def main() -> None:
         "reactor exposes state-driven flow": (
             'class="reactor-link"' in dom and 'data-flow="active"' in dom
         ),
-        "evidence spine stages render observed provenance": (
-            'class="evidence-spine"' in dom
-            and re.search(
-                r'<section(?=[^>]*class="evidence-link evidence-link-primary")'
-                r'(?=[^>]*data-stage="main")'
-                r'(?=[^>]*data-stage-state="observed")[^>]*>',
+        "evidence spine is revision-connected": (
+            re.search(
+                r'<aside(?=[^>]*class="evidence-spine")'
+                r'(?=[^>]*data-chain-state="fresh")[^>]*>',
                 dom,
             )
             is not None
             and re.search(
-                r'<section(?=[^>]*class="evidence-link")'
-                r'(?=[^>]*data-stage="pages")'
+                r'<section(?=[^>]*class="evidence-link evidence-link-primary")'
+                r'(?=[^>]*data-stage="main")'
                 r'(?=[^>]*data-stage-state="observed")[^>]*>',
                 dom,
             )
