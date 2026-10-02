@@ -8,6 +8,7 @@ const observer = document.querySelector("#factory-observer");
 const canonicalIssue = document.querySelector("#factory-canonical-issue");
 const activePullRequests = document.querySelector("#factory-active-prs");
 const capabilities = document.querySelector("#factory-capabilities");
+const evidenceSpine = document.querySelector(".evidence-spine");
 
 const CAPABILITY_PRESENTATION = {
   "observe-classify": {
@@ -79,6 +80,18 @@ function setFreshness(label, state) {
   freshness.dataset.state = state;
 }
 
+function setEvidencePath(state, breakAt = null) {
+  if (!evidenceSpine) return;
+  evidenceSpine.dataset.chainState = state;
+  if (breakAt) evidenceSpine.dataset.breakAt = breakAt;
+  else evidenceSpine.removeAttribute("data-break-at");
+}
+
+function setEvidenceStage(stage, state) {
+  const node = evidenceSpine?.querySelector(`[data-stage="${stage}"]`);
+  if (node) node.dataset.stageState = state;
+}
+
 function replaceWithLink(root, label, url) {
   root.replaceChildren();
   if (!url) {
@@ -134,6 +147,8 @@ function renderCapabilities(items) {
     link.setAttribute("x2", point.x.toFixed(1));
     link.setAttribute("y2", point.y.toFixed(1));
     link.classList.add("reactor-link");
+    const tone = (CAPABILITY_STATE[point.item?.state] || CAPABILITY_STATE.UNVERIFIED).tone;
+    link.dataset.flow = tone === "verified" || tone === "online" ? "active" : tone;
     link.style.setProperty("--link-delay", `${(point.index * 0.18).toFixed(2)}s`);
     graph.append(link);
   }
@@ -243,6 +258,7 @@ function renderStaticState(payload) {
   const sourceRevision = payload?.sourceRevision;
   mainSha.textContent = shortSha(sourceRevision);
   mainSha.title = sourceRevision || "";
+  setEvidenceStage("main", sourceRevision ? "observed" : "unknown");
 
   const runId = payload?.pages?.workflowRunId;
   replaceWithLink(
@@ -250,6 +266,7 @@ function renderStaticState(payload) {
     runId ? `Build / deploy run #${runId}` : "Build / deploy run unknown",
     payload?.pages?.workflowRunUrl,
   );
+  setEvidenceStage("pages", runId ? "observed" : "unknown");
 
   const observerState = payload?.observer?.state || "UNVERIFIED";
   const observerRun = payload?.observer?.runId;
@@ -258,6 +275,14 @@ function renderStaticState(payload) {
     observerRun ? `${observerState} · run #${observerRun}` : observerState,
     payload?.observer?.url,
   );
+  setEvidenceStage(
+    "observer",
+    ["VERIFIED", "EXISTING"].includes(observerState)
+      ? "observed"
+      : ["DISCONNECTED", "MISSING"].includes(observerState)
+        ? "failed"
+        : "unknown",
+  );
 
   const issue = payload?.canonicalIssue;
   replaceWithLink(
@@ -265,8 +290,11 @@ function renderStaticState(payload) {
     issue ? `#${issue.number} · ${issue.state}` : "UNVERIFIED",
     issue?.url,
   );
+  setEvidenceStage("control", issue ? "observed" : "unknown");
 
-  renderPullRequests(payload?.activePullRequests);
+  const pulls = Array.isArray(payload?.activePullRequests) ? payload.activePullRequests : [];
+  setEvidenceStage("change", pulls.length ? "active" : "idle");
+  renderPullRequests(pulls);
   renderCapabilities(payload?.capabilities);
 }
 
@@ -284,6 +312,7 @@ async function verifyProductionFreshness(payload) {
   const runId = payload?.pages?.workflowRunId;
   if (!sourceRevision || !runId) {
     setFreshness("UNVERIFIED · provenance missing", "unknown");
+    setEvidencePath("unknown");
     return;
   }
 
@@ -298,22 +327,32 @@ async function verifyProductionFreshness(payload) {
         `FAIL · stale ${shortSha(sourceRevision)} ≠ main ${shortSha(liveMain?.sha)}`,
         "failed",
       );
+      setEvidencePath("failed", "main");
+      setEvidenceStage("main", "failed");
       return;
     }
 
     if (run?.status === "completed" && run?.conclusion === "success") {
       setFreshness(`VERIFIED · main ${shortSha(sourceRevision)}`, "fresh");
+      setEvidencePath("fresh");
+      setEvidenceStage("main", "observed");
+      setEvidenceStage("pages", "observed");
       return;
     }
 
     if (run?.status === "completed") {
       setFreshness(`FAIL · deploy ${run?.conclusion || "unknown"}`, "failed");
+      setEvidencePath("failed", "pages");
+      setEvidenceStage("pages", "failed");
       return;
     }
 
     setFreshness(`CURRENT · deploy ${run?.status || "verifying"}`, "stale");
+    setEvidencePath("stale", "pages");
+    setEvidenceStage("pages", "active");
   } catch (error) {
     setFreshness("UNVERIFIED · live GitHub read-back failed", "unknown");
+    setEvidencePath("unknown");
     console.error("factory evidence live verification failed", error);
   }
 }
@@ -325,6 +364,7 @@ async function loadFactoryEvidence() {
     await verifyProductionFreshness(payload);
   } catch (error) {
     setFreshness("UNVERIFIED · factory-state unavailable", "failed");
+    setEvidencePath("unknown");
     console.error("factory evidence snapshot failed", error);
   }
 }
