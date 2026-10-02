@@ -303,6 +303,32 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
 
   const shell = document.createElement("div");
   shell.className = "repository-constellation-shell";
+  shell.dataset.active = String(activeCount > 0);
+
+  const tooltip = document.createElement("div");
+  tooltip.className = "constellation-tooltip";
+  tooltip.hidden = true;
+  tooltip.setAttribute("role", "status");
+
+  function showTooltip(point, clientX, clientY) {
+    const heading = document.createElement("strong");
+    heading.textContent = point.repository.name;
+    const meta = document.createElement("span");
+    meta.textContent = `${point.lane.toUpperCase()} · HEAT ${Math.round(point.heat)} · WORK ${point.items.length}`;
+    tooltip.replaceChildren(heading, meta);
+    tooltip.hidden = false;
+
+    const rect = shell.getBoundingClientRect();
+    const width = 210;
+    const left = Math.min(Math.max(12, clientX - rect.left + 14), Math.max(12, rect.width - width - 12));
+    const top = Math.min(Math.max(12, clientY - rect.top + 14), Math.max(12, rect.height - 64));
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function hideTooltip() {
+    tooltip.hidden = true;
+  }
 
   const svg = createSvg("svg", {
     viewBox: "0 0 1000 610",
@@ -385,9 +411,21 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
       tabindex: "0",
     });
     anchor.classList.add("constellation-node", `is-${lane}`);
+    anchor.dataset.heat = heatRatio.toFixed(2);
+    if (items.length > 0) anchor.classList.add("is-active");
+    if (heatRatio >= 0.58) anchor.classList.add("is-hot");
     if (Array.isArray(repository.publicLinks) && repository.publicLinks.length) {
       anchor.classList.add("has-surface");
     }
+
+    anchor.addEventListener("pointerenter", (event) => showTooltip(point, event.clientX, event.clientY));
+    anchor.addEventListener("pointermove", (event) => showTooltip(point, event.clientX, event.clientY));
+    anchor.addEventListener("pointerleave", hideTooltip);
+    anchor.addEventListener("focus", () => {
+      const rect = anchor.getBoundingClientRect();
+      showTooltip(point, rect.left + rect.width / 2, rect.top + rect.height / 2);
+    });
+    anchor.addEventListener("blur", hideTooltip);
 
     const nodeRadius = Math.min(11, 3.2 + heatRatio * 5.2 + Math.sqrt(items.length) * 0.85);
     const halo = createSvg("circle", {
@@ -407,7 +445,8 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
     title.textContent = `${repository.name} · ${items.length} work · heat ${Math.round(heat)}`;
     anchor.append(title, halo, dot);
 
-    if (index < 16 || items.length > 0 && index < 28) {
+    const importantNode = index < 10 || lane === "failed" || lane === "waiting" || heatRatio > 0.72;
+    if (importantNode) {
       const label = createSvg("text", {
         x: (x + (x >= 500 ? nodeRadius + 6 : -nodeRadius - 6)).toFixed(1),
         y: (y + 3).toFixed(1),
@@ -461,6 +500,6 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
     legend.append(item);
   }
 
-  shell.append(svg, legend);
+  shell.append(svg, legend, tooltip);
   root.append(shell);
 }
