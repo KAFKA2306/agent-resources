@@ -18,6 +18,7 @@ on:
       - 'pyproject.toml'
       - 'scripts/validate_dashboard_contract.py'
       - 'scripts/research_provider_comparison.py'
+      - 'scripts/verify_action_pins.py'
       - 'tests/test_research_provider_comparison.py'
       - 'vercel.json'
       - '.pre-commit-config.yaml'
@@ -72,6 +73,9 @@ jobs:
 
       - name: Validate pre-commit configuration
         run: pre-commit validate-config
+
+      - name: Verify immutable GitHub Action pins
+        run: python scripts/verify_action_pins.py
 
       - name: Validate README resource links
         run: |
