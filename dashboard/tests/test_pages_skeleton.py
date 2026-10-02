@@ -192,8 +192,9 @@ class DashboardSkeletonTest(unittest.TestCase):
     def test_attention_gates_are_explicit(self):
         js = JS.read_text(encoding="utf-8")
         world_js = WORLD_JS.read_text(encoding="utf-8")
-        self.assertIn('lane: "waiting", label: "判断待ち"', js)
-        self.assertIn('lane: "failed", label: "失敗・要確認"', js)
+        self.assertIn('lane: "waiting", label: "WAIT", detailLabel: "判断待ち"', js)
+        self.assertIn('lane: "failed", label: "FAIL", detailLabel: "失敗・要確認"', js)
+        self.assertIn('lane: "done", label: "DONE", detailLabel: "完了報告"', js)
         self.assertLess(js.index('lane: "waiting"'), js.index('lane: "failed"'))
         self.assertIn("{ createPublicSurfaceLinks, renderWorld }", js)
         self.assertIn("createPublicSurfaceLinks(repo)", js)
