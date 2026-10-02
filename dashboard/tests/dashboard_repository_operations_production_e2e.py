@@ -142,6 +142,44 @@ def main() -> None:
             dom,
         )
         is not None,
+        "observatory identity rendered": (
+            "AUTONOMOUS OBSERVATORY" in dom
+            and 'id="activity-title">FACTORY PULSE / 7D</h2>' in dom
+        ),
+        "mission vector uses compressed labels": all(
+            re.search(
+                rf'<button class="lane-gate"[^>]*data-lane="{lane}"[^>]*>'
+                rf'.*?<span>{label}(?: / SNAPSHOT)?</span>.*?</button>',
+                dom,
+                re.DOTALL,
+            )
+            is not None
+            for lane, label in (("waiting", "WAIT"), ("failed", "FAIL"), ("done", "DONE"))
+        ),
+        "constellation exposes deferred telemetry": (
+            'class="repository-constellation-shell"' in dom
+            and 'class="constellation-tooltip"' in dom
+            and 'data-active="' in dom
+        ),
+        "factory activity drives visual intensity": "data-factory-activity=" in dom,
+        "reactor exposes state-driven flow": (
+            'class="reactor-link"' in dom and 'data-flow="active"' in dom
+        ),
+        "evidence spine is revision-connected": (
+            re.search(
+                r'<aside(?=[^>]*class="evidence-spine")'
+                r'(?=[^>]*data-chain-state="fresh")[^>]*>',
+                dom,
+            )
+            is not None
+            and re.search(
+                r'<section(?=[^>]*class="evidence-link evidence-link-primary")'
+                r'(?=[^>]*data-stage="main")'
+                r'(?=[^>]*data-stage-state="observed")[^>]*>',
+                dom,
+            )
+            is not None
+        ),
         "three actionable gates rendered": set(gate_counts) == set(ACTIONABLE_LANES),
         "query-selected gate exposes pressed state": selected_gate_is_pressed(
             selected_dom, selected_lane
