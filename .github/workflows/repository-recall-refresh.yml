@@ -66,15 +66,7 @@ jobs:
             --json number \
             --jq '.[0].number // empty')"
           if [ -n "${existing_pr}" ]; then
-            head_sha="$(gh pr view "${existing_pr}" \
-              --repo "${GITHUB_REPOSITORY}" \
-              --json headRefOid \
-              --jq '.headRefOid')"
-            echo "repository recall refresh PR #${existing_pr} is already open; revalidating exact head ${head_sha}"
-            gh workflow run dashboard-validate.yml \
-              --repo "${GITHUB_REPOSITORY}" \
-              --ref main \
-              -f "head_sha=${head_sha}"
+            echo "repository recall refresh PR #${existing_pr} is already open"
             exit 0
           fi
 
