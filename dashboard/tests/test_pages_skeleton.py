@@ -7,6 +7,8 @@ HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 JS = ROOT / "docs" / "dashboard" / "dashboard.js"
 WORLD_JS = ROOT / "docs" / "dashboard" / "world.js"
+NEURAL_JS = ROOT / "docs" / "dashboard" / "neural-field.js"
+FACTORY_EVIDENCE_JS = ROOT / "docs" / "dashboard" / "factory-evidence.js"
 STATS_JS = ROOT / "docs" / "dashboard" / "stats.js"
 STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
 DOCS_WORKFLOW = ROOT / ".github" / "workflows" / "docs.yml"
@@ -155,6 +157,23 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("activity-pulse-plot", js)
         self.assertIn("pulse-envelope", js)
         self.assertNotIn("api.github.com", js)
+
+    def test_observatory_motion_and_evidence_are_data_driven(self):
+        html = HTML.read_text(encoding="utf-8")
+        js = JS.read_text(encoding="utf-8")
+        neural_js = NEURAL_JS.read_text(encoding="utf-8")
+        evidence_js = FACTORY_EVIDENCE_JS.read_text(encoding="utf-8")
+        css = CSS.read_text(encoding="utf-8")
+
+        self.assertIn('data-stage="main"', html)
+        self.assertIn('data-stage="pages"', html)
+        self.assertIn("document.documentElement.dataset.factoryActivity", js)
+        self.assertIn("uniform float u_activity", neural_js)
+        self.assertIn('link.dataset.flow = tone === "verified" || tone === "online" ? "active" : tone;', evidence_js)
+        self.assertIn('setEvidencePath("failed", "main")', evidence_js)
+        self.assertIn('setEvidencePath("failed", "pages")', evidence_js)
+        self.assertIn('.reactor-link[data-flow="active"]', css)
+        self.assertIn('.evidence-spine[data-chain-state="failed"]', css)
 
     def test_live_smoke_executes_browser_runtime(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
