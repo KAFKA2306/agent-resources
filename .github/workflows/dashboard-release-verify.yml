@@ -94,7 +94,7 @@ jobs:
         env:
           AGENT_RESOURCES_DASHBOARD_URL: ${{ steps.deployment.outputs.target_url }}/dashboard/
           PYTHONPATH: ${{ github.workspace }}
-        run: python dashboard/tests/dashboard_repository_operations_production_e2e.py
+        run: python dashboard/tests/run_production_e2e_with_retry.py
 
       - name: Record exact-revision release provenance
         if: steps.deployment.outputs.is_production == 'true'
