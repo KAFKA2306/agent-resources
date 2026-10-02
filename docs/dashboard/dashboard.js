@@ -26,9 +26,9 @@ const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow
 const ACTIVITY_COUNT_LABELS = { issue: "Issue", pull_request: "PR", workflow_run: "Run" };
 const WORK_ITEM_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const GATES = [
-  { lane: "waiting", label: "判断待ち" },
-  { lane: "failed", label: "失敗・要確認" },
-  { lane: "done", label: "完了報告" },
+  { lane: "waiting", label: "WAIT", detailLabel: "判断待ち" },
+  { lane: "failed", label: "FAIL", detailLabel: "失敗・要確認" },
+  { lane: "done", label: "DONE", detailLabel: "完了報告" },
 ];
 const LIVE_CONFIG_URL = "./live-config.json";
 const MIN_LIVE_SUCCESS_AGE_MS = 60 * 1000;
@@ -119,19 +119,21 @@ function renderGates(workItems, repositoriesById, liveCoverage = null) {
       && liveCoverage?.workflowRuns === "snapshot"
       && items.some((item) => item.kind === "workflow_run")
     );
-    const label = usesWorkflowSnapshot ? `${gate.label}（workflow snapshot）` : gate.label;
+    const label = usesWorkflowSnapshot ? `${gate.label} / SNAPSHOT` : gate.label;
+    const detailLabel = usesWorkflowSnapshot ? `${gate.detailLabel}（workflow snapshot）` : gate.detailLabel;
     const button = document.createElement("button");
     button.className = "lane-gate";
     button.dataset.lane = gate.lane;
     button.type = "button";
     button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-label", `${detailLabel}: ${items.length}件`);
     if (usesWorkflowSnapshot) button.dataset.freshness = "snapshot";
-    button.innerHTML = `<span>${label}</span><strong>${items.length}</strong>`;
+    button.innerHTML = `<span>${label}</span><strong>${items.length}</strong><i aria-hidden="true">→</i>`;
     button.addEventListener("click", () => {
       for (const candidate of laneGates.querySelectorAll("button[data-lane]")) {
         candidate.setAttribute("aria-pressed", String(candidate === button));
       }
-      showGateItems(label, items, repositoriesById);
+      showGateItems(detailLabel, items, repositoriesById);
     });
     laneGates.append(button);
   }
@@ -410,6 +412,7 @@ function renderDashboard(snapshot) {
   renderGates(workItems, repositoriesById, snapshot.liveCoverage);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
+  document.documentElement.dataset.factoryActivity = String(Math.min(1, activity.length / 70));
   repositoryCount.textContent = `${repositories.length} repositories`;
 
   if (repositories.length === 0) {

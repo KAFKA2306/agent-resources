@@ -7,6 +7,8 @@ HTML = ROOT / "docs" / "dashboard" / "index.html"
 CSS = ROOT / "docs" / "dashboard" / "dashboard.css"
 JS = ROOT / "docs" / "dashboard" / "dashboard.js"
 WORLD_JS = ROOT / "docs" / "dashboard" / "world.js"
+NEURAL_JS = ROOT / "docs" / "dashboard" / "neural-field.js"
+FACTORY_EVIDENCE_JS = ROOT / "docs" / "dashboard" / "factory-evidence.js"
 STATS_JS = ROOT / "docs" / "dashboard" / "stats.js"
 STATUS_JS = ROOT / "docs" / "dashboard" / "snapshot-status.js"
 DOCS_WORKFLOW = ROOT / ".github" / "workflows" / "docs.yml"
@@ -156,6 +158,23 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn("pulse-envelope", js)
         self.assertNotIn("api.github.com", js)
 
+    def test_observatory_motion_and_evidence_are_data_driven(self):
+        html = HTML.read_text(encoding="utf-8")
+        js = JS.read_text(encoding="utf-8")
+        neural_js = NEURAL_JS.read_text(encoding="utf-8")
+        evidence_js = FACTORY_EVIDENCE_JS.read_text(encoding="utf-8")
+        css = CSS.read_text(encoding="utf-8")
+
+        self.assertIn('data-stage="main"', html)
+        self.assertIn('data-stage="pages"', html)
+        self.assertIn("document.documentElement.dataset.factoryActivity", js)
+        self.assertIn("uniform float u_activity", neural_js)
+        self.assertIn('link.dataset.flow = tone === "verified" || tone === "online" ? "active" : tone;', evidence_js)
+        self.assertIn('setEvidencePath("failed", "main")', evidence_js)
+        self.assertIn('setEvidencePath("failed", "pages")', evidence_js)
+        self.assertIn('.reactor-link[data-flow="active"]', css)
+        self.assertIn('.evidence-spine[data-chain-state="failed"]', css)
+
     def test_live_smoke_executes_browser_runtime(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("Verify rendered dashboard in headless Chrome", workflow)
@@ -173,8 +192,9 @@ class DashboardSkeletonTest(unittest.TestCase):
     def test_attention_gates_are_explicit(self):
         js = JS.read_text(encoding="utf-8")
         world_js = WORLD_JS.read_text(encoding="utf-8")
-        self.assertIn('lane: "waiting", label: "判断待ち"', js)
-        self.assertIn('lane: "failed", label: "失敗・要確認"', js)
+        self.assertIn('lane: "waiting", label: "WAIT", detailLabel: "判断待ち"', js)
+        self.assertIn('lane: "failed", label: "FAIL", detailLabel: "失敗・要確認"', js)
+        self.assertIn('lane: "done", label: "DONE", detailLabel: "完了報告"', js)
         self.assertLess(js.index('lane: "waiting"'), js.index('lane: "failed"'))
         self.assertIn("{ createPublicSurfaceLinks, renderWorld }", js)
         self.assertIn("createPublicSurfaceLinks(repo)", js)

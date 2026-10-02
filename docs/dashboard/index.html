@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7fcff">
-  <title>Autonomous Factory Bridge</title>
-  <meta name="description" content="KAFKA2306の自律ソフトウェア工場を観測・修復・統合・検証するAutonomous Factory Bridge">
+  <title>Autonomous Factory Observatory</title>
+  <meta name="description" content="KAFKA2306の自律ソフトウェア工場を状態・接続・活動量で観測するAutonomous Factory Observatory">
   <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
   <link rel="stylesheet" href="./activity-timeline.css">
@@ -41,7 +41,7 @@
       </span>
       <span class="identity-copy">
         <span class="identity-kicker">KAFKA2306 / SOFTWARE FACTORY</span>
-        <strong>AUTONOMOUS BRIDGE</strong>
+        <strong>AUTONOMOUS OBSERVATORY</strong>
       </span>
     </a>
     <nav class="public-links" aria-label="公開リンク">
@@ -54,8 +54,8 @@
     <section class="bridge-stage">
       <div class="bridge-title-block">
         <p class="eyebrow">AUTONOMOUS FACTORY // LIVE</p>
-        <h1>THE FACTORY<br><span>IS ALIVE.</span></h1>
-        <h2 id="workspace-title">OBSERVE · REPAIR · MERGE · VERIFY</h2>
+        <h1>FACTORY<br><span>OBSERVATORY.</span></h1>
+        <h2 id="workspace-title">OBSERVE → REPAIR → MERGE → VERIFY</h2>
 
         <div class="bridge-health">
           <section class="hub" aria-label="データ鮮度">
@@ -76,7 +76,7 @@
             <p class="eyebrow">SELF-HEALING SYSTEMS</p>
             <h2 id="autonomy-reactor-title">Autonomy Reactor</h2>
           </div>
-          <span>OBSERVE → REPAIR → MERGE → VERIFY → RECOVER</span>
+          <span>LIVE CAPABILITY GRAPH</span>
         </header>
         <div id="factory-capabilities" class="reactor-field" aria-live="polite"></div>
       </section>
@@ -91,27 +91,27 @@
         </header>
 
         <div class="evidence-chain">
-          <section class="evidence-link evidence-link-primary">
+          <section class="evidence-link evidence-link-primary" data-stage="main">
             <span>01 / MAIN</span>
             <strong>Current main</strong>
             <div id="factory-main-sha" class="muted">loading</div>
           </section>
-          <section class="evidence-link">
+          <section class="evidence-link" data-stage="pages">
             <span>02 / PAGES</span>
             <strong>Pages deployment</strong>
             <div id="factory-pages-run" class="muted">loading</div>
           </section>
-          <section class="evidence-link">
+          <section class="evidence-link" data-stage="observer">
             <span>03 / OBSERVER</span>
             <strong>Factory Evidence Observer</strong>
             <div id="factory-observer" class="muted">loading</div>
           </section>
-          <section class="evidence-link">
+          <section class="evidence-link" data-stage="control">
             <span>04 / CONTROL</span>
             <strong>Canonical control plane</strong>
             <div id="factory-canonical-issue" class="muted">loading</div>
           </section>
-          <section class="evidence-link">
+          <section class="evidence-link" data-stage="change">
             <span>05 / CHANGE</span>
             <strong>Active PR</strong>
             <div id="factory-active-prs" class="muted">loading</div>
@@ -143,7 +143,7 @@
       <header class="signal-stream-heading">
         <div>
           <p class="eyebrow">LIVE SIGNAL STREAM</p>
-          <h2 id="activity-title">PULSE / 7D</h2>
+          <h2 id="activity-title">FACTORY PULSE / 7D</h2>
         </div>
         <span class="signal-dot" aria-hidden="true"></span>
       </header>
