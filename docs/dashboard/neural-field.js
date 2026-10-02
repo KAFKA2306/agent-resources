@@ -39,6 +39,7 @@ if (!gl) {
   uniform vec2 u_resolution;
   uniform vec2 u_pointer;
   uniform float u_time;
+  uniform float u_activity;
   out vec4 fragColor;
 
   float hash21(vec2 p) {
@@ -70,6 +71,7 @@ if (!gl) {
     vec2 pointer = (u_pointer * 2.0 - 1.0);
     pointer.x *= u_resolution.x / max(u_resolution.y, 1.0);
 
+    float flowTime = u_time * (0.025 + 0.975 * clamp(u_activity, 0.0, 1.0));
     vec3 col = vec3(0.965, 0.988, 1.0);
 
     float atmosphere = smoothstep(1.7, 0.08, length(uv * vec2(0.72, 0.9)));
@@ -80,32 +82,32 @@ if (!gl) {
     col += cyanCloud * vec3(0.02, 0.095, 0.12);
     col += violetCloud * vec3(0.045, 0.035, 0.085);
 
-    float sparks = sparkleLayer(uv + vec2(u_time * 0.005, 0.0), 18.0, 1.5)
-                 + sparkleLayer(uv * 1.18 - vec2(0.0, u_time * 0.003), 29.0, 2.1) * 0.55;
+    float sparks = sparkleLayer(uv + vec2(flowTime * 0.005, 0.0), 18.0, 0.9 + u_activity)
+                 + sparkleLayer(uv * 1.18 - vec2(0.0, flowTime * 0.003), 29.0, 1.2 + u_activity) * 0.55;
     col -= sparks * vec3(0.03, 0.085, 0.09);
     col += sparks * vec3(0.0, 0.055, 0.075);
 
     vec2 gridUv = uv;
     gridUv.y += 0.18;
     float depth = max(0.18, gridUv.y + 1.35);
-    vec2 projected = vec2(gridUv.x / depth, 1.0 / depth + u_time * 0.028);
+    vec2 projected = vec2(gridUv.x / depth, 1.0 / depth + flowTime * 0.028);
     float gridX = line(fract(projected.x * 7.0) - 0.5, 0.03);
     float gridY = line(fract(projected.y * 2.1) - 0.5, 0.021);
     float horizon = smoothstep(-0.76, 0.58, gridUv.y) * (1.0 - smoothstep(0.48, 1.28, gridUv.y));
     col -= (gridX + gridY) * horizon * vec3(0.025, 0.075, 0.09);
 
-    float beam = line(uv.y - 0.17 * sin(uv.x * 2.2 + u_time * 0.42), 0.010);
+    float beam = line(uv.y - 0.17 * sin(uv.x * 2.2 + flowTime * 0.42), 0.010);
     beam *= smoothstep(1.55, 0.0, abs(uv.x));
     col -= beam * vec3(0.018, 0.075, 0.09);
 
     float pointerGlow = exp(-3.3 * length(uv - pointer));
     col += pointerGlow * vec3(0.018, 0.065, 0.075);
 
-    float ringDistance = abs(length(uv - pointer * 0.16) - (0.38 + 0.026 * sin(u_time * 0.68)));
+    float ringDistance = abs(length(uv - pointer * 0.16) - (0.38 + 0.026 * sin(flowTime * 0.68)));
     float ring = smoothstep(0.016, 0.0, ringDistance);
     col -= ring * vec3(0.018, 0.072, 0.085);
 
-    float scan = 0.004 * sin(frag.y * 0.82 + u_time * 2.6);
+    float scan = 0.004 * sin(frag.y * 0.82 + flowTime * 2.6);
     col -= scan * vec3(0.25, 0.48, 0.55);
 
     col = clamp(col, 0.0, 1.0);
@@ -137,6 +139,7 @@ if (!gl) {
     const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
     const pointerLocation = gl.getUniformLocation(program, "u_pointer");
     const timeLocation = gl.getUniformLocation(program, "u_time");
+    const activityLocation = gl.getUniformLocation(program, "u_activity");
     const pointer = { x: 0.5, y: 0.42 };
     let animationFrame = 0;
     let visible = !document.hidden;
@@ -162,6 +165,8 @@ if (!gl) {
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.uniform2f(pointerLocation, pointer.x, pointer.y);
       gl.uniform1f(timeLocation, staticRendering ? 12.0 : now * 0.001);
+      const activity = Number.parseFloat(document.documentElement.dataset.factoryActivity || "0");
+      gl.uniform1f(activityLocation, Number.isFinite(activity) ? Math.min(1, Math.max(0, activity)) : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       if (!staticRendering && visible) animationFrame = requestAnimationFrame(render);
     }
