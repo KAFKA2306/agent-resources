@@ -189,9 +189,16 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('.reactor-link[data-flow="active"]', css)
         self.assertIn('.evidence-spine[data-chain-state="failed"]', css)
         self.assertIn("Observatory scale-up: make the factory feel physically large.", css)
-        self.assertIn(".repository-constellation-shell{min-height:720px", css)
+        self.assertIn("@media(min-width:1440px)", css)
+        self.assertNotIn("@media(min-width:1221px)", css)
+        self.assertIn("grid-template-columns:minmax(300px,1fr)minmax(680px,1.9fr)minmax(280px,.9fr)", "".join(css.split()))
+        self.assertIn(".repository-constellation-shell{height:clamp(620px,72vh,820px);min-height:0", css)
         self.assertIn(".reactor-field{width:min(100%,900px);height:720px", css)
-        self.assertIn(".hero-metric strong{font-size:clamp(3.1rem,4.4vw,5.4rem)", css)
+        self.assertIn("Size audit: continuous responsive scale + readable telemetry floor.", css)
+        self.assertIn(".hero-metric span,.hero-field-mode{font-size:.7rem}", css)
+        self.assertIn(".reactor-node-copy small{font-size:.7rem}", css)
+        self.assertIn(".status-chip{font-size:.72rem}", css)
+        self.assertIn(".telemetry-strip span:first-child{font-size:.68rem}", css)
 
     def test_live_smoke_executes_browser_runtime(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")

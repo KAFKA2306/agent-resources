@@ -687,19 +687,19 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 
 
 /* Observatory scale-up: make the factory feel physically large. */
-@media(min-width:1221px){
+@media(min-width:1440px){
   .bridge-shell{width:min(1880px,100%);padding-left:24px;padding-right:24px}
   .bridge-stage{
-    grid-template-columns:minmax(330px,1fr) minmax(720px,1.9fr) minmax(310px,.9fr);
+    grid-template-columns:minmax(300px,1fr) minmax(680px,1.9fr) minmax(280px,.9fr);
     grid-template-rows:minmax(780px,auto) auto;
     min-height:860px;
   }
   .bridge-title-block{padding-left:clamp(38px,4.8vw,76px)}
-  .bridge-title-block h1{font-size:clamp(4.2rem,6.8vw,7.6rem);line-height:.82}
+  .bridge-title-block h1{font-size:clamp(5rem,6.2vw,7.6rem);line-height:.82}
   .bridge-title-block h2{font-size:clamp(1.15rem,1.65vw,1.7rem);margin-top:30px}
   .hero-telemetry{max-width:680px;margin-top:46px}
   .hero-metric{padding-top:20px;padding-bottom:18px}
-  .hero-metric strong{font-size:clamp(3.1rem,4.4vw,5.4rem)}
+  .hero-metric strong{font-size:clamp(3.4rem,4vw,5.25rem)}
   .hero-metric span{font-size:.56rem}
   .hero-field-mode{bottom:-36px;font-size:.54rem}
   .bridge-health{max-width:620px;margin-top:58px}
@@ -728,8 +728,8 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .vector-heading h2,.signal-stream-heading h2,.field-heading h2,.stats-heading h2{font-size:1.35rem}
 
   .activity-pulse-plot{min-height:340px}
-  .repository-constellation-shell{min-height:720px;border-radius:24px}
-  .repository-constellation{min-height:720px}
+  .repository-constellation-shell{height:clamp(620px,72vh,820px);min-height:0;border-radius:24px}
+  .repository-constellation{height:100%;min-height:0}
   .constellation-node-label{font-size:11px}
   .constellation-tooltip{min-width:210px;max-width:260px;padding:12px 14px}
   .constellation-tooltip strong{font-size:.76rem}
@@ -743,5 +743,63 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .bridge-stage{
     grid-template-columns:minmax(360px,1fr) minmax(800px,2fr) minmax(340px,.9fr);
   }
-  .repository-constellation-shell,.repository-constellation{min-height:820px}
+  .repository-constellation-shell{height:clamp(680px,72vh,860px)}
+  .repository-constellation{height:100%}
+}
+
+
+/* Size audit: continuous responsive scale + readable telemetry floor. */
+.bridge-title-block h1{font-size:clamp(2.8rem,5.6vw,5.4rem)}
+.hero-metric strong{font-size:clamp(2.75rem,4vw,3.4rem)}
+.eyebrow,.identity-kicker{font-size:.7rem}
+.public-links a{font-size:.72rem}
+.public-links a span{font-size:.68rem}
+.hero-metric span,.hero-field-mode{font-size:.7rem}
+.hub>span:first-child,.bridge-current>span{font-size:.68rem}
+.reactor-heading>span{font-size:.68rem}
+.reactor-core small{font-size:.7rem}
+.reactor-node-marker{font-size:.68rem}
+.reactor-node-copy strong{font-size:.75rem}
+.reactor-node-copy small{font-size:.7rem}
+.evidence-link>span{font-size:.68rem}
+.evidence-link>strong{font-size:.8rem}
+.evidence-link .muted{font-size:.72rem}
+.telemetry-strip span:first-child{font-size:.68rem}
+.telemetry-strip strong,.snapshot-time{font-size:.76rem}
+.status-chip{font-size:.72rem}
+.lane-gate span{font-size:.78rem}
+.gate-item-meta{font-size:.72rem}
+.gate-item-reason{font-size:.78rem}
+.world-summary{font-size:.72rem}
+.stats-view-toggle button,.stats-scope{font-size:.72rem}
+.stat-card>span,.stat-card>small{font-size:.72rem}
+.pulse-counter span{font-size:.7rem}
+.constellation-legend span{font-size:.68rem}
+.constellation-tooltip strong{font-size:.78rem}
+.constellation-tooltip span{font-size:.7rem}
+
+@media(min-width:1440px){
+  .bridge-title-block h1{font-size:clamp(5rem,6.2vw,7.6rem)}
+  .hero-metric strong{font-size:clamp(3.4rem,4vw,5.25rem)}
+  .hero-metric span,.hero-field-mode{font-size:.72rem}
+  .reactor-node-copy strong{font-size:.78rem}
+  .reactor-node-copy small{font-size:.7rem}
+}
+
+@media(max-width:700px){
+  .bridge-title-block h1{font-size:clamp(2.8rem,5.6vw,3.2rem);letter-spacing:-.082em}
+  .hero-metric strong{font-size:clamp(1.9rem,8vw,2.4rem)}
+  .hero-metric span,.hero-field-mode{font-size:.7rem;letter-spacing:.06em}
+  .eyebrow,.identity-kicker,.reactor-heading>span{font-size:.7rem}
+  .reactor-node-copy strong{font-size:.78rem}
+  .reactor-node-copy small,.reactor-node-copy em{font-size:.7rem}
+  .evidence-link>span{font-size:.7rem}
+  .evidence-link>strong{font-size:.82rem}
+  .evidence-link .muted{font-size:.72rem}
+  .telemetry-strip span:first-child{font-size:.7rem}
+  .status-chip{font-size:.72rem}
+}
+
+@media(max-width:460px){
+  .bridge-title-block h1{font-size:clamp(2.55rem,12vw,2.95rem)}
 }
