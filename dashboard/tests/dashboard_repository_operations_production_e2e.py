@@ -165,6 +165,12 @@ def main() -> None:
         "factory motion mode is rendered": re.search(
             r'data-factory-motion="(?:idle|active|hot)"', dom
         ) is not None,
+        "hero telemetry is populated": (
+            re.search(r'id="hero-repository-total">[1-9][0-9]*</strong>', dom) is not None
+            and re.search(r'id="hero-activity-total">[0-9]+</strong>', dom) is not None
+            and re.search(r'id="hero-autonomy-total">[0-9]+/[0-9]+</strong>', dom) is not None
+            and re.search(r'id="hero-motion-label">(QUIET|LIVE|SURGE)</strong>', dom) is not None
+        ),
         "reactor exposes state-driven flow": (
             'class="reactor-link"' in dom and 'data-flow="active"' in dom
         ),
