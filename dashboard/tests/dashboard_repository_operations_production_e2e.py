@@ -162,6 +162,9 @@ def main() -> None:
             and 'data-active="' in dom
         ),
         "factory activity drives visual intensity": "data-factory-activity=" in dom,
+        "factory motion mode is rendered": re.search(
+            r'data-factory-motion="(?:idle|active|hot)"', dom
+        ) is not None,
         "reactor exposes state-driven flow": (
             'class="reactor-link"' in dom and 'data-flow="active"' in dom
         ),
