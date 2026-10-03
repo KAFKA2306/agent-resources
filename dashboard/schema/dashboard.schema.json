@@ -49,7 +49,8 @@
       "required": ["kind", "url"],
       "properties": {
         "kind": {"type": "string", "enum": ["front", "pages"]},
-        "url": {"type": "string", "format": "uri", "pattern": "^https://"}
+        "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "provider": {"type": "string", "minLength": 1}
       }
     },
     "workItem": {
