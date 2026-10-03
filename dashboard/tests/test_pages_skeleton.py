@@ -188,6 +188,10 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn('setEvidencePath("failed", "pages")', evidence_js)
         self.assertIn('.reactor-link[data-flow="active"]', css)
         self.assertIn('.evidence-spine[data-chain-state="failed"]', css)
+        self.assertIn("Observatory scale-up: make the factory feel physically large.", css)
+        self.assertIn(".repository-constellation-shell{min-height:720px", css)
+        self.assertIn(".reactor-field{width:min(100%,900px);height:720px", css)
+        self.assertIn(".hero-metric strong{font-size:clamp(3.1rem,4.4vw,5.4rem)", css)
 
     def test_live_smoke_executes_browser_runtime(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
