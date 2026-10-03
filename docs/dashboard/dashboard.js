@@ -21,6 +21,9 @@ const workspaceMessage = document.querySelector("#workspace-message");
 const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
 const activityFeed = document.querySelector("#activity-feed");
+const heroRepositoryTotal = document.querySelector("#hero-repository-total");
+const heroActivityTotal = document.querySelector("#hero-activity-total");
+const heroMotionLabel = document.querySelector("#hero-motion-label");
 
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const ACTIVITY_COUNT_LABELS = { issue: "Issue", pull_request: "PR", workflow_run: "Run" };
@@ -413,10 +416,12 @@ function renderDashboard(snapshot) {
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
   const factoryActivity = Math.min(1, activity.length / 70);
+  const factoryMotion = activity.length === 0 ? "idle" : factoryActivity >= 0.65 ? "hot" : "active";
   document.documentElement.dataset.factoryActivity = factoryActivity.toFixed(3);
-  document.documentElement.dataset.factoryMotion = (
-    activity.length === 0 ? "idle" : factoryActivity >= 0.65 ? "hot" : "active"
-  );
+  document.documentElement.dataset.factoryMotion = factoryMotion;
+  heroRepositoryTotal.textContent = String(repositories.length);
+  heroActivityTotal.textContent = String(activity.length);
+  heroMotionLabel.textContent = ({ idle: "QUIET", active: "LIVE", hot: "SURGE" })[factoryMotion];
   repositoryCount.textContent = `${repositories.length} repositories`;
 
   if (repositories.length === 0) {

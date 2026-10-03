@@ -9,6 +9,7 @@ const canonicalIssue = document.querySelector("#factory-canonical-issue");
 const activePullRequests = document.querySelector("#factory-active-prs");
 const capabilities = document.querySelector("#factory-capabilities");
 const evidenceSpine = document.querySelector(".evidence-spine");
+const heroAutonomyTotal = document.querySelector("#hero-autonomy-total");
 
 const CAPABILITY_PRESENTATION = {
   "observe-classify": {
@@ -114,6 +115,10 @@ function renderCapabilities(items) {
   const list = Array.isArray(items) ? items : [];
   const onlineCount = list.filter((item) => ["VERIFIED", "EXISTING"].includes(item?.state)).length;
   const onlinePercent = list.length ? Math.round((onlineCount / list.length) * 100) : 0;
+  const degradedCount = list.filter((item) => ["DISCONNECTED", "MISSING"].includes(item?.state)).length;
+  const autonomyHealth = degradedCount > 0 ? "degraded" : onlineCount === list.length && list.length > 0 ? "full" : "partial";
+  heroAutonomyTotal.textContent = list.length ? `${onlineCount}/${list.length}` : "--";
+  document.documentElement.dataset.factoryAutonomy = autonomyHealth;
   const SVG_NS = "http://www.w3.org/2000/svg";
 
   const graph = document.createElementNS(SVG_NS, "svg");
