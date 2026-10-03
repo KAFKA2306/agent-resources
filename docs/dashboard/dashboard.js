@@ -412,7 +412,11 @@ function renderDashboard(snapshot) {
   renderGates(workItems, repositoriesById, snapshot.liveCoverage);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
-  document.documentElement.dataset.factoryActivity = String(Math.min(1, activity.length / 70));
+  const factoryActivity = Math.min(1, activity.length / 70);
+  document.documentElement.dataset.factoryActivity = factoryActivity.toFixed(3);
+  document.documentElement.dataset.factoryMotion = (
+    activity.length === 0 ? "idle" : factoryActivity >= 0.65 ? "hot" : "active"
+  );
   repositoryCount.textContent = `${repositories.length} repositories`;
 
   if (repositories.length === 0) {
