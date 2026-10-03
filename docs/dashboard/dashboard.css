@@ -583,3 +583,104 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 @keyframes heat-breathe{50%{transform:scale(1.22);opacity:.45}}
 @keyframes fault-breathe{50%{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(184,133,0,.18),0 12px 28px rgba(184,133,0,.10)}}
 @keyframes fault-line{50%{opacity:.34}}
+
+
+/* Observatory impact pass: numbers first, prose second. */
+.hero-telemetry{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  max-width:560px;
+  margin-top:clamp(22px,3vw,38px);
+  border-top:1px solid rgba(0,154,210,.18);
+  border-bottom:1px solid rgba(0,154,210,.12);
+}
+.hero-metric{
+  position:relative;
+  display:grid;
+  align-content:center;
+  min-width:0;
+  padding:14px 16px 13px 0;
+}
+.hero-metric+.hero-metric{padding-left:16px;border-left:1px solid rgba(0,154,210,.12)}
+.hero-metric strong{
+  overflow:hidden;
+  color:#0a3045;
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",ui-monospace,monospace;
+  font-size:clamp(1.9rem,3.4vw,3.65rem);
+  font-weight:760;
+  line-height:.88;
+  letter-spacing:-.09em;
+  font-variant-numeric:tabular-nums;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.hero-metric span{
+  margin-top:7px;
+  color:#718b99;
+  font-size:.48rem;
+  font-weight:950;
+  letter-spacing:.16em;
+}
+.hero-field-mode{
+  position:absolute;
+  left:0;
+  bottom:-31px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#78909c;
+  font-size:.48rem;
+  font-weight:950;
+  letter-spacing:.15em;
+}
+.hero-field-mode i{
+  width:6px;height:6px;border-radius:50%;
+  background:#8da5af;
+  box-shadow:0 0 0 4px rgba(91,145,166,.08);
+}
+.hero-field-mode strong{color:#2d6075;letter-spacing:.12em}
+:root[data-factory-motion="active"] .hero-field-mode i{background:#21c99a;box-shadow:0 0 0 5px rgba(33,201,154,.10),0 0 18px rgba(33,201,154,.26)}
+:root[data-factory-motion="hot"] .hero-field-mode i{background:#17c8eb;box-shadow:0 0 0 6px rgba(23,200,235,.11),0 0 24px rgba(23,200,235,.34)}
+:root[data-factory-motion="hot"] .hero-metric strong{text-shadow:0 0 26px rgba(0,187,224,.14)}
+:root[data-factory-autonomy="full"] .hero-metric-autonomy strong{color:#16845f}
+:root[data-factory-autonomy="degraded"] .hero-metric-autonomy strong{color:#bd3e61}
+:root[data-factory-autonomy="partial"] .hero-metric-autonomy strong{color:#8a6900}
+
+.bridge-title-block{overflow:visible}
+.bridge-title-block h1{position:relative;z-index:1}
+.bridge-title-block h1::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:-4%;top:48%;
+  width:82%;height:46%;
+  background:radial-gradient(ellipse at center,rgba(27,216,239,.16),transparent 70%);
+  filter:blur(16px);
+  pointer-events:none;
+}
+:root[data-factory-motion="hot"] .bridge-title-block h1::after{background:radial-gradient(ellipse at center,rgba(27,216,239,.24),rgba(118,104,255,.08) 46%,transparent 72%)}
+
+.reactor-core{transition:box-shadow .35s ease,filter .35s ease}
+:root[data-factory-motion="active"] .reactor-core{box-shadow:0 0 0 9px rgba(255,255,255,.68),0 0 0 10px rgba(0,162,214,.19),0 24px 56px rgba(22,129,173,.14),0 0 76px rgba(0,206,232,.16)}
+:root[data-factory-motion="hot"] .reactor-core{box-shadow:0 0 0 9px rgba(255,255,255,.72),0 0 0 10px rgba(0,162,214,.24),0 28px 62px rgba(22,129,173,.16),0 0 96px rgba(0,206,232,.24),0 0 128px rgba(118,104,255,.10)}
+
+.repository-constellation-shell::before{
+  content:"";
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 50%,transparent 0 26%,rgba(0,172,219,.035) 26.2% 26.4%,transparent 26.7%),
+    linear-gradient(90deg,transparent 49.9%,rgba(0,160,211,.045) 50%,transparent 50.1%),
+    linear-gradient(transparent 49.9%,rgba(0,160,211,.045) 50%,transparent 50.1%);
+}
+.repository-constellation,.constellation-legend,.constellation-tooltip{position:relative;z-index:1}
+
+@media(max-width:700px){
+  .hero-telemetry{grid-template-columns:repeat(3,minmax(0,1fr));max-width:none;margin-top:20px}
+  .hero-metric{padding:11px 8px 10px 0}
+  .hero-metric+.hero-metric{padding-left:8px}
+  .hero-metric strong{font-size:clamp(1.45rem,8vw,2.35rem)}
+  .hero-metric span{font-size:.42rem;letter-spacing:.08em}
+  .hero-field-mode{bottom:-27px}
+  .bridge-health{margin-top:48px}
+}
