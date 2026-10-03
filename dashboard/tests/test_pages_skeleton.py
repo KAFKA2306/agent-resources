@@ -199,6 +199,14 @@ class DashboardSkeletonTest(unittest.TestCase):
         self.assertIn(".reactor-node-copy small{font-size:.7rem}", css)
         self.assertIn(".status-chip{font-size:.72rem}", css)
         self.assertIn(".telemetry-strip span:first-child{font-size:.68rem}", css)
+        self.assertIn("Typography audit v2: fewer tiny labels, stronger readable hierarchy.", css)
+        self.assertIn("font-size:.8125rem", css)
+        self.assertIn(".evidence-link>strong{\n  font-size:.9375rem;", css)
+        self.assertIn(".pulse-axis-label,.wave-label{font-size:13px}", css)
+        self.assertIn(".pulse-day-label,.wave-period{font-size:12px}", css)
+        self.assertIn(".hub>span:first-child{display:none}", css)
+        self.assertIn(".reactor-heading>span{display:none}", css)
+        self.assertIn(".hero-field-mode>span{display:none}", css)
 
     def test_live_smoke_executes_browser_runtime(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")

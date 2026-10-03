@@ -803,3 +803,134 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 @media(max-width:460px){
   .bridge-title-block h1{font-size:clamp(2.55rem,12vw,2.95rem)}
 }
+
+
+/* Typography audit v2: fewer tiny labels, stronger readable hierarchy. */
+.identity-kicker,
+.eyebrow,
+.hero-metric span,
+.hero-field-mode,
+.hub>span:first-child,
+.bridge-current>span,
+.reactor-heading>span,
+.reactor-core small,
+.reactor-node-marker,
+.reactor-node-copy small,
+.evidence-link>span,
+.telemetry-strip span:first-child,
+.status-chip,
+.lane-gate span,
+.gate-item-meta,
+.world-summary,
+.stats-view-toggle button,
+.stats-scope,
+.stat-card>span,
+.stat-card>small,
+.pulse-counter span,
+.constellation-legend span,
+.constellation-tooltip span{
+  font-size:.8125rem;
+}
+
+.public-links a,
+.telemetry-strip strong,
+.snapshot-time,
+.gate-item-reason{
+  font-size:.8125rem;
+}
+
+.reactor-node-copy strong,
+.evidence-link .muted,
+.constellation-tooltip strong{
+  font-size:.875rem;
+}
+
+.evidence-link>strong{
+  font-size:.9375rem;
+}
+
+.vector-heading h2,
+.signal-stream-heading h2,
+.field-heading h2,
+.stats-heading h2{
+  font-size:1.5rem;
+}
+
+.reactor-heading h2,
+.evidence-spine-heading h2{
+  font-size:1.25rem;
+}
+
+.constellation-node-label{font-size:12px}
+.constellation-legend span{letter-spacing:.04em}
+.pulse-axis-label,.wave-label{font-size:13px}
+.pulse-day-label,.wave-period{font-size:12px}
+.wave-value{font-size:20px}
+
+.hero-metric span,
+.hero-field-mode,
+.identity-kicker,
+.eyebrow,
+.reactor-heading>span,
+.telemetry-strip span:first-child{
+  letter-spacing:.08em;
+}
+
+/* Remove duplicated microcopy where the large data already says the same thing. */
+.hub>span:first-child{display:none}
+.reactor-heading>span{display:none}
+.hero-field-mode>span{display:none}
+
+@media(min-width:1440px){
+  .identity-kicker,
+  .eyebrow,
+  .hero-metric span,
+  .hero-field-mode,
+  .reactor-core small,
+  .reactor-node-marker,
+  .reactor-node-copy small,
+  .evidence-link>span,
+  .telemetry-strip span:first-child,
+  .status-chip,
+  .world-summary,
+  .stats-view-toggle button,
+  .stats-scope,
+  .constellation-legend span{
+    font-size:.875rem;
+  }
+  .reactor-node-copy strong,
+  .evidence-link .muted{
+    font-size:.9375rem;
+  }
+  .evidence-link>strong{font-size:1rem}
+}
+
+@media(max-width:700px){
+  .identity-kicker,
+  .eyebrow,
+  .hero-metric span,
+  .hero-field-mode,
+  .reactor-core small,
+  .reactor-node-marker,
+  .reactor-node-copy small,
+  .evidence-link>span,
+  .telemetry-strip span:first-child,
+  .status-chip,
+  .lane-gate span,
+  .gate-item-meta,
+  .world-summary,
+  .stats-view-toggle button,
+  .stats-scope,
+  .stat-card>span,
+  .stat-card>small,
+  .pulse-counter span{
+    font-size:.8125rem;
+  }
+  .reactor-node-copy strong,
+  .evidence-link .muted{font-size:.875rem}
+  .evidence-link>strong{font-size:.9375rem}
+  .vector-heading h2,
+  .signal-stream-heading h2,
+  .field-heading h2,
+  .stats-heading h2{font-size:1.35rem}
+}
