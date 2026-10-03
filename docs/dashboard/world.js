@@ -183,15 +183,42 @@ function createSurfaceIcon(publicUrl) {
   }
 }
 
-export function createPublicSurfaceLinks(repository) {
+function safePublicSurfaceLinks(repository) {
   const links = Array.isArray(repository.publicLinks) ? repository.publicLinks : [];
-  const safeLinks = links.filter(
-    (link) =>
-      link &&
-      (link.kind === "front" || link.kind === "pages") &&
-      typeof link.url === "string" &&
-      link.url.startsWith("https://"),
-  );
+  const seen = new Set();
+  return links.filter((link) => {
+    if (
+      !link ||
+      (link.kind !== "front" && link.kind !== "pages") ||
+      typeof link.url !== "string" ||
+      !link.url.startsWith("https://")
+    ) {
+      return false;
+    }
+    const identity = link.url.replace(/\/$/, "");
+    if (seen.has(identity)) return false;
+    seen.add(identity);
+    return true;
+  });
+}
+
+function publicSurfaceLabel(link) {
+  const provider = String(link.provider || "").toLowerCase();
+  let host = "";
+  try {
+    host = new URL(link.url).hostname.toLowerCase();
+  } catch {
+    return "WEB";
+  }
+  if (provider === "github-pages" || link.kind === "pages" || host.endsWith(".github.io")) return "PAGES";
+  if (provider === "vercel" || host === "vercel.app" || host.endsWith(".vercel.app")) return "VERCEL";
+  if (provider === "cloudflare" || host === "pages.dev" || host.endsWith(".pages.dev")) return "CLOUDFLARE";
+  if (provider === "stackblitz" || host === "stackblitz.com" || host.endsWith(".stackblitz.com")) return "STACKBLITZ";
+  return "WEB";
+}
+
+export function createPublicSurfaceLinks(repository) {
+  const safeLinks = safePublicSurfaceLinks(repository);
   if (!safeLinks.length) return null;
 
   const actions = document.createElement("div");
@@ -202,13 +229,57 @@ export function createPublicSurfaceLinks(repository) {
     anchor.href = link.url;
     anchor.target = "_blank";
     anchor.rel = "noopener noreferrer";
-    anchor.textContent = link.kind === "pages" ? "PAGES ↗" : "FRONT ↗";
-    anchor.title = `${repository.name} ${link.kind === "pages" ? "GitHub Pages" : "frontend"} を開く`;
+    const label = publicSurfaceLabel(link);
+    anchor.textContent = `${label} ↗`;
+    anchor.title = `${repository.name} · ${label} · ${link.url}`;
     const icon = createSurfaceIcon(link.url);
     if (icon) anchor.prepend(icon);
     actions.append(anchor);
   }
   return actions;
+}
+
+function createPublicSurfaceDirectory(repositories) {
+  const rows = repositories
+    .map((repository) => ({ repository, links: safePublicSurfaceLinks(repository) }))
+    .filter(({ links }) => links.length > 0);
+  if (!rows.length) return null;
+
+  const linkCount = rows.reduce((total, row) => total + row.links.length, 0);
+  const details = document.createElement("details");
+  details.className = "public-surface-directory";
+
+  const summary = document.createElement("summary");
+  summary.textContent = `PUBLIC SURFACES · ${linkCount} LINKS / ${rows.length} REPOS`;
+  details.append(summary);
+
+  const grid = document.createElement("div");
+  grid.className = "public-surface-grid";
+  for (const { repository, links } of rows) {
+    const row = document.createElement("section");
+    row.className = "public-surface-row";
+
+    const name = document.createElement("strong");
+    name.textContent = repository.name;
+
+    const actions = document.createElement("div");
+    actions.className = "public-surface-actions";
+    for (const link of links) {
+      const anchor = document.createElement("a");
+      anchor.className = "public-surface-link";
+      anchor.href = link.url;
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+      const label = publicSurfaceLabel(link);
+      anchor.textContent = `${label} ↗`;
+      anchor.title = link.url;
+      actions.append(anchor);
+    }
+    row.append(name, actions);
+    grid.append(row);
+  }
+  details.append(grid);
+  return details;
 }
 
 function createStation(repository, workItems, heat) {
@@ -459,13 +530,12 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
 
     nodeLayer.append(anchor);
 
-    const safeSurfaceLinks = (Array.isArray(repository.publicLinks) ? repository.publicLinks : [])
-      .filter((link) => link && (link.kind === "front" || link.kind === "pages") && typeof link.url === "string" && link.url.startsWith("https://"))
-      .slice(0, 2);
+    const safeSurfaceLinks = safePublicSurfaceLinks(repository);
     safeSurfaceLinks.forEach((link, surfaceIndex) => {
-      const theta = surfaceIndex === 0 ? -0.62 : 0.62;
-      const sx = x + Math.cos(theta) * (nodeRadius + 12);
-      const sy = y + Math.sin(theta) * (nodeRadius + 12);
+      const theta = -Math.PI / 2 + (Math.PI * 2 * surfaceIndex) / Math.max(1, safeSurfaceLinks.length);
+      const orbitRadius = nodeRadius + 13 + Math.floor(surfaceIndex / 8) * 8;
+      const sx = x + Math.cos(theta) * orbitRadius;
+      const sy = y + Math.sin(theta) * orbitRadius;
       const satellite = createSvg("a", {
         href: link.url,
         target: "_blank",
@@ -474,7 +544,7 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
       });
       satellite.classList.add("constellation-surface", `is-${link.kind}`);
       const title = createSvg("title");
-      title.textContent = `${repository.name} · ${link.kind.toUpperCase()}`;
+      title.textContent = `${repository.name} · ${publicSurfaceLabel(link)} · ${link.url}`;
       const dot = createSvg("circle", {
         cx: sx.toFixed(1),
         cy: sy.toFixed(1),
@@ -502,4 +572,6 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
 
   shell.append(svg, legend, tooltip);
   root.append(shell);
+  const surfaceDirectory = createPublicSurfaceDirectory(ranked);
+  if (surfaceDirectory) root.append(surfaceDirectory);
 }

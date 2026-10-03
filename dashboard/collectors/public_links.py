@@ -248,7 +248,23 @@ def enrich_repository_public_links(repositories, links):
             continue
         public_links = target.setdefault("publicLinks", [])
         identity = link["url"].rstrip("/")
-        if any(item.get("url", "").rstrip("/") == identity for item in public_links):
+        existing = next(
+            (
+                item
+                for item in public_links
+                if item.get("url", "").rstrip("/") == identity
+            ),
+            None,
+        )
+        if existing is not None:
+            if link.get("provider") and existing.get("provider") in {None, "homepage"}:
+                existing["provider"] = link["provider"]
             continue
-        public_links.append({"kind": "front", "url": link["url"]})
+        public_links.append(
+            {
+                "kind": "front",
+                "url": link["url"],
+                "provider": link["provider"],
+            }
+        )
     return repositories

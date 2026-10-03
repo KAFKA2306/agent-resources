@@ -42,8 +42,16 @@ class RepositoryCollectorTest(unittest.TestCase):
         self.assertEqual(
             links,
             [
-                {"kind": "front", "url": "https://example.com/app"},
-                {"kind": "pages", "url": "https://kafka2306.github.io/vrmine/"},
+                {
+                    "kind": "front",
+                    "url": "https://example.com/app",
+                    "provider": "homepage",
+                },
+                {
+                    "kind": "pages",
+                    "url": "https://kafka2306.github.io/vrmine/",
+                    "provider": "github-pages",
+                },
             ],
         )
 
@@ -55,7 +63,13 @@ class RepositoryCollectorTest(unittest.TestCase):
         )
         self.assertEqual(
             links,
-            [{"kind": "front", "url": "https://kafka2306.github.io/vrmine/"}],
+            [
+                {
+                    "kind": "front",
+                    "url": "https://kafka2306.github.io/vrmine/",
+                    "provider": "github-pages",
+                }
+            ],
         )
 
     def test_public_links_ignore_non_https_homepage(self):

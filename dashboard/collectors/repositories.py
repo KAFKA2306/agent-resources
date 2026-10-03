@@ -49,6 +49,19 @@ def github_pages_url(owner, name):
     return f"https://{host}/{quote(name, safe='')}/"
 
 
+def infer_public_link_provider(url, kind):
+    host = urlsplit(url).netloc.lower()
+    if kind == "pages" or host.endswith(".github.io"):
+        return "github-pages"
+    if host == "vercel.app" or host.endswith(".vercel.app"):
+        return "vercel"
+    if host == "pages.dev" or host.endswith(".pages.dev"):
+        return "cloudflare"
+    if host == "stackblitz.com" or host.endswith(".stackblitz.com"):
+        return "stackblitz"
+    return "homepage"
+
+
 def infer_public_links(raw, owner, name):
     links = []
     seen = set()
@@ -58,7 +71,13 @@ def infer_public_links(raw, owner, name):
         if identity in seen:
             return
         seen.add(identity)
-        links.append({"kind": kind, "url": url})
+        links.append(
+            {
+                "kind": kind,
+                "url": url,
+                "provider": infer_public_link_provider(url, kind),
+            }
+        )
 
     homepage = normalize_https_url(raw.get("homepage"))
     if homepage:
