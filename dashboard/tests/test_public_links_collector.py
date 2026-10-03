@@ -123,6 +123,12 @@ class PublicLinksCollectorTest(unittest.TestCase):
                 "https://app.pages.dev",
             },
         )
+        provider_by_url = {
+            link["url"].rstrip("/"): link.get("provider")
+            for link in repositories[0]["publicLinks"]
+        }
+        self.assertEqual(provider_by_url["https://app.vercel.app"], "vercel")
+        self.assertEqual(provider_by_url["https://app.pages.dev"], "cloudflare")
 
 
 if __name__ == "__main__":
