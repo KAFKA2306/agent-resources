@@ -934,3 +934,75 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .field-heading h2,
   .stats-heading h2{font-size:1.35rem}
 }
+
+
+/* Public surface directory: preserve every frontend route without shrinking it into microtext. */
+.public-surface-directory{
+  margin-top:18px;
+  border-top:1px solid rgba(0,151,204,.16);
+}
+.public-surface-directory>summary{
+  display:flex;
+  align-items:center;
+  min-height:48px;
+  cursor:pointer;
+  color:#245169;
+  font-size:.9375rem;
+  font-weight:950;
+  letter-spacing:.06em;
+  list-style:none;
+}
+.public-surface-directory>summary::-webkit-details-marker{display:none}
+.public-surface-directory>summary::after{
+  content:"+";
+  margin-left:auto;
+  color:#008dbb;
+  font-size:1.35rem;
+}
+.public-surface-directory[open]>summary::after{content:"−"}
+.public-surface-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:8px 18px;
+  padding:4px 0 18px;
+}
+.public-surface-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  min-height:46px;
+  padding:7px 0;
+  border-bottom:1px solid rgba(0,151,204,.09);
+}
+.public-surface-row>strong{
+  overflow:hidden;
+  color:#173e53;
+  font-size:.875rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.public-surface-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+.public-surface-link{
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  padding:6px 9px;
+  border:1px solid rgba(0,157,214,.18);
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+  color:#17617d;
+  font-size:.8125rem;
+  font-weight:900;
+  text-decoration:none;
+}
+.public-surface-link:hover,.public-surface-link:focus-visible{
+  border-color:rgba(0,157,214,.42);
+  color:#007fae;
+  box-shadow:0 0 18px rgba(0,177,216,.10);
+}
+@media(max-width:700px){
+  .public-surface-grid{grid-template-columns:minmax(0,1fr)}
+  .public-surface-row{grid-template-columns:minmax(0,1fr)}
+  .public-surface-actions{justify-content:flex-start}
+}
