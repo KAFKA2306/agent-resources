@@ -550,6 +550,36 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .evidence-chain::after{left:0}
   .constellation-tooltip{display:none!important}
 }
+/* Factory motion is telemetry, not decoration. */
+.identity-ring-a,.identity-ring-b,.bridge-stage::after,.reactor-field::after,.reactor-core::before,.reactor-core-pulse,.signal-dot{animation:none}
+.reactor-link[data-flow="active"]{animation:none}
+.reactor-node[data-capability-tone="verified"],.reactor-node[data-capability-tone="online"]{animation:none}
+.reactor-orbit{animation:none}
+
+:root[data-factory-motion="active"] .identity-ring-a{animation:ring-a 8s linear infinite}
+:root[data-factory-motion="active"] .identity-ring-b{animation:ring-b 10s linear infinite}
+:root[data-factory-motion="active"] .bridge-stage::after{animation:bridge-scan 9s ease-in-out infinite alternate}
+:root[data-factory-motion="active"] .reactor-field::after{animation:reactor-spin 24s linear infinite}
+:root[data-factory-motion="active"] .reactor-core::before{animation:reactor-spin 18s linear infinite reverse}
+:root[data-factory-motion="active"] .reactor-core-pulse{animation:core-pulse 3.4s ease-out infinite}
+:root[data-factory-motion="active"] .signal-dot{animation:signal-pulse 2.8s ease-in-out infinite}
+:root[data-factory-motion="active"] .reactor-link[data-flow="active"]{animation:link-flow 4.4s linear var(--link-delay) infinite}
+:root[data-factory-motion="active"] .reactor-node[data-capability-tone="verified"],
+:root[data-factory-motion="active"] .reactor-node[data-capability-tone="online"]{animation:node-float 7s ease-in-out var(--node-delay) infinite}
+:root[data-factory-motion="active"] .reactor-field:has(.reactor-link[data-flow="active"]) .reactor-orbit{animation:orbit-dash 24s linear infinite}
+
+:root[data-factory-motion="hot"] .identity-ring-a{animation:ring-a 4.8s linear infinite}
+:root[data-factory-motion="hot"] .identity-ring-b{animation:ring-b 6s linear infinite}
+:root[data-factory-motion="hot"] .bridge-stage::after{animation:bridge-scan 5.5s ease-in-out infinite alternate}
+:root[data-factory-motion="hot"] .reactor-field::after{animation:reactor-spin 15s linear infinite}
+:root[data-factory-motion="hot"] .reactor-core::before{animation:reactor-spin 10s linear infinite reverse}
+:root[data-factory-motion="hot"] .reactor-core-pulse{animation:core-pulse 2.1s ease-out infinite}
+:root[data-factory-motion="hot"] .signal-dot{animation:signal-pulse 1.7s ease-in-out infinite}
+:root[data-factory-motion="hot"] .reactor-link[data-flow="active"]{animation:link-flow 2.8s linear var(--link-delay) infinite}
+:root[data-factory-motion="hot"] .reactor-node[data-capability-tone="verified"],
+:root[data-factory-motion="hot"] .reactor-node[data-capability-tone="online"]{animation:node-float 4.6s ease-in-out var(--node-delay) infinite}
+:root[data-factory-motion="hot"] .reactor-field:has(.reactor-link[data-flow="active"]) .reactor-orbit{animation:orbit-dash 14s linear infinite}
+
 @keyframes heat-breathe{50%{transform:scale(1.22);opacity:.45}}
 @keyframes fault-breathe{50%{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(184,133,0,.18),0 12px 28px rgba(184,133,0,.10)}}
 @keyframes fault-line{50%{opacity:.34}}
