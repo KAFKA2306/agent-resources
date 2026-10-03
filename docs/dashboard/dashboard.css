@@ -684,3 +684,64 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .hero-field-mode{bottom:-27px}
   .bridge-health{margin-top:48px}
 }
+
+
+/* Observatory scale-up: make the factory feel physically large. */
+@media(min-width:1221px){
+  .bridge-shell{width:min(1880px,100%);padding-left:24px;padding-right:24px}
+  .bridge-stage{
+    grid-template-columns:minmax(330px,1fr) minmax(720px,1.9fr) minmax(310px,.9fr);
+    grid-template-rows:minmax(780px,auto) auto;
+    min-height:860px;
+  }
+  .bridge-title-block{padding-left:clamp(38px,4.8vw,76px)}
+  .bridge-title-block h1{font-size:clamp(4.2rem,6.8vw,7.6rem);line-height:.82}
+  .bridge-title-block h2{font-size:clamp(1.15rem,1.65vw,1.7rem);margin-top:30px}
+  .hero-telemetry{max-width:680px;margin-top:46px}
+  .hero-metric{padding-top:20px;padding-bottom:18px}
+  .hero-metric strong{font-size:clamp(3.1rem,4.4vw,5.4rem)}
+  .hero-metric span{font-size:.56rem}
+  .hero-field-mode{bottom:-36px;font-size:.54rem}
+  .bridge-health{max-width:620px;margin-top:58px}
+  .hub,.bridge-current{padding:15px 18px}
+  .hub strong,.bridge-current strong{font-size:1.05rem}
+
+  .reactor-stage{padding-top:34px}
+  .reactor-heading{top:34px}
+  .reactor-heading h2{font-size:1.22rem}
+  .reactor-field{width:min(100%,900px);height:720px;margin-top:48px}
+  .reactor-core{width:236px;height:236px}
+  .reactor-core strong{font-size:3.4rem}
+  .reactor-core small{font-size:.62rem}
+  .reactor-node{width:166px;min-height:82px;padding:11px 12px}
+  .reactor-node-marker{width:36px;height:36px}
+  .reactor-node-copy strong{font-size:.67rem}
+  .reactor-node-copy small{font-size:.52rem}
+
+  .evidence-spine{padding-left:18px;padding-right:46px}
+  .evidence-spine-heading h2{font-size:1.12rem}
+  .evidence-link{padding:13px 14px}
+  .evidence-link>strong{font-size:.76rem}
+  .evidence-link .muted{font-size:.64rem}
+
+  .mission-vector,.signal-stream,.repository-field,.telemetry-deck{padding-left:28px;padding-right:28px}
+  .vector-heading h2,.signal-stream-heading h2,.field-heading h2,.stats-heading h2{font-size:1.35rem}
+
+  .activity-pulse-plot{min-height:340px}
+  .repository-constellation-shell{min-height:720px;border-radius:24px}
+  .repository-constellation{min-height:720px}
+  .constellation-node-label{font-size:11px}
+  .constellation-tooltip{min-width:210px;max-width:260px;padding:12px 14px}
+  .constellation-tooltip strong{font-size:.76rem}
+  .constellation-tooltip span{font-size:.59rem}
+
+  .output-waveform{min-height:360px}
+}
+
+@media(min-width:1600px){
+  .bridge-shell{width:min(2040px,100%)}
+  .bridge-stage{
+    grid-template-columns:minmax(360px,1fr) minmax(800px,2fr) minmax(340px,.9fr);
+  }
+  .repository-constellation-shell,.repository-constellation{min-height:820px}
+}
