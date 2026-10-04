@@ -33,10 +33,13 @@ body::before{
   content:"";
   position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
+    radial-gradient(circle,rgba(255,255,255,.96) 0 1px,transparent 1.6px) 0 0/54px 54px,
+    radial-gradient(circle,rgba(30,216,239,.42) 0 1px,transparent 1.8px) 17px 23px/83px 83px,
+    radial-gradient(circle,rgba(118,104,255,.24) 0 1px,transparent 1.7px) 31px 9px/121px 121px,
     linear-gradient(rgba(22,148,194,.035) 1px,transparent 1px),
     linear-gradient(90deg,rgba(22,148,194,.035) 1px,transparent 1px);
-  background-size:38px 38px;
-  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.4) 66%,transparent 100%);
+  background-size:54px 54px,83px 83px,121px 121px,38px 38px,38px 38px;
+  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.48) 62%,transparent 100%);
 }
 #neural-field{position:fixed;inset:0;z-index:-2;width:100vw;height:100vh;pointer-events:none;opacity:.76}
 a,button{font:inherit}
