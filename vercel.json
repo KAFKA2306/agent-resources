@@ -6,6 +6,15 @@
   "functions": {
     "api/dashboard-live.js": {
       "maxDuration": 60
+    },
+    "api/mcp.js": {
+      "maxDuration": 60
+    },
+    "api/github-events.js": {
+      "maxDuration": 60
+    },
+    "api/mcp-events-health.js": {
+      "maxDuration": 10
     }
   },
   "redirects": [
@@ -27,6 +36,10 @@
     {
       "source": "/dashboard/factory-state.json",
       "destination": "https://kafka2306.github.io/agent-resources/dashboard/factory-state.json"
+    },
+    {
+      "source": "/mcp",
+      "destination": "/api/mcp"
     }
   ],
   "headers": [
