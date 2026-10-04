@@ -26,10 +26,6 @@
   ],
   "rewrites": [
     {
-      "source": "/mcp",
-      "destination": "/api/mcp"
-    },
-    {
       "source": "/dashboard/dashboard.json",
       "destination": "https://kafka2306.github.io/agent-resources/dashboard/dashboard.json"
     },
@@ -40,6 +36,10 @@
     {
       "source": "/dashboard/factory-state.json",
       "destination": "https://kafka2306.github.io/agent-resources/dashboard/factory-state.json"
+    },
+    {
+      "source": "/mcp",
+      "destination": "/api/mcp"
     }
   ],
   "headers": [
