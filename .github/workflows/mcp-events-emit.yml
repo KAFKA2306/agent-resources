@@ -53,8 +53,8 @@ jobs:
             202|207)
               exit 0
               ;;
-            503)
-              echo "MCP Events storage is not configured yet; event emission is safely dormant."
+            404|503)
+              echo "MCP Events ingress is not active yet; event emission is safely dormant."
               exit 0
               ;;
             *)
