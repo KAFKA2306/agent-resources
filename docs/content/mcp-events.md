@@ -35,7 +35,8 @@ Supported events:
 
 - MCP Events protocol version: `2026-07-28`.
 - Persistent subscriptions use a private Vercel Blob store.
-- Subscription creation fails closed while `BLOB_READ_WRITE_TOKEN` is unavailable.
+- Subscription creation fails closed while Blob storage is unavailable.
+- Current Vercel Private Blob OIDC authentication is supported; a long-lived `BLOB_READ_WRITE_TOKEN` is not required for a properly connected OIDC store.
 - GitHub ingress accepts only GitHub Actions OIDC tokens with audience `agent-resources-mcp-events` from exactly `KAFKA2306/agent-resources`.
 - Callback URLs must use HTTPS on port 443.
 - DNS destinations are resolved before connection and private, local, reserved, or mixed public/private answers are rejected.
@@ -47,9 +48,9 @@ Supported events:
 
 ## Activation
 
-The code is safe to deploy before storage exists. The GitHub emitter treats HTTP 503 from the ingress as dormant rather than a CI failure.
+The code is safe to deploy before storage exists. The GitHub emitter treats HTTP 404 during bootstrap and HTTP 503 while storage is unavailable as dormant rather than a CI failure.
 
-To activate subscriptions, attach a private Vercel Blob store to the `agent-resources` Vercel project so `BLOB_READ_WRITE_TOKEN` is available in Production. Then add the MCP endpoint as a personal ChatGPT plugin in developer mode and rescan its events.
+To activate subscriptions, attach a private Vercel Blob store to the `agent-resources` Vercel project. Prefer the current Vercel OIDC connection mode. Then add the MCP endpoint as a personal ChatGPT plugin in developer mode and rescan its events.
 
 Health probe:
 
