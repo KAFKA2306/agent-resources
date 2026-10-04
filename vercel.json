@@ -6,6 +6,15 @@
   "functions": {
     "api/dashboard-live.js": {
       "maxDuration": 60
+    },
+    "api/mcp.js": {
+      "maxDuration": 60
+    },
+    "api/github-events.js": {
+      "maxDuration": 60
+    },
+    "api/mcp-events-health.js": {
+      "maxDuration": 10
     }
   },
   "redirects": [
@@ -16,6 +25,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/mcp",
+      "destination": "/api/mcp"
+    },
     {
       "source": "/dashboard/dashboard.json",
       "destination": "https://kafka2306.github.io/agent-resources/dashboard/dashboard.json"
