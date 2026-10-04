@@ -9,7 +9,7 @@ export default async function handler(request, response) {
   return response.status(200).json({
     service: "agent-resources-mcp-events",
     protocolVersion: MCP_PROTOCOL_VERSION,
-    storageConfigured: store.configured(),
+    storageConfigured: await store.available(),
     pilotRepository: "KAFKA2306/agent-resources",
     eventCount: EVENT_DEFINITIONS.length,
   });
