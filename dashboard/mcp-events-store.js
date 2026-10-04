@@ -10,25 +10,44 @@ export class StorageUnavailableError extends Error {
   }
 }
 
+function asStorageUnavailable(error) {
+  return error instanceof StorageUnavailableError
+    ? error
+    : new StorageUnavailableError(error?.message || String(error));
+}
+
 async function defaultBlobClient() {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) throw new StorageUnavailableError();
-  return import("@vercel/blob");
+  try {
+    return await import("@vercel/blob");
+  } catch (error) {
+    throw asStorageUnavailable(error);
+  }
 }
 
 async function readJsonBlob(client, blob) {
-  const response = await client.get(blob.url, { access: "private" });
+  let response;
+  try {
+    response = await client.get(blob.url, { access: "private", useCache: false });
+  } catch (error) {
+    throw asStorageUnavailable(error);
+  }
   if (!response) return null;
-  return JSON.parse(await response.text());
+  if (typeof response.text === "function") return JSON.parse(await response.text());
+  return JSON.parse(await new Response(response.stream).text());
 }
 
 async function listAll(client, prefix) {
   const blobs = [];
   let cursor;
-  do {
-    const page = await client.list({ prefix, limit: 100, cursor });
-    blobs.push(...page.blobs);
-    cursor = page.cursor || undefined;
-  } while (cursor);
+  try {
+    do {
+      const page = await client.list({ prefix, limit: 100, cursor });
+      blobs.push(...page.blobs);
+      cursor = page.cursor || undefined;
+    } while (cursor);
+  } catch (error) {
+    throw asStorageUnavailable(error);
+  }
   return blobs;
 }
 
@@ -37,29 +56,47 @@ export class BlobSubscriptionStore {
     this.clientLoader = clientLoader;
   }
 
-  configured() {
-    return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  async available() {
+    try {
+      await this.listSubscriptions();
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async putSubscription(subscription) {
-    const client = await this.clientLoader();
-    const pathname = `${SUBSCRIPTION_PREFIX}${subscription.id}.json`;
-    await client.put(pathname, JSON.stringify(subscription), {
-      access: "private",
-      addRandomSuffix: false,
-      allowOverwrite: true,
-      contentType: "application/json",
-      cacheControlMaxAge: 60,
-    });
+    try {
+      const client = await this.clientLoader();
+      const pathname = `${SUBSCRIPTION_PREFIX}${subscription.id}.json`;
+      await client.put(pathname, JSON.stringify(subscription), {
+        access: "private",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "application/json",
+        cacheControlMaxAge: 60,
+      });
+    } catch (error) {
+      throw asStorageUnavailable(error);
+    }
   }
 
   async deleteSubscription(id) {
-    const client = await this.clientLoader();
-    await client.del(`${SUBSCRIPTION_PREFIX}${id}.json`);
+    try {
+      const client = await this.clientLoader();
+      await client.del(`${SUBSCRIPTION_PREFIX}${id}.json`);
+    } catch (error) {
+      throw asStorageUnavailable(error);
+    }
   }
 
   async listSubscriptions() {
-    const client = await this.clientLoader();
+    let client;
+    try {
+      client = await this.clientLoader();
+    } catch (error) {
+      throw asStorageUnavailable(error);
+    }
     const blobs = await listAll(client, SUBSCRIPTION_PREFIX);
     const subscriptions = [];
     for (const blob of blobs) {
@@ -67,6 +104,7 @@ export class BlobSubscriptionStore {
         const value = await readJsonBlob(client, blob);
         if (value) subscriptions.push(value);
       } catch (error) {
+        if (error instanceof StorageUnavailableError) throw error;
         console.warn("mcp events ignored unreadable subscription", blob.pathname, error?.message || error);
       }
     }
@@ -74,7 +112,12 @@ export class BlobSubscriptionStore {
   }
 
   async getVerification(principal, callbackUrl) {
-    const client = await this.clientLoader();
+    let client;
+    try {
+      client = await this.clientLoader();
+    } catch (error) {
+      throw asStorageUnavailable(error);
+    }
     const key = verificationCacheKey({ principal, callbackUrl });
     const pathname = `${VERIFICATION_PREFIX}${key}.json`;
     const blobs = await listAll(client, pathname);
@@ -83,18 +126,22 @@ export class BlobSubscriptionStore {
   }
 
   async putVerification(principal, callbackUrl, verifiedUntil) {
-    const client = await this.clientLoader();
-    const key = verificationCacheKey({ principal, callbackUrl });
-    await client.put(
-      `${VERIFICATION_PREFIX}${key}.json`,
-      JSON.stringify({ principal, callbackUrl, verifiedUntil }),
-      {
-        access: "private",
-        addRandomSuffix: false,
-        allowOverwrite: true,
-        contentType: "application/json",
-        cacheControlMaxAge: 60,
-      },
-    );
+    try {
+      const client = await this.clientLoader();
+      const key = verificationCacheKey({ principal, callbackUrl });
+      await client.put(
+        `${VERIFICATION_PREFIX}${key}.json`,
+        JSON.stringify({ principal, callbackUrl, verifiedUntil }),
+        {
+          access: "private",
+          addRandomSuffix: false,
+          allowOverwrite: true,
+          contentType: "application/json",
+          cacheControlMaxAge: 60,
+        },
+      );
+    } catch (error) {
+      throw asStorageUnavailable(error);
+    }
   }
 }
