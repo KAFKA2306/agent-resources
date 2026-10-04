@@ -36,8 +36,6 @@ async function deliverWithRetry(subscription, event) {
 
 export default async function handler(request, response) {
   if (request.method !== "POST") return send(response, 405, { error: "method_not_allowed" });
-  if (!store.configured()) return send(response, 503, { error: "mcp_events_storage_unavailable" });
-
   const token = bearerToken(request.headers.authorization);
   if (!token) return send(response, 401, { error: "missing_github_oidc_token" });
   let claims;
