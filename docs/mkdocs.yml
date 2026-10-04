@@ -51,6 +51,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Control Tower: control-tower.md
+  - MCP Events: mcp-events.md
   - AGR CLI: cli.md
   - Creating Skills: creating.md
   - CLI Reference: reference.md
