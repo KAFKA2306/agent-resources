@@ -129,11 +129,6 @@ async function verifyCallback(subscription, nowMs) {
 }
 
 async function handleSubscribe(id, params) {
-  if (!store.configured()) {
-    return rpcError(id, -32000, "Persistent subscription storage is unavailable", {
-      reason: "storage_unavailable",
-    });
-  }
   const argumentsCheck = validateSubscriptionArguments(params?.name, params?.arguments);
   if (!argumentsCheck.ok) return rpcError(id, -32602, "Invalid event subscription arguments", argumentsCheck);
   const deliveryCheck = validateDelivery(params?.delivery);
@@ -186,7 +181,6 @@ async function handleUnsubscribe(id, params) {
   if (!argumentsCheck.ok) return rpcError(id, -32602, "Invalid event subscription arguments", argumentsCheck);
   const deliveryCheck = deliveryIdentity(params);
   if (!deliveryCheck.ok) return rpcError(id, -32602, "Invalid event delivery", deliveryCheck);
-  if (!store.configured()) return result(id, {});
   const subscriptionId = deterministicSubscriptionId({
     principal: PRINCIPAL,
     callbackUrl: deliveryCheck.url,
@@ -247,6 +241,9 @@ export default async function handler(request, response) {
   try {
     return json(response, 200, await dispatchRpc(body));
   } catch (error) {
+    if (error instanceof StorageUnavailableError) {
+      return json(response, 200, rpcError(body?.id, -32000, "Persistent subscription storage is unavailable", { reason: "storage_unavailable" }));
+    }
     console.error("mcp events endpoint failed", error?.message || error);
     return json(response, 500, rpcError(body?.id, -32603, "Internal error"));
   }
