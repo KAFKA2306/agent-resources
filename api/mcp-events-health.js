@@ -1,4 +1,4 @@
-import { EVENT_DEFINITIONS, MCP_PROTOCOL_VERSION } from "../dashboard/mcp-events-core.js";
+import { oauthConfiguration } from "../dashboard/mcp-events-auth.js";\nimport { EVENT_DEFINITIONS, MCP_PROTOCOL_VERSION } from "../dashboard/mcp-events-core.js";
 import { BlobSubscriptionStore } from "../dashboard/mcp-events-store.js";
 
 const store = new BlobSubscriptionStore();
@@ -9,7 +9,7 @@ export default async function handler(request, response) {
   return response.status(200).json({
     service: "agent-resources-mcp-events",
     protocolVersion: MCP_PROTOCOL_VERSION,
-    storageConfigured: await store.available(),
+    storageConfigured: await store.available(),\n    oauthConfigured: oauth.configured,\n    oauthResource: oauth.resource,
     pilotRepository: "KAFKA2306/agent-resources",
     eventCount: EVENT_DEFINITIONS.length,
   });
