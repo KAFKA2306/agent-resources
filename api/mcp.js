@@ -9,7 +9,7 @@ import {
   validateDelivery,
   validateSubscriptionArguments,
 } from "../dashboard/mcp-events-core.js";
-import { BlobSubscriptionStore, StorageUnavailableError } from "../dashboard/mcp-events-store.js";
+import {\n  McpAuthConfigurationError,\n  McpAuthenticationError,\n  authenticateMcpPrincipal,\n  authenticationChallenge,\n} from "../dashboard/mcp-events-auth.js";\nimport { BlobSubscriptionStore, StorageUnavailableError } from "../dashboard/mcp-events-store.js";
 import { postSignedWebhook } from "../dashboard/mcp-events-webhook.js";
 
 const SERVER_NAME = "agent-resources-mcp-events";
@@ -128,7 +128,7 @@ async function verifyCallback(subscription, nowMs) {
   );
 }
 
-async function handleSubscribe(id, params) {
+async function handleSubscribe(id, params, principal) {
   const argumentsCheck = validateSubscriptionArguments(params?.name, params?.arguments);
   if (!argumentsCheck.ok) return rpcError(id, -32602, "Invalid event subscription arguments", argumentsCheck);
   const deliveryCheck = validateDelivery(params?.delivery);
@@ -140,7 +140,7 @@ async function handleSubscribe(id, params) {
   const nowMs = Date.now();
   const expiresAt = grantedExpiration(nowMs, params?.ttlMs);
   const subscriptionId = deterministicSubscriptionId({
-    principal: PRINCIPAL,
+    principal,
     callbackUrl: deliveryCheck.url,
     name: params.name,
     arguments: params.arguments,
@@ -148,7 +148,7 @@ async function handleSubscribe(id, params) {
   const existing = (await store.listSubscriptions()).find((item) => item.id === subscriptionId);
   const subscription = {
     id: subscriptionId,
-    principal: PRINCIPAL,
+    principal,
     name: params.name,
     arguments: params.arguments,
     url: deliveryCheck.url,
@@ -176,13 +176,13 @@ async function handleSubscribe(id, params) {
   return result(id, { id: subscription.id, refreshBefore: expiresAt, cursor: null, truncated: false });
 }
 
-async function handleUnsubscribe(id, params) {
+async function handleUnsubscribe(id, params, principal) {
   const argumentsCheck = validateSubscriptionArguments(params?.name, params?.arguments);
   if (!argumentsCheck.ok) return rpcError(id, -32602, "Invalid event subscription arguments", argumentsCheck);
   const deliveryCheck = deliveryIdentity(params);
   if (!deliveryCheck.ok) return rpcError(id, -32602, "Invalid event delivery", deliveryCheck);
   const subscriptionId = deterministicSubscriptionId({
-    principal: PRINCIPAL,
+    principal,
     callbackUrl: deliveryCheck.url,
     name: params.name,
     arguments: params.arguments,
@@ -195,7 +195,7 @@ async function handleUnsubscribe(id, params) {
   return result(id, {});
 }
 
-async function dispatchRpc(body) {
+async function dispatchRpc(body, principal) {
   if (!body || body.jsonrpc !== "2.0" || typeof body.method !== "string") {
     return rpcError(body?.id, -32600, "Invalid Request");
   }
@@ -217,9 +217,9 @@ async function dispatchRpc(body) {
     case "events/list":
       return result(body.id, { events: EVENT_DEFINITIONS });
     case "events/subscribe":
-      return handleSubscribe(body.id, body.params || {});
+      return handleSubscribe(body.id, body.params || {}, principal);
     case "events/unsubscribe":
-      return handleUnsubscribe(body.id, body.params || {});
+      return handleUnsubscribe(body.id, body.params || {}, principal);
     case "initialize":
       return rpcError(body.id, -32022, "This server supports modern MCP only", {
         supported: [MCP_PROTOCOL_VERSION],
@@ -238,8 +238,28 @@ export default async function handler(request, response) {
   const body = request.body;
   const validation = validateModernRequest(request, body);
   if (validation) return json(response, validation.status, validation.error);
+  let principal = null;
+  if (body?.method === "events/subscribe" || body?.method === "events/unsubscribe") {
+    try {
+      principal = await authenticateMcpPrincipal(request);
+    } catch (error) {
+      if (error instanceof McpAuthConfigurationError) {
+        return json(response, 503, rpcError(body?.id, -32001, "MCP Events OAuth is not configured", {
+          reason: "oauth_not_configured",
+        }));
+      }
+      if (error instanceof McpAuthenticationError) {
+        response.setHeader("WWW-Authenticate", authenticationChallenge());
+        return json(response, 401, rpcError(body?.id, -32001, "Authentication required", {
+          reason: error.message || "invalid_access_token",
+        }));
+      }
+      throw error;
+    }
+  }
+
   try {
-    return json(response, 200, await dispatchRpc(body));
+    return json(response, 200, await dispatchRpc(body, principal));
   } catch (error) {
     if (error instanceof StorageUnavailableError) {
       return json(response, 200, rpcError(body?.id, -32000, "Persistent subscription storage is unavailable", { reason: "storage_unavailable" }));
