@@ -259,7 +259,9 @@ export default async function handler(request, response) {
           reason: error.message || "invalid_access_token",
         }));
       }
-      throw error;
+      console.error("mcp oauth verification failed", error?.message || error);
+      return json(response, 500, rpcError(body?.id, -32603, "Internal error"));
+
     }
   }
 
