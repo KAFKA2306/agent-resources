@@ -110,7 +110,7 @@ const rotationSecret = (value) => `whsec_${Buffer.alloc(32, value).toString("bas
 function oauthTokenFor(claimOverrides = {}) {
   const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
   const jwk = publicKey.export({ format: "jwk" });
-  jwk.kid = "oauth-test-key";
+  keySequence += 1;\n  jwk.kid = `oauth-test-key-${keySequence}`;
   jwk.use = "sig";
   jwk.alg = "RS256";
   const now = Math.floor(Date.now() / 1000);
