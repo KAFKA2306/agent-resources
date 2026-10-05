@@ -66,7 +66,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 .identity-kicker{color:#68889a;font-size:.56rem;font-weight:950;letter-spacing:.16em}
 .identity-copy strong{font-size:1rem;letter-spacing:.13em}
 .public-links{display:flex;gap:7px;flex-wrap:wrap}
-.public-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:#245169;font-size:.65rem;font-weight:900;text-decoration:none;transition:.18s ease}
+.public-links a{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.82);color:#245169;font-size:.65rem;font-weight:900;text-decoration:none;transition:.18s ease}
 .public-links a span{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(0,169,217,.08);color:#0087b4;font-size:.5rem}
 .public-links a:hover{transform:translateY(-1px);border-color:var(--line-strong);box-shadow:var(--glow);color:#007eab}
 
