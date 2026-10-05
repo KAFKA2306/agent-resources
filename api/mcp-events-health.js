@@ -7,6 +7,7 @@ const store = new BlobSubscriptionStore();
 export default async function handler(request, response) {
   if (request.method !== "GET") return response.status(405).json({ error: "method_not_allowed" });
   response.setHeader("Cache-Control", "no-store");
+  const oauth = oauthConfiguration();
   return response.status(200).json({
     service: "agent-resources-mcp-events",
     protocolVersion: MCP_PROTOCOL_VERSION,
