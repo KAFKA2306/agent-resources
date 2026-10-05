@@ -50,8 +50,12 @@ jobs:
           cat "${response_file}"
           echo
           case "${status}" in
-            202|207)
+            202)
               exit 0
+              ;;
+            207)
+              echo "MCP Events ingress accepted the event but at least one callback delivery failed." >&2
+              exit 1
               ;;
             404|503)
               echo "MCP Events ingress is not active yet; event emission is safely dormant."
