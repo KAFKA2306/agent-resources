@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createHmac, generateKeyPairSync, sign } from "node:crypto";
-import handler from "../../api/mcp.js";\nimport {\n  McpAuthConfigurationError,\n  authenticateMcpPrincipal,\n  oauthConfiguration,\n} from "../mcp-events-auth.js";
+import handler from "../../api/mcp.js";
+import {
+  McpAuthConfigurationError,
+  authenticateMcpPrincipal,
+  oauthConfiguration,
+} from "../mcp-events-auth.js";
 import {
   canonicalJson,
   deterministicSubscriptionId,
@@ -110,7 +115,8 @@ const rotationSecret = (value) => `whsec_${Buffer.alloc(32, value).toString("bas
 function oauthTokenFor(claimOverrides = {}) {
   const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
   const jwk = publicKey.export({ format: "jwk" });
-  keySequence += 1;\n  jwk.kid = `oauth-test-key-${keySequence}`;
+  keySequence += 1;
+  jwk.kid = `oauth-test-key-${keySequence}`;
   jwk.use = "sig";
   jwk.alg = "RS256";
   const now = Math.floor(Date.now() / 1000);
