@@ -9,12 +9,17 @@ import {
   validateDelivery,
   validateSubscriptionArguments,
 } from "../dashboard/mcp-events-core.js";
-import {\n  McpAuthConfigurationError,\n  McpAuthenticationError,\n  authenticateMcpPrincipal,\n  authenticationChallenge,\n} from "../dashboard/mcp-events-auth.js";\nimport { BlobSubscriptionStore, StorageUnavailableError } from "../dashboard/mcp-events-store.js";
+import {
+  McpAuthConfigurationError,
+  McpAuthenticationError,
+  authenticateMcpPrincipal,
+  authenticationChallenge,
+} from "../dashboard/mcp-events-auth.js";
+import { BlobSubscriptionStore, StorageUnavailableError } from "../dashboard/mcp-events-store.js";
 import { postSignedWebhook } from "../dashboard/mcp-events-webhook.js";
 
 const SERVER_NAME = "agent-resources-mcp-events";
 const SERVER_VERSION = "0.1.0";
-const PRINCIPAL = "kafka2306-public-pilot";
 const store = new BlobSubscriptionStore();
 
 function json(response, status, payload) {
