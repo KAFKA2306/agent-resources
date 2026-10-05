@@ -3,6 +3,11 @@ import test from "node:test";
 import { createHmac, generateKeyPairSync, sign } from "node:crypto";
 import handler from "../../api/mcp.js";
 import {
+  McpAuthConfigurationError,
+  authenticateMcpPrincipal,
+  oauthConfiguration,
+} from "../mcp-events-auth.js";
+import {
   canonicalJson,
   deterministicSubscriptionId,
   githubEventToMcp,
@@ -107,6 +112,37 @@ function tokenFor(claimOverrides = {}) {
 
 const rotationSecret = (value) => `whsec_${Buffer.alloc(32, value).toString("base64")}`;
 
+function oauthTokenFor(claimOverrides = {}) {
+  const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+  const jwk = publicKey.export({ format: "jwk" });
+  keySequence += 1;
+  jwk.kid = `oauth-test-key-${keySequence}`;
+  jwk.use = "sig";
+  jwk.alg = "RS256";
+  const now = Math.floor(Date.now() / 1000);
+  const header = Buffer.from(JSON.stringify({ alg: "RS256", typ: "JWT", kid: jwk.kid })).toString("base64url");
+  const payload = Buffer.from(JSON.stringify({
+    iss: "https://auth.example.test/",
+    aud: "https://agent-resources-one.vercel.app",
+    exp: now + 300,
+    nbf: now - 10,
+    sub: "user_123",
+    scope: "mcp.events",
+    ...claimOverrides,
+  })).toString("base64url");
+  const signature = sign("RSA-SHA256", Buffer.from(`${header}.${payload}`), privateKey).toString("base64url");
+  return {
+    token: `${header}.${payload}.${signature}`,
+    fetchImpl: async () => ({ ok: true, json: async () => ({ keys: [jwk] }) }),
+    env: {
+      MCP_EVENTS_OAUTH_ISSUER: "https://auth.example.test/",
+      MCP_EVENTS_OAUTH_JWKS_URI: "https://auth.example.test/.well-known/jwks.json",
+      MCP_EVENTS_OAUTH_AUDIENCE: "https://agent-resources-one.vercel.app",
+      MCP_EVENTS_OAUTH_SCOPE: "mcp.events",
+    },
+  };
+}
+
 test("canonical JSON makes subscription identity independent of key order", () => {
   assert.equal(canonicalJson({ b: 2, a: 1 }), canonicalJson({ a: 1, b: 2 }));
   const left = deterministicSubscriptionId({ principal: "personal:kafka2306", callbackUrl: "https://example.com/callback", name: "github.issue.opened", arguments: { repository: "KAFKA2306/agent-resources", number: 381 } });
@@ -178,6 +214,40 @@ test("protocol header mismatch fails with HTTP 400", async () => {
   await handler(request, response);
   assert.equal(response.state.status, 400);
   assert.equal(response.state.body.error.code, -32023);
+});
+
+test("MCP event subscription auth fails closed when OAuth is not configured", async () => {
+  assert.equal(oauthConfiguration({}).configured, false);
+  await assert.rejects(
+    () => authenticateMcpPrincipal({ headers: {} }, { env: {} }),
+    McpAuthConfigurationError,
+  );
+});
+
+test("MCP event subscription principal comes from a verified OAuth subject", async () => {
+  const fixture = oauthTokenFor();
+  const request = { headers: { authorization: `Bearer ${fixture.token}` } };
+  const left = await authenticateMcpPrincipal(request, {
+    env: fixture.env,
+    fetchImpl: fixture.fetchImpl,
+  });
+  const right = await authenticateMcpPrincipal(request, {
+    env: fixture.env,
+    fetchImpl: fixture.fetchImpl,
+  });
+  assert.match(left, /^oauth_[A-Za-z0-9_-]{32}$/);
+  assert.equal(left, right);
+});
+
+test("MCP event subscription auth rejects a token for another resource", async () => {
+  const fixture = oauthTokenFor({ aud: "https://wrong.example.test" });
+  await assert.rejects(
+    () => authenticateMcpPrincipal(
+      { headers: { authorization: `Bearer ${fixture.token}` } },
+      { env: fixture.env, fetchImpl: fixture.fetchImpl },
+    ),
+    /oauth_bad_audience/,
+  );
 });
 
 test("github actions oidc accepts exact pilot repository and audience", async () => {
