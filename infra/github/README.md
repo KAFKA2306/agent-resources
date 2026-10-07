@@ -2,7 +2,7 @@
 
 This directory gives the Software Factory Control Tower one narrow Terraform responsibility: detect drift in its GitHub repository control plane.
 
-It reads the live `KAFKA2306/agent-resources` repository through the OSS `integrations/github` Terraform provider and fails planning when core factory invariants are broken.
+It reads the live `KAFKA2306/agent-resources` repository through the OSS `integrations/github` Terraform provider and fails planning when core factory invariants are broken. Merge-policy fields that the provider cannot reliably expose with the ephemeral Actions token are read directly from GitHub REST and passed into Terraform as typed variables.
 
 Checked invariants:
 
