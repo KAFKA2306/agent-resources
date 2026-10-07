@@ -1,0 +1,43 @@
+name: dependency vulnerability reusable
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-vulnerability-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install Trivy 0.75.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="0.75.0"
+          archive="trivy_${version}_Linux-64bit.tar.gz"
+          checksums="trivy_${version}_checksums.txt"
+          base="https://github.com/aquasecurity/trivy/releases/download/v${version}"
+
+          curl -fsSLO "${base}/${archive}"
+          curl -fsSLO "${base}/${checksums}"
+          grep "  ${archive}$" "${checksums}" | sha256sum --check --strict -
+          tar -xzf "${archive}" trivy
+          sudo install -m 0755 trivy /usr/local/bin/trivy
+          trivy --version
+
+      - name: Scan dependency vulnerabilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          trivy fs \
+            --scanners vuln \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --no-progress \
+            .
