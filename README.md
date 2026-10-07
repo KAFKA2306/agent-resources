@@ -89,6 +89,7 @@ dashboard/     Control Tower collectors / control contracts / tests
 docs/dashboard/ public Control Tower UI
 docs/content/   public documentation
 api/            live overlay API
+infra/github/   Terraform GitHub control-plane drift contract
 skills/         reusable agent skills
 plugins/        packaged integrations
 src/            agr / agrx
@@ -103,6 +104,9 @@ uv run pytest
 uv run ruff check .
 uv run ty check
 npm run test:dashboard
+terraform -chdir=infra/github fmt -check -recursive
+terraform -chdir=infra/github init -backend=false
+terraform -chdir=infra/github plan
 ~~~
 
 repository運用契約、security boundary、autonomous factory invariant は [AGENTS.md](AGENTS.md) を正準とします。
