@@ -39,6 +39,18 @@ jobs:
           terraform_version: 1.16.4
           terraform_wrapper: false
 
+      - name: Read live GitHub merge settings
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          squash="$(gh api "repos/${GITHUB_REPOSITORY}" --jq '.allow_squash_merge')"
+          test "$squash" = "true" || {
+            echo "allow_squash_merge is not true"
+            exit 1
+          }
+          echo "TF_VAR_allow_squash_merge=$squash" >> "$GITHUB_ENV"
+
       - name: Check Terraform formatting
         run: terraform -chdir=infra/github fmt -check -recursive
 
