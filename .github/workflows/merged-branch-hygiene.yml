@@ -1,0 +1,82 @@
+name: Cleanup merged branches
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Delete only branches fully contained in main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          default="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.default_branch')"
+          mapfile -t open_heads < <(
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100"               --jq '.[].head.ref' | sort -u
+          )
+          mapfile -t branches < <(
+            gh api --paginate "repos/$GITHUB_REPOSITORY/branches?per_page=100"               --jq '.[].name'
+          )
+
+          deleted=0
+          kept=0
+
+          for branch in "${branches[@]}"; do
+            if [[ "$branch" == "$default" ]]; then
+              continue
+            fi
+
+            case "$branch" in
+              gh-pages|develop|development|staging|production)
+                echo "keep persistent branch: $branch"
+                kept=$((kept + 1))
+                continue
+                ;;
+            esac
+
+            if printf '%s\n' "${open_heads[@]}" | grep -Fxq -- "$branch"; then
+              echo "keep open PR head: $branch"
+              kept=$((kept + 1))
+              continue
+            fi
+
+            compare_ref="$(python - "$branch" "$default" <<'PY'
+          import sys
+          from urllib.parse import quote
+          print(quote(f"{sys.argv[1]}...{sys.argv[2]}", safe=""))
+          PY
+          )"
+
+            status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$compare_ref" --jq '.status')"
+
+            if [[ "$status" != "ahead" && "$status" != "identical" ]]; then
+              echo "keep branch with unmerged commits: $branch ($status)"
+              kept=$((kept + 1))
+              continue
+            fi
+
+            encoded_branch="$(python - "$branch" <<'PY'
+          import sys
+          from urllib.parse import quote
+          print(quote(sys.argv[1], safe=""))
+          PY
+          )"
+
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$encoded_branch"
+            echo "deleted fully merged branch: $branch"
+            deleted=$((deleted + 1))
+          done
+
+          echo "deleted=$deleted"
+          echo "kept=$kept"
