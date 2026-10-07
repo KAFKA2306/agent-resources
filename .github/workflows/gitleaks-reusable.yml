@@ -1,0 +1,49 @@
+name: gitleaks reusable
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks 8.30.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="8.30.1"
+          archive="gitleaks_${version}_linux_x64.tar.gz"
+          checksums="gitleaks_${version}_checksums.txt"
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${version}"
+
+          curl -fsSLO "${base}/${archive}"
+          curl -fsSLO "${base}/${checksums}"
+          grep "  ${archive}$" "${checksums}" | sha256sum --check --strict -
+          tar -xzf "${archive}" gitleaks
+          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: Scan commits introduced by this event
+        shell: bash
+        run: |
+          set -euo pipefail
+          zero="0000000000000000000000000000000000000000"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            log_opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.event.before }}" != "${zero}" ]]; then
+            log_opts="${{ github.event.before }}..${{ github.sha }}"
+          else
+            log_opts="--all"
+          fi
+
+          gitleaks git --redact --verbose --log-opts="${log_opts}" .
