@@ -13,11 +13,6 @@ provider "github" {
   owner = "KAFKA2306"
 }
 
-variable "allow_squash_merge" {
-  description = "Live GitHub REST value for allow_squash_merge."
-  type        = bool
-}
-
 data "github_repository" "control_tower" {
   full_name = "KAFKA2306/agent-resources"
 }
@@ -45,7 +40,6 @@ resource "terraform_data" "github_contract" {
     visibility         = data.github_repository.control_tower.visibility
     default_branch     = data.github_repository.control_tower.default_branch
     issues_enabled     = data.github_repository.control_tower.has_issues
-    squash_enabled     = var.allow_squash_merge
     archived           = data.github_repository.control_tower.archived
     required_workflows = sort(tolist(local.required_workflows))
   }
@@ -64,11 +58,6 @@ resource "terraform_data" "github_contract" {
     precondition {
       condition     = data.github_repository.control_tower.has_issues
       error_message = "GitHub Issues must stay enabled because factory work routing depends on them."
-    }
-
-    precondition {
-      condition     = var.allow_squash_merge
-      error_message = "Squash merge must stay enabled for the repository merge contract."
     }
 
     precondition {
