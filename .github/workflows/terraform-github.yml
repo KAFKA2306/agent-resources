@@ -4,12 +4,12 @@ on:
   pull_request:
     paths:
       - 'infra/github/**'
-      - '.github/workflows/terraform-github.yml'
+      - '.github/workflows/**'
   push:
     branches: [main]
     paths:
       - 'infra/github/**'
-      - '.github/workflows/terraform-github.yml'
+      - '.github/workflows/**'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
