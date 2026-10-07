@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Delete only branches fully contained in main
+      - name: Delete only merged branches
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -24,6 +24,9 @@ jobs:
           default="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.default_branch')"
           mapfile -t open_heads < <(
             gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100"               --jq '.[].head.ref' | sort -u
+          )
+          mapfile -t merged_heads < <(
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=closed&per_page=100"               --jq '.[] | select(.merged_at != null) | [.head.repo.full_name, .head.ref] | @tsv'
           )
           mapfile -t branches < <(
             gh api --paginate "repos/$GITHUB_REPOSITORY/branches?per_page=100"               --jq '.[].name'
@@ -51,17 +54,27 @@ jobs:
               continue
             fi
 
-            compare_ref="$(python - "$branch" "$default" <<'PY'
+            merged_by_pr=false
+            if printf '%s\n' "${merged_heads[@]}" | grep -Fxq -- "$GITHUB_REPOSITORY"$'\t'"$branch"; then
+              merged_by_pr=true
+            fi
+
+            fully_contained=false
+            if [[ "$merged_by_pr" != "true" ]]; then
+              compare_ref="$(python - "$branch" "$default" <<'PY'
           import sys
           from urllib.parse import quote
           print(quote(f"{sys.argv[1]}...{sys.argv[2]}", safe=""))
           PY
           )"
+              status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$compare_ref" --jq '.status')"
+              if [[ "$status" == "ahead" || "$status" == "identical" ]]; then
+                fully_contained=true
+              fi
+            fi
 
-            status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$compare_ref" --jq '.status')"
-
-            if [[ "$status" != "ahead" && "$status" != "identical" ]]; then
-              echo "keep branch with unmerged commits: $branch ($status)"
+            if [[ "$merged_by_pr" != "true" && "$fully_contained" != "true" ]]; then
+              echo "keep branch with unmerged work: $branch"
               kept=$((kept + 1))
               continue
             fi
@@ -74,7 +87,7 @@ jobs:
           )"
 
             gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$encoded_branch"
-            echo "deleted fully merged branch: $branch"
+            echo "deleted merged branch: $branch"
             deleted=$((deleted + 1))
           done
 
