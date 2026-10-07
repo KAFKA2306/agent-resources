@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Delete only merged branches
+      - name: Delete only safely merged branches
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -22,45 +22,46 @@ jobs:
           set -euo pipefail
 
           default="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.default_branch')"
+
           mapfile -t open_heads < <(
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100"               --jq '.[].head.ref' | sort -u
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100"               --jq '.[] | [.head.repo.full_name, .head.ref] | @tsv'
           )
           mapfile -t merged_heads < <(
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=closed&per_page=100"               --jq '.[] | select(.merged_at != null) | [.head.repo.full_name, .head.ref] | @tsv'
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=closed&per_page=100"               --jq '.[] | select(.merged_at != null) | [.head.repo.full_name, .head.ref, .head.sha] | @tsv'
           )
           mapfile -t branches < <(
-            gh api --paginate "repos/$GITHUB_REPOSITORY/branches?per_page=100"               --jq '.[].name'
+            gh api --paginate "repos/$GITHUB_REPOSITORY/branches?per_page=100"               --jq '.[] | [.name, .commit.sha, (.protected | tostring)] | @tsv'
           )
 
           deleted=0
           kept=0
 
-          for branch in "${branches[@]}"; do
-            if [[ "$branch" == "$default" ]]; then
+          for row in "${branches[@]}"; do
+            IFS=$'\t' read -r branch branch_sha protected <<<"$row"
+
+            if [[ "$branch" == "$default" || "$branch" == "gh-pages" ]]; then
               continue
             fi
 
-            case "$branch" in
-              gh-pages|develop|development|staging|production)
-                echo "keep persistent branch: $branch"
-                kept=$((kept + 1))
-                continue
-                ;;
-            esac
+            if [[ "$protected" == "true" ]]; then
+              echo "keep protected branch: $branch"
+              kept=$((kept + 1))
+              continue
+            fi
 
-            if printf '%s\n' "${open_heads[@]}" | grep -Fxq -- "$branch"; then
+            if printf '%s\n' "${open_heads[@]}" | grep -Fxq -- "$GITHUB_REPOSITORY"$'\t'"$branch"; then
               echo "keep open PR head: $branch"
               kept=$((kept + 1))
               continue
             fi
 
-            merged_by_pr=false
-            if printf '%s\n' "${merged_heads[@]}" | grep -Fxq -- "$GITHUB_REPOSITORY"$'\t'"$branch"; then
-              merged_by_pr=true
+            merged_exact=false
+            if printf '%s\n' "${merged_heads[@]}" | grep -Fxq -- "$GITHUB_REPOSITORY"$'\t'"$branch"$'\t'"$branch_sha"; then
+              merged_exact=true
             fi
 
             fully_contained=false
-            if [[ "$merged_by_pr" != "true" ]]; then
+            if [[ "$merged_exact" != "true" ]]; then
               compare_ref="$(python - "$branch" "$default" <<'PY'
           import sys
           from urllib.parse import quote
@@ -73,7 +74,7 @@ jobs:
               fi
             fi
 
-            if [[ "$merged_by_pr" != "true" && "$fully_contained" != "true" ]]; then
+            if [[ "$merged_exact" != "true" && "$fully_contained" != "true" ]]; then
               echo "keep branch with unmerged work: $branch"
               kept=$((kept + 1))
               continue
