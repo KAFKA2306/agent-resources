@@ -115,3 +115,7 @@ repository運用契約、security boundary、autonomous factory invariant は [A
 
 [MIT License](LICENSE)
 
+
+## Operational ontology
+
+[Project ontology](ontology/project.yaml) maps domain objects, relationships, evidence rules, guarded actions and outcome metrics to the shared [Causal–Evidence Core](https://github.com/KAFKA2306/know/blob/main/ontology/causal-evidence-core.yaml). The manifest documents the intended decision boundary; it does not by itself implement or authorize new real-world actions.
