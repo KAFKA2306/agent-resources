@@ -1,0 +1,91 @@
+project:
+  id: "kafka:agent-resources"
+  name: "Software Factory Control Tower"
+  repository: "https://github.com/KAFKA2306/agent-resources"
+  version: "0.1.0"
+  updated: "2026-10-08"
+  core_ontology: "https://raw.githubusercontent.com/KAFKA2306/know/main/ontology/causal-evidence-core.yaml"
+  schema: "https://raw.githubusercontent.com/KAFKA2306/know/main/ontology/project.schema.json"
+
+purpose:
+  problem: "Observe each repository delivery lifecycle and route work or recovery only from verifiable code, CI, deployment and production evidence."
+  intended_decisions: ["classify_blocker","request_repair","allow_merge","block_merge","verify_deploy","rollback_or_fix_forward"]
+  success_conditions:
+    - "Every merge or deployment decision references its own repo and trustworthy checks."
+    - "Control Tower does not become a second source of truth."
+    - "Private artifacts and secrets never enter public dashboard evidence."
+  falsification_conditions:
+    - "Missing checks are treated as passing."
+    - "Unverified deployment is presented as healthy."
+    - "Public evidence includes private repo URLs, work items or secrets."
+
+scope:
+  included: ["repository","issue","pull request","commit","CI check","artifact","deployment","production probe","blocker","repair attempt"]
+  excluded: ["paid external services","fabricated probe results","cross-repo state ownership","unapproved access expansion"]
+  temporal: "Commit, CI run, deployment event, probe observation and decision time are separately recorded."
+  abstraction_level: "Evidence-only software factory control and observability; run-specific state stays in its owner repository."
+
+competency_questions:
+  - "Which evidence prevents a repository from merging or deploying?"
+  - "Which commit, CI run and artifact produced the deployed version?"
+  - "Is production LIVE, SNAPSHOT, STALE or UNVERIFIED?"
+  - "Which repair action was tried and what observed outcome followed?"
+
+domain_mapping:
+  System: "SoftwareDeliveryEvidenceSystem"
+  State: ["issue state","PR state","CI state","deployment state","production state","blocker state"]
+  Action: ["discover work","classify blockers","propose repair","verify CI","merge when permitted","probe production","rollback or fix forward"]
+  Process: ["factory loop","evidence collection","CI evaluation","deployment verification","incident recovery"]
+  Observation: ["GitHub status","check run","deployment record","production response","artifact hash"]
+  Model: ["control contracts","evidence spine","delivery state machine"]
+  Requirement: ["source of truth","least privilege","verified checks","secret safety","reproducibility"]
+  Claim: ["CI passed","merge permitted","deploy ready","production healthy","repair succeeded"]
+  Evidence: ["GitHub issue or PR","commit SHA","check run","artifact attestation","deployment URL","probe record"]
+  Decision: ["classify_blocker","request_repair","allow_merge","block_merge","verify_deploy"]
+
+claims_and_evidence:
+  assertion_types: ["ObservedFact","ReportedFact","CalculatedValue","RequirementAssertion","DecisionAssertion"]
+  required_evidence:
+    MergeDecision: ["head SHA","required checks","ruleset state","unresolved blockers"]
+    Deployment: ["artifact identity","deployment identity","environment","timestamp"]
+    Production: ["observed endpoint","probe time","response and freshness"]
+  unknown_policy: "Missing or stale evidence remains UNVERIFIED and cannot authorize merge, release or healthy status."
+
+decision_rules:
+  - id: "merge-ready"
+    when: "Head SHA and required checks match and repo rules and blockers permit integration."
+    result: "allow_merge"
+  - id: "merge-unknown"
+    when: "Required checks, repo rules or unresolved blocker status cannot be verified."
+    result: "block_merge"
+  - id: "production-verified"
+    when: "Production probe matches intended deployment and a fresh observed response exists."
+    result: "verify_deploy"
+
+provenance:
+  sources: ["repository GitHub API","GitHub Actions","deployment provider evidence","production endpoints"]
+  generated_artifacts: ["dashboard snapshots","live overlay","control contracts","CI run evidence","recovery outcome records"]
+  agents: ["GitHub Actions","local Python controller","GitHub API","human reviewer"]
+  lineage: "Issue/PR -> commit SHA -> required check -> merge decision -> artifact -> deployment -> production probe."
+
+validation:
+  structural: "Verify repository identity, commit hash, check IDs, deployment IDs and evidence references."
+  semantic: "Never treat SNAPSHOT as LIVE, missing evidence as PASS, or process intent as observed success."
+  evidence: "A control action requires immutable source links, explicit rule and contemporaneous evidence."
+  publication: "Strip private identifiers and secrets; public UI only shows scoped, verified evidence."
+
+operational_model:
+  implementation_status: "contract_only; execution integration must be proven separately"
+  canonical_sources: ["dashboard/","docs/dashboard/","api/","AGENTS.md"]
+  objects: ["Repository","Issue","PullRequest","CheckRun","Artifact","Deployment","Probe","Evidence","Decision"]
+  links:
+    - ["PullRequest","TARGETS","Repository"]
+    - ["CheckRun","VERIFIES","PullRequest"]
+    - ["Deployment","USES","Artifact"]
+    - ["Probe","OBSERVES","Deployment"]
+  actions:
+    - id: "merge_if_evidence_verified"
+      preconditions: "Matching head SHA, required checks, repository rules and blocking conditions all pass"
+      recorded_effect: "Merge decision may be executed by the authorized owner workflow"
+      rollback_or_recovery: "Failed deployment triggers verified fix-forward or rollback workflow"
+  outcome_metrics: ["first_pass_yield","lead_time_p95","self_heal_success_rate","unverified_release_count"]
