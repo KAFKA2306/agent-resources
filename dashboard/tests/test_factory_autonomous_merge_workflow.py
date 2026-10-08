@@ -16,6 +16,14 @@ class AutonomousMergeWorkflowTests(unittest.TestCase):
         self.assertIn("github.event.workflow_run.event == 'pull_request'", self.text)
         self.assertIn("github.event.workflow_run.conclusion == 'success'", self.text)
 
+    def test_repository_dispatch_proves_dispatched_exact_head_validation(self):
+        self.assertIn("context.eventName === 'repository_dispatch'", self.text)
+        self.assertIn(
+            "repository_dispatch confirms successful exact-head dispatched validation",
+            self.text,
+        )
+        self.assertIn("run.event === 'pull_request'", self.text)
+
     def test_binds_merge_to_exact_head_and_vercel_success(self):
         self.assertIn("pr.head.sha === headSha", self.text)
         self.assertIn("vercel.state !== 'success'", self.text)
