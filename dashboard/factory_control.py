@@ -238,26 +238,28 @@ def verify_evidence(
     """Verify exact-revision evidence and fail closed when evidence is incomplete."""
     revision = _required(expected_revision, "expected_revision")
     required = frozenset(_required(kind, "required_kind") for kind in required_kinds)
-    by_kind: dict[str, Mapping[str, object]] = {}
+    if not required:
+        return VerificationDecision("UNVERIFIED", "no_required_kinds")
 
+    by_kind: dict[str, list[Mapping[str, object]]] = {}
     for item in evidence:
         kind = item.get("kind")
-        if isinstance(kind, str) and kind:
-            by_kind[kind] = item
+        if isinstance(kind, str) and kind in required:
+            by_kind.setdefault(kind, []).append(item)
 
     missing = sorted(required - by_kind.keys())
     if missing:
         return VerificationDecision("UNVERIFIED", f"missing:{','.join(missing)}")
 
+    # All observations must agree on the exact revision and outcome.
+    # Never allow a later success to overwrite an earlier failure.
     for kind in sorted(required):
-        item = by_kind[kind]
-        observed_revision = item.get("revision")
-        if observed_revision != revision:
+        items = by_kind[kind]
+        if any(item.get("revision") != revision for item in items):
             return VerificationDecision("UNVERIFIED", f"revision_mismatch:{kind}")
-        conclusion = item.get("conclusion")
-        if conclusion == "failure":
+        if any(item.get("conclusion") == "failure" for item in items):
             return VerificationDecision("FAIL", f"failed:{kind}")
-        if conclusion != "success":
+        if any(item.get("conclusion") != "success" for item in items):
             return VerificationDecision("UNVERIFIED", f"unknown_conclusion:{kind}")
 
     return VerificationDecision("PASS", "all_required_evidence_verified")
