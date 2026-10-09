@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "847db20917e3b32a866da862910ef8d0f87e5e57"
+          "fingerprint": "49d7fd70ae766d897eb68f013442acc9cfe93e0f"
         }
       ],
-      "sourceFingerprint": "f8c59f18260e06d06021f73bd1649d3cafd42a336a878323ac25d8cc61140e1c",
+      "sourceFingerprint": "29b5f80d4e2e81c81959476cc29f6f33a29310de77dc545ea0f2f3c3713180ce",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -331,12 +331,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/auto-invest/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3ac6daa27317cc52f9024b7ce8c87358b201f8dc"
+          "fingerprint": "6c25b6e1797a1675da865d0fdc231577df6cb460"
         }
       ],
-      "sourceFingerprint": "3e3f42dab42cf379c97e9ef5bd22946638749553e0f548a0c369307772004435",
+      "sourceFingerprint": "6fb7b21703918b7345ba118aba3d8bc1326eefd3429b60732a55a93fb7d0e867",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "autonomous-logistics",
@@ -357,10 +357,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-logistics/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "9920b601bc839acab073dd46c2c8269e22feda30"
+          "fingerprint": "bbc64910164e874f43196e9d328e203053d1ab23"
         }
       ],
-      "sourceFingerprint": "8f8903f1d846353726ddde7c715a8d58a30980321d074646117d089ab089ba8a",
+      "sourceFingerprint": "3c3aaa15531b8f1746b451a0456f9294d64eb775db3bdcecf18f71b9229b5652",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -383,10 +383,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/autonomous-vehicles/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d8e69ffde94b89fb92c2f30e181f47e4469542b0"
+          "fingerprint": "1cf5ca8a8182e367f47e16f67073d770eee631c0"
         }
       ],
-      "sourceFingerprint": "2ac8b9911bff057607e16c551436b079b109a613f1123f7aea9c60c7686c59af",
+      "sourceFingerprint": "699920dcb6560677f8693aacc1f00f43d3b35a96d2cfe2b8704d351bc1541bf0",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -606,10 +606,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/books/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "c45ed55806371d52f9ade9e89682526f8527b45e"
+          "fingerprint": "e502c7141d33013e198115e3a4f100971a2117ec"
         }
       ],
-      "sourceFingerprint": "08a45aefec23c27ad24b5ffaf8b41196cfbac889312c827a7ffd950f3c452224",
+      "sourceFingerprint": "a40f9a24039115e3df81c72ac78d7f20f9e2cd55363dfa213657f1d74e0a79d7",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -632,10 +632,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/boothitemmanager/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3a84b2731cf87029332e7e20384ebcfa756a67a2"
+          "fingerprint": "e16608788e2a4144f9109f7c0fb3e2a2872cfae8"
         }
       ],
-      "sourceFingerprint": "6a5e8f0aeb009886293cfc9cbcc563c4b2ce1b2e2fbc78b4a56c80fc29570c12",
+      "sourceFingerprint": "868a15f83e627ebff576f784f2082ace4da51a543ebc57dfcda161d97dac2881",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -975,12 +975,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/design/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "72c6f83da029adba6b015a266d4d2d13d7c01447"
+          "fingerprint": "71b51a94ffce386f1cf0eb89412497f637f26261"
         }
       ],
-      "sourceFingerprint": "3e60ed14ee688a6f0b682c882b0ea94a8da0253593ae819a1a624d87ef434114",
+      "sourceFingerprint": "65b17805adf23b7c0603546a733eff6bb624bb2b1b4a0a2614446f87d7a42926",
       "checkedAt": "2026-09-22T02:12:04Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "detective",
@@ -1136,12 +1136,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/etf/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "b8b0b9be2d3a02fe88a0faa7c6476d5429db76b5"
+          "fingerprint": "ebf5cc912f671a378f932777075dab1d3b8b571b"
         }
       ],
-      "sourceFingerprint": "e33fe37ff56233056db686bc1f6a6ab0dbefe05314127b70b2b223e58fd39d20",
+      "sourceFingerprint": "ec27c305eef5f1b6d9fe78dabdb6d64b2f26d71c978661ba319282291499ceb0",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "factory",
@@ -1162,10 +1162,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d1b2000606e456a710c1082af377e386940c6547"
+          "fingerprint": "f7bd641adfc1e5baee8b2171830110c5b00d327f"
         }
       ],
-      "sourceFingerprint": "16145849ee3d9fc4fea4b589271468ec54a2289318fc2283dfd653134d80b17d",
+      "sourceFingerprint": "63aef53a01bd0dba1632935416565e6e43f2b5d78640c86385dec48db425a8bf",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1214,10 +1214,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finBI/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e6a7f887767890a172cc8ee891e8da2db071d610"
+          "fingerprint": "2b31320f1042ad6c3a2864524d8e4ca4d5f82aff"
         }
       ],
-      "sourceFingerprint": "13ff502b9304f4522b231847f30501f9319b484636311cea2a9bf74d38fc4bc2",
+      "sourceFingerprint": "5b6efad274eab8b62c801f654147eaf5fe868948d4d6254a8d0421ad10f2e65e",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1479,10 +1479,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/image2outfit/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "255e1bd50970b1d7cc1066675201dce98c8050dc"
+          "fingerprint": "87fd8ea447b5f4141ff494c750dfd7f27c00d74a"
         }
       ],
-      "sourceFingerprint": "23cb32f05b9b5668f02192ab2d33307c4878966538a1fbe8521d8c31ce9f6596",
+      "sourceFingerprint": "9dfa375b158588a260b9933b05b9fbeb39606fac4ed90147bf4e8b2ac9710716",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2507,10 +2507,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/salary/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d43016076d6234c185520e83b747c3be16c297d7"
+          "fingerprint": "4836c74f9c4f515fc0f788f9eda5717166837204"
         }
       ],
-      "sourceFingerprint": "7355487b51942c24e3af8a71cb3db2e1a88cb30f02560199b944d17c1fce231d",
+      "sourceFingerprint": "1ebb328587f97282799c6a6fb9dd0bbd5958e6f0ea5ac57537bb2a79ca136399",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2689,10 +2689,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/travel/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4f956ff80df17e650d2e00e9160fcacddef59c25"
+          "fingerprint": "e0f1947689ae47524d915bba228cfdffe75d55a5"
         }
       ],
-      "sourceFingerprint": "124d45b4b09dce30556e639d088eefae3e70548d6c89e95a5761b2ccb7466e5d",
+      "sourceFingerprint": "f05bfb247231945dbc413fb31f965a681a134bc8dd29e29bf67b9aadf69c9527",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
