@@ -1531,10 +1531,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/investor2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "2b1e28623cca3dc79eb4db3f4f230ff2dcc882ad"
+          "fingerprint": "81a10f372e644721a12b375ef1b10713e0e42542"
         }
       ],
-      "sourceFingerprint": "77ba8e4b8a818c8086363cb546bf44d9f15b10fe88c2977d8bd51d1937a5991f",
+      "sourceFingerprint": "65b834e2e7a8525230216208e0b444066be6de14521511af1f5ad3d871d51adb",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2123,10 +2123,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/nlm/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "ee63538841a530d7cfc249ffaea5bb99cb1e0487"
+          "fingerprint": "44f4c705b3c8c7942e5a65f0fbb8bad6b58896ac"
         }
       ],
-      "sourceFingerprint": "8ad0ceadceeb70309cc27524a05ee674121f855d9580fcb895aa9df7b2fcc901",
+      "sourceFingerprint": "c3622f7f15f3098851ffdca1d2ae617ba66534e0c5ea6542f8d8d3d4aaacc92a",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -2507,10 +2507,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/salary/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4836c74f9c4f515fc0f788f9eda5717166837204"
+          "fingerprint": "b77b09df55d6a66d22e59fc1f0d2b40844d9e2ec"
         }
       ],
-      "sourceFingerprint": "1ebb328587f97282799c6a6fb9dd0bbd5958e6f0ea5ac57537bb2a79ca136399",
+      "sourceFingerprint": "c501289f810558c5efd6d350a093e0d57690e36d509262739ad59a7f43f51b41",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2944,12 +2944,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vmatch2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "5d52de67ea6da24eb459facb37637b2ed4a268ae"
+          "fingerprint": "982f7807c68685bd37e36190449ef657c6b8cafa"
         }
       ],
-      "sourceFingerprint": "bca85140ffc14eb3de2fba6bec9d26258372300fa5bf1b45d5a1b85b7c6ba718",
+      "sourceFingerprint": "2088e02d18dead3091ff9b06a983f6729eeb339216680887454b94bc0616f8a0",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "vmatching",
