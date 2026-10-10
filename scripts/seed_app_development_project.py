@@ -56,41 +56,64 @@ def issue_url(repo: str, number: int) -> str:
     return f"https://github.com/{OWNER}/{repo}/issues/{number}"
 
 
-def project_fields() -> list[dict[str, Any]]:
-    return gh("project", "field-list", PROJECT, "--owner", OWNER, "--limit", "100", "--format", "json")["fields"]
+def graphql(query: str, variables: dict[str, Any]) -> dict[str, Any]:
+    result = gh("api", "graphql", "--input", "-", data={"query": query, "variables": variables})
+    if result.get("errors"):
+        raise RuntimeError("GitHub GraphQL returned errors: " + json.dumps(result["errors"], ensure_ascii=False))
+    return result.get("data") or {}
 
 
-def ensure_status_options() -> None:
-    fields = project_fields()
-    status = next((field for field in fields if field["name"] == "Status"), None)
-    if status is None or "options" not in status:
-        raise RuntimeError("Project #3 に単一選択の Status フィールドがありません。")
+def project_status() -> tuple[str, dict[str, Any]]:
+    data = graphql(
+        """query($owner: String!, $number: Int!) {
+          user(login:$owner) { projectV2(number:$number) {
+            id number title fields(first:100) { nodes {
+              ... on ProjectV2SingleSelectField { id name options { id name color description } }
+            } }
+          } }
+        }""",
+        {"owner": OWNER, "number": int(PROJECT)},
+    )
+    project = (data.get("user") or {}).get("projectV2")
+    if not project or str(project.get("number")) != PROJECT:
+        raise RuntimeError("Project #3を読み取れません。認証とproject権限を確認してください。")
+    status = next((x for x in project["fields"]["nodes"] if x and x.get("name") == "Status"), None)
+    if not status or "options" not in status:
+        raise RuntimeError("既存の単一選択Statusがありません。無断で別のFieldを作成しません。")
+    return project["id"], status
 
+
+def ensure_status_options(status: dict[str, Any]) -> dict[str, str]:
+    original = status["options"]
+    previous = {x["name"]: x["id"] for x in original}
+    missing = [name for name in STATUS_COLORS if name not in previous]
+    if not missing:
+        return previous
+
+    # updateProjectV2Field replaces all options. Preserve every ID, color and description.
     options = [
-        {key: value for key, value in option.items() if key in {"id", "name", "color", "description"}}
-        for option in status["options"]
+        {"id": x["id"], "name": x["name"], "description": x["description"], "color": x["color"]}
+        for x in original
     ]
-    existing_names = {option["name"] for option in options}
-    missing = [name for name in STATUS_COLORS if name not in existing_names]
-    if missing:
-        # Carry existing IDs forward so values on existing items remain intact.
-        options.extend(
-            {"name": name, "color": STATUS_COLORS[name], "description": ""}
-            for name in missing
-        )
-        gh(
-            "api", "graphql", "--input", "-",
-            data={
-                "query": "mutation($input: UpdateProjectV2FieldInput!) { updateProjectV2Field(input: $input) { projectV2Field { ... on ProjectV2SingleSelectField { id name } } } }",
-                "variables": {"input": {"fieldId": status["id"], "singleSelectOptions": options}},
-            },
-        )
-        print("Status選択肢を追加:", ", ".join(missing))
-
-    updated = next(field for field in project_fields() if field["name"] == "Status")
-    available = {option["name"] for option in updated.get("options", [])}
+    options.extend(
+        {"name": name, "description": "", "color": STATUS_COLORS[name]} for name in missing
+    )
+    graphql(
+        """mutation($input: UpdateProjectV2FieldInput!) {
+          updateProjectV2Field(input:$input) { projectV2Field {
+            ... on ProjectV2SingleSelectField { id name }
+          } }
+        }""",
+        {"input": {"fieldId": status["id"], "singleSelectOptions": options}},
+    )
+    _, updated = project_status()
+    available = {x["name"]: x["id"] for x in updated["options"]}
     if not set(STATUS_COLORS).issubset(available):
-        raise RuntimeError(f"Status選択肢の確認に失敗: {sorted(available)}")
+        raise RuntimeError("不足していたStatusの追加を確認できません。")
+    if any(available.get(name) != ident for name, ident in previous.items()):
+        raise RuntimeError("既存のStatus option IDに変更を検出したため停止します。")
+    print("Status選択肢追加:", ", ".join(missing))
+    return available
 
 
 def project_items() -> dict[str, dict[str, Any]]:
@@ -106,36 +129,39 @@ def project_items() -> dict[str, dict[str, Any]]:
 
 def main() -> int:
     try:
-        info = gh("project", "view", PROJECT, "--owner", OWNER, "--format", "json")
-        if str(info.get("number", PROJECT)) != PROJECT:
-            raise RuntimeError("意図しないProjectへ接続されたため停止しました。")
-        print(f"対象Project: {OWNER}/projects/{PROJECT} ({info.get('title', '')})")
-        ensure_status_options()
+        project_id, status_field = project_status()
+        print(f"対象: https://github.com/users/{OWNER}/projects/{PROJECT}")
+        options = ensure_status_options(status_field)
         before = project_items()
         for repo, number, status in WORK:
             url = issue_url(repo, number)
-            if url not in before:
-                gh("project", "item-add", PROJECT, "--owner", OWNER, "--url", url, "--format", "json")
+            item = before.get(url)
+            if item is None:
+                item = gh("project", "item-add", PROJECT, "--owner", OWNER, "--url", url, "--format", "json")
                 print("追加:", url)
-            gh("project", "item-edit", PROJECT, "--owner", OWNER, "--url", url,
-               "--field", "Status", "--value", status, "--format", "json")
-            print(f"  Status={status}: {url}")
+            if not item.get("id"):
+                raise RuntimeError(f"Project item IDを取得できません: {url}")
+            if item.get("status") == status:
+                print(f"維持: {status} {url}")
+                continue
+            gh("project", "item-edit", "--id", item["id"], "--project-id", project_id,
+               "--field-id", status_field["id"], "--single-select-option-id", options[status], "--format", "json")
+            print(f"更新: {status} {url}")
 
         after = project_items()
-        missing = [issue_url(repo, number) for repo, number, _ in WORK if issue_url(repo, number) not in after]
-        wrong_status = [
-            (issue_url(repo, number), status, after[issue_url(repo, number)].get("status"))
-            for repo, number, status in WORK
-            if issue_url(repo, number) in after and after[issue_url(repo, number)].get("status") != status
+        problems = [
+            (issue_url(repo, number), value, after.get(issue_url(repo, number), {}).get("status"))
+            for repo, number, value in WORK
+            if after.get(issue_url(repo, number), {}).get("status") != value
         ]
-        if missing or wrong_status:
-            raise RuntimeError(f"登録後の照合が不一致: missing={missing}; status_mismatch={wrong_status}")
-        print(f"完了: {len(WORK)}件をProject #3へ登録しStatusを検証しました。")
+        if problems:
+            raise RuntimeError(f"read-back不一致: {problems}")
+        print(f"SUCCESS: {len(WORK)}件の登録とStatusをGitHub Projects #3で照合済み")
+        return 0
     except RuntimeError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
-        print("GitHub CLIのProject権限は gh auth refresh -s project で追加できます。", file=sys.stderr)
+        print("必要な環境: gh auth status / gh auth refresh -s project", file=sys.stderr)
         return 1
-    return 0
 
 
 if __name__ == "__main__":
