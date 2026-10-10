@@ -178,5 +178,42 @@ class FactoryControlTests(unittest.TestCase):
         self.assertEqual(result.reason, "failed:production")
 
 
+    def test_verifier_rejects_empty_required_kinds(self):
+        result = verify_evidence(
+            expected_revision="abc123",
+            evidence=[],
+            required_kinds=[],
+        )
+        self.assertEqual(result.status, "UNVERIFIED")
+        self.assertEqual(result.reason, "no_required_kinds")
+
+    def test_verifier_never_overwrites_failed_duplicate_with_success(self):
+        failure = {"kind": "checks", "revision": "abc123", "conclusion": "failure"}
+        success = {"kind": "checks", "revision": "abc123", "conclusion": "success"}
+        for observations in ([failure, success], [success, failure]):
+            with self.subTest(order=[item["conclusion"] for item in observations]):
+                result = verify_evidence(
+                    expected_revision="abc123",
+                    evidence=observations,
+                    required_kinds=["checks"],
+                )
+                self.assertEqual(result.status, "FAIL")
+                self.assertEqual(result.reason, "failed:checks")
+
+    def test_verifier_rejects_stale_or_incomplete_duplicate_evidence(self):
+        success = {"kind": "checks", "revision": "abc123", "conclusion": "success"}
+        for extra in (
+            {"kind": "checks", "revision": "older", "conclusion": "success"},
+            {"kind": "checks", "revision": "abc123", "conclusion": "pending"},
+        ):
+            with self.subTest(extra=extra):
+                result = verify_evidence(
+                    expected_revision="abc123",
+                    evidence=[success, extra],
+                    required_kinds=["checks"],
+                )
+                self.assertEqual(result.status, "UNVERIFIED")
+
+
 if __name__ == "__main__":
     unittest.main()
