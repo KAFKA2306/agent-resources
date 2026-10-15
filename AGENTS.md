@@ -37,6 +37,14 @@ CI greenは、そのexact revisionで実行されたcheckの成功だけを証�
 
 production truthが必要な場所でfixture、dummy、mock、silent fallbackを代用しません。取得不能は成功扱いせず `UNVERIFIED` とします。
 
+## Formal verification and test retirement (Lean 4)
+
+- Prefer Lean 4 proof for high-impact, deterministic invariants in pure mathematical or policy logic. Choose actual production decisions or calculations, not decorative theorems.
+- Pin the Lean toolchain, build every proof in GitHub Actions, and check that no proof relies on `sorry`, `admit`, or unreviewed axioms. Proof checking is a CI job, not a replacement for CI.
+- Separately verify the Lean model against the owning implementation through exhaustive finite-domain correspondence, differential tests, code generation, or implementation in Lean. A proof about a second model does not certify Python, JavaScript, or external data.
+- Replace only duplicate unit/property cases that are covered by the proven statement AND a live model-to-implementation check. Retain security scans, integration, E2E, deployment, and production verifications until an equivalent check is proven operational.
+- Track coverage and direct proof/CI links in owner PRs. Use the portfolio migration workline `agent-resources#545` to coordinate, not to take implementation ownership away from other repositories.
+
 ## Workline and GitHub
 
 既存のcanonical Issue / PR / branchがあれば再利用します。1つの成果に重複worklineを作りません。
