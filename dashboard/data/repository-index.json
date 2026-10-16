@@ -1058,10 +1058,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/DominionDeckDrawSimlator/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4e8080907dcb1cee65ea00062cb95ad8cce21eef"
+          "fingerprint": "d3e5d08a52e19763561aa6f4af18da3dd2178c2a"
         }
       ],
-      "sourceFingerprint": "79c5014ed28e1474b3cbe8fcecaa194128259cef09aabc818cd9108aecb3b02e",
+      "sourceFingerprint": "304194e93c8db3e0db00d96052b937cb30c9d8671930bbbbb6d75627d32901d3",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
