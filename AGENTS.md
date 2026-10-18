@@ -45,6 +45,19 @@ production truthが必要な場所でfixture、dummy、mock、silent fallbackを
 - Replace only duplicate unit/property cases that are covered by the proven statement AND a live model-to-implementation check. Retain security scans, integration, E2E, deployment, and production verifications until an equivalent check is proven operational.
 - Track coverage and direct proof/CI links in owner PRs. Use the portfolio migration workline `agent-resources#545` to coordinate, not to take implementation ownership away from other repositories.
 
+## Compute-scaling project selection
+
+プロジェクトの刷新では、固定された人手ルールの追加より、**将来のローカルOSSモデル・探索量・計算資源の改善を、既存の仕組みが安全に取り込めること**を優先する。ただし「計算量を増やせば必ず良くなる」とは扱わない。
+
+- まず対象タスクを判定する。決定論的な検証、一次データの取得、厳密な計算をLLMへ置換しない。学習・探索・生成・検索・複雑な推論など、compute scalingの仮説が成立する部分だけを候補にする。
+- 既存の実装・データ正本を維持し、モデル/ランタイム・推論budget・探索幅・batch-size等を**同じI/O契約の下で差し替え・調整可能**にする。provider固有SDKやpromptをdomain rulesの正本にしない。
+- 評価データを固定し、baselineと候補を**同じ入力・同じ評価式**で比較する。品質・失敗率・処理時間・RAM/VRAM・計算量・推論単価（測定可能な範囲）を記録し、増分computeに見合う改善がない場合はbaselineを残す。
+- 証拠には実model/revision、input dataset revision、設定、seed（該当する場合）、実runtime環境、評価器のversion、観測/推計/未測定の区別を残す。予算超過、OOM、タイムアウト、重要ゲート失敗はfail-visibleにする。
+- 新規課金が必要なmanaged/SaaS/APIを導入せず、利用可能なローカルOSSと既存設備・既存リポジトリを第一候補にする。外部モデル変更で認証・privacy・公開境界・primary-source ruleを弱めない。
+- 評価結果が良くなった候補だけを段階的に採用し、回帰時にbaselineへ戻せるようにする。新しいbenchmark基盤・重複status台帳・抽象的なadapterは、既存実装で足りない具体的失敗が立証されるまで追加しない。
+
+owner repositoryごとの適用責務: research/dataはsource fidelityとfreshness、RAGは検索品質、生成はartifact/visual gate、投資は将来情報漏洩のない期間外評価、mediaは根拠精度と公開gate、agent factoryは実work completionと人手介入率を最優先とする。
+
 ## Workline and GitHub
 
 既存のcanonical Issue / PR / branchがあれば再利用します。1つの成果に重複worklineを作りません。
