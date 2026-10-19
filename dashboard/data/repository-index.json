@@ -523,10 +523,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/boardgamelist/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "50654e42882369cf8a1d47a8ba6d8a522862f226"
+          "fingerprint": "e367e65873640b7697604e958282a69deb321126"
         }
       ],
-      "sourceFingerprint": "50bb4712e5817801f3aa62ac715bc68613ca157717cc2d6bf1abe81991882f7d",
+      "sourceFingerprint": "686121598d994e16829e018c3007e1d02b3f0069ad866f64e91cbec06c518afc",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -2507,10 +2507,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/salary/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "b77b09df55d6a66d22e59fc1f0d2b40844d9e2ec"
+          "fingerprint": "ec9d6e056804b8d7db44449a76ab50154fffc5bb"
         }
       ],
-      "sourceFingerprint": "c501289f810558c5efd6d350a093e0d57690e36d509262739ad59a7f43f51b41",
+      "sourceFingerprint": "c27423d8c3905a06be558284ecd18e98dcb1270c79f8d433ab0d04fe1ef79125",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
