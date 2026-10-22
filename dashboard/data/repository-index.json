@@ -975,10 +975,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/design/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "71b51a94ffce386f1cf0eb89412497f637f26261"
+          "fingerprint": "b41a65889e65a12d53b155b97ba81a4a46fa3144"
         }
       ],
-      "sourceFingerprint": "65b17805adf23b7c0603546a733eff6bb624bb2b1b4a0a2614446f87d7a42926",
+      "sourceFingerprint": "294b17089c7a832b6beba606200681ed67c50bb05157b4f40a2b1876f94096b8",
       "checkedAt": "2026-09-22T02:12:04Z",
       "needsReview": true
     },
