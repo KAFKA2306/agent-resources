@@ -1,0 +1,27 @@
+name: Gitleaks range regression
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/gitleaks-reusable.yml
+      - .github/workflows/gitleaks-range-tests.yml
+      - tests/test_select_gitleaks_range.py
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/gitleaks-reusable.yml
+      - .github/workflows/gitleaks-range-tests.yml
+      - tests/test_select_gitleaks_range.py
+
+permissions:
+  contents: read
+
+jobs:
+  range-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Install test runner
+        run: python3 -m pip install --disable-pip-version-check pytest==9.0.2
+      - name: Test GitHub event commit ranges
+        run: python3 -m pytest -q tests/test_select_gitleaks_range.py
