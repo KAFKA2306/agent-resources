@@ -32,18 +32,121 @@ jobs:
           sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
           gitleaks version
 
-      - name: Scan commits introduced by this event
+      - name: Select bounded commit range (fail closed)
+        id: range
         shell: bash
         run: |
+          python3 - <<'PY'
+          #!/usr/bin/env python3
+          """Select a bounded Gitleaks git range from the trusted GitHub event payload.
+          
+          An explicit workflow_dispatch is the only full-history mode. Ambiguous history
+          is an error, never an implicit request to scan all history or to skip a scan.
+          """
+          
+          import json
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+          
+          ZERO = "0" * 40
+          SHA = re.compile(r"[0-9a-fA-F]{40}\Z")
+          
+          
+          class UnsafeRange(ValueError):
+              pass
+          
+          
+          def git(*args: str) -> str:
+              result = subprocess.run(["git", *args], capture_output=True, text=True, check=False)
+              if result.returncode:
+                  # Git stderr can contain remote URLs. Do not print it in public CI logs.
+                  raise UnsafeRange(f"Git operation failed: {args[0]}")
+              return result.stdout.strip()
+          
+          
+          def checked_commit(value: object, label: str) -> str:
+              if not isinstance(value, str) or not SHA.fullmatch(value):
+                  raise UnsafeRange(f"Missing or invalid {label} SHA")
+              git("cat-file", "-e", f"{value}^{{commit}}")
+              return value.lower()
+          
+          
+          def shared_ancestor(base: str, head: str) -> str:
+              ancestor = git("merge-base", base, head)
+              return checked_commit(ancestor, "merge-base")
+          
+          
+          def select_range(event: dict, event_name: str, github_sha: str) -> tuple[str, str]:
+              if event_name == "workflow_dispatch":
+                  return "--all", "manual-full-history"
+          
+              if event_name == "pull_request":
+                  pr = event.get("pull_request") or {}
+                  base = checked_commit((pr.get("base") or {}).get("sha"), "PR base")
+                  head = checked_commit((pr.get("head") or {}).get("sha"), "PR head")
+                  shared_ancestor(base, head)
+                  return f"{base}..{head}", "pull-request"
+          
+              if event_name != "push":
+                  raise UnsafeRange("Unsupported event for delta secret scan")
+          
+              head = checked_commit(github_sha, "push head")
+              after = event.get("after")
+              if not isinstance(after, str) or after.lower() != head:
+                  raise UnsafeRange("Push event after SHA does not match GITHUB_SHA")
+              before = event.get("before")
+              if not isinstance(before, str) or not SHA.fullmatch(before):
+                  raise UnsafeRange("Missing or invalid push before SHA")
+              before = before.lower()
+              if before != ZERO:
+                  checked_commit(before, "push before")
+                  if git("merge-base", "--is-ancestor", before, head) != "":
+                      raise UnsafeRange("Unexpected merge-base result")
+                  return f"{before}..{head}", "push-delta"
+          
+              repo = event.get("repository") or {}
+              default = repo.get("default_branch")
+              ref = event.get("ref")
+              if not isinstance(default, str) or not default or default.startswith("-"):
+                  raise UnsafeRange("Missing or unsafe default branch")
+              git("check-ref-format", "--branch", default)
+              if not isinstance(ref, str) or not ref.startswith("refs/heads/"):
+                  raise UnsafeRange("New-branch event is not a branch push")
+              if ref == f"refs/heads/{default}":
+                  raise UnsafeRange("Initial default-branch push needs explicit full-history audit")
+              git("fetch", "--no-tags", "origin", f"+refs/heads/{default}:refs/remotes/origin/{default}")
+              base = git("rev-parse", "--verify", f"refs/remotes/origin/{default}^{{commit}}")
+              base = checked_commit(base, "default branch")
+              ancestor = shared_ancestor(base, head)
+              return f"{ancestor}..{head}", "new-branch-delta"
+          
+          
+          def main() -> int:
+              try:
+                  event_path = os.environ["GITHUB_EVENT_PATH"]
+                  event = json.loads(Path(event_path).read_text(encoding="utf-8"))
+                  log_opts, scope = select_range(event, os.environ["GITHUB_EVENT_NAME"], os.environ.get("GITHUB_SHA", ""))
+                  output = os.environ["GITHUB_OUTPUT"]
+                  with open(output, "a", encoding="utf-8") as stream:
+                      stream.write(f"log_opts={log_opts}\nscan_scope={scope}\n")
+                  print(f"Gitleaks scan scope: {scope}")
+                  return 0
+              except (UnsafeRange, KeyError, OSError, ValueError) as exc:
+                  print(f"Gitleaks range selection failed closed: {exc}", file=sys.stderr)
+                  return 1
+          
+          
+          if __name__ == "__main__":
+              sys.exit(main())
+          PY
+
+      - name: Scan selected commits
+        shell: bash
+        env:
+          GITLEAKS_LOG_OPTS: ${{ steps.range.outputs.log_opts }}
+        run: |
           set -euo pipefail
-          zero="0000000000000000000000000000000000000000"
-
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            log_opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.event.before }}" != "${zero}" ]]; then
-            log_opts="${{ github.event.before }}..${{ github.sha }}"
-          else
-            log_opts="--all"
-          fi
-
-          gitleaks git --redact --verbose --log-opts="${log_opts}" .
+          gitleaks git --redact --verbose --log-opts="${GITLEAKS_LOG_OPTS}" .
