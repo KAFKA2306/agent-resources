@@ -3364,10 +3364,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/yt3/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "cd8b61816629100fdc2e2bed39cbbd7b204ccede"
+          "fingerprint": "3763a85c6bc23bb9fb6bbce35376b0eb30eeccab"
         }
       ],
-      "sourceFingerprint": "ecd6db830998cf15b50afa1fb2d9626c60630ade0616acd09addd1c4ccab248f",
+      "sourceFingerprint": "98691e05071bc07244f7a2d2c307d89a4f827406c9d74fa0e91263dea7d09688",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
