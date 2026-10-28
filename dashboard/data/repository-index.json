@@ -1188,10 +1188,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finAnalist/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "ec3118b0e257a998eac5c0a27e8fd41a62d24dca"
+          "fingerprint": "77a79050fca2fc7094ff2c0c4669c3fba8b6f73f"
         }
       ],
-      "sourceFingerprint": "40fa379944a01b149982b89d1a7de62561072d5c3daa3307da89d3ada976a0f8",
+      "sourceFingerprint": "f90f2733ebeb4f960aabd413caa803c9aeaa4fcfb87914c74d063620653aed7d",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1453,10 +1453,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/hitaiou/blob/main/readme.md",
           "status": "ok",
-          "fingerprint": "046276e918d66bab4a3ea5633cc13ca5b6ce8179"
+          "fingerprint": "d3daa73259e71c58369a9f884b83d482d108a685"
         }
       ],
-      "sourceFingerprint": "424797d0c6bff29279932b74e0eeea12b19615d9ddf0c12b275065015b1d9824",
+      "sourceFingerprint": "e30480c37e6608521492502984d7c8dd6ff6397017a384f07ab163ad1e0fd87b",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2533,10 +2533,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "dcc69e7b65bdd886fa0c6c33ccfb4dae9ef22e46"
+          "fingerprint": "a34dc2bff7479eabc1c3bcff06f706cb149df7c0"
         }
       ],
-      "sourceFingerprint": "6fd33cb04c6100e603aaf54d1bf1cef102ecc536036659fd6dac04665224ee67",
+      "sourceFingerprint": "8a06734d86f71e508bc0df026ddaac01ddbaa30b13f102e24bb3ecbe5e4c5ca8",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
