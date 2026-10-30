@@ -897,10 +897,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/dancer/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "bab25c47acafb2021433b825ccf6c223b1061902"
+          "fingerprint": "ecbaccf43db51a27b9357460a085df7fbbacd7c6"
         }
       ],
-      "sourceFingerprint": "88afcd2ef4c02064fad7959311f9bc6d340255a6f817d9c06cbed1b30926b4b1",
+      "sourceFingerprint": "7d3eb5a9a1d0c715016025c8180d929d9e1ebf43cf02a11ccb967c1a18e12203",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1297,12 +1297,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/furuyoni/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e4c0a08cbb68ac668fa7182861186c4de662e31f"
+          "fingerprint": "45106f76746d8eb84a4ce641f1ffbcda85afe5d5"
         }
       ],
-      "sourceFingerprint": "0bd0178e56fac35466496d45e2088c540eda11e8a559b1c348f103b74fa4dd5a",
+      "sourceFingerprint": "6060c5e24a3b6de0aa590450846facfa77cce1859ad39759d313002598f19096",
       "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "game-library-dashboard",
@@ -2419,10 +2419,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/prompt-vault/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "91f9e82c59cd136210fb6094cb53298dc1160468"
+          "fingerprint": "39ae750bf1d6efc2ddb1264a63d2d26b1cb13046"
         }
       ],
-      "sourceFingerprint": "5c0a66c777d4c1538c63f97254aa349410a2faed1320f4ce88b7b624f8a04a10",
+      "sourceFingerprint": "37f724c4a8a4d75ae775572991393d9d5503116ebe0d1bb6bd004b68ab45c7b8",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
