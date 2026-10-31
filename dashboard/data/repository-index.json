@@ -2362,12 +2362,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/PictureChangerTools/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "f678e4e49a78ed5097bd0a9edaeb01823d969a94"
+          "fingerprint": "ba2b84328a87b9bf280bc5eeafccfc67e427cd3b"
         }
       ],
-      "sourceFingerprint": "d47d39ee55c27047c5f8c219e52b7c177f6526627485aa3f3dfc261c3e967113",
+      "sourceFingerprint": "36cefa5ffc7ffabe3eef3ae3bdb4538579e52ca8f955574e75ecdd1f8cb7b039",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "poker-raise-quiz",
