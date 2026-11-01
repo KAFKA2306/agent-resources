@@ -853,6 +853,32 @@
       "needsReview": false
     },
     {
+      "name": "curious-museum",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "matches": [
+        "未確認: semantic review 完了後に検索対象へ昇格"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/curious-museum",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/curious-museum",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/curious-museum/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "6bfbdce53a2beedf2b752556b7bb50d9a1aa11b7"
+        }
+      ],
+      "sourceFingerprint": "d20f825c7bce4108838f261c0d37f7d34954a6e9657dd1b71ed2ecfeb00ffea6",
+      "checkedAt": null,
+      "needsReview": true
+    },
+    {
       "name": "daily-arXiv-ai-enhanced",
       "purpose": "Automatically crawl arXiv papers daily and summarize them using AI. Illustrating them using GitHub Pages.",
       "matches": [
@@ -1136,10 +1162,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/etf/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "ebf5cc912f671a378f932777075dab1d3b8b571b"
+          "fingerprint": "3b53209e457b58f9ce40edf91b0757dc1f721f4a"
         }
       ],
-      "sourceFingerprint": "ec27c305eef5f1b6d9fe78dabdb6d64b2f26d71c978661ba319282291499ceb0",
+      "sourceFingerprint": "596e61df4833feaee257f4baa75bf524f5a7b4c107b4d622ef50055c1b8e7da0",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1531,10 +1557,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/investor2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "81a10f372e644721a12b375ef1b10713e0e42542"
+          "fingerprint": "3a44aaef0c2b6ea6b77d0bf29779db191003bb84"
         }
       ],
-      "sourceFingerprint": "65b834e2e7a8525230216208e0b444066be6de14521511af1f5ad3d871d51adb",
+      "sourceFingerprint": "5999351957b32fa6aea1366e6945da074d14fe607a8668eceb28b5d8951ccecd",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -2533,10 +2559,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "a34dc2bff7479eabc1c3bcff06f706cb149df7c0"
+          "fingerprint": "b25d99f289a301ab3a86513cf14773e9c6aabed2"
         }
       ],
-      "sourceFingerprint": "8a06734d86f71e508bc0df026ddaac01ddbaa30b13f102e24bb3ecbe5e4c5ca8",
+      "sourceFingerprint": "f20ac9e46e89df3b2c1fc7fa3aba830887f532f1a1b0284f8e797246df6e0dfe",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
