@@ -871,10 +871,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/curious-museum/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6bfbdce53a2beedf2b752556b7bb50d9a1aa11b7"
+          "fingerprint": "186bcdc075557938e6f05aae285795e150a192c6"
         }
       ],
-      "sourceFingerprint": "d20f825c7bce4108838f261c0d37f7d34954a6e9657dd1b71ed2ecfeb00ffea6",
+      "sourceFingerprint": "e8bca6793c5e1bbb054ddd3fccb2cbc29036165c2f5b32b3f88c208605cd74f6",
       "checkedAt": null,
       "needsReview": true
     },
@@ -2815,6 +2815,32 @@
       "sourceFingerprint": "bac149f2bebec61066aed0c1e30e0fe46dfd538cd4eb825b1487f22a7c4ede98",
       "checkedAt": "2026-08-17T23:16:22Z",
       "needsReview": true
+    },
+    {
+      "name": "universal-knowledge",
+      "purpose": "現在の状態（2026-11-01）: 11分野の設定、模擬LLM応答による動作テスト、GitHub Actionsでの設定検証とPages公開を実装しています。公開ページでは設定一覧とコミットSHAを照合できます。実モデルの抽出精度は未測定です。また、引用文字列が原文と一致しても、解釈が正しいとは限りません。分野横断の自動推論と外部サービスの操作は未実装です。",
+      "matches": [
+        "現在の状態（2026-11-01）: 11分野の設定、模擬LLM応答による動作テスト、GitHub Actionsでの設定検証とPages公開を実装しています。公開ページでは設定一覧とコミットSHAを照合できます。実モデルの抽出精度は未測定です。また、引用文字列が原文と一致しても、解釈が正しいとは限りません。分野横断の自動推論と外部サービスの操作は未実装です。"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/universal-knowledge",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/universal-knowledge",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/universal-knowledge/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "0aa7d3764a40cbce4619b0eaf3d5920153f037d2"
+        }
+      ],
+      "sourceFingerprint": "60665eab900225c416ed2975da7f07e320a6dcd0888e6ddf822341312904e4b4",
+      "checkedAt": "2026-11-02T01:47:56Z",
+      "needsReview": false
     },
     {
       "name": "uranium",
