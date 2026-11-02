@@ -222,11 +222,41 @@ class GitHubStatsCollectorTest(unittest.TestCase):
             )
         self.assertEqual(sleeps, [])
 
-    def test_incomplete_search_fails_closed(self):
+    def test_incomplete_search_retries_and_accepts_only_complete_count(self):
+        calls = 0
+        sleeps = []
+
+        def incomplete_once(url, token=None):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return {"total_count": 99, "incomplete_results": True}, {}
+            return {"total_count": 7, "incomplete_results": False}, {}
+
+        total = _search_total(
+            "issues", "author:KAFKA2306 is:issue is:public",
+            request_fn=incomplete_once, sleep_fn=sleeps.append,
+        )
+        self.assertEqual(total, 7)
+        self.assertEqual(calls, 2)
+        self.assertEqual(sleeps, [1.0])
+
+    def test_incomplete_search_fails_closed_after_bounded_retries(self):
+        calls = 0
+        sleeps = []
+
         def incomplete(url, token=None):
+            nonlocal calls
+            calls += 1
             return {"total_count": 99, "incomplete_results": True}, {}
-        with self.assertRaises(GitHubApiError):
-            _search_total("issues", "author:KAFKA2306 is:issue is:public", request_fn=incomplete)
+
+        with self.assertRaisesRegex(GitHubApiError, "incomplete results"):
+            _search_total(
+                "issues", "author:KAFKA2306 is:issue is:public",
+                request_fn=incomplete, sleep_fn=sleeps.append,
+            )
+        self.assertEqual(calls, 3)
+        self.assertEqual(sleeps, [1.0, 2.0])
 
     def test_missing_public_scope_is_rejected_before_request(self):
         called = False

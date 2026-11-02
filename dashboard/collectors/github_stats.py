@@ -75,26 +75,32 @@ def _search_total(
         raise GitHubApiError("public dashboard search must include is:public")
 
     url = f"{API_ROOT}/{endpoint}?{urlencode({'q': query, 'per_page': 1})}"
+    # Share one bounded retry budget across rate limits and incomplete responses.
+    # Never publish a partial total_count from GitHub Search.
     attempt = 0
     while True:
         try:
             payload, _ = request_fn(url, token)
-            break
         except GitHubApiError as exc:
             wait_seconds = _rate_limit_wait(exc, now_fn=now_fn)
             if wait_seconds is None or attempt >= max_rate_retries:
                 raise
             sleep_fn(wait_seconds * (2**attempt))
             attempt += 1
+            continue
 
-    if not isinstance(payload, dict):
-        raise GitHubApiError("unexpected GitHub Search API response shape")
-    if payload.get("incomplete_results") is not False:
-        raise GitHubApiError("GitHub Search API returned incomplete results")
-    total = payload.get("total_count")
-    if not isinstance(total, int) or total < 0:
-        raise GitHubApiError("GitHub Search API returned invalid total_count")
-    return total
+        if not isinstance(payload, dict):
+            raise GitHubApiError("unexpected GitHub Search API response shape")
+        if payload.get("incomplete_results") is not False:
+            if attempt >= max_rate_retries:
+                raise GitHubApiError("GitHub Search API returned incomplete results")
+            sleep_fn(1.0 * (2**attempt))
+            attempt += 1
+            continue
+        total = payload.get("total_count")
+        if not isinstance(total, int) or isinstance(total, bool) or total < 0:
+            raise GitHubApiError("GitHub Search API returned invalid total_count")
+        return total
 
 
 def _parse_start_month(value):
