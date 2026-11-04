@@ -796,35 +796,30 @@
       "needsReview": false
     },
     {
-      "name": "ComfyUI-KLingAI-API",
-      "purpose": "ComfyUIからKLing AI APIを呼び出すためのカスタムノード",
+      "name": "comfyui-workflows-factory",
+      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
       "matches": [
-        "ComfyUIからKling AI APIを使う",
-        "Kling動画生成をComfyUI nodeから呼ぶ",
-        "ComfyUI custom node for KLing AI"
+        "未確認: semantic review 完了後に検索対象へ昇格"
       ],
-      "notFor": [
-        "ComfyUI本体を管理する",
-        "KLing AIの料金やWeb UIだけを調べる"
-      ],
-      "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API",
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/comfyui-workflows-factory",
       "sources": [
         {
           "kind": "repository",
-          "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API",
+          "url": "https://github.com/KAFKA2306/comfyui-workflows-factory",
           "status": "ok",
           "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
         },
         {
           "kind": "readme",
-          "url": "https://github.com/KAFKA2306/ComfyUI-KLingAI-API/blob/main/README.md",
+          "url": "https://github.com/KAFKA2306/comfyui-workflows-factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3276e8aca2e629332f84d7d066da83daa6921577"
+          "fingerprint": "01ed901afdd4d15cae63f1aca87f11f38cc94e0c"
         }
       ],
-      "sourceFingerprint": "41ce31f6d5ea3238f38fb3dd6806b7f6489b1bad31e9f0d84e3353783492a19e",
-      "checkedAt": "2026-08-18T03:27:13Z",
-      "needsReview": false
+      "sourceFingerprint": "b8360f856cde04466b1f31b31c00015ed8ae80bebc5cee467cae9d5fe57adef4",
+      "checkedAt": null,
+      "needsReview": true
     },
     {
       "name": "CrewTrade",
@@ -854,9 +849,9 @@
     },
     {
       "name": "curious-museum",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "奇妙な実話や科学の発見を三択クイズで調べる、ブラウザ用の小さな博物館です。第0号館には正式展示6点、発掘室には次の展示候補70点があります。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "奇妙な実話や科学の発見を三択クイズで調べる、ブラウザ用の小さな博物館です。第0号館には正式展示6点、発掘室には次の展示候補70点があります。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/curious-museum",
@@ -875,8 +870,8 @@
         }
       ],
       "sourceFingerprint": "e0d7050e05fc107fac2ea3f1deceab74dbe65b0874cfb3c286d206d7b3c9b276",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-11-04T02:41:03Z",
+      "needsReview": false
     },
     {
       "name": "daily-arXiv-ai-enhanced",
