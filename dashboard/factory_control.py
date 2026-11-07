@@ -112,8 +112,17 @@ def discover_work(signals: Iterable[Mapping[str, object]]) -> list[WorkItem]:
     """Convert current failure evidence into deduplicated work items."""
     discovered: dict[str, WorkItem] = {}
     for signal in signals:
+        # A pending, cancelled or unrecognized observation is not evidence of
+        # a repairable failure. Keep it visible to observers without creating
+        # a remediation task or triggering a write.
         conclusion = signal.get("conclusion")
-        if conclusion in {"success", "neutral", "skipped"}:
+        if conclusion not in {"failure", "timed_out", "action_required", "stale"}:
+            continue
+        # The actual GitHub Actions collector always includes run status.
+        # Reject a non-completed run even if a partial observation contains a
+        # contradictory conclusion. Legacy signals without status are allowed.
+        status = signal.get("status")
+        if status is not None and status != "completed":
             continue
 
         owner = _mapping_string(signal, "owner")
