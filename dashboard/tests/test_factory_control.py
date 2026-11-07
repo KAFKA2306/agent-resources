@@ -48,6 +48,35 @@ class FactoryControlTests(unittest.TestCase):
         self.assertEqual(len(work), 1)
         self.assertEqual(work[0].failure_class, "unsupported_model")
 
+    def test_non_failures_and_unfinished_runs_never_become_repair_tasks(self):
+        base = {
+            "owner": "KAFKA2306",
+            "repository": "agent-resources",
+            "source_kind": "workflow_run",
+            "source_id": "899",
+            "fingerprint": "same-failure",
+            "kind": "deterministic_test_failure",
+        }
+        for conclusion, status in (
+            (None, "queued"),
+            (None, "in_progress"),
+            ("cancelled", "completed"),
+            ("success", "completed"),
+            ("neutral", "completed"),
+            ("skipped", "completed"),
+            ("pending", "completed"),
+            ("unknown", "completed"),
+            ("failure", "in_progress"),
+        ):
+            with self.subTest(conclusion=conclusion, status=status):
+                observation = {**base, "conclusion": conclusion, "status": status}
+                self.assertEqual(discover_work([observation]), [])
+
+        for conclusion in ("failure", "timed_out", "action_required", "stale"):
+            with self.subTest(actionable=conclusion):
+                observation = {**base, "conclusion": conclusion, "status": "completed"}
+                self.assertEqual(len(discover_work([observation])), 1)
+
     def test_unknown_state_never_becomes_success(self):
         self.assertEqual(classify_failure({}), "unknown")
         decision = decide_remediation(failure_class="unknown", attempt=0)
