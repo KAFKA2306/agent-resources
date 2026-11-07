@@ -448,7 +448,16 @@ def remediate_workflow_run(
         request_text_fn=request_text_fn,
     )
 
-    if signal.get("conclusion") in {"success", "neutral", "skipped"}:
+    # A workflow is observable before its outcome is known. In-progress runs
+    # must never enter remediation, and GitHub cancellations are not evidence
+    # of a failed step that may safely be re-executed.
+    if signal.get("status") != "completed" or signal.get("conclusion") in {
+        None,
+        "success",
+        "neutral",
+        "skipped",
+        "cancelled",
+    }:
         return {"status": "NO_WORK", "signal": signal}
 
     work = discover_work([signal])
