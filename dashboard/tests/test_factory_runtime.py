@@ -103,6 +103,61 @@ class FactoryRuntimeTests(unittest.TestCase):
         self.assertEqual(signal["conclusion"], "failure")
         self.assertEqual(signal["source_kind"], "commit_status")
 
+    def test_queued_or_running_workflow_does_not_create_remediation(self):
+        # A monitor can observe an unfinished run without promoting it to a failure.
+        for status in ("queued", "in_progress", "waiting"):
+            with self.subTest(status=status):
+                run = {
+                    "id": 899,
+                    "name": "CI",
+                    "status": status,
+                    "conclusion": None,
+                }
+                mutations = []
+
+                def request_fn(url, token=None):
+                    if url.endswith("/actions/runs/899"):
+                        return run, {}
+                    return {"jobs": []}, {}
+
+                result = remediate_workflow_run(
+                    owner="KAFKA2306",
+                    repository="agent-resources",
+                    run_id=899,
+                    request_fn=request_fn,
+                    mutation_fn=lambda *args, **kwargs: mutations.append((args, kwargs)),
+                )
+
+                self.assertEqual(result["status"], "NO_WORK")
+                self.assertEqual(result["signal"]["status"], status)
+                self.assertEqual(mutations, [])
+
+    def test_cancelled_run_does_not_become_a_failure_repair(self):
+        run = {
+            "id": 898,
+            "name": "CI",
+            "status": "completed",
+            "conclusion": "cancelled",
+        }
+        mutations = []
+
+        def request_fn(url, token=None):
+            if url.endswith("/actions/runs/898"):
+                return run, {}
+            return {"jobs": []}, {}
+
+        result = remediate_workflow_run(
+            owner="KAFKA2306",
+            repository="agent-resources",
+            run_id=898,
+            request_fn=request_fn,
+            mutation_fn=lambda *args, **kwargs: mutations.append((args, kwargs)),
+        )
+
+        self.assertEqual(result["status"], "NO_WORK")
+        self.assertEqual(result["signal"]["conclusion"], "cancelled")
+        self.assertEqual(mutations, [])
+
     def test_pending_commit_status_does_not_create_work(self):
         signal = commit_status_to_signal(
             owner="example",
