@@ -1500,10 +1500,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/image2outfit/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "87fd8ea447b5f4141ff494c750dfd7f27c00d74a"
+          "fingerprint": "0d5f7d72a5c23846d50ac062188c866d76da14f2"
         }
       ],
-      "sourceFingerprint": "9dfa375b158588a260b9933b05b9fbeb39606fac4ed90147bf4e8b2ac9710716",
+      "sourceFingerprint": "749d2c1b3f30e317e6fe6899ad8354bb226cb5aea7110ccf9ecbf96e1a46b29f",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
