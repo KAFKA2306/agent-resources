@@ -25,8 +25,8 @@ jobs:
           checksums="gitleaks_${version}_checksums.txt"
           base="https://github.com/gitleaks/gitleaks/releases/download/v${version}"
 
-          curl -fsSLO "${base}/${archive}"
-          curl -fsSLO "${base}/${checksums}"
+          curl --fail --silent --show-error --location --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 15 --max-time 120 --output "${archive}" "${base}/${archive}"
+          curl --fail --silent --show-error --location --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 15 --max-time 120 --output "${checksums}" "${base}/${checksums}"
           grep "  ${archive}$" "${checksums}" | sha256sum --check --strict -
           tar -xzf "${archive}" gitleaks
           sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
