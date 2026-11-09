@@ -814,10 +814,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/comfyui-workflows-factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "01ed901afdd4d15cae63f1aca87f11f38cc94e0c"
+          "fingerprint": "0ddd2e9eeb8ba4705f18a520ce9a845754288584"
         }
       ],
-      "sourceFingerprint": "b8360f856cde04466b1f31b31c00015ed8ae80bebc5cee467cae9d5fe57adef4",
+      "sourceFingerprint": "7c2e40ce6c2c6fc6242c0c89c553a5701de6b59ac322778cf9a79a9455c9989a",
       "checkedAt": null,
       "needsReview": true
     },
@@ -1500,10 +1500,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/image2outfit/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "0d5f7d72a5c23846d50ac062188c866d76da14f2"
+          "fingerprint": "246023769953bfaf626899b9524de202603265ad"
         }
       ],
-      "sourceFingerprint": "749d2c1b3f30e317e6fe6899ad8354bb226cb5aea7110ccf9ecbf96e1a46b29f",
+      "sourceFingerprint": "905c4448296f821d55b35853984d7693f0aed44cce8cd14fe17a414677069d9e",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
