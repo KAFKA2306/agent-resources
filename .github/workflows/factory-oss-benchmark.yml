@@ -11,8 +11,6 @@ on:
       - 'tests/test_oss_benchmark.py'
       - 'tests/test_benchmark_selection.py'
       - 'tests/test_benchmark_analysis.py'
-  schedule:
-    - cron: '23 1 * * *'
 
 permissions:
   actions: write
