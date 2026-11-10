@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows:
       - Validate Dashboard PR
-      - Factory Self-Heal Pilot
       - Validate KAFKA Evidence UI
       - Build and Deploy Docs
       - Verify Dashboard Release
