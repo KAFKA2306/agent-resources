@@ -35,6 +35,8 @@ CI greenは、そのexact revisionで実行されたcheckの成功だけを証�
 
 変更に必要な最小の意味あるtest / validationを実行します。小さくreversibleな変更について実装をそのまま写すtestを追加せず、必要なcheckが通った後は、新しい変更・失敗・未解決riskがない限り検証範囲を広げたり反復したりしません。
 
+CIとtestsは必須のものだけ残します。必須とは、GitHubが強制するcheck、秘密情報・権限・公開安全性を守るgate、変更した機能の重大な回帰を検出する最小の検証、本番反映の確認です。毎時・毎回の全件test、同じ証明をする複数workflow、意図的に失敗するpilot、実変更に結び付かない定期benchmarkは削除します。削除前に既存の必要な検査・復旧機能が残ることを確認し、CI greenとruntime PASSを混同しません。
+
 production truthが必要な場所でfixture、dummy、mock、silent fallbackを代用しません。取得不能は成功扱いせず `UNVERIFIED` とします。
 
 ## Formal verification and test retirement (Lean 4)
