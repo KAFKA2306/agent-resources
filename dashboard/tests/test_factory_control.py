@@ -81,8 +81,9 @@ class FactoryControlTests(unittest.TestCase):
         self.assertEqual(classify_failure({}), "unknown")
         decision = decide_remediation(failure_class="unknown", attempt=0)
 
-        self.assertFalse(decision.terminal)
-        self.assertEqual(decision.action, "diagnose")
+        self.assertTrue(decision.terminal)
+        self.assertEqual(decision.action, "terminal_unverified")
+        self.assertEqual(decision.reason, "no_bounded_executor_for_failure_class")
 
     def test_transient_failure_has_bounded_retry_budget(self):
         first = decide_remediation(failure_class="transient_network", attempt=0)
