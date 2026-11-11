@@ -131,7 +131,7 @@ failure
 
 CI、build、unsupported model、provider outage、runner unavailable、merge conflict、artifact failure、deployment failure、production probe failureなどは routine repair targetです。
 
-法的判断、契約、初回外部認証、現実世界の不可逆操作など、機械側にauthorityがないものだけを human-only exception とします。
+法的判断、契約、初回外部認証、現実世界の不可逆操作など、機械側にauthorityがないものは自律処理の対象外です。元のIssueなどの記録は保持し、Factoryの作業数・成功率の母数には含めません。実行手段がない未知障害も自律修復可能とは数えず、未検証の終了状態として記録します。
 
 ## Current public architecture
 
