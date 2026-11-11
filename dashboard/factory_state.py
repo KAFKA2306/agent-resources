@@ -97,7 +97,14 @@ def build_factory_state(
     Collectors may provide generators. Materialize once so deriving worklines and
     metrics observes the same evidence instead of consuming the iterator twice.
     """
-    evidence = list(signals)
+    # Human-only authority is outside autonomous execution scope. Retain the
+    # source evidence upstream, but never count it as an unfinished factory task.
+    evidence = [
+        signal
+        for signal in signals
+        if str(signal.get("failure_class") or "").lower()
+        not in HUMAN_AUTHORITY_FAILURES
+    ]
     worklines = [derive_workline_state(signal) for signal in evidence]
     signal_by_id = {str(signal["id"]): signal for signal in evidence}
     completed = [workline for workline in worklines if workline["state"] == "VERIFIED"]

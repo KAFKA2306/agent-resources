@@ -106,7 +106,8 @@ class FactoryEvidenceCollectorTests(unittest.TestCase):
         self.assertEqual(states["deterministic-repair"], "EXISTING")
         self.assertEqual(states["deploy-production-probe"], "VERIFIED")
         self.assertEqual(states["provider-runner-recovery"], "DISCONNECTED")
-        self.assertEqual(states["general-diagnosis-patch"], "MISSING")
+        self.assertNotIn("general-diagnosis-patch", states)
+        self.assertEqual(len(states), 9)
 
     def test_stale_checkout_fails_before_publishing(self):
         def only_main(url, _token):

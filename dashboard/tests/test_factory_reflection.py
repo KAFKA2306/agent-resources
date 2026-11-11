@@ -69,8 +69,36 @@ class FactoryReflectionTests(unittest.TestCase):
 
         self.assertEqual(result.status, "REUSED")
         self.assertEqual(result.canonical_issue_number, 381)
-        self.assertEqual(result.factory_action, "diagnose")
+        self.assertEqual(result.factory_action, "terminal_unverified")
         self.assertIsNotNone(result.factory_task_id)
+        self.assertEqual(calls, [])
+
+    def test_no_executor_means_no_new_reflection_issue(self):
+        calls = []
+        payload = candidate(
+            subject_kind="workflow",
+            subject_id="382",
+            evidence_urls=[
+                "https://github.com/KAFKA2306/agent-resources/actions/runs/382"
+            ],
+        )
+
+        def request_fn(url, token=None):
+            if url.endswith("/repos/KAFKA2306/agent-resources"):
+                return {"private": False, "archived": False}, {}
+            if url.endswith("/actions/runs/382"):
+                return {"id": 382, "conclusion": "failure"}, {}
+            if "/issues?state=all" in url:
+                return [], {}
+            raise AssertionError(url)
+
+        result = process_candidate(
+            payload,
+            request_fn=request_fn,
+            mutation_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
+        )
+        self.assertEqual(result.status, "OUT_OF_SCOPE")
+        self.assertEqual(result.factory_action, "terminal_unverified")
         self.assertEqual(calls, [])
 
     def test_closed_memory_does_not_create_issue(self):

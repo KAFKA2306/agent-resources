@@ -107,6 +107,8 @@ class FactoryStateTests(unittest.TestCase):
         )
 
         self.assertEqual(state["metrics"]["selfHealRate"], 1.0)
+        self.assertEqual([item["id"] for item in state["worklines"]], ["2"])
+        self.assertEqual(state["metrics"]["humanInterventionRate"], 0.0)
 
 
 if __name__ == "__main__":

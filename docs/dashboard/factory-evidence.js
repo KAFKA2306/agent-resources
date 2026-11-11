@@ -52,13 +52,8 @@ const CAPABILITY_PRESENTATION = {
     name: "FRESHNESS SHIELD",
     description: "古い公開状態を弾き、current mainと一致した情報だけを通す。",
   },
-  "general-diagnosis-patch": {
-    code: "A09",
-    name: "DIAGNOSTIC ENGINE",
-    description: "未知の障害を解析し、一般化された修正ルートへ接続する。",
-  },
   "provider-runner-recovery": {
-    code: "A10",
+    code: "A09",
     name: "FAILOVER MATRIX",
     description: "runnerやprovider障害時に実行経路を切り替え、作業継続を狙う。",
   },

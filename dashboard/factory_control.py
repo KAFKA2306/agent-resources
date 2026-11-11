@@ -217,10 +217,12 @@ def decide_remediation(
 
     policy = _POLICY.get(failure_class)
     if policy is None:
+        # No generic diagnosis executor exists. Keep the failure visible
+        # without scheduling work that this factory cannot perform.
         return RemediationDecision(
-            action="diagnose",
-            terminal=False,
-            reason="unknown_failure_requires_bounded_diagnosis",
+            action="terminal_unverified",
+            terminal=True,
+            reason="no_bounded_executor_for_failure_class",
         )
 
     action, max_attempts = policy
