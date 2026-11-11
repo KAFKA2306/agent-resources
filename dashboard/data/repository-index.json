@@ -814,10 +814,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/comfyui-workflows-factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "0ddd2e9eeb8ba4705f18a520ce9a845754288584"
+          "fingerprint": "53a931c873fae393aa2fbec1eb3be3adccf79805"
         }
       ],
-      "sourceFingerprint": "7c2e40ce6c2c6fc6242c0c89c553a5701de6b59ac322778cf9a79a9455c9989a",
+      "sourceFingerprint": "e98d2e4295d04830cca51e05f7c80d3a4b840b83fd506dde453205949e9aff77",
       "checkedAt": null,
       "needsReview": true
     },
