@@ -75,28 +75,26 @@ class FactoryReflectionTests(unittest.TestCase):
 
     def test_no_executor_means_no_new_reflection_issue(self):
         calls = []
+        payload = candidate(
+            subject_kind="workflow",
+            subject_id="382",
+            evidence_urls=[
+                "https://github.com/KAFKA2306/agent-resources/actions/runs/382"
+            ],
+        )
 
         def request_fn(url, token=None):
             if url.endswith("/repos/KAFKA2306/agent-resources"):
                 return {"private": False, "archived": False}, {}
-            if url.endswith("/issues/381"):
-                return {"number": 381, "state": "closed"}, {}
-            raise AssertionError(url)
-
-        # Grounded gaps with no executor must not add a new open Issue.
-        payload = candidate(subject_kind="issue", subject_id="382")
-        def missing_issue(url, token=None):
-            if url.endswith("/repos/KAFKA2306/agent-resources"):
-                return {"private": False, "archived": False}, {}
-            if url.endswith("/issues/382"):
-                return {"number": 382, "state": "open", "html_url": "https://github.com/KAFKA2306/agent-resources/issues/382"}, {}
+            if url.endswith("/actions/runs/382"):
+                return {"id": 382, "conclusion": "failure"}, {}
             if "/issues?state=all" in url:
                 return [], {}
             raise AssertionError(url)
 
         result = process_candidate(
             payload,
-            request_fn=missing_issue,
+            request_fn=request_fn,
             mutation_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
         )
         self.assertEqual(result.status, "OUT_OF_SCOPE")
