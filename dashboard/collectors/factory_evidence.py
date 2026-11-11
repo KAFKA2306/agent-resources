@@ -146,7 +146,6 @@ def _capabilities(
     deterministic_executor = 'decision.action == "repair_agent"' in runtime
     reroute_policy = "ROUTABLE_FAILURES" in control
     reroute_executor = 'decision.action == "reroute"' in runtime
-    diagnosis_executor = 'decision.action == "diagnose"' in runtime
     bounded_retry = "_POLICY =" in control and "retry_budget_exhausted" in control
 
     pages_pipeline = (
@@ -202,11 +201,6 @@ def _capabilities(
             "id": "pages-freshness-gate",
             "label": "Pages freshness gate",
             "state": "EXISTING" if freshness_gate else "MISSING",
-        },
-        {
-            "id": "general-diagnosis-patch",
-            "label": "General diagnosis / patch",
-            "state": "EXISTING" if diagnosis_executor else "MISSING",
         },
         {
             "id": "provider-runner-recovery",
