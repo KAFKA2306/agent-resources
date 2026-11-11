@@ -142,6 +142,9 @@ class FixtureHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_GET(self):  # noqa: N802 - stdlib handler API
         path = self.path.split("?", 1)[0]
+        if path == "/issue-backlog-history.json":
+            self.send_json({"schemaVersion": 1, "scope": "public", "timezone": "Asia/Tokyo", "snapshots": [{"date": "2026-08-18", "observedAt": "2026-08-18T09:00:00+09:00", "allOpen": 10, "authoredOpen": 8}, {"date": "2026-08-19", "observedAt": "2026-08-19T09:00:00+09:00", "allOpen": 7, "authoredOpen": 5}]})
+            return
         if path == "/dashboard.json":
             self.send_json(BASELINE)
             return
@@ -254,11 +257,15 @@ def main() -> None:
         is not None,
         "misleading agent count absent": "1 agents" not in dom,
         "baseline work item replaced": "BASELINE-ISSUE" not in dom,
+        "issue backlog graph reports actual latest and delta": 'id="issue-history-title">未解決Issueの推移</h2>' in dom
+        and "7件" in dom and "-3件" in dom and "2026-08-19" in dom,
+        "issue backlog table accessible": "日別の件数を表で確認" in dom,
         "monthly stats selected by default": 'data-stats-view="monthly" aria-pressed="true"' in dom
         and 'id="github-stats-title">OUTPUT / YTD</h2>' in dom
         and 'class="output-waveform"' in dom,
         "weekly stats selected by query": 'data-stats-view="weekly" aria-pressed="true"' in weekly_dom
         and 'id="github-stats-title">OUTPUT / 12W</h2>' in weekly_dom,
+        "output graph exact-value table": "期間別の正確な件数を表で確認" in weekly_dom,
         "weekly stats waveform rendered": 'data-view="weekly"' in weekly_dom
         and 'aria-label="GitHub週次活動"' in weekly_dom
         and weekly_dom.count('class="wave-point is-commits"') == 2,

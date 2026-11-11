@@ -121,6 +121,7 @@ jobs:
           if [ -s dashboard/generated/previous-dashboard.json ]; then
             stats_args+=(--previous-dashboard dashboard/generated/previous-dashboard.json)
           fi
+          stats_args+=(--issue-backlog-output docs/dashboard/issue-backlog-history.json)
           python -m dashboard.collectors.github_stats "${stats_args[@]}"
           python -m dashboard.collectors.work_items --repositories dashboard/generated/repositories.json --output dashboard/generated/work-items.json
           python -m dashboard.collectors.workflow_runs --repositories dashboard/generated/repositories.json --output dashboard/generated/workflow-runs.json

@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./dashboard.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js"];
+    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js", "issue-history.js"];
     Promise.all(modules.map((name) => import(`./${name}?v=${assetVersion}`))).catch((error) => {
       const status = document.getElementById("snapshot-status");
       if (status) {
@@ -183,6 +183,23 @@
 
     <p id="workspace-message" class="muted workspace-message" hidden></p>
 
+    <section class="telemetry-deck issue-history" aria-labelledby="issue-history-title">
+      <header class="stats-heading">
+        <div>
+          <p class="eyebrow">ISSUE BACKLOG / DAILY</p>
+          <h2 id="issue-history-title">未解決Issueの推移</h2>
+        </div>
+        <span class="stats-scope">PUBLIC / JST</span>
+      </header>
+      <div id="issue-history-summary" class="stats-summary" aria-label="未解決Issueの現在件数と増減"></div>
+      <div class="issue-history-legend" aria-label="系列の説明">
+        <span class="issue-series-a">所有リポジトリ内の未解決Issue</span>
+        <span class="issue-series-b">本人が作成した未解決Issue</span>
+      </div>
+      <div id="issue-history-chart" class="issue-history-chart" aria-label="未解決Issueの履歴">履歴データを読込中</div>
+      <p id="issue-history-note" class="stats-note muted"></p>
+    </section>
+
     <section class="telemetry-deck github-stats" aria-labelledby="github-stats-title">
       <header class="stats-heading">
         <div>
@@ -197,13 +214,14 @@
           <span id="stats-scope" class="stats-scope">public only</span>
         </div>
       </header>
+      <p class="stats-explanation">コミット・PRマージ・Issueクローズの件数を、月別または週別で確認できます。</p>
       <div id="stats-summary" class="stats-summary" aria-label="GitHub活動サマリー"></div>
       <div id="stats-legend" class="stats-legend" aria-hidden="true" hidden>
         <span data-series="commits">Commit</span>
         <span data-series="prsMerged">Merged PR</span>
         <span data-series="issuesClosed">Closed Issue</span>
       </div>
-      <div id="stats-monthly" class="stats-monthly" role="table" aria-label="GitHub月次活動"></div>
+      <div id="stats-monthly" class="stats-monthly" role="group" aria-label="GitHub月次活動"></div>
       <p id="stats-note" class="stats-note muted"></p>
     </section>
   </main>
