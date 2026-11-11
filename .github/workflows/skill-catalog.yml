@@ -10,16 +10,6 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/skill-catalog.yml"
-  push:
-    branches: [main]
-    paths:
-      - "api/v1/**"
-      - "skills/**"
-      - "scripts/validate_skill_catalog.py"
-      - "tests/test_validate_skill_catalog.py"
-      - "pyproject.toml"
-      - "uv.lock"
-      - ".github/workflows/skill-catalog.yml"
   workflow_dispatch:
 
 permissions:
