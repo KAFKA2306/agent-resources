@@ -69,8 +69,38 @@ class FactoryReflectionTests(unittest.TestCase):
 
         self.assertEqual(result.status, "REUSED")
         self.assertEqual(result.canonical_issue_number, 381)
-        self.assertEqual(result.factory_action, "diagnose")
+        self.assertEqual(result.factory_action, "terminal_unverified")
         self.assertIsNotNone(result.factory_task_id)
+        self.assertEqual(calls, [])
+
+    def test_no_executor_means_no_new_reflection_issue(self):
+        calls = []
+
+        def request_fn(url, token=None):
+            if url.endswith("/repos/KAFKA2306/agent-resources"):
+                return {"private": False, "archived": False}, {}
+            if url.endswith("/issues/381"):
+                return {"number": 381, "state": "closed"}, {}
+            raise AssertionError(url)
+
+        # Grounded gaps with no executor must not add a new open Issue.
+        payload = candidate(subject_kind="issue", subject_id="382")
+        def missing_issue(url, token=None):
+            if url.endswith("/repos/KAFKA2306/agent-resources"):
+                return {"private": False, "archived": False}, {}
+            if url.endswith("/issues/382"):
+                return {"number": 382, "state": "open", "html_url": "https://github.com/KAFKA2306/agent-resources/issues/382"}, {}
+            if "/issues?state=all" in url:
+                return [], {}
+            raise AssertionError(url)
+
+        result = process_candidate(
+            payload,
+            request_fn=missing_issue,
+            mutation_fn=lambda *args, **kwargs: calls.append((args, kwargs)),
+        )
+        self.assertEqual(result.status, "OUT_OF_SCOPE")
+        self.assertEqual(result.factory_action, "terminal_unverified")
         self.assertEqual(calls, [])
 
     def test_closed_memory_does_not_create_issue(self):
