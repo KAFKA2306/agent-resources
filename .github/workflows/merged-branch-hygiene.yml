@@ -1,4 +1,4 @@
-name: Cleanup merged branches
+name: Cleanup non-default branches with archive
 
 on:
   push:
@@ -9,88 +9,94 @@ permissions:
   contents: write
   pull-requests: read
 
+concurrency:
+  group: branch-hygiene-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Delete only safely merged branches
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
+      - name: Archive branch heads before removing refs
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            const fullName = `${owner}/${repo}`;
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const defaultBranch = repository.default_branch;
+            const branches = await github.paginate(github.rest.repos.listBranches, {
+              owner, repo, per_page: 100,
+            });
+            const openPulls = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100,
+            });
+            const openHeads = new Set(openPulls
+              .filter(pr => pr.head.repo?.full_name === fullName)
+              .map(pr => pr.head.ref));
+            const deleted = [];
+            const kept = [];
 
-          default="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.default_branch')"
+            for (const branch of branches) {
+              const name = branch.name;
+              if (name === defaultBranch) continue;
+              if (branch.protected || openHeads.has(name)) {
+                kept.push(`${name}: protected or open pull request`);
+                continue;
+              }
 
-          mapfile -t open_heads < <(
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100"               --jq '.[] | [.head.repo.full_name, .head.ref] | @tsv'
-          )
-          mapfile -t merged_heads < <(
-            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls?state=closed&per_page=100"               --jq '.[] | select(.merged_at != null) | [.head.repo.full_name, .head.ref, .head.sha] | @tsv'
-          )
-          mapfile -t branches < <(
-            gh api --paginate "repos/$GITHUB_REPOSITORY/branches?per_page=100"               --jq '.[] | [.name, .commit.sha, (.protected | tostring)] | @tsv'
-          )
+              // Re-read the head: never archive a stale snapshot and delete a changed branch.
+              const { data: current } = await github.rest.repos.getBranch({
+                owner, repo, branch: name,
+              });
+              if (current.protected || current.commit.sha !== branch.commit.sha) {
+                kept.push(`${name}: protected or changed since listing`);
+                continue;
+              }
 
-          deleted=0
-          kept=0
+              const headSha = current.commit.sha;
+              // A ref to the original SHA preserves even unmerged work without
+              // introducing a second long-lived branch or changing main.
+              const archiveName = `branch-archive/${name}/${headSha.slice(0, 12)}`;
+              try {
+                await github.rest.git.createRef({
+                  owner, repo, ref: `refs/tags/${archiveName}`, sha: headSha,
+                });
+              } catch (error) {
+                if (error.status !== 422) throw error;
+                const { data: existing } = await github.rest.git.getRef({
+                  owner, repo, ref: `tags/${archiveName}`,
+                });
+                if (existing.object.sha !== headSha) {
+                  throw new Error(`archive tag SHA mismatch for ${name}`);
+                }
+              }
 
-          for row in "${branches[@]}"; do
-            IFS=$'\t' read -r branch branch_sha protected <<<"$row"
-
-            if [[ "$branch" == "$default" || "$branch" == "gh-pages" ]]; then
-              continue
-            fi
-
-            if [[ "$protected" == "true" ]]; then
-              echo "keep protected branch: $branch"
-              kept=$((kept + 1))
-              continue
-            fi
-
-            if printf '%s\n' "${open_heads[@]}" | grep -Fxq -- "$GITHUB_REPOSITORY"$'\t'"$branch"; then
-              echo "keep open PR head: $branch"
-              kept=$((kept + 1))
-              continue
-            fi
-
-            merged_exact=false
-            if printf '%s\n' "${merged_heads[@]}" | grep -Fxq -- "$GITHUB_REPOSITORY"$'\t'"$branch"$'\t'"$branch_sha"; then
-              merged_exact=true
-            fi
-
-            fully_contained=false
-            if [[ "$merged_exact" != "true" ]]; then
-              compare_ref="$(python - "$branch" "$default" <<'PY'
-          import sys
-          from urllib.parse import quote
-          print(quote(f"{sys.argv[1]}...{sys.argv[2]}", safe=""))
-          PY
-          )"
-              status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$compare_ref" --jq '.status')"
-              if [[ "$status" == "ahead" || "$status" == "identical" ]]; then
-                fully_contained=true
-              fi
-            fi
-
-            if [[ "$merged_exact" != "true" && "$fully_contained" != "true" ]]; then
-              echo "keep branch with unmerged work: $branch"
-              kept=$((kept + 1))
-              continue
-            fi
-
-            encoded_branch="$(python - "$branch" <<'PY'
-          import sys
-          from urllib.parse import quote
-          print(quote(sys.argv[1], safe=""))
-          PY
-          )"
-
-            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$encoded_branch"
-            echo "deleted merged branch: $branch"
-            deleted=$((deleted + 1))
-          done
-
-          echo "deleted=$deleted"
-          echo "kept=$kept"
+              // An open PR created since the initial listing must retain its head.
+              const { data: livePulls } = await github.rest.pulls.list({
+                owner, repo, head: `${owner}:${name}`, state: 'open', per_page: 1,
+              });
+              if (livePulls.length) {
+                kept.push(`${name}: open pull request created during cleanup`);
+                continue;
+              }
+              const { data: latest } = await github.rest.repos.getBranch({
+                owner, repo, branch: name,
+              });
+              if (latest.protected || latest.commit.sha !== headSha) {
+                kept.push(`${name}: protected or updated during cleanup`);
+                continue;
+              }
+              await github.rest.git.deleteRef({
+                owner, repo, ref: `heads/${name}`,
+              });
+              deleted.push(`${name} -> refs/tags/${archiveName} (${headSha})`);
+            }
+            core.summary.addHeading('Single-default-branch cleanup');
+            core.summary.addRaw(`Default: ${defaultBranch}; removed: ${deleted.length}; kept: ${kept.length}\n\n`);
+            for (const line of deleted) core.summary.addRaw(`- archived and deleted: ${line}\n`);
+            for (const line of kept) core.summary.addRaw(`- kept: ${line}\n`);
+            await core.summary.write();
+            core.info(`Removed ${deleted.length} non-default branches; kept ${kept.length}.`);
