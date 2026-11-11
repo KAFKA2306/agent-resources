@@ -57,6 +57,18 @@ jobs:
               }
 
               const headSha = current.commit.sha;
+              // Do not interrupt active work that has not yet opened a PR.
+              // Cleanup will revisit it on a later main push.
+              const { data: headCommit } = await github.rest.repos.getCommit({
+                owner, repo, ref: headSha,
+              });
+              const tipTime = Date.parse(
+                headCommit.commit.committer?.date || headCommit.commit.author?.date || '',
+              );
+              if (!Number.isFinite(tipTime) || Date.now() - tipTime < 24 * 60 * 60 * 1000) {
+                kept.push(`${name}: active in last 24h or no reliable commit time`);
+                continue;
+              }
               // A ref to the original SHA preserves even unmerged work without
               // introducing a second long-lived branch or changing main.
               const archiveName = `branch-archive/${name}/${headSha.slice(0, 12)}`;
