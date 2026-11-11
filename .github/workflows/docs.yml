@@ -11,7 +11,7 @@ on:
   repository_dispatch:
     types: [factory.pages.refresh]
   schedule:
-    - cron: '17 * * * *'
+    - cron: '17 0 * * *'
   workflow_dispatch:
 
 permissions:

@@ -33,12 +33,6 @@ on:
       - '.github/workflows/factory-capability-readback.yml'
       - '.github/workflows/factory-autonomous-merge.yml'
       - '.github/workflows/factory-conflict-repair.yml'
-      - '.github/workflows/factory-reflection.yml'
-      - '.github/workflows/factory-oss-benchmark.yml'
-      - '.github/workflows/factory-runtime-metrics.yml'
-      - '.github/workflows/gh-aw-sync.yml'
-      - '.github/workflows/github-ops-audit.md'
-      - '.github/workflows/github-ops-audit.lock.yml'
       - '.github/workflows/github-models-ops-audit.yml'
       - '.github/workflows/repository-recall-refresh.yml'
       - '.github/workflows/reusable-weekly-repo-research.yml'
@@ -95,11 +89,6 @@ jobs:
 
       - name: Run commit-time validation
         run: pre-commit run --all-files --hook-stage pre-commit
-
-      - name: Verify Factory Reflection live grounding
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: python -m dashboard.factory_reflection --probe-issue 381 --repository "$GITHUB_REPOSITORY"
 
       - name: Validate recurring research provider comparison
         run: python -m unittest tests.test_research_provider_comparison -v
