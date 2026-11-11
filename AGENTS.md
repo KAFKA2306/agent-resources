@@ -62,6 +62,8 @@ owner repositoryごとの適用責務: research/dataはsource fidelityとfreshne
 
 ## Workline and GitHub
 
+各repositoryで長期保持するbranchはdefault branchの1本だけとします。未統合PRや直近24時間に更新された作業branchは作業中として保護し、終了後に既存のcleanup処理で削除します。mainへ未統合の変更を無検証で取り込まず、削除前に元head SHAを復元可能なtagへ保存します。branch整理用の追加CIは作りません。
+
 既存のcanonical Issue / PR / branchがあれば再利用します。1つの成果に重複worklineを作りません。
 
 write前に対象stateを再取得し、permission確認のためのdummy/no-op mutationを作りません。変更後はread-backし、mergeは可能ならexact head SHAを固定します。
