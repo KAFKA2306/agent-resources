@@ -6,13 +6,6 @@ on:
       - .github/workflows/gitleaks-reusable.yml
       - .github/workflows/gitleaks-range-tests.yml
       - tests/test_select_gitleaks_range.py
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/gitleaks-reusable.yml
-      - .github/workflows/gitleaks-range-tests.yml
-      - tests/test_select_gitleaks_range.py
-
 permissions:
   contents: read
 
