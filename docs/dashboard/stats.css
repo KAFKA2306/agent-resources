@@ -5,3 +5,41 @@
 .stats-monthly{display:grid;gap:7px}.stats-row{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;align-items:start;padding:7px 0;border-top:1px solid var(--line)}.stats-row[data-partial="true"]{background:linear-gradient(90deg,rgba(50,93,255,.05),transparent)}.stats-month{padding-top:5px;font-size:.74rem;font-variant-numeric:tabular-nums}.stats-series{display:grid;gap:5px}.stats-series-item{display:grid;grid-template-columns:78px minmax(70px,1fr) 56px;gap:8px;align-items:center}.stats-series-label{color:var(--muted);font-size:.65rem}.stats-track{height:8px;overflow:hidden;border-radius:999px;background:var(--bg)}.stats-bar{display:block;height:100%;border-radius:inherit;background:#8aa0ff}.stats-series-item[data-series="prsMerged"] .stats-bar{background:#9ad5b0}.stats-series-item[data-series="issuesClosed"] .stats-bar{background:#d3a7ef}.stats-value{text-align:right;font-size:.72rem;font-variant-numeric:tabular-nums}.stats-note{margin:10px 0 0;font-size:.68rem;line-height:1.5}
 @media(max-width:900px){.stats-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.stats-summary{grid-template-columns:minmax(0,1fr)}.stats-heading{align-items:flex-start;flex-direction:column}.stats-heading-actions{width:100%;justify-content:space-between}.stats-row{grid-template-columns:minmax(0,1fr)}.stats-month{padding-top:0}.stats-series-item{grid-template-columns:72px minmax(60px,1fr) 50px}}
+
+
+/* Legible history charts: explicit scales, exact totals, and accessible detail tables. */
+.github-stats .stats-explanation{margin:0 0 12px;color:var(--muted);font-size:.86rem;line-height:1.6}
+.github-stats .stats-monthly{display:block}
+.output-waveform{width:100%;height:auto;display:block;overflow:visible}
+.wave-max-guide{stroke:var(--line);stroke-dasharray:3 5;opacity:.8}
+.wave-scale-label{fill:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.stats-details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.stats-details summary{cursor:pointer;font-size:.88rem;font-weight:700;outline-offset:4px}
+.stats-details summary:focus-visible{outline:2px solid #2563eb}
+.stats-details table,.issue-history-details table{margin-top:12px;width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.82rem}
+.stats-details caption,.issue-history-details caption{text-align:left;color:var(--muted);padding:6px 0}
+.stats-details th,.stats-details td,.issue-history-details th,.issue-history-details td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.stats-details th:first-child,.issue-history-details th:first-child{text-align:left}
+.stats-details thead,.issue-history-details thead{background:var(--bg)}
+.stats-details tbody tr:hover,.issue-history-details tbody tr:hover{background:var(--bg)}
+.issue-history{margin-bottom:16px}
+.issue-history .stats-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+.issue-history-legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin-bottom:8px;font-size:.81rem;font-weight:700;line-height:1.5}
+.issue-history-legend span{display:inline-flex;align-items:center;gap:8px}
+.issue-history-legend span::before{content:"";width:22px;height:3px;border-radius:2px;background:#2563eb}
+.issue-history-legend .issue-series-b::before{background:#ae6b37}
+.issue-history-chart{min-height:90px;color:var(--muted);font-size:.83rem;line-height:1.6}
+.issue-history-chart svg{display:block;width:100%;height:auto;min-height:175px;overflow:visible}
+.issue-history-grid{stroke:var(--line);stroke-width:1}
+.issue-history-axis{fill:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.issue-history-line{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.issue-history-line.is-all,.issue-history-point.is-all{stroke:#2563eb}
+.issue-history-line.is-authored,.issue-history-point.is-authored{stroke:#ae6b37}
+.issue-history-point{fill:var(--surface);stroke-width:3}
+.issue-history-point:focus-visible{stroke-width:6;outline:none}
+.issue-history-details{margin-top:8px}
+.issue-history-details summary{cursor:pointer;font-weight:700;padding:8px 0;outline-offset:3px}
+.issue-history-details summary:focus-visible{outline:2px solid #2563eb}
+.issue-history-scroll,.stats-table-scroll{max-height:400px;overflow:auto}
+@media(max-width:700px){.issue-history .stats-summary{grid-template-columns:1fr 1fr}.issue-history .stats-summary .stat-card:last-child{grid-column:span 2}.issue-history-legend{gap:6px 16px}}
+@media(max-width:560px){.output-waveform{min-width:560px}.github-stats .stats-monthly{overflow-x:auto}.issue-history-chart svg{min-width:480px}.issue-history-chart{overflow-x:auto}.stats-details table,.issue-history-details table{font-size:.75rem}}

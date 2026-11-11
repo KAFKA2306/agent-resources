@@ -99,7 +99,7 @@ export function renderStats(stats) {
   statsScope.textContent = "PUBLIC";
   statsMonthly.dataset.view = view;
   statsMonthly.setAttribute("aria-label", config.ariaLabel);
-  statsMonthly.setAttribute("role", "img");
+  statsMonthly.setAttribute("role", "group");
   if (statsTitle) statsTitle.textContent = view === "weekly" ? "OUTPUT / 12W" : "OUTPUT / YTD";
   if (statsLegend) statsLegend.hidden = true;
   statsNote.textContent = "";
@@ -119,16 +119,17 @@ export function renderStats(stats) {
   const latest = rows[rows.length - 1];
   statsSummary.append(
     statCard("REPOS", stats.publicRepositories, ""),
-    statCard("COMMIT", latest.commits, ""),
-    statCard("MERGE", latest.prsMerged, ""),
-    statCard("CLOSE", latest.issuesClosed, ""),
+    statCard("COMMIT", latest.commits, rowLabel(view, latest) + (latest.partial ? "（途中）" : "")),
+    statCard("MERGE", latest.prsMerged, rowLabel(view, latest) + (latest.partial ? "（途中）" : "")),
+    statCard("CLOSE", latest.issuesClosed, rowLabel(view, latest) + (latest.partial ? "（途中）" : "")),
   );
 
   const SVG_NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.classList.add("output-waveform");
   svg.setAttribute("viewBox", "0 0 1000 330");
-  svg.setAttribute("aria-label", config.ariaLabel);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", config.ariaLabel + "。各段ごとに0件から最大件数までの独立した目盛りで表示");
 
   const bands = [
     { ...STAT_SERIES[0], y: 70, className: "commits" },
@@ -143,10 +144,26 @@ export function renderStats(stats) {
     const guide = document.createElementNS(SVG_NS, "line");
     guide.setAttribute("x1", "100");
     guide.setAttribute("x2", "900");
-    guide.setAttribute("y1", String(band.y));
-    guide.setAttribute("y2", String(band.y));
+    guide.setAttribute("y1", String(band.y + 24));
+    guide.setAttribute("y2", String(band.y + 24));
     guide.classList.add("wave-guide");
     svg.append(guide);
+    const topGuide = document.createElementNS(SVG_NS, "line");
+    topGuide.setAttribute("x1", "100");
+    topGuide.setAttribute("x2", "900");
+    topGuide.setAttribute("y1", String(band.y - 20));
+    topGuide.setAttribute("y2", String(band.y - 20));
+    topGuide.classList.add("wave-max-guide");
+    svg.append(topGuide);
+    for (const [value, position] of [[max.toLocaleString("ja-JP"), band.y - 18], ["0", band.y + 29]]) {
+      const scaleLabel = document.createElementNS(SVG_NS, "text");
+      scaleLabel.setAttribute("x", "94");
+      scaleLabel.setAttribute("y", String(position));
+      scaleLabel.setAttribute("text-anchor", "end");
+      scaleLabel.classList.add("wave-scale-label");
+      scaleLabel.textContent = value;
+      svg.append(scaleLabel);
+    }
 
     const label = document.createElementNS(SVG_NS, "text");
     label.setAttribute("x", "20");
@@ -160,7 +177,7 @@ export function renderStats(stats) {
     current.setAttribute("y", String(band.y + 5));
     current.setAttribute("text-anchor", "end");
     current.classList.add("wave-value", `is-${band.className}`);
-    current.textContent = String(values[values.length - 1] || 0);
+    current.textContent = (values[values.length - 1] || 0).toLocaleString("ja-JP") + "件";
     svg.append(current);
 
     const polyline = document.createElementNS(SVG_NS, "polyline");
@@ -168,7 +185,7 @@ export function renderStats(stats) {
     polyline.setAttribute(
       "points",
       values.map((value, index) => {
-        const amplitude = (value / max) * 34;
+        const amplitude = (value / max) * 44;
         return `${x(index).toFixed(1)},${(band.y + 24 - amplitude).toFixed(1)}`;
       }).join(" "),
     );
@@ -180,7 +197,10 @@ export function renderStats(stats) {
       const point = document.createElementNS(SVG_NS, "circle");
       point.setAttribute("cx", x(index).toFixed(1));
       point.setAttribute("cy", cy.toFixed(1));
-      point.setAttribute("r", "3.2");
+      point.setAttribute("r", "4.2");
+      point.setAttribute("tabindex", "0");
+      point.setAttribute("role", "img");
+      point.setAttribute("aria-label", rowLabel(view, rows[index]) + " " + band.label + " " + value + "件");
       point.classList.add("wave-point", `is-${band.className}`);
       const title = document.createElementNS(SVG_NS, "title");
       title.textContent = `${rowLabel(view, rows[index])} · ${band.label} ${value}`;
@@ -201,7 +221,53 @@ export function renderStats(stats) {
   lastLabel.classList.add("wave-period");
   lastLabel.textContent = rowLabel(view, rows[rows.length - 1]);
   svg.append(firstLabel, lastLabel);
+  if (rows.length > 4) {
+    for (const index of [Math.round((rows.length - 1) / 3), Math.round((rows.length - 1) * 2 / 3)]) {
+      const label = document.createElementNS(SVG_NS, "text");
+      label.setAttribute("x", String(x(index)));
+      label.setAttribute("y", "320");
+      label.setAttribute("text-anchor", "middle");
+      label.classList.add("wave-period");
+      label.textContent = rowLabel(view, rows[index]);
+      svg.append(label);
+    }
+  }
 
-  statsMonthly.append(svg);
+  const details = document.createElement("details");
+  details.className = "stats-details";
+  const summary = document.createElement("summary");
+  summary.textContent = "期間別の正確な件数を表で確認";
+  const table = document.createElement("table");
+  const caption = document.createElement("caption");
+  caption.textContent = config.title + "（件）";
+  table.append(caption);
+  const heading = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  for (const text of ["期間", "コミット", "PR作成", "PRマージ", "Issue作成", "Issueクローズ"]) {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = text;
+    headerRow.append(th);
+  }
+  heading.append(headerRow);
+  table.append(heading);
+  const body = document.createElement("tbody");
+  for (const row of rows) {
+    const tr = document.createElement("tr");
+    const period = document.createElement("th");
+    period.scope = "row";
+    period.textContent = rowLabel(view, row) + (row.partial ? " *" : "");
+    tr.append(period);
+    for (const key of ["commits", "prsCreated", "prsMerged", "issuesCreated", "issuesClosed"]) {
+      const td = document.createElement("td");
+      td.textContent = Number.isInteger(row[key]) ? row[key].toLocaleString("ja-JP") : "—";
+      tr.append(td);
+    }
+    body.append(tr);
+  }
+  table.append(body);
+  details.append(summary, table);
+  statsMonthly.append(svg, details);
+  statsNote.textContent = "各段は独立した0件〜最大値の目盛りです。段同士の線の高さは比較できません。" + (latest.partial ? " * 最終期間は集計途中です。" : "");
 }
 
