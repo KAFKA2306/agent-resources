@@ -452,6 +452,19 @@ def process_candidate(
             factory_reason=factory_reason,
         )
 
+    # A grounded gap is not automatically an executable job. Do not create
+    # a new issue for a route with no authorized, bounded executor.
+    if factory_action in {"terminal_unverified", "external_authority"}:
+        return ProcessResult(
+            status="OUT_OF_SCOPE",
+            candidate_id=candidate.candidate_id,
+            grounding=grounding.status,
+            reason=factory_reason,
+            factory_task_id=factory_task_id,
+            factory_action=factory_action,
+            factory_reason=factory_reason,
+        )
+
     if not execute:
         return ProcessResult(
             status="PLANNED",
