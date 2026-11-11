@@ -5,9 +5,6 @@ run-name: >-
   ${{ github.event.client_payload.git.sha || inputs.expected_sha || github.sha }}
 
 on:
-  push:
-    branches:
-      - main
   repository_dispatch:
     types:
       - vercel.deployment.success
@@ -23,8 +20,6 @@ on:
         required: false
         default: ''
         type: string
-  schedule:
-    - cron: '37 * * * *'
 
 permissions:
   contents: read
