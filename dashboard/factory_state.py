@@ -62,13 +62,15 @@ def derive_workline_state(signal: Mapping[str, object]) -> dict[str, object]:
 def _seconds(start: object, end: object) -> float | None:
     if not isinstance(start, str) or not isinstance(end, str):
         return None
-    return max(
-        0.0,
-        (
-            datetime.fromisoformat(end.replace("Z", "+00:00"))
-            - datetime.fromisoformat(start.replace("Z", "+00:00"))
-        ).total_seconds(),
-    )
+    try:
+        started = datetime.fromisoformat(start.replace("Z", "+00:00"))
+        finished = datetime.fromisoformat(end.replace("Z", "+00:00"))
+        # Invalid clocks are missing evidence, not a measured zero-second run.
+        if started.tzinfo is None or finished.tzinfo is None or finished < started:
+            return None
+        return (finished - started).total_seconds()
+    except (TypeError, ValueError, OverflowError):
+        return None
 
 
 def _percentile(values: list[float], percentile: float) -> float | None:

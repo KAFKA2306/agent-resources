@@ -82,3 +82,39 @@ def test_stage_duration_metrics_stay_unknown_without_complete_evidence() -> None
     assert state["metrics"]["meanQueueTimeSeconds"] is None
     assert state["metrics"]["meanRepairTimeSeconds"] is None
     assert state["metrics"]["meanDeployProbeTimeSeconds"] is None
+
+
+def test_invalid_time_evidence_is_excluded_instead_of_counted_as_zero() -> None:
+    valid = _verified_signal(1, 5)
+    backward = {
+        **_verified_signal(2, 5),
+        "started_at": "2026-09-26T00:06:00Z",
+        "updated_at": "2026-09-26T00:05:00Z",
+    }
+    malformed = {
+        **_verified_signal(3, 5),
+        "started_at": "not-a-timestamp",
+    }
+    state = build_factory_state(
+        [valid, backward, malformed],
+        main_sha="abc123",
+        generated_at="2026-09-26T01:00:00Z",
+    )
+
+    # The two invalid observations cannot improve the measured lead time.
+    assert state["metrics"]["meanLeadTimeSeconds"] == 300.0
+    assert state["metrics"]["leadTimeP50Seconds"] == 300.0
+    assert state["metrics"]["leadTimeP95Seconds"] == 300.0
+
+
+def test_timestamps_without_timezone_are_not_comparable() -> None:
+    signal = {
+        **_verified_signal(1, 5),
+        "started_at": "2026-09-26T00:00:00",
+    }
+    state = build_factory_state(
+        [signal],
+        main_sha="abc123",
+        generated_at="2026-09-26T01:00:00Z",
+    )
+    assert state["metrics"]["meanLeadTimeSeconds"] is None
