@@ -710,10 +710,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/cast_event_cal/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4b5f883216e26d96f7c331e2f9f2c0bb1b2aea9d"
+          "fingerprint": "4ccab104e1f1e8d33bec0ee8ea0bbb11077dab53"
         }
       ],
-      "sourceFingerprint": "5adcb1cdf9de9435f72d31e9b5058274375e6f87b4b6c82d4a0c5fad50ca35f4",
+      "sourceFingerprint": "2d1ceae62fb42aba68f8059a7ef253392bdf8d93d652c6acee97b55e5816cf7c",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -814,10 +814,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/comfyui-workflows-factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "53a931c873fae393aa2fbec1eb3be3adccf79805"
+          "fingerprint": "a15e60d4cbf597afbb52a41cf15bb0fac0975cd3"
         }
       ],
-      "sourceFingerprint": "e98d2e4295d04830cca51e05f7c80d3a4b840b83fd506dde453205949e9aff77",
+      "sourceFingerprint": "757b6e238bc5b33c5e190adca63d7243a8621d60e25651e06189bbabd18c4674",
       "checkedAt": null,
       "needsReview": true
     },
