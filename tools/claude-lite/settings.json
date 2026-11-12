@@ -29,7 +29,14 @@
       "Bash(ssh *)",
       "Bash(scp *)",
       "Bash(sudo *)",
-      "Bash(rm -rf *)"
+      "Bash(rm -rf *)",
+      "Read(**/.env)",
+      "Edit(**/.env)",
+      "Read(~/.*.pem)",
+      "Edit(~/.*.pem)",
+      "Bash(gh *)",
+      "Bash(git -C source push *)",
+      "Bash(git -C source reset --hard *)"
     ]
   },
   "hooks": {
@@ -54,6 +61,32 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$LITE_RUN_DIR/hooks/check-progress-and-time.sh\" stop"
+          }
+        ]
+      }
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": false,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        "~/.ssh",
+        "~/.aws",
+        "~/.config/gh",
+        "~/.git-credentials",
+        "~/.npmrc",
+        "~/.agent-eval/claude-config"
+      ]
+    }
   }
 }
