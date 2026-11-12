@@ -60,6 +60,19 @@ production truthが必要な場所でfixture、dummy、mock、silent fallbackを
 
 owner repositoryごとの適用責務: research/dataはsource fidelityとfreshness、RAGは検索品質、生成はartifact/visual gate、投資は将来情報漏洩のない期間外評価、mediaは根拠精度と公開gate、agent factoryは実work completionと人手介入率を最優先とする。
 
+## Agent improvement experiments (ISUCON-inspired)
+
+AI agent・harness・自動修復ループを改善するときは、**指示やtoolの量ではなく、同一条件での最終成果**を採否の基準にします。競技用の手順をそのまま移植せず、既存のIssue / PR / Actions / production evidenceを使います。
+
+1. **Walking skeleton:** まず現行の最小構成で、入力から実際の完了条件まで1回通す。失敗・手戻り・人間介入も記録し、成功例だけを選ばない。
+2. **Baseline / candidate:** 既存の最小構成（bare）と改良構成を、同じタスク・評価器revision・入力revision・権限・実行環境・費用上限で比較する。複数の異なるタスクを使い、過去の有名な1問や成功事例への過適合を避ける。
+3. **反復とばらつき:** 変更なしでも結果が揺れる。1回の最高値、偶然の通過、CI greenだけで改善を認定しない。費用に見合う範囲で複数runを比較し、run数・成功率・処理時間・資源使用・失敗分類・測定条件を示す。同条件の比較ができなければ結果を `UNVERIFIED` とする。
+4. **Lite を選ぶ:** 失敗が実測された部分だけを最小の指示・hook・監視・復旧処理で補う。複雑なfull構成がbareに負けるなら削る。試行のたびにIssueやworkflowを増やさず、既存の作業記録を使う。
+5. **最終状態の検査:** 途中の最高点と本番の完了を分ける。導入後のexact revision / deployment / production probeを確認し、再起動・再実行後のデータ保持が要件なら、その前後を検証する。ロールバック先を保持し、不合格の変更を本番成功としない。
+6. **申し送り:** 比較に使った環境差、疑わしい計測、未解決の失敗、次のrunで確かめる条件だけを現在のcanonical Issue / PRへ短く残す。独立した台帳、常時benchmark CI、毎時の全件再実行は追加しない。
+
+参考: [ISUCON2026 優勝・準備編](https://zenn.dev/luvtechno/articles/isucon2026-preparation)（2026-11-11）。元記事のfull / bare / liteは比較対象の名前であり、工場に新たな運用状態を作るものではありません。
+
 ## Workline and GitHub
 
 各repositoryで長期保持するbranchはdefault branchの1本だけとします。未統合PRや直近24時間に更新された作業branchは作業中として保護し、終了後に既存のcleanup処理で削除します。mainへ未統合の変更を無検証で取り込まず、削除前に元head SHAを復元可能なtagへ保存します。branch整理用の追加CIは作りません。

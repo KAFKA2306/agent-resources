@@ -114,6 +114,23 @@ routine human intervention が発生したら、それ自体を automation gap �
 - runner recovery success
 - rollback / fix-forward success
 
+## Improvement evaluation
+
+Agentや自律ループの変更は、作業量・指示の多さ・PR件数だけでは評価しません。既存のIssue / PRとActions / production証拠に、次の比較結果を残します。
+
+| 比較する項目 | 確認する証拠 |
+|---|---|
+| 対象 | 同じタスク群、入力revision、評価器revision、実行環境・権限・予算 |
+| Baseline | 現行の最小構成のrun結果（成功・失敗の両方） |
+| Candidate | 変更した構成のrun結果、exact commit SHA |
+| 結果 | E2E成功率、失敗内訳、時間、資源・費用、試行回数とばらつき |
+| 導入後 | merge / deployment / production probe。永続化が必要なら再起動前後の状態 |
+| 採否 | 同条件で繰り返し改善した場合のみ採用。測れない層は `UNVERIFIED` |
+
+まず最小の構成を実際に走らせ、そこで観測した失敗だけを補強します。成功runだけを抽出しないこと、単一の最高値を全体改善と呼ばないこと、別のタスク群でも破綻しないことを確認します。新しい常時benchmark workflowや第二のstatus DBは作りません。
+
+運用規則は [AGENTS.md](https://github.com/KAFKA2306/agent-resources/blob/main/AGENTS.md) が正準です。方法の参考: [ISUCON2026 準備編](https://zenn.dev/luvtechno/articles/isucon2026-preparation)。
+
 ## Failure handling
 
 失敗を赤く表示して終わりにはしません。
