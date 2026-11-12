@@ -6,6 +6,14 @@ mkdir -p "$STATE"
 case "$1" in
   compact) cat "$RUN/CONDITIONS.md"; exit 0 ;;
   progress) ;;
+  stop)
+    NOW="$(date +%s)"
+    if [[ -n "$LITE_END_EPOCH" ]] && (( NOW < LITE_END_EPOCH - 2400 )) && [[ ! -e "$STATE/stop-reminded" ]]; then
+      : > "$STATE/stop-reminded"
+      printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"Stop","additionalContext":"Before stopping, confirm the stated acceptance criteria with direct evidence. If work remains and time permits, continue; otherwise report the verified result and stop."}}'
+    fi
+    exit 0
+    ;;
   *) exit 2 ;;
 esac
 NOW="$(date +%s)"
