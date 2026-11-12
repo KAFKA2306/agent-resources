@@ -7,7 +7,6 @@ on:
       - "skills/kafka-evidence-ui/**"
       - ".agents/plugins/marketplace.json"
       - ".claude-plugin/marketplace.json"
-      - "README.md"
       - ".github/workflows/kafka-evidence-ui-*.yml"
 permissions:
   contents: read
