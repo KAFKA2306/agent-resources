@@ -4,7 +4,7 @@ A reusable, **opt-in** runner for evaluating autonomous coding tasks without cha
 
 ## Use
 
-Requires `git`, `python3`, and a compatible current `claude` CLI. Log in once with the dedicated config directory, for example `CLAUDE_CONFIG_DIR="$HOME/.agent-eval/claude-config" claude auth login`. The runner does not perform login, pay for API calls, deploy, or modify the host/source checkout on its own.
+Requires `git`, `python3`, a compatible current `claude` CLI, plus `bubblewrap` and `socat` for the Linux/WSL2 sandbox. Log in once with the dedicated config directory, for example `CLAUDE_CONFIG_DIR="$HOME/.agent-eval/claude-config" claude auth login`. The runner clears inherited environment variables so host GitHub/cloud/provider credentials are not passed into the agent subprocess; authenticate its dedicated Claude profile interactively once. Sandboxing is fail-closed if unavailable. The runner does not perform login, pay for API calls, deploy, or modify the host/source checkout on its own.
 
 ```bash
 # Run from any directory; the three paths/values are arguments, not defaults.
@@ -31,7 +31,7 @@ check-clean:
 # to existing `deploy` / `bench` targets; do not overwrite their recipes.
 ```
 
-The `PreToolUse` hook also blocks an uncommitted exact `make bench` or `make deploy` call. **By default `make deploy` is not allowed**: add it to the run-specific permission allowlist only when the target and external effects are authorized and its own Makefile guard is installed. It **does not** protect all possible deploy entrypoints or underlying OS processes. `permissions.block*OutsideWorkingDirectories` restricts built-in file tools, not arbitrary Bash subprocesses. For untrusted code, run the full agent inside an actual container/VM with filesystem, network and credentials isolated. Do not use `--dangerously-skip-permissions`.
+The `PreToolUse` hook also blocks an uncommitted exact `make bench` or `make deploy` call. **By default `make deploy` is not allowed**: add it to the run-specific permission allowlist only when the target and external effects are authorized and its own Makefile guard is installed. It **does not** protect all possible deploy entrypoints or underlying OS processes. `permissions.block*OutsideWorkingDirectories` restricts built-in file tools, not arbitrary Bash subprocesses. Claude Code sandboxing is enabled and refuses unsandboxed Bash execution. For untrusted code, still run the full agent inside an actual container/VM with filesystem, network and credentials isolated. Do not use `--dangerously-skip-permissions`.
 
 ## Isolation and evaluation contract
 

@@ -28,27 +28,61 @@
       "Bash(aws *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "mcp__*"
+      "mcp__*",
+      "Read(**/.env)",
+      "Edit(**/.env)",
+      "Bash(git push *)"
     ]
   },
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "hooks": [{"type": "command", "command": "python3 \"$AGENT_LITE_RUN_ROOT/hooks.py\" pre"}]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$AGENT_LITE_RUN_ROOT/hooks.py\" pre"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Bash",
-        "hooks": [{"type": "command", "command": "python3 \"$AGENT_LITE_RUN_ROOT/hooks.py\" post"}]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$AGENT_LITE_RUN_ROOT/hooks.py\" post"
+          }
+        ]
       }
     ],
     "SessionStart": [
       {
         "matcher": "compact",
-        "hooks": [{"type": "command", "command": "python3 \"$AGENT_LITE_RUN_ROOT/hooks.py\" compact"}]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$AGENT_LITE_RUN_ROOT/hooks.py\" compact"
+          }
+        ]
       }
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": false,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [
+        "~/.ssh",
+        "~/.aws",
+        "~/.config/gh",
+        "~/.git-credentials",
+        "~/.npmrc",
+        "~/.agent-eval/claude-config"
+      ]
+    }
   }
 }
