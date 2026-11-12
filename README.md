@@ -66,6 +66,8 @@ agr sync
 
 CLI docs: https://agent-resources-one.vercel.app/site/cli/
 
+Opt-in [Claude Code HOOTL lite runner](tools/claude-lite/README.md): reproducible isolated run, score-stall audit, and git rollback boundary.
+
 ## Authority
 
 - owner repository: 実装とrepository固有state
