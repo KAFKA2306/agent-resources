@@ -1,0 +1,14 @@
+.PHONY: check-clean deploy bench record-score
+check-clean:
+	@git -C source rev-parse --verify HEAD >/dev/null
+	@if test -n "$$(git -C source status --porcelain)"; then \
+	  echo "ERROR: uncommitted changes. Commit a recoverable state first." >&2; exit 1; \
+	fi
+deploy: check-clean
+	@test -n "$(DEPLOY_CMD)" || { echo "DEPLOY_CMD required" >&2; exit 2; }
+	@cd source && $(DEPLOY_CMD)
+bench: check-clean
+	@test -n "$(BENCH_CMD)" || { echo "BENCH_CMD required" >&2; exit 2; }
+	@cd source && $(BENCH_CMD)
+record-score:
+	@bash hooks/record-score.sh "$(SCORE)"

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "autoMemoryEnabled": false,
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Agent",
+      "Bash(git -C source status *)",
+      "Bash(git -C source diff *)",
+      "Bash(git -C source log *)",
+      "Bash(git -C source add *)",
+      "Bash(git -C source commit *)",
+      "Bash(make -f Makefile.guard *)",
+      "Bash(go test *)",
+      "Bash(npm test *)",
+      "Bash(python3 -m pytest *)"
+    ],
+    "deny": [
+      "mcp__*",
+      "Read(~/.ssh/**)",
+      "Edit(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Edit(~/.aws/**)",
+      "Read(~/.config/gh/**)",
+      "Edit(~/.config/gh/**)",
+      "Bash(strings *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(sudo *)",
+      "Bash(rm -rf *)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$LITE_RUN_DIR/hooks/check-progress-and-time.sh\" progress"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$LITE_RUN_DIR/hooks/check-progress-and-time.sh\" compact"
+          }
+        ]
+      }
+    ]
+  }
+}
