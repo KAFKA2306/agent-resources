@@ -47,16 +47,18 @@ cp "$CONDITIONS" "$RUN_ROOT/CONDITIONS.md"
 } > "$RUN_ROOT/run-prompt.md"
 printf '{"mcpServers":{}}\n' > "$RUN_ROOT/mcp.json"
 
-export AGENT_LITE_RUN_ROOT="$RUN_ROOT"
-export AGENT_LITE_DEADLINE_EPOCH="$DEADLINE_EPOCH"
-export CLAUDE_CONFIG_DIR="$RUN_BASE/claude-config"
+# Keep host SCM, cloud, provider and other ambient credentials out of the agent process.
+# The dedicated Claude profile is the only auth source (login interactively once).
 # Login once under the dedicated config: CLAUDE_CONFIG_DIR=... claude auth login
 printf 'Isolated run: %s\n' "$RUN_ROOT"
 printf 'Source commit: %s\n' "$(git -C "$RUN_ROOT/repo" rev-parse HEAD)"
 cd "$RUN_ROOT/repo"
 # Empty setting-sources excludes user/project/local settings. Managed policy still applies.
 # The repo's tracked CLAUDE.md remains project input; this is not OS-level isolation.
-exec claude -p \
+exec env -i HOME="$HOME" PATH="$PATH" USER="$(id -un)" LANG=C.UTF-8 TERM=xterm-256color \
+  AGENT_LITE_RUN_ROOT="$RUN_ROOT" AGENT_LITE_DEADLINE_EPOCH="$DEADLINE_EPOCH" \
+  CLAUDE_CONFIG_DIR="$RUN_BASE/claude-config" CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 \
+  claude -p \
   --setting-sources '' \
   --settings "$RUN_ROOT/settings.json" \
   --strict-mcp-config --mcp-config "$RUN_ROOT/mcp.json" \
