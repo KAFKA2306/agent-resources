@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "49d7fd70ae766d897eb68f013442acc9cfe93e0f"
+          "fingerprint": "c5d815e45cc28f0971953694a01d107bb8821ec3"
         }
       ],
-      "sourceFingerprint": "29b5f80d4e2e81c81959476cc29f6f33a29310de77dc545ea0f2f3c3713180ce",
+      "sourceFingerprint": "f8e25437f62b0e01051d1e3d9218abbcb29c210b330bf2ac7046d3f26dc5bbe1",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -710,10 +710,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/cast_event_cal/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4ccab104e1f1e8d33bec0ee8ea0bbb11077dab53"
+          "fingerprint": "9fe7855673180e4a0dd6f551d62e8f76c0d242b1"
         }
       ],
-      "sourceFingerprint": "2d1ceae62fb42aba68f8059a7ef253392bdf8d93d652c6acee97b55e5816cf7c",
+      "sourceFingerprint": "50429e4bc0c2f58654194fba299c8c8364708370449cb4d39811a8c90cbc9901",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -797,9 +797,9 @@
     },
     {
       "name": "comfyui-workflows-factory",
-      "purpose": "未確認: source evidence は取得済みだが semantic review が必要",
+      "purpose": "公開されているComfyUIのWorkflowを発見・収集・評価・選定し、出典と改訂履歴を保全して制作基盤へ引き渡すためのリポジトリです。8つの制作目的を対等に扱います。作品の生成・完成・公開と実機での品質、速度、VRAM、失敗率の検証は製造基盤の責任であり、収集の成功を制作の成功とは扱いません。",
       "matches": [
-        "未確認: semantic review 完了後に検索対象へ昇格"
+        "公開されているComfyUIのWorkflowを発見・収集・評価・選定し、出典と改訂履歴を保全して制作基盤へ引き渡すためのリポジトリです。8つの制作目的を対等に扱います。作品の生成・完成・公開と実機での品質、速度、VRAM、失敗率の検証は製造基盤の責任であり、収集の成功を制作の成功とは扱いません。"
       ],
       "notFor": [],
       "url": "https://github.com/KAFKA2306/comfyui-workflows-factory",
@@ -818,8 +818,8 @@
         }
       ],
       "sourceFingerprint": "757b6e238bc5b33c5e190adca63d7243a8621d60e25651e06189bbabd18c4674",
-      "checkedAt": null,
-      "needsReview": true
+      "checkedAt": "2026-11-13T02:54:05Z",
+      "needsReview": false
     },
     {
       "name": "CrewTrade",
