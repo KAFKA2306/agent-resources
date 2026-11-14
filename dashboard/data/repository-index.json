@@ -2588,6 +2588,32 @@
       "needsReview": true
     },
     {
+      "name": "sts2",
+      "purpose": "新キャラの企画、制作、Steam版での動作確認、配布をこのリポジトリで管理する。初版の進捗は Issue #1 に記録する。",
+      "matches": [
+        "新キャラの企画、制作、Steam版での動作確認、配布をこのリポジトリで管理する。初版の進捗は Issue #1 に記録する。"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/sts2",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/sts2",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/sts2/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "baf83dfdfc36fe4b18149aed2ae8aee20aeaf467"
+        }
+      ],
+      "sourceFingerprint": "840d6a7cbb228a2c7ae1c5cd24fdc9d7d0069552d68497c9f6641b2f1d2bc863",
+      "checkedAt": "2026-11-14T02:41:22Z",
+      "needsReview": false
+    },
+    {
       "name": "summer",
       "purpose": "夏の暑さ対策について、学術論文のような形式で情報を整理・表示するウェブサイトです。UV遮蔽、体温調節、冷却システムなどの対策を科学的な説明とともに紹介しています。",
       "matches": [
