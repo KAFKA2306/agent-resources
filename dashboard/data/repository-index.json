@@ -2606,12 +2606,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/sts2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "baf83dfdfc36fe4b18149aed2ae8aee20aeaf467"
+          "fingerprint": "5e87871791077ae328b2e871b27f0699da702293"
         }
       ],
-      "sourceFingerprint": "840d6a7cbb228a2c7ae1c5cd24fdc9d7d0069552d68497c9f6641b2f1d2bc863",
+      "sourceFingerprint": "c14ecdc0865ccc80c05007709ca752b22e753e1d92f52c1f170fbe76d2087a3f",
       "checkedAt": "2026-11-14T02:41:22Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "summer",
