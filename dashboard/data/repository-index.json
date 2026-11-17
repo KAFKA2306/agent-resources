@@ -1235,10 +1235,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finBI/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "2b31320f1042ad6c3a2864524d8e4ca4d5f82aff"
+          "fingerprint": "166b79c9e5c39f87178033da2d136b7855995b05"
         }
       ],
-      "sourceFingerprint": "5b6efad274eab8b62c801f654147eaf5fe868948d4d6254a8d0421ad10f2e65e",
+      "sourceFingerprint": "e8907cf882ed7dfe239f0394bc8fbde90e9883db7ed36fc4ba40699a28674241",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
