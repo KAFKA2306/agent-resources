@@ -15,6 +15,8 @@
 
 ## Priority and execution
 
+作業の開始時に [Kafstylerの作業規約](https://github.com/KAFKA2306/kafstyler/blob/main/AGENTS.md#全作業への適用と自己改善) に従う。正本の `main` のSHAを固定し、`scope` と必要なスキルで完了条件、実行、検証を決める。対象に固有の不足はその対象の作業記録へ、共通手順の不足はKafstylerの保守担当が読める非公開の記録へつなぐ。
+
 1. current user instruction
 2. この `AGENTS.md`
 3. current official upstream documentation
