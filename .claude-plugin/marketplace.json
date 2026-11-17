@@ -23,6 +23,14 @@
         "javascript",
         "dashboard"
       ]
+    },
+    {
+      "name": "kafstyler",
+      "description": "AIエージェントが開発・調査・制作・運用で目標を定め、成果を検証して届け、文書や手法を自律的に改善する。",
+      "source": {
+        "source": "github",
+        "repo": "KAFKA2306/kafstyler"
+      }
     }
   ]
 }
