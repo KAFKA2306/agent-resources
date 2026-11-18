@@ -814,12 +814,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/comfyui-workflows-factory/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "a15e60d4cbf597afbb52a41cf15bb0fac0975cd3"
+          "fingerprint": "7ca310e7f10de5a2d6ed9ed872833a9a168b0d16"
         }
       ],
-      "sourceFingerprint": "757b6e238bc5b33c5e190adca63d7243a8621d60e25651e06189bbabd18c4674",
+      "sourceFingerprint": "bf679aa43cf3b08b8fc64c8433528422359cac254ced6651367bb484dd240a87",
       "checkedAt": "2026-11-13T02:54:05Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "CrewTrade",
@@ -996,10 +996,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/design/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "c6118057b97c8c9c54dae2d2a93b659485c5fddb"
+          "fingerprint": "ce463a810ded4af88424bc9db3a699f4fe94d6e9"
         }
       ],
-      "sourceFingerprint": "3da41751c010cc0bdc380e02e9fc3afe51f13c90c21803e3ac61f829dc145c29",
+      "sourceFingerprint": "d1c2207da55964aff2075495d4a2599d4dc928727d06883ee3cda65cfb7a7758",
       "checkedAt": "2026-09-22T02:12:04Z",
       "needsReview": true
     },
@@ -1698,6 +1698,32 @@
       "sourceFingerprint": "4f6ded2ae39a595b55ea34134790174c10da47bea7a1b96b7a9ed0cf0ffc8ed7",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
+    },
+    {
+      "name": "kafstyler",
+      "purpose": "Kafstylerは、Claude CodeとCodexのAIエージェントが、開発・調査・制作・運用で何をもって完了とするかを決め、成果物を検証して届けるためのプラグインです。文章の推敲やデータ設計など、作業に応じてスキルを組み合わせます。複数の仕事に共通する手順の漏れが見つかれば、再現してKafstyler自体を直します。",
+      "matches": [
+        "Kafstylerは、Claude CodeとCodexのAIエージェントが、開発・調査・制作・運用で何をもって完了とするかを決め、成果物を検証して届けるためのプラグインです。文章の推敲やデータ設計など、作業に応じてスキルを組み合わせます。複数の仕事に共通する手順の漏れが見つかれば、再現してKafstyler自体を直します。"
+      ],
+      "notFor": [],
+      "url": "https://github.com/KAFKA2306/kafstyler",
+      "sources": [
+        {
+          "kind": "repository",
+          "url": "https://github.com/KAFKA2306/kafstyler",
+          "status": "ok",
+          "fingerprint": "24aac5d67dd4e66b26cae070d92b8a0dc382bc89bfa5689583bf3bbbbbd7b3a7"
+        },
+        {
+          "kind": "readme",
+          "url": "https://github.com/KAFKA2306/kafstyler/blob/main/README.md",
+          "status": "ok",
+          "fingerprint": "91c00923332c3cc3a12c8bfec6cbe46280d6e9c9"
+        }
+      ],
+      "sourceFingerprint": "cb1229905ed7f063e20f390f3ca26575b897175654380f21cabc56ed80a4ffa1",
+      "checkedAt": "2026-11-18T03:51:28Z",
+      "needsReview": false
     },
     {
       "name": "kakeibo",
@@ -2554,10 +2580,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "5b22e2b39cdcb3069c48d0c6f21b119d02bb5856"
+          "fingerprint": "d5145c269fa827e9d58c600d4b353936506f6d39"
         }
       ],
-      "sourceFingerprint": "67e811fc94d3384a913d7ed81b8a666404763a1351bc3e284d0f1d5690760382",
+      "sourceFingerprint": "94bb70a73c85147b791984b92db49f57c77e0f823ea18961b93866d913fb8997",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -3437,10 +3463,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/yt3/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "1dda1b1197acc3274cedda3ffbd716542f7d947e"
+          "fingerprint": "47712f6c2ea5e512bb9ef8c4a4950df5e77c8f3e"
         }
       ],
-      "sourceFingerprint": "a3e3c0f87f1bc6760b3ee152f0f9fa46d550719c8c603ebd53abbaecf694f74b",
+      "sourceFingerprint": "0af96da900c9d2251c650eff5de93096678d700e6275746a7d552e3d9df15a26",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
