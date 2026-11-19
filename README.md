@@ -94,7 +94,8 @@ api/            live overlay API
 infra/github/   Terraform GitHub control-plane drift contract
 skills/         reusable agent skills
 plugins/        packaged integrations
-src/            agr / agrx
+agr/            agr
+agrx/           agrx
 ~~~
 
 内部互換のため `dashboard/`、`dashboard.json`、`/api/dashboard-live` など既存の技術識別子は維持します。製品名は Software Factory Control Tower に統一します。
