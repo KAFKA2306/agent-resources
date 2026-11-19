@@ -109,9 +109,9 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   display:flex;flex-direction:column;justify-content:center;
   padding:clamp(26px,4vw,52px) 10px clamp(26px,4vw,52px) clamp(24px,4vw,50px);
 }
-.bridge-title-block h1{margin:0;color:#0b2a3d;font-size:clamp(2.4rem,5.6vw,5.4rem);line-height:.86;letter-spacing:-.072em;text-transform:uppercase}
-.bridge-title-block h1 span{color:transparent;-webkit-text-stroke:1.5px rgba(0,148,204,.73);text-shadow:0 0 24px rgba(0,177,216,.10)}
-.bridge-title-block h2{max-width:500px;margin:24px 0 8px;font-size:clamp(1rem,1.8vw,1.38rem);line-height:1.3;letter-spacing:-.025em}
+.bridge-display-title{margin:0;color:#0b2a3d;font-size:clamp(2.4rem,5.6vw,5.4rem);line-height:.86;letter-spacing:-.072em;text-transform:uppercase}
+.bridge-display-title span{color:transparent;-webkit-text-stroke:1.5px rgba(0,148,204,.73);text-shadow:0 0 24px rgba(0,177,216,.10)}
+.bridge-flow{max-width:500px;margin:24px 0 8px;font-size:clamp(1rem,1.8vw,1.38rem);line-height:1.3;letter-spacing:-.025em}
 .bridge-title-block .hero-note{max-width:520px;margin:0;font-size:.76rem;line-height:1.7}
 .bridge-health{display:grid;gap:8px;margin-top:28px;max-width:480px}
 .hub,.bridge-current{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:3px 12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.72);box-shadow:inset 0 1px 0 #fff}
@@ -243,7 +243,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 }
 .mission-vector::before,.repository-field::before,.telemetry-deck::before{content:"";position:absolute;left:0;top:0;width:40%;height:2px;background:linear-gradient(90deg,var(--cyan2),rgba(118,104,255,.5),transparent);box-shadow:0 0 10px rgba(0,199,231,.25)}
 .vector-heading,.signal-stream-heading,.field-heading,.stats-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:13px}
-.vector-heading h2,.signal-stream-heading h2,.field-heading h2,.stats-heading h2{margin:0;font-size:1.08rem;letter-spacing:-.02em}
+.vector-heading h1,.signal-stream-heading h2,.field-heading h2,.stats-heading h2{margin:0;font-size:1.08rem;letter-spacing:-.02em}
 .vector-heading>p{max-width:450px;margin:2px 0 0;color:var(--muted);font-size:.68rem;text-align:right}
 .lane-gates{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .lane-gates::before{content:"";position:absolute;left:9%;right:9%;top:50%;height:1px;background:linear-gradient(90deg,rgba(0,160,212,.06),rgba(0,181,221,.35),rgba(118,104,255,.3),rgba(0,160,212,.06));z-index:0}
@@ -329,7 +329,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 @media(max-width:900px){
   .bridge-stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto}
   .bridge-title-block{padding:30px 24px 6px;text-align:center;align-items:center}
-  .bridge-title-block h2,.bridge-title-block .hero-note{max-width:680px}
+  .bridge-flow,.bridge-title-block .hero-note{max-width:680px}
   .bridge-health{width:min(100%,620px)}
   .reactor-stage{padding-top:12px}
   .reactor-field{height:540px}
@@ -346,7 +346,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .public-links{width:100%}.public-links a{flex:1;justify-content:center}
   .bridge-shell{padding:10px 10px 30px}
   .bridge-stage{border-radius:20px}
-  .bridge-title-block h1{font-size:clamp(2.6rem,15vw,4.4rem)}
+  .bridge-display-title{font-size:clamp(2.6rem,15vw,4.4rem)}
   .reactor-heading{position:relative;left:auto;top:auto;transform:none;margin-top:8px}
   .reactor-field{height:auto;min-height:0;margin:12px 0 0;padding:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;background:none;border-radius:0}
   .reactor-field::before,.reactor-field::after{display:none}
@@ -651,8 +651,8 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 :root[data-factory-autonomy="partial"] .hero-metric-autonomy strong{color:#8a6900}
 
 .bridge-title-block{overflow:visible}
-.bridge-title-block h1{position:relative;z-index:1}
-.bridge-title-block h1::after{
+.bridge-display-title{position:relative;z-index:1}
+.bridge-display-title::after{
   content:"";
   position:absolute;
   z-index:-1;
@@ -662,7 +662,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   filter:blur(16px);
   pointer-events:none;
 }
-:root[data-factory-motion="hot"] .bridge-title-block h1::after{background:radial-gradient(ellipse at center,rgba(27,216,239,.24),rgba(118,104,255,.08) 46%,transparent 72%)}
+:root[data-factory-motion="hot"] .bridge-display-title::after{background:radial-gradient(ellipse at center,rgba(27,216,239,.24),rgba(118,104,255,.08) 46%,transparent 72%)}
 
 .reactor-core{transition:box-shadow .35s ease,filter .35s ease}
 :root[data-factory-motion="active"] .reactor-core{box-shadow:0 0 0 9px rgba(255,255,255,.68),0 0 0 10px rgba(0,162,214,.19),0 24px 56px rgba(22,129,173,.14),0 0 76px rgba(0,206,232,.16)}
@@ -698,8 +698,8 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
     min-height:860px;
   }
   .bridge-title-block{padding-left:clamp(38px,4.8vw,76px)}
-  .bridge-title-block h1{font-size:clamp(5rem,6.2vw,7.6rem);line-height:.82}
-  .bridge-title-block h2{font-size:clamp(1.15rem,1.65vw,1.7rem);margin-top:30px}
+  .bridge-display-title{font-size:clamp(5rem,6.2vw,7.6rem);line-height:.82}
+  .bridge-flow{font-size:clamp(1.15rem,1.65vw,1.7rem);margin-top:30px}
   .hero-telemetry{max-width:680px;margin-top:46px}
   .hero-metric{padding-top:20px;padding-bottom:18px}
   .hero-metric strong{font-size:clamp(3.4rem,4vw,5.25rem)}
@@ -728,7 +728,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .evidence-link .muted{font-size:.64rem}
 
   .mission-vector,.signal-stream,.repository-field,.telemetry-deck{padding-left:28px;padding-right:28px}
-  .vector-heading h2,.signal-stream-heading h2,.field-heading h2,.stats-heading h2{font-size:1.35rem}
+  .vector-heading h1,.signal-stream-heading h2,.field-heading h2,.stats-heading h2{font-size:1.35rem}
 
   .activity-pulse-plot{min-height:340px}
   .repository-constellation-shell{height:clamp(620px,72vh,820px);min-height:0;border-radius:24px}
@@ -752,7 +752,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 
 
 /* Size audit: continuous responsive scale + readable telemetry floor. */
-.bridge-title-block h1{font-size:clamp(2.8rem,5.6vw,5.4rem)}
+.bridge-display-title{font-size:clamp(2.8rem,5.6vw,5.4rem)}
 .hero-metric strong{font-size:clamp(2.75rem,4vw,3.4rem)}
 .eyebrow,.identity-kicker{font-size:.7rem}
 .public-links a{font-size:.72rem}
@@ -782,7 +782,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 .constellation-tooltip span{font-size:.7rem}
 
 @media(min-width:1440px){
-  .bridge-title-block h1{font-size:clamp(5rem,6.2vw,7.6rem)}
+  .bridge-display-title{font-size:clamp(5rem,6.2vw,7.6rem)}
   .hero-metric strong{font-size:clamp(3.4rem,4vw,5.25rem)}
   .hero-metric span,.hero-field-mode{font-size:.72rem}
   .reactor-node-copy strong{font-size:.78rem}
@@ -790,7 +790,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 }
 
 @media(max-width:700px){
-  .bridge-title-block h1{font-size:clamp(2.8rem,5.6vw,3.2rem);letter-spacing:-.082em}
+  .bridge-display-title{font-size:clamp(2.8rem,5.6vw,3.2rem);letter-spacing:-.082em}
   .hero-metric strong{font-size:clamp(1.9rem,8vw,2.4rem)}
   .hero-metric span,.hero-field-mode{font-size:.7rem;letter-spacing:.06em}
   .eyebrow,.identity-kicker,.reactor-heading>span{font-size:.7rem}
@@ -804,7 +804,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
 }
 
 @media(max-width:460px){
-  .bridge-title-block h1{font-size:clamp(2.55rem,12vw,2.95rem)}
+  .bridge-display-title{font-size:clamp(2.55rem,12vw,2.95rem)}
 }
 
 
@@ -852,7 +852,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   font-size:.9375rem;
 }
 
-.vector-heading h2,
+.vector-heading h1,
 .signal-stream-heading h2,
 .field-heading h2,
 .stats-heading h2{
@@ -932,7 +932,7 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .reactor-node-copy strong,
   .evidence-link .muted{font-size:.875rem}
   .evidence-link>strong{font-size:.9375rem}
-  .vector-heading h2,
+  .vector-heading h1,
   .signal-stream-heading h2,
   .field-heading h2,
   .stats-heading h2{font-size:1.35rem}
@@ -1008,4 +1008,29 @@ a:focus-visible,button:focus-visible,[tabindex="0"]:focus-visible{outline:2px so
   .public-surface-grid{grid-template-columns:minmax(0,1fr)}
   .public-surface-row{grid-template-columns:minmax(0,1fr)}
   .public-surface-actions{justify-content:flex-start}
+}
+
+.mission-vector{margin-top:0}
+.bridge-stage{margin-top:14px}
+.action-coverage{margin:0 0 12px;font-size:.875rem;color:var(--ink)}
+.primary-action{margin-bottom:14px}
+.primary-action h3{margin:0 0 6px;font-size:.9375rem}
+.gate-item{grid-template-columns:minmax(0,1fr) auto}
+.gate-item-meta,.gate-item-title,.gate-item-reason{grid-column:1;overflow-wrap:anywhere}
+.gate-item-title{font-size:1rem}
+.gate-item-link{
+  grid-column:2;grid-row:1/4;align-self:center;
+  display:inline-flex;align-items:center;min-height:44px;max-width:100%;
+  padding:5px 10px;border:1px solid var(--line-strong);border-radius:8px;
+  font-size:.875rem;text-decoration:underline;text-underline-offset:2px;
+}
+.gate-item .world-station-actions{grid-column:1/-1;grid-row:auto;justify-content:flex-start}
+.gate-item-owner{font-weight:700;color:var(--ink)}
+.lane-gate{min-height:44px}
+@media(max-width:700px){
+  .lane-gates{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .lane-gate{grid-template-columns:minmax(0,1fr);gap:2px;padding:7px 6px}
+  .lane-gate strong{font-size:1.125rem}
+  .gate-item{grid-template-columns:minmax(0,1fr)}
+  .gate-item-link{grid-column:1;grid-row:auto;justify-self:start}
 }

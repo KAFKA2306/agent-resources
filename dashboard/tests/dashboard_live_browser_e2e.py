@@ -109,14 +109,14 @@ def live_payload() -> dict[str, object]:
             {
                 "id": "shared#2",
                 "repositoryId": "shared",
-                "kind": "issue",
+                "kind": "pull_request",
                 "number": 2,
-                "title": "LIVE-ISSUE",
-                "url": "https://github.com/KAFKA2306/poker-raise-quiz/issues/2",
+                "title": "LIVE-PR",
+                "url": "https://github.com/KAFKA2306/poker-raise-quiz/pull/2",
                 "state": "open",
                 "updatedAt": fetched_at,
-                "lane": "failed",
-                "laneReason": "live fixture",
+                "lane": "waiting",
+                "laneReason": "open_pull_request",
             }
         ],
         "activity": [],
@@ -245,9 +245,9 @@ def main() -> None:
             "LIVE · workflow snapshot<"
         ) in dom,
         "live repository rendered": "poker-raise-quiz" in dom,
-        "live work item rendered": "LIVE-ISSUE" in dom,
-        "primary action rendered": 'id="primary-action"' in dom and "最優先の対応" in dom,
-        "primary action has one-click evidence": "次の行動: 対応先を開く" in dom,
+        "live work item rendered": "LIVE-PR" in dom,
+        "primary action rendered": 'id="primary-action"' in dom and "最優先の確認 · 未解決PR" in dom,
+        "primary action has one-click evidence": "PRの変更とチェックを開く" in dom,
         "baseline public link survived live overlay": PUBLIC_SURFACE_URL in dom,
         "public surface action rendered": 'class="constellation-surface is-front"' in dom,
         "work item terminology rendered": re.search(
