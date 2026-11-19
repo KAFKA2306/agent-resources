@@ -7,7 +7,7 @@ import pytest
 
 SCRIPT = (
     Path(__file__).parent.parent
-    / "skills/development/workflow/research-codebase/scripts/gh_issue_phase.sh"
+    / "skills/development/workflow/make-release/scripts/gh_issue_phase.sh"
 )
 
 
