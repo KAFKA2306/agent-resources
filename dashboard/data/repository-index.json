@@ -1718,12 +1718,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/kafstyler/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "91c00923332c3cc3a12c8bfec6cbe46280d6e9c9"
+          "fingerprint": "6759f9f358a6b49ce01622876f75834991d58d45"
         }
       ],
-      "sourceFingerprint": "cb1229905ed7f063e20f390f3ca26575b897175654380f21cabc56ed80a4ffa1",
+      "sourceFingerprint": "d5ef2ca97cf23c06d1639f8b3e976766ace46a5eb3eea10fba6c0e7e59a3ce9a",
       "checkedAt": "2026-11-18T03:51:28Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "kakeibo",
@@ -2580,10 +2580,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d5145c269fa827e9d58c600d4b353936506f6d39"
+          "fingerprint": "6ef02ec3c5fc48e0f06f5db84d495fec29296182"
         }
       ],
-      "sourceFingerprint": "94bb70a73c85147b791984b92db49f57c77e0f823ea18961b93866d913fb8997",
+      "sourceFingerprint": "10706dd6a5a73c38fa2eb38699b9aa586243badcf39d17cf31966a149e53caed",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
