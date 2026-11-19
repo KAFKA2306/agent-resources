@@ -20,6 +20,10 @@ const liveFetchedAt = document.querySelector("#live-fetched-at");
 const workspaceMessage = document.querySelector("#workspace-message");
 const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
+const actionCoverage = document.querySelector("#action-coverage");
+const primaryAction = document.querySelector("#primary-action");
+const primaryActionTitle = document.querySelector("#primary-action-title");
+const primaryActionItem = document.querySelector("#primary-action-item");
 const activityFeed = document.querySelector("#activity-feed");
 const heroRepositoryTotal = document.querySelector("#hero-repository-total");
 const heroActivityTotal = document.querySelector("#hero-activity-total");
@@ -27,16 +31,28 @@ const heroMotionLabel = document.querySelector("#hero-motion-label");
 
 const ACTIVITY_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const ACTIVITY_COUNT_LABELS = { issue: "Issue", pull_request: "PR", workflow_run: "Run" };
-const WORK_ITEM_LABELS = { issue: "Issue", pull_request: "Pull Request", workflow_run: "Workflow Run" };
 const GATES = [
-  { lane: "waiting", label: "WAIT", detailLabel: "判断待ち" },
-  { lane: "failed", label: "FAIL", detailLabel: "失敗・要確認" },
-  { lane: "done", label: "DONE", detailLabel: "完了報告" },
+  { lane: "waiting", label: "未解決PR", detailLabel: "未解決PR" },
+  { lane: "failed", label: "実行の失敗", detailLabel: "失敗した実行" },
+  { lane: "done", label: "終了した実行", detailLabel: "終了した実行" },
 ];
+const NEXT_ACTION = {
+  workflow_run: "Actionsの実行ログを開く",
+  pull_request: "PRの変更とチェックを開く",
+  issue: "Issueを開く",
+};
+const LANE_REASONS = {
+  open_pull_request: "PRが開いています。",
+  workflow_failed: "実行が失敗しました。",
+  workflow_cancelled: "実行が中止されました。",
+  workflow_completed: "実行が完了しました。",
+  workflow_skipped: "実行がスキップされました。",
+};
 const LIVE_CONFIG_URL = "./live-config.json";
 const MIN_LIVE_SUCCESS_AGE_MS = 60 * 1000;
 
 let baselineSnapshot = null;
+let visibleSnapshot = null;
 let liveEndpoint = null;
 let liveEndpointResolved = false;
 let liveRequest = null;
@@ -60,6 +76,85 @@ function formatWorkItemAge(value) {
   return `${Math.floor(hours / 24)}日前に更新`;
 }
 
+function createGateItem(item, repositoriesById, includePublicSurfaces = true) {
+  const repo = repositoriesById.get(item.repositoryId);
+  const row = document.createElement("article");
+  row.className = "gate-item";
+
+  const meta = document.createElement("div");
+  meta.className = "gate-item-meta";
+  const owner = document.createElement("span");
+  owner.className = "gate-item-owner";
+  owner.textContent = repositoryLabel(repo);
+  const updated = document.createElement("time");
+  if (item.updatedAt) updated.dateTime = item.updatedAt;
+  updated.textContent = formatWorkItemAge(item.updatedAt);
+  meta.append(owner, updated);
+
+  const title = document.createElement("strong");
+  title.className = "gate-item-title";
+  title.textContent = item.title;
+
+  const reason = document.createElement("p");
+  reason.className = "gate-item-reason";
+  reason.textContent = LANE_REASONS[item.laneReason] || "GitHubで状態を確認してください。";
+
+  const link = document.createElement("a");
+  link.className = "gate-item-link";
+  link.href = item.url;
+  link.textContent = NEXT_ACTION[item.kind] || "GitHubの記録を開く";
+
+  row.append(meta, title, reason, link);
+  const publicSurfaceLinks = includePublicSurfaces && repo ? createPublicSurfaceLinks(repo) : null;
+  if (publicSurfaceLinks) row.append(publicSurfaceLinks);
+  return row;
+}
+
+function renderPrimaryAction(failed, waiting, repositoriesById, snapshot, liveError) {
+  const stored = classifySnapshot(snapshot.generatedAt);
+  const live = classifyLive(snapshot.liveFetchedAt, snapshot.liveMaxAgeSeconds);
+  const hasLive = live.fetched !== null;
+  const freshWorkflow = stored.state === "fresh";
+  const freshWork = hasLive ? live.isFresh && !liveError : freshWorkflow;
+  const workflowTime = stored.generated
+    ? `Actionsの保存時刻 ${formatSnapshotTime(stored.generated)} JST`
+    : "Actionsの保存時刻は不明";
+  const prTime = hasLive
+    ? `PRの取得時刻 ${formatSnapshotTime(live.fetched)} JST`
+    : stored.generated ? "PRも同じ保存時刻" : "PRの取得時刻は不明";
+  const coverage = liveError
+    ? `ライブ取得失敗（${liveError}）`
+    : hasLive && !live.isFresh
+      ? "ライブの取得結果は古い"
+      : hasLive
+        ? "PRをライブ取得"
+        : "保存データを表示";
+  let status = `${coverage}。 ${workflowTime}。 ${prTime}。`;
+  if (!freshWorkflow && stored.generated) status += " Actionsの現況は未確認です。";
+
+  const item = (freshWorkflow && failed[0])
+    || (freshWork && waiting[0])
+    || failed[0]
+    || waiting[0];
+  if (!item) {
+    status += freshWorkflow && freshWork
+      ? " 取得範囲に失敗した実行・未解決PRはありません。"
+      : " 現在の対応件数は未確認です。";
+  }
+  actionCoverage.textContent = status;
+  const linkHadFocus = primaryAction.contains(document.activeElement);
+  primaryAction.hidden = !item;
+  primaryActionItem.replaceChildren();
+  if (!item) return;
+
+  const fresh = item.lane === "failed" ? freshWorkflow : freshWork;
+  primaryActionTitle.textContent = fresh
+    ? item.lane === "failed" ? "最優先の確認 · 失敗した実行" : "最優先の確認 · 未解決PR"
+    : "過去の記録 · GitHubで現況を確認";
+  primaryActionItem.append(createGateItem(item, repositoriesById, false));
+  if (linkHadFocus) primaryActionItem.querySelector(".gate-item-link").focus({ preventScroll: true });
+}
+
 function showGateItems(label, items, repositoriesById) {
   gateDetail.replaceChildren();
   gateDetail.hidden = false;
@@ -75,63 +170,32 @@ function showGateItems(label, items, repositoriesById) {
   }
   const list = document.createElement("div");
   list.className = "gate-item-list";
-  for (const item of items.slice().sort(compareWorkItems)) {
-    const row = document.createElement("article");
-    row.className = "gate-item";
-    const repo = repositoriesById.get(item.repositoryId);
-
-    const itemHeading = document.createElement("div");
-    itemHeading.className = "gate-item-heading";
-    const link = document.createElement("a");
-    link.className = "gate-item-link";
-    link.href = item.url;
-    link.target = "_blank";
-    link.rel = "noreferrer";
-    link.textContent = `${repositoryLabel(repo)} · ${item.title}`;
-    itemHeading.append(link);
-
-    const meta = document.createElement("div");
-    meta.className = "gate-item-meta";
-    const kind = document.createElement("span");
-    kind.textContent = WORK_ITEM_LABELS[item.kind] || item.kind;
-    const state = document.createElement("span");
-    state.textContent = item.state;
-    const updated = document.createElement("time");
-    if (item.updatedAt) updated.dateTime = item.updatedAt;
-    updated.textContent = formatWorkItemAge(item.updatedAt);
-    meta.append(kind, state, updated);
-
-    const reason = document.createElement("p");
-    reason.className = "gate-item-reason";
-    reason.textContent = item.laneReason || "理由は取得できませんでした。";
-
-    row.append(itemHeading, meta, reason);
-    const publicSurfaceLinks = repo ? createPublicSurfaceLinks(repo) : null;
-    if (publicSurfaceLinks) row.append(publicSurfaceLinks);
-    list.append(row);
+  for (const item of items) {
+    list.append(createGateItem(item, repositoriesById));
   }
   gateDetail.append(list);
 }
 
-function renderGates(workItems, repositoriesById, liveCoverage = null) {
+function renderGates(workItems, repositoriesById, snapshot, liveError) {
   laneGates.replaceChildren();
+  gateDetail.hidden = true;
+  const ordered = workItems.slice().sort(compareWorkItems);
+  const failed = ordered.filter((item) => item.lane === "failed");
+  const waiting = ordered.filter((item) => item.lane === "waiting");
+  renderPrimaryAction(failed, waiting, repositoriesById, snapshot, liveError);
+  if (!snapshot.generatedAt && !snapshot.liveFetchedAt) return;
+
+  const itemsByLane = { failed, waiting, done: ordered.filter((item) => item.lane === "done") };
   for (const gate of GATES) {
-    const items = workItems.filter((item) => item.lane === gate.lane);
-    const usesWorkflowSnapshot = (
-      gate.lane === "failed"
-      && liveCoverage?.workflowRuns === "snapshot"
-      && items.some((item) => item.kind === "workflow_run")
-    );
-    const label = usesWorkflowSnapshot ? `${gate.label} / SNAPSHOT` : gate.label;
-    const detailLabel = usesWorkflowSnapshot ? `${gate.detailLabel}（workflow snapshot）` : gate.detailLabel;
+    const items = itemsByLane[gate.lane];
+    const detailLabel = gate.detailLabel;
     const button = document.createElement("button");
     button.className = "lane-gate";
     button.dataset.lane = gate.lane;
     button.type = "button";
     button.setAttribute("aria-pressed", "false");
     button.setAttribute("aria-label", `${detailLabel}: ${items.length}件`);
-    if (usesWorkflowSnapshot) button.dataset.freshness = "snapshot";
-    button.innerHTML = `<span>${label}</span><strong>${items.length}</strong><i aria-hidden="true">→</i>`;
+    button.innerHTML = `<span>${gate.label}</span><strong>${items.length}</strong>`;
     button.addEventListener("click", () => {
       for (const candidate of laneGates.querySelectorAll("button[data-lane]")) {
         candidate.setAttribute("aria-pressed", String(candidate === button));
@@ -359,6 +423,7 @@ function formatSnapshotTime(date) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    timeZone: "Asia/Tokyo",
   }).format(date);
 }
 
@@ -402,17 +467,27 @@ function renderLiveFailure(message = "Live取得失敗") {
   snapshotStatus.textContent = "LIVE ERROR";
   liveFetchedAt.removeAttribute("datetime");
   liveFetchedAt.textContent = `Live: ${message}`;
+  const { workItems, repositoriesById, snapshot } = visibleSnapshot;
+  const ordered = workItems.slice().sort(compareWorkItems);
+  renderPrimaryAction(
+    ordered.filter((item) => item.lane === "failed"),
+    ordered.filter((item) => item.lane === "waiting"),
+    repositoriesById,
+    snapshot,
+    message,
+  );
 }
 
-function renderDashboard(snapshot) {
+function renderDashboard(snapshot, liveError = null) {
   const repositories = Array.isArray(snapshot.repositories) ? snapshot.repositories : [];
   const workItems = Array.isArray(snapshot.workItems) ? snapshot.workItems : [];
   const activity = Array.isArray(snapshot.activity) ? snapshot.activity : [];
   const repositoriesById = new Map(repositories.map((repo) => [repo.id, repo]));
   const referenceTime = snapshot.liveFetchedAt || snapshot.generatedAt;
+  visibleSnapshot = { workItems, repositoriesById, snapshot };
 
+  renderGates(workItems, repositoriesById, snapshot, liveError);
   renderWorld(repositories, workItems, activity, referenceTime);
-  renderGates(workItems, repositoriesById, snapshot.liveCoverage);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
   const factoryActivity = Math.min(1, activity.length / 70);
@@ -471,7 +546,7 @@ export async function refreshLiveState({ force = false } = {}) {
       if (sequence < latestAppliedSequence) return null;
       latestAppliedSequence = sequence;
       lastLiveSuccessAt = Date.now();
-      renderDashboard(merged);
+      renderDashboard({ ...merged, liveMaxAgeSeconds: live.cache?.maxAgeSeconds });
       renderSnapshotMeta(baselineSnapshot);
       renderLiveMeta(live.fetchedAt, live.cache?.maxAgeSeconds, merged.liveCoverage);
       return merged;
@@ -497,7 +572,7 @@ async function loadDashboard() {
     renderSnapshotMeta(baselineSnapshot);
     await refreshLiveState({ force: true });
   } catch (error) {
-    renderDashboard({ repositories: [], workItems: [], activity: [], stats: null });
+    renderDashboard({ repositories: [], workItems: [], activity: [], stats: null }, "保存データも取得できません");
     snapshotStatus.dataset.state = "failed";
     snapshotStatus.textContent = "更新失敗";
     snapshotGeneratedAt.removeAttribute("datetime");

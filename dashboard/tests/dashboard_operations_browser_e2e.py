@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime as dt
 import pathlib
 import ssl
 import subprocess
@@ -30,7 +31,7 @@ PROBE = """
       const summary = document.querySelector('.operations-summary');
       const bridgeStage = document.querySelector('.bridge-stage');
       const summaryIndicators = document.querySelectorAll('#snapshot-status, #lane-gates .lane-gate');
-      document.body.dataset.restoredBeforeKeyboard = String(initialHeading.textContent.includes('判断待ち'));
+      document.body.dataset.restoredBeforeKeyboard = String(initialHeading.textContent.includes('未解決PR'));
       document.body.dataset.gatesNamed = String(buttons.every((button) => button.type === 'button' && button.textContent.trim().length > 0));
       document.body.dataset.summaryIndicators = String(
         summaryIndicators.length === 4
@@ -64,12 +65,38 @@ PROBE = """
 </script>
 """
 
+FAILED_RUN = {
+    "id": "shared:workflow_run:123",
+    "repositoryId": "shared",
+    "kind": "workflow_run",
+    "number": 3,
+    "title": "Validate site",
+    "url": "https://github.com/KAFKA2306/poker-raise-quiz/actions/runs/123",
+    "state": "failed",
+    "updatedAt": "2026-08-19T00:00:00Z",
+    "lane": "failed",
+    "laneReason": "workflow_failed",
+}
+
 
 class OperationsHandler(FixtureHandler):
+    mode = "live"
+
     def do_GET(self):  # noqa: N802 - stdlib handler API
         path = self.path.split("?", 1)[0]
         if path == "/dashboard.json":
-            self.send_json({**BASELINE, "stats": None})
+            generated_at = (
+                dt.datetime.now(dt.UTC).isoformat() if self.mode == "fresh" else BASELINE["generatedAt"]
+            )
+            self.send_json({
+                **BASELINE,
+                "generatedAt": generated_at,
+                "workItems": [] if self.mode == "empty" else [FAILED_RUN],
+                "stats": None,
+            })
+            return
+        if path == "/api/dashboard-live" and self.mode in {"fallback", "empty"}:
+            self.send_error(502)
             return
         if path == "/operations-test.html":
             html = (DASHBOARD_DIR / "index.html").read_text(encoding="utf-8")
@@ -94,29 +121,35 @@ def main() -> None:
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            result = subprocess.run(
-                [
-                    find_chrome(),
-                    "--headless=new",
-                    "--disable-gpu",
-                    "--no-sandbox",
-                    "--no-proxy-server",
-                    "--ignore-certificate-errors",
-                    "--window-size=390,844",
-                    "--virtual-time-budget=5000",
-                    "--dump-dom",
-                    f"https://localhost:{port}/operations-test.html?lane=waiting",
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=45,
-            )
+            def browser_dom(mode: str, path: str) -> str:
+                OperationsHandler.mode = mode
+                return subprocess.run(
+                    [
+                        find_chrome(),
+                        "--headless=new",
+                        "--disable-gpu",
+                        "--no-sandbox",
+                        "--no-proxy-server",
+                        "--ignore-certificate-errors",
+                        "--window-size=390,844",
+                        "--virtual-time-budget=5000",
+                        "--dump-dom",
+                        f"https://localhost:{port}/{path}",
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=45,
+                ).stdout
+
+            dom = browser_dom("live", "operations-test.html?lane=waiting")
+            fresh_dom = browser_dom("fresh", "index.html")
+            fallback_dom = browser_dom("fallback", "index.html")
+            empty_dom = browser_dom("empty", "index.html")
         finally:
             server.shutdown()
             thread.join(timeout=5)
 
-    dom = result.stdout
     checks = {
         "URL lane restored before keyboard": 'data-restored-before-keyboard="true"' in dom,
         "gate buttons have names": 'data-gates-named="true"' in dom,
@@ -127,10 +160,18 @@ def main() -> None:
         "empty stats hides legend": 'data-legend-hidden="true"' in dom,
         "ArrowRight updates URL": 'data-keyboard-lane="failed"' in dom,
         "ArrowRight moves focus": 'data-keyboard-focus="failed"' in dom,
-        "ArrowRight changes detail": 'data-keyboard-detail="失敗・要確認 (1)"' in dom,
+        "ArrowRight changes detail": 'data-keyboard-detail="失敗した実行 (1)"' in dom,
         "keyboard-selected gate exposes pressed state": 'data-failed-pressed="true"' in dom,
         "mobile width has no horizontal overflow": 'data-no-horizontal-overflow="true"' in dom,
         "probe did not time out": 'data-operations-probe="timeout"' not in dom,
+        "fresh PR ranks above old Actions evidence": "最優先の確認 · 未解決PR" in dom
+        and "Actionsの現況は未確認" in dom,
+        "fresh failed Actions evidence links to its run": "最優先の確認 · 失敗した実行" in fresh_dom
+        and f'href="{FAILED_RUN["url"]}">Actionsの実行ログを開く' in fresh_dom,
+        "live 502 leaves historical evidence available": "ライブ取得失敗（HTTP 502）" in fallback_dom
+        and "過去の記録 · GitHubで現況を確認" in fallback_dom
+        and f'href="{FAILED_RUN["url"]}">Actionsの実行ログを開く' in fallback_dom,
+        "stale empty data leaves current count unknown": "現在の対応件数は未確認です" in empty_dom,
     }
     failures = [name for name, passed in checks.items() if not passed]
     if failures:

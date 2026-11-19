@@ -146,15 +146,23 @@ def main() -> None:
             "AUTONOMOUS OBSERVATORY" in dom
             and 'id="activity-title">FACTORY PULSE / 7D</h2>' in dom
         ),
-        "mission vector uses compressed labels": all(
+        "task states have recognizable labels": all(
             re.search(
                 rf'<button class="lane-gate"[^>]*data-lane="{lane}"[^>]*>'
-                rf'.*?<span>{label}(?: / SNAPSHOT)?</span>.*?</button>',
+                rf'.*?<span>{label}</span>.*?</button>',
                 dom,
                 re.DOTALL,
             )
             is not None
-            for lane, label in (("waiting", "WAIT"), ("failed", "FAIL"), ("done", "DONE"))
+            for lane, label in (
+                ("waiting", "未解決PR"), ("failed", "実行の失敗"), ("done", "終了した実行")
+            )
+        ),
+        "action coverage precedes the Observatory visualizations": (
+            'id="action-coverage"' in dom
+            and dom.index('id="action-coverage"') < dom.index('class="bridge-stage"')
+            and "Actionsの保存時刻" in dom
+            and "PRの取得時刻" in dom
         ),
         "constellation exposes deferred telemetry": (
             'class="repository-constellation-shell"' in dom
@@ -214,19 +222,23 @@ def main() -> None:
         and 'class="output-waveform"' in weekly_dom,
     }
     if actionable_count > 0:
-        checks["primary human action rendered"] = bool(primary_action)
-        checks["primary human action heading rendered"] = "最優先の対応" in primary_action
-        checks["primary human action exposes owner"] = "Owner repository:" in primary_action
-        checks["primary human action exposes reason"] = 'class="gate-item-reason"' in primary_action
-        checks["primary human action reaches evidence in one action"] = (
-            "次の行動: 対応先を開く" in primary_action
-            and 'class="gate-item-action"' in primary_action
+        checks["confirmation candidate identifies freshness and repository"] = (
+            ("最優先の確認" in primary_action or "過去の記録" in primary_action)
+            and 'class="gate-item-owner"' in primary_action
+            and 'class="gate-item-reason"' in primary_action
+        )
+        checks["one action opens the canonical PR or run record"] = (
+            re.search(
+                r'class="gate-item-link" href="https://github\.com/[^/]+/[^/]+/'
+                r'(?:pull/\d+">PRの変更とチェックを開く|actions/runs/\d+">Actionsの実行ログを開く)',
+                primary_action,
+            )
+            is not None
         )
     if selected_count > 0:
         checks["selected gate owner/repository label rendered"] = (
             re.search(
-                r'class="gate-item-meta gate-item-owner"[^>]*>\s*'
-                r'Owner repository:\s*KAFKA2306 / [^<]+</span>',
+                r'class="gate-item-owner"[^>]*>\s*KAFKA2306 / [^<]+</span>',
                 gate_detail,
             )
             is not None

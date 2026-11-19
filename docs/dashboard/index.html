@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7fcff">
   <title>Autonomous Factory Observatory</title>
-  <meta name="description" content="KAFKA2306の自律ソフトウェア工場を状態・接続・活動量で観測するAutonomous Factory Observatory">
+  <meta name="description" content="公開リポジトリの失敗した実行と未解決のPRを、観測時刻とGitHubの記録から確認する。">
   <link rel="stylesheet" href="./world.css">
   <link rel="stylesheet" href="./stats.css">
   <link rel="stylesheet" href="./activity-timeline.css">
   <link rel="stylesheet" href="./dashboard.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "gate-actions.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js", "issue-history.js"];
+    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js", "issue-history.js"];
     Promise.all(modules.map((name) => import(`./${name}?v=${assetVersion}`))).catch((error) => {
       const status = document.getElementById("snapshot-status");
       if (status) {
@@ -50,12 +50,26 @@
     </nav>
   </header>
 
-  <main id="main" class="bridge-shell" aria-labelledby="workspace-title" tabindex="-1">
+  <main id="main" class="bridge-shell" aria-labelledby="action-title" tabindex="-1">
+    <section class="operations-summary mission-vector" aria-labelledby="action-title">
+      <header class="vector-heading">
+        <h1 id="action-title">次に確認する作業</h1>
+      </header>
+      <p id="action-coverage" class="action-coverage" role="status">公開データを読み込んでいます。</p>
+      <section id="primary-action" class="primary-action" aria-labelledby="primary-action-title" hidden>
+        <h3 id="primary-action-title"></h3>
+        <div id="primary-action-item"></div>
+      </section>
+      <div id="lane-gates" class="lane-gates" aria-label="作業の状態"></div>
+    </section>
+
+    <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
+
     <section class="bridge-stage">
       <div class="bridge-title-block">
         <p class="eyebrow">AUTONOMOUS FACTORY // LIVE</p>
-        <h1>FACTORY<br><span>OBSERVATORY.</span></h1>
-        <h2 id="workspace-title">OBSERVE → REPAIR → MERGE → VERIFY</h2>
+        <h2 class="bridge-display-title">FACTORY<br><span>OBSERVATORY.</span></h2>
+        <p class="bridge-flow">OBSERVE → REPAIR → MERGE → VERIFY</p>
 
         <div class="hero-telemetry" aria-label="Factory live telemetry">
           <div class="hero-metric">
@@ -146,18 +160,6 @@
         <div><span>MODE</span><strong>AUTONOMOUS</strong></div>
       </section>
     </section>
-
-    <section class="operations-summary mission-vector" aria-labelledby="action-title">
-      <header class="vector-heading">
-        <div>
-          <p class="eyebrow">MISSION VECTOR</p>
-          <h2 id="action-title">INTERVENTION</h2>
-        </div>
-      </header>
-      <div id="lane-gates" class="lane-gates" aria-label="対応が必要な状態"></div>
-    </section>
-
-    <section id="gate-detail" class="gate-detail" aria-live="polite" hidden></section>
 
     <section class="signal-stream" aria-labelledby="activity-title">
       <header class="signal-stream-heading">
