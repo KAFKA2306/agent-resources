@@ -19,10 +19,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/2510youtuber/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "578a8587d822c8ef4f76d025b80b813a17b39c97"
+          "fingerprint": "f3f854c92898dda77d93f07291e951cad1d399aa"
         }
       ],
-      "sourceFingerprint": "1ca0a36b21a5553d9fa05c1fced7712bc4f484ffb6f6bd1ee44c15df0e022d06",
+      "sourceFingerprint": "38950a93a1bcb0508031098e5302a1b56732e49943ddfe16197e5b470ab43555",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -175,10 +175,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/agent-resources/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "c5d815e45cc28f0971953694a01d107bb8821ec3"
+          "fingerprint": "71398ced77c1281a8e4142400ca5e658239abd5e"
         }
       ],
-      "sourceFingerprint": "f8e25437f62b0e01051d1e3d9218abbcb29c210b330bf2ac7046d3f26dc5bbe1",
+      "sourceFingerprint": "9bab639665c6b8e1300a6d688426fb2c532696e6c7839073d787dfedce525f28",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -279,12 +279,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/articles/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "f69cbd7b1c65dd1794240a669ae9bef13ca17f41"
+          "fingerprint": "4e814eb6ffe4b1043cff567354796c03b3ff5d3c"
         }
       ],
-      "sourceFingerprint": "ba33e95d133bc29cf6650aab0806641d270cb1fd38af60b6b2b04460a3f96533",
+      "sourceFingerprint": "375a496b04aa2d5bd6ef49aa1ee286f17dbfce83e97dba3aae5f2d191df6aeb8",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "astroneer",
@@ -523,10 +523,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/boardgamelist/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e367e65873640b7697604e958282a69deb321126"
+          "fingerprint": "2752a224b27ce3219a09136b53803adaaf1a8c02"
         }
       ],
-      "sourceFingerprint": "686121598d994e16829e018c3007e1d02b3f0069ad866f64e91cbec06c518afc",
+      "sourceFingerprint": "b05e0cbf76da8455cfe3a72bbbfd7c1385e33b8294583ee0cd25677dde208c5d",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -710,10 +710,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/cast_event_cal/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "9fe7855673180e4a0dd6f551d62e8f76c0d242b1"
+          "fingerprint": "455da706a53b0118279db56c88d212ca7fedf4ec"
         }
       ],
-      "sourceFingerprint": "50429e4bc0c2f58654194fba299c8c8364708370449cb4d39811a8c90cbc9901",
+      "sourceFingerprint": "075cc37c7f6049b15007ab24378edd57e6665a71fe15b15a403ebb9a7d66c70c",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -788,12 +788,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/com/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "dc61619fdb4f0d6460218c1b576526b23b66ad97"
+          "fingerprint": "2f3e06357660321eb06c8e69242f1ec2845977dd"
         }
       ],
-      "sourceFingerprint": "5d0769ac5cb59a190e81d5e13703ff316b1bb798caf0d94f0c14f07876cf6a02",
+      "sourceFingerprint": "5fb0810a1eccc024b92dbe2a3f8664fd778ca6d825dfdb728d1f4c542e56dda7",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "comfyui-workflows-factory",
@@ -1157,10 +1157,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/etf/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3b53209e457b58f9ce40edf91b0757dc1f721f4a"
+          "fingerprint": "4e92be8c17182da2c8bb5988a5ecc66e455dc474"
         }
       ],
-      "sourceFingerprint": "596e61df4833feaee257f4baa75bf524f5a7b4c107b4d622ef50055c1b8e7da0",
+      "sourceFingerprint": "f47878ad03c10ad6aa30ab7556395bf4c7ce5b2c9f5e47c98950deadf3183fd9",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1235,10 +1235,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/finBI/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "166b79c9e5c39f87178033da2d136b7855995b05"
+          "fingerprint": "563053909b1e468b86f80668f3949c7a1a356ebe"
         }
       ],
-      "sourceFingerprint": "e8907cf882ed7dfe239f0394bc8fbde90e9883db7ed36fc4ba40699a28674241",
+      "sourceFingerprint": "8ae364c784176c60447fe26f72338895ed5e4bbb2aa726f5acdcb47382b58b92",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1718,10 +1718,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/kafstyler/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6759f9f358a6b49ce01622876f75834991d58d45"
+          "fingerprint": "b93e0ec5caf4f02fbc765677c5708d5fdcecb28b"
         }
       ],
-      "sourceFingerprint": "d5ef2ca97cf23c06d1639f8b3e976766ace46a5eb3eea10fba6c0e7e59a3ce9a",
+      "sourceFingerprint": "503240d529015d3d7bd9660f2f40b20e79986f82dcfa6114405e32de622fa464",
       "checkedAt": "2026-11-18T03:51:28Z",
       "needsReview": true
     },
@@ -2497,10 +2497,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/readable-github/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "21897bf972fbccad3238ea493050d9e15e17012e"
+          "fingerprint": "96a71645c8c996ed9fce805321f7ac49eeff8112"
         }
       ],
-      "sourceFingerprint": "244ee677c66b02ae2ce71034a270686bc54054ffa87fedda5da89629b19700d5",
+      "sourceFingerprint": "a5fec509e3029de976447c39233b5a60910ed685de0a6cb1f06a750110a54de7",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -2528,10 +2528,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/rule-scribe-games/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "4b0a040e78b12f6b05add9530cc60703cf1fbd0f"
+          "fingerprint": "54aec6be5e108e1c46fdb22942e498eb2dd6d205"
         }
       ],
-      "sourceFingerprint": "ec653773fe89b4572ceaf6d4998d46c490d447fb1dfea2d749e26079023f2853",
+      "sourceFingerprint": "b71366a35c43b93ebd63969ecab4f4f1adb9a31c3172ac8ea18939381aa6a0d1",
       "checkedAt": "2026-08-18T03:27:13Z",
       "needsReview": true
     },
@@ -2580,10 +2580,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/semiconductor-earnings-model/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6ef02ec3c5fc48e0f06f5db84d495fec29296182"
+          "fingerprint": "a5b2145626072d8c0cd1b241e40a1c836f635961"
         }
       ],
-      "sourceFingerprint": "10706dd6a5a73c38fa2eb38699b9aa586243badcf39d17cf31966a149e53caed",
+      "sourceFingerprint": "e9ad6e656422a80f7261f479daf18b888f56547da977ed087ed0bc35a1611026",
       "checkedAt": "2026-08-18T01:58:06Z",
       "needsReview": true
     },
@@ -3271,10 +3271,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/vrmine/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "d1aa8a76b18be60382da92a0f2a9a6337268b6b0"
+          "fingerprint": "6aeff3bb542a8b5d0cd57098757e0b6719b00036"
         }
       ],
-      "sourceFingerprint": "fb42a5f28afe3dd7ece9f720667471606c3991513dffd403d9fddfc24a0520ef",
+      "sourceFingerprint": "ce4b5b7f436d45bee2d9cf11b3436c85b46ac00ea93f2ea6d9d5b0170aa67d75",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -3463,10 +3463,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/yt3/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "47712f6c2ea5e512bb9ef8c4a4950df5e77c8f3e"
+          "fingerprint": "b24c3690d48d3d85d1be6a796d3d2c666254ba52"
         }
       ],
-      "sourceFingerprint": "0af96da900c9d2251c650eff5de93096678d700e6275746a7d552e3d9df15a26",
+      "sourceFingerprint": "97105d4e5f1b9edce56b92e426f6c79b01f242627ba0ec7a2da613b121acaf4b",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
