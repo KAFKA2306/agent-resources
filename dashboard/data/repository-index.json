@@ -279,10 +279,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/articles/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3b28385a7b3856a468140621c8c2b8a7730ad038"
+          "fingerprint": "7d071616f096bb6bf46eb2689daf9b72348f39c3"
         }
       ],
-      "sourceFingerprint": "4131656184793890729764b1a3a11c53c9a6fe741a7874a8e9483f1f54bdedae",
+      "sourceFingerprint": "dd8adea5db5166d0b42d660af1b7bbf751ec33123bb3990d80757b17eaf9d00a",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -658,12 +658,12 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/bpyutils/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "e2e0cabc5c23b5442345c61443b0eb95e60471e7"
+          "fingerprint": "5ef9bac937241571f3f12566c1a743f456422f4f"
         }
       ],
-      "sourceFingerprint": "84c5453f92cabefe7a12e797aa1b7fe8cb813fa9368533d08b844873713e48e2",
+      "sourceFingerprint": "c805a977541ed30021c077762de76ac1de78103d556cb328333b3dbbb4283d73",
       "checkedAt": "2026-08-18T02:40:46Z",
-      "needsReview": false
+      "needsReview": true
     },
     {
       "name": "CantStopExpressLearn",
@@ -1105,10 +1105,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/econalert/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "6d9cdf67e8a6aba8863cf07deb59a1e8020fa203"
+          "fingerprint": "b822a50f07c5f9d6a472d043b123047f3496f22e"
         }
       ],
-      "sourceFingerprint": "2c22bc563752836e1a13c4a24c18e4ec7dea29251569736a5d438286f2464bca",
+      "sourceFingerprint": "5a6fb5467b50775ae633b587b2c2d1bfa13b771a70454514f5faf3f96ea29377",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1552,10 +1552,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/investor2/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "3a44aaef0c2b6ea6b77d0bf29779db191003bb84"
+          "fingerprint": "71910390df688b7f23e2fda20bcd6c6aed2c39cf"
         }
       ],
-      "sourceFingerprint": "5999351957b32fa6aea1366e6945da074d14fe607a8668eceb28b5d8951ccecd",
+      "sourceFingerprint": "f5cea83c7fb4a541222ea6d27dad2d7904c2a2b345b3a57608f3ae9ddc790af3",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
@@ -1718,10 +1718,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/kafstyler/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "b93e0ec5caf4f02fbc765677c5708d5fdcecb28b"
+          "fingerprint": "bcaa4f601f30f53b5ba670feb32ee70885804087"
         }
       ],
-      "sourceFingerprint": "503240d529015d3d7bd9660f2f40b20e79986f82dcfa6114405e32de622fa464",
+      "sourceFingerprint": "72e56e94775fac4688d970ef473e381ebeeaf56c0cb68374ccfbd7e8eeb0f496",
       "checkedAt": "2026-11-18T03:51:28Z",
       "needsReview": true
     },
@@ -1822,10 +1822,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/know/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "c0c148c92a5173082e65522cbb659a5e0c139712"
+          "fingerprint": "b67efd9d178e8586ec09bb7b51a57dc0617096f4"
         }
       ],
-      "sourceFingerprint": "109844dfcded37041a0f43f6a4608b12ddebe298e8fa0fd4a95a0b55d9bc2639",
+      "sourceFingerprint": "a76930adfbf25a49f5d52b2c3bb8f4f03c8ce17743ee4bfcd175a2ee43a606da",
       "checkedAt": "2026-08-18T02:40:46Z",
       "needsReview": true
     },
