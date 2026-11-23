@@ -99,6 +99,12 @@ Issue / PRは、長い履歴を読まなくても現在状態、次の1手、完
 
 obsolete・重複documentやSkillは削除・統合します。tool固有のinstruction fileへrepository-wide rulesを複製しません。
 
+### Web UI の変更と評価
+
+- 利用者の主要操作と期待結果、対応ブラウザー、既存コンポーネントを先に特定します。Web 機能の互換性は [WebDX Baseline](https://github.com/web-platform-dx/web-features/blob/main/docs/baseline.md) で照合し、主要操作・キーボード操作・フォールバックを対象ブラウザーで検証します。
+- Web API の選択が必要なときは、[Modern Web Guidance](https://github.com/GoogleChrome/modern-web-guidance/tree/v1.0.0) を使います。スクリプトと対話実行はともに `DISABLE_TELEMETRY=1 npx -y modern-web-guidance@1.0.0` を入口とし、一般的な短い検索語で `search` し、該当するガイドだけ `retrieve` します。広範な既存コードの調査には `legacy-scan --json` を使います。
+- ガイドは同じ課題・同じ採点で比較します。主要操作と回帰チェックを通った候補を、課題の初回完了率、修正回数、合格1件あたりの実消費トークンで評価します。判定と再現用の証拠は既存の PR に残します。
+
 ## Security
 
 credential、secret、private dataをpublic artifact、fixture、log、docsへ入れません。external Skillはsourceとmutation/secret要求を確認してから使います。destructive actionや権限拡大は現在stateと明示的な意図を確認します。
