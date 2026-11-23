@@ -1718,10 +1718,10 @@
           "kind": "readme",
           "url": "https://github.com/KAFKA2306/kafstyler/blob/main/README.md",
           "status": "ok",
-          "fingerprint": "bcaa4f601f30f53b5ba670feb32ee70885804087"
+          "fingerprint": "33f4b64f9626a5484032a219f79c2f33966d9f06"
         }
       ],
-      "sourceFingerprint": "72e56e94775fac4688d970ef473e381ebeeaf56c0cb68374ccfbd7e8eeb0f496",
+      "sourceFingerprint": "6e46d9ff753fa72e94b2a1d8c67d27b89e61afc5b4a6c993e17619464e198717",
       "checkedAt": "2026-11-18T03:51:28Z",
       "needsReview": true
     },
