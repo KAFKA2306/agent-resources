@@ -26,7 +26,7 @@
     },
     {
       "name": "kafstyler",
-      "description": "AIエージェントが開発・調査・制作・運用で目標を定め、成果を検証して届け、文書や手法を自律的に改善する。",
+      "description": "普遍的な判断原理と再利用可能な実行契約に基づき、開発・調査・制作・運用を実行・公開まで進める7スキル。",
       "source": {
         "source": "url",
         "url": "https://github.com/KAFKA2306/kafstyler.git"
