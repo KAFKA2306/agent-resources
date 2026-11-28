@@ -63,15 +63,16 @@ Control Tower は中央status DBを新設しません。状態の正本は既存
 | Runtime | canonical production / active probe |
 | Cross-repo view | Control Tower |
 
-Control Towerは、Pagesのworkflowが生成した静的snapshotを表示するread modelです。VercelとGitHub Pagesは同じsnapshotを読みます。
+Control Towerのsnapshotやlive overlayは、これらを観測して表示するread modelです。
 
 ## Evidence states
 
 | State | Meaning |
 |---|---|
-| `SNAPSHOT` | `generatedAt` / `sourceRevision` を持つ保存済みデータを表示している |
-| `STALE` | 保存時刻がfreshness条件を満たさない |
-| `UNVERIFIED` | 表示中snapshotから先のcurrent stateを確認できない |
+| `LIVE` | live endpointから現在値を取得できた |
+| `SNAPSHOT` | 生成済みbaselineを表示している |
+| `STALE` | データは存在するがfreshness条件を満たさない |
+| `UNVERIFIED` | 必要な証拠が不足し、成功を確認できない |
 | `PASS` | 必須evidenceがexact revisionで成功 |
 | `FAIL` | 必須evidenceが明示的に失敗 |
 
@@ -154,18 +155,9 @@ CI、build、unsupported model、provider outage、runner unavailable、merge co
 ~~~text
 GitHub repositories / Actions / PRs
           │
-          ▼
-     snapshot collectors
+          ├─ snapshot collectors → generated baseline
           │
-          ├─ dashboard.json
-          ├─ factory-state.json
-          └─ other generated snapshots
-          │
-          ▼
- GitHub Pages (canonical files)
-      ▲            ▲
-      │            │
-      └─ GitHub Pages UI   Vercel rewrites to same files
+          └─ live API → live overlay
                          │
                          ▼
               Software Factory Control Tower
@@ -174,7 +166,7 @@ GitHub repositories / Actions / PRs
                  canonical evidence links
 ~~~
 
-`factory-state.json` が工場状態のmachine-generated canonical snapshotです。画面には保存時刻とrevisionを表示し、別途current read-backがない状態を `PASS` や `LIVE` に見せません。
+baseline は GitHub Pages でも利用できるfallbackです。live stateでbaseline全体を置換せず、liveで取得できた範囲だけをoverlayします。
 
 ## Boundaries
 

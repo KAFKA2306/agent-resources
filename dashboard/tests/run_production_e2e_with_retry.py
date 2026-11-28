@@ -4,14 +4,15 @@ import subprocess
 import sys
 import time
 
+
 MAX_ATTEMPTS = 3
 RETRY_DELAY_SECONDS = 3
 
 
 def main() -> int:
-    command = [sys.executable, "dashboard/tests/dashboard_snapshot_production_e2e.py"]
+    command = [sys.executable, "dashboard/tests/dashboard_repository_operations_production_e2e.py"]
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        result = subprocess.run(command, check=False, text=True)
+        result = subprocess.run(command, text=True)
         if result.returncode == 0:
             if attempt > 1:
                 print(f"production browser E2E recovered on bounded retry {attempt}/{MAX_ATTEMPTS}")
