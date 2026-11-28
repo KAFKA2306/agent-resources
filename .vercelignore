@@ -1,4 +1,4 @@
-# Vercel deployment surface: dashboard UI + live API only.
+# Vercel deployment surface: dashboard UI plus unrelated integration APIs.
 # Keep the Python CLI/package, tests, agent configs, release docs, and other
 # repository assets out of the Vercel source so Python zero-config never
 # interprets agr/main.py or agrx/main.py as a web application.

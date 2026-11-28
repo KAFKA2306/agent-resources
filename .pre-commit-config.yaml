@@ -24,15 +24,15 @@ repos:
         entry: python scripts/validate_dashboard_contract.py
         language: system
         pass_filenames: false
-        files: '^(?:api/dashboard-live\.js|dashboard/|docs/dashboard/|vercel\.json|package\.json|pyproject\.toml|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
+        files: '^(?:dashboard/|docs/dashboard/|vercel\.json|package\.json|pyproject\.toml|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
 
       - id: dashboard-browser-contract
-        name: dashboard baseline and live browser contract
-        entry: python dashboard/tests/dashboard_live_browser_e2e.py
+        name: dashboard static snapshot browser contract
+        entry: python dashboard/tests/dashboard_snapshot_browser_e2e.py
         language: system
         pass_filenames: false
         stages: [pre-push]
-        files: '^(?:api/dashboard-live\.js|dashboard/|docs/dashboard/|vercel\.json|package\.json|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
+        files: '^(?:dashboard/|docs/dashboard/|vercel\.json|package\.json|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
 
       - id: dashboard-operations-browser-contract
         name: dashboard operations browser contract
@@ -40,4 +40,4 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
-        files: '^(?:api/dashboard-live\.js|dashboard/|docs/dashboard/|vercel\.json|package\.json|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
+        files: '^(?:dashboard/|docs/dashboard/|vercel\.json|package\.json|scripts/validate_dashboard_contract\.py|\.github/workflows/dashboard-(?:validate|release-verify)\.yml|\.pre-commit-config\.yaml)'
