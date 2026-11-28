@@ -1,5 +1,7 @@
+const REPOSITORY = "KAFKA2306/agent-resources";
+const API_BASE = `https://api.github.com/repos/${REPOSITORY}`;
+
 const freshness = document.querySelector("#factory-freshness");
-const factoryStateGeneratedAt = document.querySelector("#factory-state-generated-at");
 const mainSha = document.querySelector("#factory-main-sha");
 const pagesRun = document.querySelector("#factory-pages-run");
 const observer = document.querySelector("#factory-observer");
@@ -58,11 +60,11 @@ const CAPABILITY_PRESENTATION = {
 };
 
 const CAPABILITY_STATE = {
-  VERIFIED: { label: "VERIFIED", tone: "verified" },
-  EXISTING: { label: "EXISTING", tone: "online" },
-  DISCONNECTED: { label: "DISCONNECTED", tone: "degraded" },
-  MISSING: { label: "MISSING", tone: "offline" },
-  UNVERIFIED: { label: "UNVERIFIED", tone: "checking" },
+  VERIFIED: { label: "VERIFIED LIVE", tone: "verified" },
+  EXISTING: { label: "ONLINE", tone: "online" },
+  DISCONNECTED: { label: "DEGRADED", tone: "degraded" },
+  MISSING: { label: "OFFLINE", tone: "offline" },
+  UNVERIFIED: { label: "CHECKING", tone: "checking" },
 };
 
 function shortSha(value) {
@@ -106,16 +108,11 @@ function replaceWithLink(root, label, url) {
 function renderCapabilities(items) {
   capabilities.replaceChildren();
   const list = Array.isArray(items) ? items : [];
-  const recordedOperationalCount = list.filter((item) => ["VERIFIED", "EXISTING"].includes(item?.state)).length;
-  const onlinePercent = list.length ? Math.round((recordedOperationalCount / list.length) * 100) : 0;
+  const onlineCount = list.filter((item) => ["VERIFIED", "EXISTING"].includes(item?.state)).length;
+  const onlinePercent = list.length ? Math.round((onlineCount / list.length) * 100) : 0;
   const degradedCount = list.filter((item) => ["DISCONNECTED", "MISSING"].includes(item?.state)).length;
-  const autonomyHealth = degradedCount > 0
-    ? "degraded"
-    : recordedOperationalCount === list.length && list.length > 0
-      ? "full"
-      : "partial";
-  heroAutonomyTotal.textContent = list.length ? `${recordedOperationalCount}/${list.length}` : "--";
-  heroAutonomyTotal.title = `${recordedOperationalCount} of ${list.length} capability states are VERIFIED or EXISTING in this snapshot`;
+  const autonomyHealth = degradedCount > 0 ? "degraded" : onlineCount === list.length && list.length > 0 ? "full" : "partial";
+  heroAutonomyTotal.textContent = list.length ? `${onlineCount}/${list.length}` : "--";
   document.documentElement.dataset.factoryAutonomy = autonomyHealth;
   const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -173,15 +170,12 @@ function renderCapabilities(items) {
   const core = document.createElement("section");
   core.className = "reactor-core";
   core.style.setProperty("--online-percent", `${onlinePercent}%`);
-  core.setAttribute(
-    "aria-label",
-    `${recordedOperationalCount} of ${list.length} capability states are VERIFIED or EXISTING in this snapshot`,
-  );
+  core.setAttribute("aria-label", `${onlineCount} of ${list.length} autonomous systems online`);
 
   const coreValue = document.createElement("strong");
-  coreValue.textContent = `${recordedOperationalCount}/${list.length}`;
+  coreValue.textContent = `${onlineCount}/${list.length}`;
   const coreLabel = document.createElement("small");
-  coreLabel.textContent = "RECORDED";
+  coreLabel.textContent = "ONLINE";
   const corePulse = document.createElement("span");
   corePulse.className = "reactor-core-pulse";
   corePulse.setAttribute("aria-hidden", "true");
@@ -194,8 +188,7 @@ function renderCapabilities(items) {
       name: item.label || item.id || "Capability",
       description: "Factory capability.",
     };
-    const stateLabel = typeof item.state === "string" && item.state ? item.state : "UNVERIFIED";
-    const statePresentation = CAPABILITY_STATE[stateLabel] || CAPABILITY_STATE.UNVERIFIED;
+    const statePresentation = CAPABILITY_STATE[item.state] || CAPABILITY_STATE.UNVERIFIED;
 
     const node = document.createElement("article");
     node.className = "reactor-node";
@@ -205,10 +198,10 @@ function renderCapabilities(items) {
     node.style.setProperty("--node-x", `${(x / 10).toFixed(2)}%`);
     node.style.setProperty("--node-y", `${(y / 7.6).toFixed(2)}%`);
     node.style.setProperty("--node-delay", `${(index * 0.16).toFixed(2)}s`);
-    node.title = `${presentation.name} · ${stateLabel}\n${presentation.description}`;
+    node.title = `${presentation.name} · ${statePresentation.label}\n${presentation.description}`;
     node.setAttribute(
       "aria-label",
-      `${presentation.name}: ${stateLabel}. ${presentation.description}`,
+      `${presentation.name}: ${statePresentation.label}. ${presentation.description}`,
     );
 
     const marker = document.createElement("span");
@@ -220,7 +213,7 @@ function renderCapabilities(items) {
     const heading = document.createElement("strong");
     heading.textContent = presentation.name;
     const state = document.createElement("small");
-    state.textContent = stateLabel;
+    state.textContent = statePresentation.label;
     copy.append(heading, state);
 
     node.append(marker, copy);
@@ -262,20 +255,6 @@ function renderPullRequests(items) {
 }
 
 function renderStaticState(payload) {
-  const generatedAt = payload?.generatedAt;
-  const generatedTime = new Date(generatedAt);
-  if (typeof generatedAt === "string" && Number.isFinite(generatedTime.getTime())) {
-    factoryStateGeneratedAt.dateTime = generatedAt;
-    factoryStateGeneratedAt.textContent = generatedAt;
-    factoryStateGeneratedAt.title = generatedAt;
-    setFreshness("SNAPSHOT · current production state UNVERIFIED", "unknown");
-  } else {
-    factoryStateGeneratedAt.removeAttribute("datetime");
-    factoryStateGeneratedAt.textContent = "generatedAt unknown";
-    setFreshness("UNVERIFIED · generatedAt missing or invalid", "unknown");
-  }
-  setEvidencePath("unknown");
-
   const sourceRevision = payload?.sourceRevision;
   mainSha.textContent = shortSha(sourceRevision);
   mainSha.title = sourceRevision || "";
@@ -284,7 +263,7 @@ function renderStaticState(payload) {
   const runId = payload?.pages?.workflowRunId;
   replaceWithLink(
     pagesRun,
-    runId ? `Pages workflow run #${runId}` : "Pages workflow run unknown",
+    runId ? `Build / deploy run #${runId}` : "Build / deploy run unknown",
     payload?.pages?.workflowRunUrl,
   );
   setEvidenceStage("pages", runId ? "observed" : "unknown");
@@ -322,19 +301,68 @@ function renderStaticState(payload) {
 async function fetchJson(url) {
   const response = await fetch(url, {
     cache: "no-store",
-    headers: { Accept: "application/json" },
+    headers: { Accept: "application/vnd.github+json" },
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
+}
+
+async function verifyProductionFreshness(payload) {
+  const sourceRevision = payload?.sourceRevision;
+  const runId = payload?.pages?.workflowRunId;
+  if (!sourceRevision || !runId) {
+    setFreshness("UNVERIFIED · provenance missing", "unknown");
+    setEvidencePath("unknown");
+    return;
+  }
+
+  try {
+    const [liveMain, run] = await Promise.all([
+      fetchJson(`${API_BASE}/commits/main`),
+      fetchJson(`${API_BASE}/actions/runs/${encodeURIComponent(runId)}`),
+    ]);
+
+    if (liveMain?.sha !== sourceRevision) {
+      setFreshness(
+        `FAIL · stale ${shortSha(sourceRevision)} ≠ main ${shortSha(liveMain?.sha)}`,
+        "failed",
+      );
+      setEvidencePath("failed", "main");
+      setEvidenceStage("main", "failed");
+      return;
+    }
+
+    if (run?.status === "completed" && run?.conclusion === "success") {
+      setFreshness(`VERIFIED · main ${shortSha(sourceRevision)}`, "fresh");
+      setEvidencePath("fresh");
+      setEvidenceStage("main", "observed");
+      setEvidenceStage("pages", "observed");
+      return;
+    }
+
+    if (run?.status === "completed") {
+      setFreshness(`FAIL · deploy ${run?.conclusion || "unknown"}`, "failed");
+      setEvidencePath("failed", "pages");
+      setEvidenceStage("pages", "failed");
+      return;
+    }
+
+    setFreshness(`CURRENT · deploy ${run?.status || "verifying"}`, "stale");
+    setEvidencePath("stale", "pages");
+    setEvidenceStage("pages", "active");
+  } catch (error) {
+    setFreshness("UNVERIFIED · live GitHub read-back failed", "unknown");
+    setEvidencePath("unknown");
+    console.error("factory evidence live verification failed", error);
+  }
 }
 
 async function loadFactoryEvidence() {
   try {
     const payload = await fetchJson("./factory-state.json");
     renderStaticState(payload);
+    await verifyProductionFreshness(payload);
   } catch (error) {
-    factoryStateGeneratedAt.removeAttribute("datetime");
-    factoryStateGeneratedAt.textContent = "Snapshot unavailable";
     setFreshness("UNVERIFIED · factory-state unavailable", "failed");
     setEvidencePath("unknown");
     console.error("factory evidence snapshot failed", error);

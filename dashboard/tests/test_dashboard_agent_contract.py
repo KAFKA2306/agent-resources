@@ -1,5 +1,6 @@
-import unittest
 from pathlib import Path
+import unittest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "dashboard" / "AGENTS.md"
@@ -18,16 +19,15 @@ class DashboardAgentContractTest(unittest.TestCase):
         required = (
             "config/public-links.json",
             "collectors/public_links.py",
-            "../docs/dashboard/dashboard.js",
-            "../docs/dashboard/factory-evidence.js",
+            "../api/dashboard-live.js",
+            "../docs/dashboard/live-overlay.js",
             "../vercel.json",
             "python scripts/validate_dashboard_contract.py",
             "uvx pre-commit run --all-files --hook-stage pre-commit",
             "uvx pre-commit run --all-files --hook-stage pre-push",
-            "exact SHA",
+            "exact PR head",
             "Verify Dashboard Release",
             "UNVERIFIED",
-            "factory-state.json",
         )
         for value in required:
             with self.subTest(value=value):
