@@ -559,7 +559,7 @@ export function renderWorld(repositories, workItems, activity = [], generatedAt 
   const legend = document.createElement("div");
   legend.className = "constellation-legend";
   for (const [lane, label] of [
-    ["working", "LIVE"],
+    ["working", "WORK"],
     ["waiting", "WAIT"],
     ["failed", "FAIL"],
     ["idle", "IDLE"],
