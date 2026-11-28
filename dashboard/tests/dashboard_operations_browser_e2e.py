@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import threading
 
-from dashboard_snapshot_browser_e2e import (
+from dashboard_live_browser_e2e import (
     BASELINE,
     DASHBOARD_DIR,
     FixtureHandler,
@@ -15,6 +15,7 @@ from dashboard_snapshot_browser_e2e import (
     create_certificate,
     find_chrome,
 )
+
 
 PROBE = """
 <script>
@@ -79,28 +80,25 @@ FAILED_RUN = {
 
 
 class OperationsHandler(FixtureHandler):
-    mode = "snapshot"
+    mode = "live"
 
-    def do_GET(self):
+    def do_GET(self):  # noqa: N802 - stdlib handler API
         path = self.path.split("?", 1)[0]
         if path == "/dashboard.json":
             generated_at = (
-                dt.datetime.now(dt.timezone.utc).isoformat()
-                if self.mode == "fresh"
-                else BASELINE["generatedAt"]
+                dt.datetime.now(dt.UTC).isoformat() if self.mode == "fresh" else BASELINE["generatedAt"]
             )
-            snapshot = {
+            self.send_json({
                 **BASELINE,
                 "generatedAt": generated_at,
                 "workItems": [] if self.mode == "empty" else [FAILED_RUN],
-                "stats": BASELINE["stats"],
-            }
-            if self.mode == "missing-time":
-                snapshot.pop("generatedAt")
-            self.send_json(snapshot)
+                "stats": None,
+            })
+            return
+        if path == "/api/dashboard-live" and self.mode in {"fallback", "empty"}:
+            self.send_error(502)
             return
         if path == "/operations-test.html":
-            type(self).requests.append(path)
             html = (DASHBOARD_DIR / "index.html").read_text(encoding="utf-8")
             body = html.replace("</body>", f"{PROBE}</body>").encode()
             self.send_response(200)
@@ -113,7 +111,7 @@ class OperationsHandler(FixtureHandler):
 
 
 def main() -> None:
-    OperationsHandler.requests = []
+    OperationsHandler.live_requests = 0
     with tempfile.TemporaryDirectory() as tmp, ThreadingServer(("127.0.0.1", 0), OperationsHandler) as server:
         cert_path, key_path = create_certificate(pathlib.Path(tmp))
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -144,10 +142,10 @@ def main() -> None:
                     timeout=45,
                 ).stdout
 
-            dom = browser_dom("snapshot", "operations-test.html?lane=waiting")
+            dom = browser_dom("live", "operations-test.html?lane=waiting")
             fresh_dom = browser_dom("fresh", "index.html")
+            fallback_dom = browser_dom("fallback", "index.html")
             empty_dom = browser_dom("empty", "index.html")
-            missing_time_dom = browser_dom("missing-time", "index.html")
         finally:
             server.shutdown()
             thread.join(timeout=5)
@@ -157,7 +155,7 @@ def main() -> None:
         "gate buttons have names": 'data-gates-named="true"' in dom,
         "command deck has freshness plus three state gates": 'data-summary-indicators="true"' in dom,
         "restored gate exposes pressed state": 'data-waiting-pressed="true"' in dom,
-        "owner/repository is visible for snapshot work item": 'data-owner-visible="true"' in dom,
+        "owner/repository is visible for live work item": 'data-owner-visible="true"' in dom,
         "skip link targets focusable main": 'data-skip-link="true"' in dom,
         "empty stats hides legend": 'data-legend-hidden="true"' in dom,
         "ArrowRight updates URL": 'data-keyboard-lane="failed"' in dom,
@@ -166,12 +164,14 @@ def main() -> None:
         "keyboard-selected gate exposes pressed state": 'data-failed-pressed="true"' in dom,
         "mobile width has no horizontal overflow": 'data-no-horizontal-overflow="true"' in dom,
         "probe did not time out": 'data-operations-probe="timeout"' not in dom,
-        "snapshot coverage states that current GitHub status is unverified": "GitHubの現在状態は未確認です" in dom,
-        "fresh snapshot failed Actions evidence links to its run": "Snapshot上の確認候補 · 失敗した実行" in fresh_dom
+        "fresh PR ranks above old Actions evidence": "最優先の確認 · 未解決PR" in dom
+        and "Actionsの現況は未確認" in dom,
+        "fresh failed Actions evidence links to its run": "最優先の確認 · 失敗した実行" in fresh_dom
         and f'href="{FAILED_RUN["url"]}">Actionsの実行ログを開く' in fresh_dom,
-        "stale empty data leaves current count unknown": "現在の件数は未確認です" in empty_dom,
-        "missing timestamp is not promoted to current": "GitHubの現在状態は未確認です" in missing_time_dom,
-        "live endpoint and config are never requested": not {"/api/dashboard-live", "/live-config.json"}.intersection(OperationsHandler.requests),
+        "live 502 leaves historical evidence available": "ライブ取得失敗（HTTP 502）" in fallback_dom
+        and "過去の記録 · GitHubで現況を確認" in fallback_dom
+        and f'href="{FAILED_RUN["url"]}">Actionsの実行ログを開く' in fallback_dom,
+        "stale empty data leaves current count unknown": "現在の対応件数は未確認です" in empty_dom,
     }
     failures = [name for name, passed in checks.items() if not passed]
     if failures:

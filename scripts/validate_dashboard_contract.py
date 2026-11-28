@@ -45,6 +45,7 @@ def main() -> None:
     run([npm, "run", "test:dashboard"])
 
     javascript_paths = sorted((ROOT / "docs" / "dashboard").glob("*.js"))
+    javascript_paths.extend([ROOT / "dashboard" / "live-core.js", ROOT / "api" / "dashboard-live.js"])
     for path in javascript_paths:
         run([node, "--check", str(path.relative_to(ROOT))])
 

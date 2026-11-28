@@ -78,13 +78,18 @@ jobs:
         if: steps.deployment.outputs.is_production != 'true'
         run: echo 'Preview deployment succeeded; product release verification is not applicable.'
 
-      - name: Verify released production dashboard in Chrome
+      - name: Verify production live payload
+        if: steps.deployment.outputs.is_production == 'true'
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.target_url }}
+        run: python dashboard/production_live_smoke.py
+
+      - name: Verify released production dashboard
         if: steps.deployment.outputs.is_production == 'true'
         env:
           AGENT_RESOURCES_DASHBOARD_URL: ${{ steps.deployment.outputs.target_url }}/dashboard/
-          EXPECTED_SHA: ${{ github.event.client_payload.git.sha || inputs.expected_sha || github.sha }}
           PYTHONPATH: ${{ github.workspace }}
-        run: python dashboard/tests/run_production_snapshot_e2e_with_retry.py
+        run: python dashboard/tests/run_production_e2e_with_retry.py
 
       - name: Record exact-revision release provenance
         if: steps.deployment.outputs.is_production == 'true'

@@ -7,8 +7,8 @@ Control Tower変更では、長い過去会話を前提にしません。この�
 変更理由に対応するファイルだけを読みます。
 
 - 公開リンク: `config/public-links.json` → `collectors/public_links.py`
-- static Dashboard data: `../docs/dashboard/dashboard.js` / `../docs/dashboard/factory-evidence.js`
-- static snapshot generation: `collectors/` / `../docs/dashboard/*.json`
+- live state: `live-core.js` / `../api/dashboard-live.js`
+- browser overlay: `../docs/dashboard/live-overlay.js` / `../docs/dashboard/dashboard.js`
 - Vercel route: `../vercel.json`
 - 検証入口: `../scripts/validate_dashboard_contract.py` / `../.pre-commit-config.yaml`
 
@@ -16,10 +16,10 @@ Control Tower変更では、長い過去会話を前提にしません。この�
 
 ## 壊してはいけない契約
 
-1. `dashboard.json` と `factory-state.json` はPagesのworkflowが生成する静的machine snapshotです。VercelもPagesの同じsnapshotを表示します。
-2. snapshotの値・`generatedAt`・`sourceRevision` をそのまま示し、表示時のcurrent stateと混同しません。current read-backのない値は `UNVERIFIED` です。
-3. 公開リンクの正準は `config/public-links.json` です。各UIへ個別URLをhardcodeしません。
-4. 同じ責務のsnapshot、API、status authorityを増やしません。Pages上の静的machine snapshotが公開stateの正本です。
+1. GitHub Pagesで生成するsnapshotがbaselineです。Vercelでもbaselineを保持し、`/api/dashboard-live` は別経路のlive overlayです。
+2. live stateでbaseline全体を置換しません。`publicLinks` などbaseline由来の情報を保持します。
+3. 公開リンクの正準は `config/public-links.json` です。live APIやUIへ個別URLをhardcodeしません。
+4. 同じ責務のfallback、config、snapshot、API、status authorityを増やしません。baselineが設計済みfallbackです。
 5. CI successだけでproduction successとしません。merge後のVercel deploymentとproduction browser verificationを別に確認します。
 
 ## 検証
@@ -46,11 +46,12 @@ uvx pre-commit run --all-files --hook-stage pre-push
 
 ## 完了条件
 
-- exact SHAのDashboard checksが成功
-- mainへの反映後、PagesとVercel productionが同じ変更を配布
-- Pages/Vercelのbrowser表示で静的snapshotの値・時刻・provenanceを確認
-- current mainやproductionへの別途read-backがない限り、画面上のcurrent stateは `UNVERIFIED`
+- exact PR headでControl Tower CIが成功
+- 検証後にPR headが変わっていない状態でmerge
+- merge SHAのVercel production deploymentがREADY
+- `Verify Dashboard Release` のproduction分類runが同じmerge SHAをcheckoutし、production live payloadとreleased production dashboardを実際に検証して成功
+- 変更したproduction behaviorをbrowser E2Eが直接assertしている
 
 preview / non-production deploymentの`Verify Dashboard Release`成功はproduction完了の証拠にしません。
 
-この条件を満たさない層は `UNVERIFIED` として残します。
+この5点を満たさない場合は、どの層が未確認かを `UNVERIFIED` として残します。
