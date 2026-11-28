@@ -9,6 +9,9 @@ class ProductionResourceHealthTests(unittest.TestCase):
         self.assertTrue(
             _same_timestamp("2026-11-28T15:24:45.592Z", "2026-11-28T15:24:45.592+00:00")
         )
+        self.assertTrue(
+            _same_timestamp("2026-11-28T15:24:45.592871Z", "2026-11-28T15:24:45.592Z")
+        )
         self.assertFalse(
             _same_timestamp("2026-11-28T15:24:46.000Z", "2026-11-28T15:24:45.592Z")
         )

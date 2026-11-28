@@ -97,7 +97,8 @@ def _same_timestamp(left: str, right: str) -> bool:
         return (
             left_time.tzinfo is not None
             and right_time.tzinfo is not None
-            and left_time == right_time
+            and left_time.replace(microsecond=(left_time.microsecond // 1000) * 1000)
+            == right_time.replace(microsecond=(right_time.microsecond // 1000) * 1000)
         )
     except (TypeError, ValueError):
         return False
