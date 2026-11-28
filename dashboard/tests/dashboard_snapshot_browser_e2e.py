@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime as dt
 import http.server
 import json
 import pathlib
@@ -11,10 +10,13 @@ import ssl
 import subprocess
 import tempfile
 import threading
+from collections.abc import Mapping
+from typing import ClassVar
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DASHBOARD_DIR = ROOT / "docs" / "dashboard"
 PUBLIC_SURFACE_URL = "https://kafka2306.github.io/poker-raise-quiz/"
+GENERATED_AT = "2026-08-19T00:00:00Z"
 
 
 def repository(repo_id: str, name: str) -> dict[str, object]:
@@ -35,8 +37,8 @@ baseline_repository["publicLinks"] = [{"kind": "front", "url": PUBLIC_SURFACE_UR
 
 BASELINE = {
     "schemaVersion": "1.0.0",
-    "generatedAt": "2026-08-19T00:00:00Z",
-    "summary": {"repositoryCount": 1, "workItemCount": 1, "activityCount": 0},
+    "generatedAt": GENERATED_AT,
+    "summary": {"repositoryCount": 1, "workItemCount": 1, "activityCount": 1},
     "repositories": [baseline_repository],
     "workItems": [
         {
@@ -44,7 +46,7 @@ BASELINE = {
             "repositoryId": "shared",
             "kind": "issue",
             "number": 1,
-            "title": "BASELINE-ISSUE",
+            "title": "SNAPSHOT-ISSUE",
             "url": "https://github.com/KAFKA2306/poker-raise-quiz/issues/1",
             "state": "open",
             "updatedAt": "2026-08-19T00:00:00Z",
@@ -52,7 +54,16 @@ BASELINE = {
             "laneReason": "baseline fixture",
         }
     ],
-    "activity": [],
+    "activity": [
+        {
+            "id": "shared:activity:1",
+            "repositoryId": "shared",
+            "kind": "issue",
+            "occurredAt": "2026-08-19T00:00:00Z",
+            "summary": "Snapshot activity fixture",
+            "url": "https://github.com/KAFKA2306/poker-raise-quiz/issues/1",
+        }
+    ],
     "stats": {
         "owner": "KAFKA2306",
         "scope": "public",
@@ -95,44 +106,55 @@ BASELINE = {
     },
 }
 
+FACTORY_STATE = {
+    "schemaVersion": "1.0.0",
+    "generatedAt": GENERATED_AT,
+    "sourceRevision": "abc123def456",
+    "authority": {"repository": "KAFKA2306/agent-resources", "defaultBranch": "main", "mainSha": "abc123def456"},
+    "pages": {
+        "workflowRunId": "1234",
+        "workflowRunUrl": "https://github.com/KAFKA2306/agent-resources/actions/runs/1234",
+        "sourceRevision": "abc123def456",
+        "state": "UNVERIFIED",
+    },
+    "observer": {"state": "UNVERIFIED", "runId": None, "url": None},
+    "canonicalIssue": {
+        "number": 381,
+        "title": "Software Factory",
+        "state": "OPEN",
+        "updatedAt": GENERATED_AT,
+        "url": "https://github.com/KAFKA2306/agent-resources/issues/381",
+    },
+    "activePullRequests": [],
+    "capabilities": [
+        {"id": "observe-classify", "label": "Observe / classify", "state": "UNVERIFIED"},
+        {"id": "bounded-retry", "label": "Bounded retry", "state": "EXISTING"},
+        {"id": "deterministic-repair", "label": "Deterministic repair", "state": "MISSING"},
+        {"id": "future-capability", "label": "Future capability", "state": "EXPERIMENTAL"},
+    ],
+}
 
-def live_payload() -> dict[str, object]:
-    fetched_at = dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z")
-    return {
-        "schemaVersion": "1.0.0",
-        "source": "live",
-        "scope": "public",
-        "fetchedAt": fetched_at,
-        "cache": {"maxAgeSeconds": 600, "staleWhileRevalidateSeconds": 30},
-        "repositories": [repository("shared", "poker-raise-quiz")],
-        "workItems": [
-            {
-                "id": "shared#2",
-                "repositoryId": "shared",
-                "kind": "pull_request",
-                "number": 2,
-                "title": "LIVE-PR",
-                "url": "https://github.com/KAFKA2306/poker-raise-quiz/pull/2",
-                "state": "open",
-                "updatedAt": fetched_at,
-                "lane": "waiting",
-                "laneReason": "open_pull_request",
-            }
-        ],
-        "activity": [],
-    }
+ISSUE_HISTORY = {
+    "schemaVersion": 1,
+    "scope": "public",
+    "timezone": "Asia/Tokyo",
+    "snapshots": [
+        {"date": "2026-08-18", "observedAt": "2026-08-18T09:00:00+09:00", "allOpen": 10, "authoredOpen": 8},
+        {"date": "2026-08-19", "observedAt": "2026-08-19T09:00:00+09:00", "allOpen": 7, "authoredOpen": 5},
+    ],
+}
 
 
 class FixtureHandler(http.server.SimpleHTTPRequestHandler):
-    live_requests = 0
+    requests: ClassVar[list[str]] = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(DASHBOARD_DIR), **kwargs)
 
-    def log_message(self, *_args):
+    def log_message(self, format: str, *args: object) -> None:
         return
 
-    def send_json(self, payload: dict[str, object]) -> None:
+    def send_json(self, payload: Mapping[str, object]) -> None:
         body = json.dumps(payload).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -140,21 +162,20 @@ class FixtureHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def do_GET(self):  # noqa: N802 - stdlib handler API
+    def do_GET(self):
         path = self.path.split("?", 1)[0]
+        type(self).requests.append(path)
         if path == "/issue-backlog-history.json":
-            self.send_json({"schemaVersion": 1, "scope": "public", "timezone": "Asia/Tokyo", "snapshots": [{"date": "2026-08-18", "observedAt": "2026-08-18T09:00:00+09:00", "allOpen": 10, "authoredOpen": 8}, {"date": "2026-08-19", "observedAt": "2026-08-19T09:00:00+09:00", "allOpen": 7, "authoredOpen": 5}]})
+            self.send_json(ISSUE_HISTORY)
             return
         if path == "/dashboard.json":
             self.send_json(BASELINE)
             return
-        if path == "/live-config.json":
-            port = self.server.server_address[1]
-            self.send_json({"endpoint": f"https://localhost:{port}/api/dashboard-live"})
+        if path == "/factory-state.json":
+            self.send_json(FACTORY_STATE)
             return
-        if path == "/api/dashboard-live":
-            type(self).live_requests += 1
-            self.send_json(live_payload())
+        if path == "/repository-operations.json":
+            self.send_json({"generatedAt": GENERATED_AT, "sourceRevision": "abc123def456", "runId": "1234", "repositories": []})
             return
         super().do_GET()
 
@@ -202,7 +223,7 @@ def create_certificate(directory: pathlib.Path) -> tuple[pathlib.Path, pathlib.P
 
 
 def main() -> None:
-    FixtureHandler.live_requests = 0
+    FixtureHandler.requests = []
     with tempfile.TemporaryDirectory() as tmp, ThreadingServer(("127.0.0.1", 0), FixtureHandler) as server:
         cert_path, key_path = create_certificate(pathlib.Path(tmp))
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -212,7 +233,7 @@ def main() -> None:
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            def dump_dom(query: str = "") -> str:
+            def dump_dom(query: str = "") -> tuple[str, str]:
                 result = subprocess.run(
                     [
                         find_chrome(),
@@ -221,6 +242,7 @@ def main() -> None:
                         "--no-sandbox",
                         "--no-proxy-server",
                         "--ignore-certificate-errors",
+                        "--enable-logging=stderr",
                         "--virtual-time-budget=4000",
                         "--dump-dom",
                         f"https://localhost:{port}/{query}",
@@ -230,53 +252,37 @@ def main() -> None:
                     text=True,
                     timeout=45,
                 )
-                return result.stdout
+                return result.stdout, result.stderr
 
-            dom = dump_dom()
-            weekly_dom = dump_dom("?stats=weekly")
+            dom, stderr = dump_dom()
+            weekly_dom, weekly_stderr = dump_dom("?stats=weekly")
         finally:
             server.shutdown()
             thread.join(timeout=5)
 
+    forbidden_requests = {"/api/dashboard-live", "/live-config.json"}
     checks = {
-        "live request occurred": FixtureHandler.live_requests >= 1,
-        "live status rendered": (
-            'id="snapshot-status" data-state="fresh" data-workflow-state="snapshot">'
-            "LIVE · workflow snapshot<"
-        ) in dom,
-        "live repository rendered": "poker-raise-quiz" in dom,
-        "live work item rendered": "LIVE-PR" in dom,
-        "primary action rendered": 'id="primary-action"' in dom and "最優先の確認 · 未解決PR" in dom,
-        "primary action has one-click evidence": "PRの変更とチェックを開く" in dom,
-        "baseline public link survived live overlay": PUBLIC_SURFACE_URL in dom,
-        "public surface action rendered": 'class="constellation-surface is-front"' in dom,
-        "work item terminology rendered": re.search(
-            r'id="agent-world-summary"[^>]*>\s*1 NODES · 1 ACTIVE\s*<',
-            dom,
-        )
-        is not None,
-        "misleading agent count absent": "1 agents" not in dom,
-        "baseline work item replaced": "BASELINE-ISSUE" not in dom,
-        "issue backlog graph reports actual latest and delta": 'id="issue-history-title">未解決Issueの推移</h2>' in dom
-        and "7件" in dom and "-3件" in dom and "2026-08-19" in dom,
+        "machine snapshot rendered its exact generation time": f'<time id="factory-state-generated-at" class="snapshot-time" datetime="{GENERATED_AT}" title="{GENERATED_AT}">{GENERATED_AT}</time>' in dom,
+        "static factory snapshot stays explicitly unverified for current production": "SNAPSHOT · current production state UNVERIFIED" in dom,
+        "stored capability values are preserved": 'data-capability-state="UNVERIFIED"' in dom and 'data-capability-state="MISSING"' in dom and 'data-capability-state="EXISTING"' in dom and 'data-capability-state="EXPERIMENTAL"' in dom and ">EXPERIMENTAL</small>" in dom,
+        "snapshot source revision is rendered": "abc123def456" in dom,
+        "snapshot age is rendered without claiming live success": "古いSnapshot" in dom and "GitHubの現在状態は未確認です" in dom and "LIVE · workflow snapshot" not in dom,
+        "static repository and work item rendered": "poker-raise-quiz" in dom and "SNAPSHOT-ISSUE" in dom,
+        "primary action has one-click evidence": "Snapshot上の確認候補 · 未解決PR" in dom and "Issueを開く" in dom,
+        "baseline public link rendered": PUBLIC_SURFACE_URL in dom and 'class="constellation-surface is-front"' in dom,
+        "work item terminology rendered": re.search(r'id="agent-world-summary"[^>]*>\s*1 NODES · 1 ACTIVE\s*<', dom) is not None,
+        "issue backlog graph reports actual latest and delta": 'id="issue-history-title">未解決Issueの推移</h2>' in dom and "7件" in dom and "-3件" in dom and "2026-08-19" in dom,
         "issue backlog table accessible": "日別の件数を表で確認" in dom,
-        "monthly stats selected by default": 'data-stats-view="monthly" aria-pressed="true"' in dom
-        and 'id="github-stats-title">OUTPUT / YTD</h2>' in dom
-        and 'class="output-waveform"' in dom,
-        "weekly stats selected by query": 'data-stats-view="weekly" aria-pressed="true"' in weekly_dom
-        and 'id="github-stats-title">OUTPUT / 12W</h2>' in weekly_dom,
-        "output graph exact-value table": "期間別の正確な件数を表で確認" in weekly_dom,
-        "weekly stats waveform rendered": 'data-view="weekly"' in weekly_dom
-        and 'aria-label="GitHub週次活動"' in weekly_dom
-        and weekly_dom.count('class="wave-point is-commits"') == 2,
-        "weekly waveform keeps measured points": 'class="output-waveform"' in weekly_dom
-        and 'class="wave-point is-prsMerged"' in weekly_dom
-        and 'class="wave-point is-issuesClosed"' in weekly_dom,
+        "monthly stats selected by default": 'data-stats-view="monthly" aria-pressed="true"' in dom and 'id="github-stats-title">OUTPUT / YTD</h2>' in dom and 'class="output-waveform"' in dom,
+        "weekly stats selected by query": 'data-stats-view="weekly" aria-pressed="true"' in weekly_dom and 'id="github-stats-title">OUTPUT / 12W</h2>' in weekly_dom,
+        "weekly stats retain their stored values": 'data-view="weekly"' in weekly_dom and 'aria-label="GitHub週次活動"' in weekly_dom and weekly_dom.count('class="wave-point is-commits"') == 2,
+        "no live endpoint or config was requested": not forbidden_requests.intersection(FixtureHandler.requests),
+        "browser console has no resource or script errors": all("ERROR:CONSOLE" not in output and "Failed to load resource" not in output for output in (stderr, weekly_stderr)),
     }
     failures = [name for name, passed in checks.items() if not passed]
     if failures:
-        raise SystemExit("dashboard browser E2E failed: " + ", ".join(failures))
-    print("dashboard browser E2E: baseline publicLinks -> live overlay -> monthly/weekly stats -> primary action PASS")
+        raise SystemExit("dashboard snapshot browser E2E failed: " + ", ".join(failures))
+    print("dashboard browser E2E: static snapshots, provenance, UNKNOWN state, monthly/weekly data PASS")
 
 
 if __name__ == "__main__":

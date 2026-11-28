@@ -7,13 +7,13 @@ const NOW = Date.parse("2026-08-13T03:00:00Z");
 test("snapshot within the hourly refresh window is fresh", () => {
   const result = classifySnapshot(new Date(NOW - 60 * 60 * 1000).toISOString(), NOW);
   assert.equal(result.state, "fresh");
-  assert.equal(result.label, "最新snapshot");
+  assert.equal(result.label, "Snapshot生成から2時間以内");
 });
 
 test("snapshot older than two hours is stale", () => {
   const result = classifySnapshot(new Date(NOW - STALE_AFTER_MS - 1).toISOString(), NOW);
   assert.equal(result.state, "stale");
-  assert.equal(result.label, "古いsnapshot");
+  assert.equal(result.label, "古いSnapshot");
 });
 
 test("invalid generatedAt is never treated as fresh", () => {
@@ -25,5 +25,5 @@ test("invalid generatedAt is never treated as fresh", () => {
 test("implausibly future generatedAt is never treated as fresh", () => {
   const result = classifySnapshot(new Date(NOW + CLOCK_SKEW_TOLERANCE_MS + 1).toISOString(), NOW);
   assert.equal(result.state, "unknown");
-  assert.equal(result.label, "生成時刻異常");
+  assert.equal(result.label, "Snapshot生成時刻異常");
 });

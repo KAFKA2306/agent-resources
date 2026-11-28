@@ -28,7 +28,7 @@ scope:
 competency_questions:
   - "Which evidence prevents a repository from merging or deploying?"
   - "Which commit, CI run and artifact produced the deployed version?"
-  - "Is production LIVE, SNAPSHOT, STALE or UNVERIFIED?"
+  - "Which production revision does the saved SNAPSHOT describe, and is current production still UNVERIFIED?"
   - "Which repair action was tried and what observed outcome followed?"
 
 domain_mapping:
@@ -64,7 +64,7 @@ decision_rules:
 
 provenance:
   sources: ["repository GitHub API","GitHub Actions","deployment provider evidence","production endpoints"]
-  generated_artifacts: ["dashboard snapshots","live overlay","control contracts","CI run evidence","recovery outcome records"]
+  generated_artifacts: ["dashboard snapshots","control contracts","CI run evidence","recovery outcome records"]
   agents: ["GitHub Actions","local Python controller","GitHub API","human reviewer"]
   lineage: "Issue/PR -> commit SHA -> required check -> merge decision -> artifact -> deployment -> production probe."
 

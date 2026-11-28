@@ -13,14 +13,14 @@ ASSET_ROOT = ROOT / "docs" / "dashboard"
 
 
 class AgentWorldTest(unittest.TestCase):
-    def test_world_is_connected_to_canonical_or_live_public_state(self):
+    def test_world_is_connected_to_canonical_static_public_state(self):
         html = HTML.read_text(encoding="utf-8")
         dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
         self.assertIn('id="agent-world-zones"', html)
         self.assertIn('href="./world.css"', html)
         self.assertIn('import(`./world.js?v=${assetVersion}`)', dashboard_js)
         self.assertIn(
-            "const referenceTime = snapshot.liveFetchedAt || snapshot.generatedAt;",
+            "const referenceTime = snapshot.generatedAt;",
             dashboard_js,
         )
         self.assertIn(
@@ -28,7 +28,8 @@ class AgentWorldTest(unittest.TestCase):
             dashboard_js,
         )
         self.assertIn('fetch("./dashboard.json"', dashboard_js)
-        self.assertIn("mergeLiveSnapshot(baselineSnapshot, live)", dashboard_js)
+        self.assertNotIn("mergeLiveSnapshot", dashboard_js)
+        self.assertNotIn("/api/dashboard-live", dashboard_js)
 
     def test_world_layout_is_data_driven(self):
         js = WORLD_JS.read_text(encoding="utf-8")

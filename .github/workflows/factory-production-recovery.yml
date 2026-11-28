@@ -18,9 +18,9 @@ concurrency:
 
 jobs:
   fix-forward-revert:
-    # Only deployment-backed verification is authoritative enough to trigger
-    # production recovery. The gate below additionally proves that the failed
-    # revision changed code capable of causing the observed production class.
+    # Only an independently named deployed HTTP/resource/browser-runtime health
+    # failure may trigger recovery; semantic contract assertions can contain
+    # test defects and fail closed without automatically reverting application code.
     if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.event == 'repository_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -38,6 +38,23 @@ jobs:
           script: |
             const failedRun = context.payload.workflow_run;
             const failedSha = failedRun.head_sha;
+            const { data: failedRunJobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: failedRun.id,
+              per_page: 100,
+            });
+            const failedSteps = (failedRunJobs.jobs || []).flatMap(job =>
+              (job.steps || [])
+                .filter(step => step.conclusion === 'failure')
+                .map(step => step.name)
+            );
+            if (!failedSteps.includes('Verify production resources and browser runtime')) {
+              core.notice(`not reverting ${failedSha}: release failure was outside the production HTTP/resource and browser-runtime health check (${failedSteps.join(', ') || 'no failed step'})`);
+              core.setOutput('recover', 'false');
+              return;
+            }
+
             const { data: repo } = await github.rest.repos.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -70,9 +87,11 @@ jobs:
             const changed = (comparison.files || []).map(file => file.filename);
             const productionRelevant = changed.some(path =>
               path === 'dashboard/index.html' ||
+              path.startsWith('docs/dashboard/') ||
               path.startsWith('dashboard/assets/') ||
               path.startsWith('dashboard/js/') ||
               path.startsWith('dashboard/css/') ||
+              path === 'vercel.json' ||
               path.startsWith('scripts/verify_production') ||
               path === '.github/workflows/dashboard-release-verify.yml'
             );

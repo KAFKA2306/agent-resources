@@ -11,7 +11,6 @@ on:
     paths:
       - 'AGENTS.md'
       - 'README.md'
-      - 'api/dashboard-live.js'
       - 'dashboard/**'
       - 'docs/**'
       - 'package.json'
@@ -97,8 +96,8 @@ jobs:
         working-directory: docs
         run: mkdocs build --strict
 
-      - name: Verify baseline to live overlay in headless Chrome
-        run: python dashboard/tests/dashboard_live_browser_e2e.py
+      - name: Verify static dashboard snapshots in headless Chrome
+        run: python dashboard/tests/dashboard_snapshot_browser_e2e.py
 
       - name: Verify operations navigation in headless Chrome
         run: python dashboard/tests/dashboard_operations_browser_e2e.py
