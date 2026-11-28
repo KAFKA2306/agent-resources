@@ -6,39 +6,57 @@ ROOT = Path(__file__).resolve().parents[2]
 VERCEL = ROOT / "vercel.json"
 DASHBOARD_HTML = ROOT / "docs" / "dashboard" / "index.html"
 DASHBOARD_JS = ROOT / "docs" / "dashboard" / "dashboard.js"
-FACTORY_EVIDENCE_JS = ROOT / "docs" / "dashboard" / "factory-evidence.js"
-CANONICAL_DASHBOARD = "https://kafka2306.github.io/agent-resources/dashboard/dashboard.json"
-CANONICAL_FACTORY_STATE = "https://kafka2306.github.io/agent-resources/dashboard/factory-state.json"
+AUTO_REFRESH = ROOT / "docs" / "dashboard" / "auto-refresh.js"
+LIVE_CONFIG = ROOT / "docs" / "dashboard" / "live-config.json"
+LIVE_API = ROOT / "api" / "dashboard-live.js"
+CANONICAL_BASELINE = "https://kafka2306.github.io/agent-resources/dashboard/dashboard.json"
 
 
-class VercelSnapshotTest(unittest.TestCase):
-    def test_vercel_routes_public_dashboard_snapshots_to_pages(self):
+class VercelFreshnessTest(unittest.TestCase):
+    def test_vercel_serves_canonical_baseline_before_live_overlay(self):
         config = json.loads(VERCEL.read_text(encoding="utf-8"))
-        rewrites = {rule["source"]: rule["destination"] for rule in config["rewrites"]}
         self.assertEqual(config["outputDirectory"], "deploy")
-        self.assertEqual(rewrites["/dashboard/dashboard.json"], CANONICAL_DASHBOARD)
-        self.assertEqual(rewrites["/dashboard/factory-state.json"], CANONICAL_FACTORY_STATE)
-        self.assertNotIn("api/dashboard-live.js", config.get("functions", {}))
+        rewrite = config["rewrites"][0]
+        self.assertEqual(rewrite["source"], "/dashboard/dashboard.json")
+        self.assertEqual(rewrite["destination"], CANONICAL_BASELINE)
+        self.assertNotEqual(rewrite["destination"], "/api/dashboard-live")
+        self.assertIn("api/dashboard-live.js", config["functions"])
+        self.assertGreaterEqual(config["functions"]["api/dashboard-live.js"]["maxDuration"], 30)
 
-    def test_dashboard_reads_the_static_snapshot_without_live_endpoint_config(self):
-        html = DASHBOARD_HTML.read_text(encoding="utf-8")
-        dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
-        factory_js = FACTORY_EVIDENCE_JS.read_text(encoding="utf-8")
-        self.assertIn('fetch("./dashboard.json"', dashboard_js)
-        self.assertIn('fetchJson("./factory-state.json")', factory_js)
-        self.assertIn('"UNVERIFIED"', factory_js)
-        self.assertIn("current production state UNVERIFIED", factory_js)
-        self.assertNotIn("/api/dashboard-live", dashboard_js + factory_js + html)
-        self.assertNotIn("live-config.json", dashboard_js + factory_js + html)
-        self.assertNotIn("api.github.com", factory_js)
-        self.assertNotIn('"auto-refresh.js"', html)
-
-    def test_vercel_build_remains_a_static_dashboard_build(self):
+    def test_vercel_build_is_static_and_does_not_duplicate_github_collection(self):
         config = json.loads(VERCEL.read_text(encoding="utf-8"))
         command = config["buildCommand"]
         self.assertIn("mkdocs build", command)
         self.assertNotIn("dashboard.collectors", command)
         self.assertNotIn("GITHUB_TOKEN", command)
+
+    def test_browser_refreshes_live_state_without_full_page_reload(self):
+        html = DASHBOARD_HTML.read_text(encoding="utf-8")
+        dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
+        js = AUTO_REFRESH.read_text(encoding="utf-8")
+        self.assertIn('"auto-refresh.js"', html)
+        self.assertIn('import(`./${name}?v=${assetVersion}`)', html)
+        self.assertIn('id="live-fetched-at"', html)
+        self.assertIn("2 * 60 * 1000", js)
+        self.assertIn('document.addEventListener("visibilitychange"', js)
+        self.assertIn('window.addEventListener("focus"', js)
+        self.assertIn('window.addEventListener("pageshow"', js)
+        self.assertIn('"dashboard:refresh-live"', js)
+        self.assertNotIn("window.location.reload()", js)
+        self.assertIn("mergeLiveSnapshot", dashboard_js)
+        self.assertIn('fetch(endpoint, { headers: { Accept: "application/json" } })', dashboard_js)
+
+    def test_pages_live_endpoint_targets_verified_vercel_url(self):
+        config = json.loads(LIVE_CONFIG.read_text(encoding="utf-8"))
+        self.assertEqual(
+            config["endpoint"],
+            "https://agent-resources-one.vercel.app/api/dashboard-live",
+        )
+        api = LIVE_API.read_text(encoding="utf-8")
+        self.assertIn('response.setHeader("Access-Control-Allow-Origin", "*")', api)
+        self.assertIn("DASHBOARD_GITHUB_TOKEN", api)
+        self.assertNotIn("ghp_", api)
+        self.assertNotIn("github_pat_", api)
 
 
 if __name__ == "__main__":

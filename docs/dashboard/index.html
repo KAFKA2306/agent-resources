@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./dashboard.css">
   <script type="module">
     const assetVersion = Date.now().toString();
-    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "activity-timeline.js", "operations-navigation.js", "repository-operations.js", "issue-history.js"];
+    const modules = ["neural-field.js", "dashboard.js", "factory-evidence.js", "activity-timeline.js", "auto-refresh.js", "operations-navigation.js", "repository-operations.js", "issue-history.js"];
     Promise.all(modules.map((name) => import(`./${name}?v=${assetVersion}`))).catch((error) => {
       const status = document.getElementById("snapshot-status");
       if (status) {
@@ -67,11 +67,11 @@
 
     <section class="bridge-stage">
       <div class="bridge-title-block">
-        <p class="eyebrow">AUTONOMOUS FACTORY // SNAPSHOT</p>
+        <p class="eyebrow">AUTONOMOUS FACTORY // LIVE</p>
         <h2 class="bridge-display-title">FACTORY<br><span>OBSERVATORY.</span></h2>
         <p class="bridge-flow">OBSERVE → REPAIR → MERGE → VERIFY</p>
 
-        <div class="hero-telemetry" aria-label="Factory snapshot telemetry">
+        <div class="hero-telemetry" aria-label="Factory live telemetry">
           <div class="hero-metric">
             <strong id="hero-repository-total">0</strong>
             <span>REPOSITORIES</span>
@@ -110,7 +110,7 @@
             <p class="eyebrow">SELF-HEALING SYSTEMS</p>
             <h2 id="autonomy-reactor-title">Autonomy Reactor</h2>
           </div>
-          <span>SNAPSHOT CAPABILITY GRAPH</span>
+          <span>LIVE CAPABILITY GRAPH</span>
         </header>
         <div id="factory-capabilities" class="reactor-field" aria-live="polite"></div>
       </section>
@@ -127,12 +127,12 @@
         <div class="evidence-chain">
           <section class="evidence-link evidence-link-primary" data-stage="main">
             <span>01 / MAIN</span>
-            <strong>Snapshot source revision</strong>
+            <strong>Current main</strong>
             <div id="factory-main-sha" class="muted">loading</div>
           </section>
           <section class="evidence-link" data-stage="pages">
             <span>02 / PAGES</span>
-            <strong>Pages workflow run</strong>
+            <strong>Pages deployment</strong>
             <div id="factory-pages-run" class="muted">loading</div>
           </section>
           <section class="evidence-link" data-stage="observer">
@@ -153,8 +153,8 @@
         </div>
       </aside>
 
-      <section class="telemetry-strip" aria-label="データ保存時刻">
-        <div><span>FACTORY STATE</span><time id="factory-state-generated-at" class="snapshot-time">読込中</time></div>
+      <section class="telemetry-strip" aria-label="データ更新時刻">
+        <div><span>LIVE</span><time id="live-fetched-at" class="snapshot-time">読込中</time></div>
         <div><span>SNAPSHOT</span><time id="snapshot-generated-at" class="snapshot-time">読込中</time></div>
         <div><span>OPERATIONS</span><time id="operations-generated-at" class="snapshot-time">読込中</time></div>
         <div><span>MODE</span><strong>AUTONOMOUS</strong></div>
@@ -164,7 +164,7 @@
     <section class="signal-stream" aria-labelledby="activity-title">
       <header class="signal-stream-heading">
         <div>
-          <p class="eyebrow">SNAPSHOT SIGNAL STREAM</p>
+          <p class="eyebrow">LIVE SIGNAL STREAM</p>
           <h2 id="activity-title">FACTORY PULSE / 7D</h2>
         </div>
         <span class="signal-dot" aria-hidden="true"></span>

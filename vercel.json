@@ -4,6 +4,9 @@
   "outputDirectory": "deploy",
   "ignoreCommand": "test \"$VERCEL_GIT_COMMIT_AUTHOR_LOGIN\" = \"github-actions[bot]\" && test \"$VERCEL_GIT_COMMIT_MESSAGE\" = \"chore: refresh repository recall index\"",
   "functions": {
+    "api/dashboard-live.js": {
+      "maxDuration": 60
+    },
     "api/mcp.js": {
       "maxDuration": 60
     },

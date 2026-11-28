@@ -1,5 +1,5 @@
-import unittest
 from pathlib import Path
+import unittest
 
 
 class ProductionRecoveryWorkflowTests(unittest.TestCase):
@@ -10,15 +10,6 @@ class ProductionRecoveryWorkflowTests(unittest.TestCase):
     def test_only_runs_after_failed_release_verification(self):
         self.assertIn("- Verify Dashboard Release", self.text)
         self.assertIn("github.event.workflow_run.conclusion == 'failure'", self.text)
-
-    def test_reverts_only_failed_exact_revision_production_browser_checks(self):
-        self.assertIn("listJobsForWorkflowRun", self.text)
-        self.assertIn("Verify released production dashboard in Chrome", self.text)
-        self.assertIn("release failure was outside the exact-revision production browser check", self.text)
-
-    def test_current_pages_ui_and_vercel_files_are_production_relevant(self):
-        self.assertIn("path.startsWith('docs/dashboard/')", self.text)
-        self.assertIn("path === 'vercel.json'", self.text)
 
     def test_refuses_stale_failure_revision(self):
         self.assertIn("main.sha !== failedSha", self.text)

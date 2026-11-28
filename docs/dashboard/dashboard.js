@@ -2,11 +2,13 @@ const assetVersion = encodeURIComponent(new URL(import.meta.url).searchParams.ge
 const [
   { compareWorkItems },
   { classifySnapshot },
+  { classifyLive, mergeLiveSnapshot },
   { renderStats },
   { createPublicSurfaceLinks, renderWorld },
 ] = await Promise.all([
   import(`./ranking.js?v=${assetVersion}`),
   import(`./snapshot-status.js?v=${assetVersion}`),
+  import(`./live-overlay.js?v=${assetVersion}`),
   import(`./stats.js?v=${assetVersion}`),
   import(`./world.js?v=${assetVersion}`),
 ]);
@@ -14,6 +16,7 @@ const [
 const repositoryCount = document.querySelector("#repository-count");
 const snapshotStatus = document.querySelector("#snapshot-status");
 const snapshotGeneratedAt = document.querySelector("#snapshot-generated-at");
+const liveFetchedAt = document.querySelector("#live-fetched-at");
 const workspaceMessage = document.querySelector("#workspace-message");
 const laneGates = document.querySelector("#lane-gates");
 const gateDetail = document.querySelector("#gate-detail");
@@ -45,19 +48,27 @@ const LANE_REASONS = {
   workflow_completed: "実行が完了しました。",
   workflow_skipped: "実行がスキップされました。",
 };
+const LIVE_CONFIG_URL = "./live-config.json";
+const MIN_LIVE_SUCCESS_AGE_MS = 60 * 1000;
+
+let baselineSnapshot = null;
 let visibleSnapshot = null;
+let liveEndpoint = null;
+let liveEndpointResolved = false;
+let liveRequest = null;
+let liveRequestSequence = 0;
+let latestAppliedSequence = 0;
+let lastLiveSuccessAt = 0;
 
 function repositoryLabel(repository) {
   if (!repository) return "unknown";
   return repository.owner ? `${repository.owner} / ${repository.name}` : repository.name;
 }
 
-function formatWorkItemAge(value, observedAt) {
+function formatWorkItemAge(value) {
   const updated = new Date(value);
   if (Number.isNaN(updated.getTime())) return "更新時刻不明";
-  const observed = new Date(observedAt);
-  if (Number.isNaN(observed.getTime())) return "更新時刻不明";
-  const ageMs = Math.max(0, observed.getTime() - updated.getTime());
+  const ageMs = Math.max(0, Date.now() - updated.getTime());
   const minutes = Math.floor(ageMs / (60 * 1000));
   if (minutes < 60) return `${minutes}分前に更新`;
   const hours = Math.floor(minutes / 60);
@@ -77,7 +88,7 @@ function createGateItem(item, repositoriesById, includePublicSurfaces = true) {
   owner.textContent = repositoryLabel(repo);
   const updated = document.createElement("time");
   if (item.updatedAt) updated.dateTime = item.updatedAt;
-  updated.textContent = formatWorkItemAge(item.updatedAt, visibleSnapshot?.snapshot.generatedAt);
+  updated.textContent = formatWorkItemAge(item.updatedAt);
   meta.append(owner, updated);
 
   const title = document.createElement("strong");
@@ -99,17 +110,35 @@ function createGateItem(item, repositoriesById, includePublicSurfaces = true) {
   return row;
 }
 
-function renderPrimaryAction(failed, waiting, repositoriesById, snapshot) {
+function renderPrimaryAction(failed, waiting, repositoriesById, snapshot, liveError) {
   const stored = classifySnapshot(snapshot.generatedAt);
-  const savedAt = stored.generated
-    ? `保存時刻 ${formatSnapshotTime(stored.generated)} JST`
-    : "保存時刻不明";
-  let status = `GitHubの現在状態は未確認です。公開snapshotの${savedAt}を表示しています。`;
+  const live = classifyLive(snapshot.liveFetchedAt, snapshot.liveMaxAgeSeconds);
+  const hasLive = live.fetched !== null;
+  const freshWorkflow = stored.state === "fresh";
+  const freshWork = hasLive ? live.isFresh && !liveError : freshWorkflow;
+  const workflowTime = stored.generated
+    ? `Actionsの保存時刻 ${formatSnapshotTime(stored.generated)} JST`
+    : "Actionsの保存時刻は不明";
+  const prTime = hasLive
+    ? `PRの取得時刻 ${formatSnapshotTime(live.fetched)} JST`
+    : stored.generated ? "PRも同じ保存時刻" : "PRの取得時刻は不明";
+  const coverage = liveError
+    ? `ライブ取得失敗（${liveError}）`
+    : hasLive && !live.isFresh
+      ? "ライブの取得結果は古い"
+      : hasLive
+        ? "PRをライブ取得"
+        : "保存データを表示";
+  let status = `${coverage}。 ${workflowTime}。 ${prTime}。`;
+  if (!freshWorkflow && stored.generated) status += " Actionsの現況は未確認です。";
 
-  const item = failed[0] || waiting[0];
+  const item = (freshWorkflow && failed[0])
+    || (freshWork && waiting[0])
+    || failed[0]
+    || waiting[0];
   if (!item) {
-    status += stored.generated
-      ? " 保存データに失敗した実行・未解決PRはありません。現在の件数は未確認です。"
+    status += freshWorkflow && freshWork
+      ? " 取得範囲に失敗した実行・未解決PRはありません。"
       : " 現在の対応件数は未確認です。";
   }
   actionCoverage.textContent = status;
@@ -118,9 +147,10 @@ function renderPrimaryAction(failed, waiting, repositoriesById, snapshot) {
   primaryActionItem.replaceChildren();
   if (!item) return;
 
-  primaryActionTitle.textContent = item.lane === "failed"
-    ? "Snapshot上の確認候補 · 失敗した実行"
-    : "Snapshot上の確認候補 · 未解決PR";
+  const fresh = item.lane === "failed" ? freshWorkflow : freshWork;
+  primaryActionTitle.textContent = fresh
+    ? item.lane === "failed" ? "最優先の確認 · 失敗した実行" : "最優先の確認 · 未解決PR"
+    : "過去の記録 · GitHubで現況を確認";
   primaryActionItem.append(createGateItem(item, repositoriesById, false));
   if (linkHadFocus) primaryActionItem.querySelector(".gate-item-link").focus({ preventScroll: true });
 }
@@ -146,13 +176,14 @@ function showGateItems(label, items, repositoriesById) {
   gateDetail.append(list);
 }
 
-function renderGates(workItems, repositoriesById, snapshot) {
+function renderGates(workItems, repositoriesById, snapshot, liveError) {
   laneGates.replaceChildren();
   gateDetail.hidden = true;
   const ordered = workItems.slice().sort(compareWorkItems);
   const failed = ordered.filter((item) => item.lane === "failed");
   const waiting = ordered.filter((item) => item.lane === "waiting");
-  renderPrimaryAction(failed, waiting, repositoriesById, snapshot);
+  renderPrimaryAction(failed, waiting, repositoriesById, snapshot, liveError);
+  if (!snapshot.generatedAt && !snapshot.liveFetchedAt) return;
 
   const itemsByLane = { failed, waiting, done: ordered.filter((item) => item.lane === "done") };
   for (const gate of GATES) {
@@ -411,15 +442,51 @@ function renderSnapshotMeta(snapshot) {
   }
 }
 
-function renderDashboard(snapshot) {
+function renderLiveMeta(fetchedAt, maxAgeSeconds, liveCoverage = null) {
+  const freshness = classifyLive(fetchedAt, maxAgeSeconds);
+  const workflowSnapshot = liveCoverage?.workflowRuns === "snapshot";
+  snapshotStatus.dataset.state = freshness.state;
+  if (workflowSnapshot) {
+    snapshotStatus.dataset.workflowState = "snapshot";
+    snapshotStatus.textContent = `${freshness.label} · workflow snapshot`;
+  } else {
+    delete snapshotStatus.dataset.workflowState;
+    snapshotStatus.textContent = freshness.label;
+  }
+  if (!freshness.fetched) {
+    liveFetchedAt.removeAttribute("datetime");
+    liveFetchedAt.textContent = "Live: 取得できません";
+    return;
+  }
+  liveFetchedAt.dateTime = freshness.fetched.toISOString();
+  liveFetchedAt.textContent = `Live: ${formatSnapshotTime(freshness.fetched)}`;
+}
+
+function renderLiveFailure(message = "Live取得失敗") {
+  snapshotStatus.dataset.state = "failed";
+  snapshotStatus.textContent = "LIVE ERROR";
+  liveFetchedAt.removeAttribute("datetime");
+  liveFetchedAt.textContent = `Live: ${message}`;
+  const { workItems, repositoriesById, snapshot } = visibleSnapshot;
+  const ordered = workItems.slice().sort(compareWorkItems);
+  renderPrimaryAction(
+    ordered.filter((item) => item.lane === "failed"),
+    ordered.filter((item) => item.lane === "waiting"),
+    repositoriesById,
+    snapshot,
+    message,
+  );
+}
+
+function renderDashboard(snapshot, liveError = null) {
   const repositories = Array.isArray(snapshot.repositories) ? snapshot.repositories : [];
   const workItems = Array.isArray(snapshot.workItems) ? snapshot.workItems : [];
   const activity = Array.isArray(snapshot.activity) ? snapshot.activity : [];
   const repositoriesById = new Map(repositories.map((repo) => [repo.id, repo]));
-  const referenceTime = snapshot.generatedAt;
+  const referenceTime = snapshot.liveFetchedAt || snapshot.generatedAt;
   visibleSnapshot = { workItems, repositoriesById, snapshot };
 
-  renderGates(workItems, repositoriesById, snapshot);
+  renderGates(workItems, repositoriesById, snapshot, liveError);
   renderWorld(repositories, workItems, activity, referenceTime);
   renderActivity(activity, repositoriesById);
   renderStats(snapshot.stats);
@@ -429,7 +496,7 @@ function renderDashboard(snapshot) {
   document.documentElement.dataset.factoryMotion = factoryMotion;
   heroRepositoryTotal.textContent = String(repositories.length);
   heroActivityTotal.textContent = String(activity.length);
-  heroMotionLabel.textContent = ({ idle: "QUIET", active: "RECENT", hot: "SURGE" })[factoryMotion];
+  heroMotionLabel.textContent = ({ idle: "QUIET", active: "LIVE", hot: "SURGE" })[factoryMotion];
   repositoryCount.textContent = `${repositories.length} repositories`;
 
   if (repositories.length === 0) {
@@ -440,23 +507,83 @@ function renderDashboard(snapshot) {
   workspaceMessage.hidden = true;
 }
 
+async function resolveLiveEndpoint() {
+  if (liveEndpointResolved) return liveEndpoint;
+  liveEndpointResolved = true;
+  if (window.location.hostname.endsWith(".vercel.app")) {
+    liveEndpoint = "/api/dashboard-live";
+    return liveEndpoint;
+  }
+  try {
+    const response = await fetch(LIVE_CONFIG_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const config = await response.json();
+    liveEndpoint = typeof config.endpoint === "string" && config.endpoint.startsWith("https://") ? config.endpoint : null;
+  } catch (error) {
+    console.warn("dashboard live endpoint config unavailable", error);
+    liveEndpoint = null;
+  }
+  return liveEndpoint;
+}
+
+export async function refreshLiveState({ force = false } = {}) {
+  if (!baselineSnapshot) return null;
+  if (!force && lastLiveSuccessAt && Date.now() - lastLiveSuccessAt < MIN_LIVE_SUCCESS_AGE_MS) return null;
+  if (liveRequest) return liveRequest;
+
+  const sequence = ++liveRequestSequence;
+  liveRequest = (async () => {
+    try {
+      const endpoint = await resolveLiveEndpoint();
+      if (!endpoint) {
+        renderLiveFailure("endpoint未設定");
+        return null;
+      }
+      const response = await fetch(endpoint, { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const live = await response.json();
+      const merged = mergeLiveSnapshot(baselineSnapshot, live);
+      if (sequence < latestAppliedSequence) return null;
+      latestAppliedSequence = sequence;
+      lastLiveSuccessAt = Date.now();
+      renderDashboard({ ...merged, liveMaxAgeSeconds: live.cache?.maxAgeSeconds });
+      renderSnapshotMeta(baselineSnapshot);
+      renderLiveMeta(live.fetchedAt, live.cache?.maxAgeSeconds, merged.liveCoverage);
+      return merged;
+    } catch (error) {
+      if (sequence >= latestAppliedSequence) {
+        renderLiveFailure(error instanceof Error ? error.message : "Live取得失敗");
+      }
+      console.error("dashboard live refresh failed", error);
+      return null;
+    } finally {
+      if (sequence === liveRequestSequence) liveRequest = null;
+    }
+  })();
+  return liveRequest;
+}
+
 async function loadDashboard() {
   try {
     const response = await fetch("./dashboard.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const snapshot = await response.json();
-    renderDashboard(snapshot);
-    renderSnapshotMeta(snapshot);
+    baselineSnapshot = await response.json();
+    renderDashboard(baselineSnapshot);
+    renderSnapshotMeta(baselineSnapshot);
+    await refreshLiveState({ force: true });
   } catch (error) {
-    renderDashboard({ repositories: [], workItems: [], activity: [], stats: null });
+    renderDashboard({ repositories: [], workItems: [], activity: [], stats: null }, "保存データも取得できません");
     snapshotStatus.dataset.state = "failed";
     snapshotStatus.textContent = "更新失敗";
     snapshotGeneratedAt.removeAttribute("datetime");
     snapshotGeneratedAt.textContent = "Snapshot: 取得できません";
+    liveFetchedAt.removeAttribute("datetime");
+    liveFetchedAt.textContent = "Live: baselineなし";
     workspaceMessage.hidden = false;
     workspaceMessage.textContent = "dashboard.json を読み込めませんでした。最新成功データとして扱いません。";
     console.error(error);
   }
 }
 
+window.addEventListener("dashboard:refresh-live", () => refreshLiveState());
 loadDashboard();

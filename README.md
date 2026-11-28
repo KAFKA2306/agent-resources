@@ -33,8 +33,7 @@ observe
 
 Control Tower は工場の第二の正本ではありません。表示される状態から必ず canonical evidence へ戻れることを優先します。
 
-- Pagesが生成する `dashboard.json` / `factory-state.json` のsnapshotを表示する
-- `generatedAt` と `sourceRevision` を示し、表示時点のcurrent stateは `UNVERIFIED` とする
+- LIVE / SNAPSHOT / STALE / UNVERIFIED を区別する
 - Issue / PR / Actions / deployment / production evidence を横断する
 - 失敗を表示するだけでなく、どの工程で止まったかを示す
 - routine human intervention を automation gap として扱う
@@ -91,7 +90,7 @@ KAFKA2306 の共有Web UI authorityは [`KAFKA2306/design`](https://github.com/K
 dashboard/     Control Tower collectors / control contracts / tests
 docs/dashboard/ public Control Tower UI
 docs/content/   public documentation
-api/            MCP / GitHub event integration APIs
+api/            live overlay API
 infra/github/   Terraform GitHub control-plane drift contract
 skills/         reusable agent skills
 plugins/        packaged integrations
@@ -99,7 +98,7 @@ agr/            agr
 agrx/           agrx
 ~~~
 
-`dashboard/`、`dashboard.json` などの識別子は内部実装です。DashboardはPages生成の静的snapshotを表示し、製品名は Software Factory Control Tower に統一します。
+内部互換のため `dashboard/`、`dashboard.json`、`/api/dashboard-live` など既存の技術識別子は維持します。製品名は Software Factory Control Tower に統一します。
 
 ## Development
 
