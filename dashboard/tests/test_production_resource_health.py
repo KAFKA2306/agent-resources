@@ -39,9 +39,9 @@ class ProductionResourceHealthTests(unittest.TestCase):
             open_url=open_url,
         )
 
-        self.assertEqual(len(results), 7)
+        self.assertEqual(len(results), 8)
         self.assertTrue(all(status == 200 for _, status in results))
-        self.assertEqual(len(requests), 7)
+        self.assertEqual(len(requests), 8)
         self.assertIn(
             "https://agent-resources-one.vercel.app/dashboard/factory-state.json?v=abc123",
             [url for url, _ in requests],

@@ -24,6 +24,8 @@ class VercelSnapshotTest(unittest.TestCase):
         html = DASHBOARD_HTML.read_text(encoding="utf-8")
         dashboard_js = DASHBOARD_JS.read_text(encoding="utf-8")
         factory_js = FACTORY_EVIDENCE_JS.read_text(encoding="utf-8")
+        self.assertIn('rel="icon"', html)
+        self.assertIn("../site/assets/images/favicon.png", html)
         self.assertIn('fetch("./dashboard.json"', dashboard_js)
         self.assertIn('fetchJson("./factory-state.json")', factory_js)
         self.assertIn('"UNVERIFIED"', factory_js)

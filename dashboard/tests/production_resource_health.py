@@ -37,6 +37,7 @@ def verify_http_resources(
         ("factory state snapshot", urljoin(root, f"dashboard/factory-state.json{query}")),
         ("dashboard JavaScript", urljoin(root, "dashboard/dashboard.js")),
         ("factory evidence JavaScript", urljoin(root, "dashboard/factory-evidence.js")),
+        ("dashboard favicon", urljoin(root, "site/assets/images/favicon.png")),
     )
     results = []
     for label, url in resources:
